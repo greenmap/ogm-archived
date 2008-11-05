@@ -103,7 +103,7 @@ if($node->field_involved[0]['value'] == 'yes') {
 			$contents .= t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
 		}
 		if($node->og_groups_both[$node->og_groups[0]] > '') {
-			$contents .= t('to') . ' ' . l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0]);
+			$contents .= t('to') . ' ' . l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
 		}
 		// debug
 		//print_r($node);
