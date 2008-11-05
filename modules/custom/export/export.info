@@ -1,0 +1,5 @@
+; $Id$
+name = export
+description = Export Data from OGM
+package = GreenMap
+core= 5.x

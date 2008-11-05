@@ -1,0 +1,350 @@
+<?php
+
+function export_menu($may_cache){
+	$items = array();
+	if($may_cache){
+	} else {
+		if (arg(0) == 'node' && is_numeric(arg(1))) {
+			$member = false;
+			if ($GLOBALS['user']->og_groups[arg(1)]){
+				$member = true;
+			}
+			$items[] = array(
+				'path' 				=> 'node/'. arg(1). '/export', 
+				'title' 			=> t('Export'),
+				'access' 			=> $member,
+				'callback' 			=> 'export_csv',
+				'callback arguments'=> array(arg(1)),
+				'type'    			=> MENU_LOCAL_TASK,
+				'weight' 			=> 8
+			);
+				
+			
+	  }
+	}
+	return $items;
+	
+}
+/*
+ * hook_menu -calls these functions
+ */
+
+function export_csv($nid){
+	drupal_goto('export/' . $nid);
+}
+
+
+function export_views_default_views(){
+	
+	
+  $view = new stdClass();
+  $view->name = 'export_csv';
+  $view->description = 'CSV list of all published, public sites on a map';
+  $view->access = array (
+  0 => '3',
+  1 => '4',
+  2 => '5',
+);
+  $view->view_args_php = '';
+  $view->page = TRUE;
+  $view->page_title = '';
+  $view->page_header = '';
+  $view->page_header_format = '1';
+  $view->page_footer = '';
+  $view->page_footer_format = '1';
+  $view->page_empty = 'There are no sites on this map';
+  $view->page_empty_format = '1';
+  $view->page_type = 'views_csv';
+  $view->url = 'export';
+  $view->use_pager = FALSE;
+  $view->nodes_per_page = '0';
+  $view->sort = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'sortorder' => 'ASC',
+      'options' => '',
+    ),
+  );
+  $view->argument = array (
+    array (
+      'type' => 'gid',
+      'argdefault' => '1',
+      'title' => '',
+      'options' => '',
+      'wildcard' => '',
+      'wildcard_substitution' => '',
+    ),
+  );
+  $view->field = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'nid',
+      'label' => 'Site ID',
+    ),
+    array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => 'Site Name',
+      'handler' => 'views_handler_field_nodelink',
+      'options' => 'link',
+    ),
+    array (
+      'tablename' => 'primary_term',
+      'field' => 'tid',
+      'label' => 'Primary Icon',
+    ),
+    array (
+      'tablename' => 'term_node_1',
+      'field' => 'name',
+      'label' => 'All Icons',
+      'options' => 'link',
+    ),
+    array (
+      'tablename' => 'term_node_4',
+      'field' => 'name',
+      'label' => 'Tags',
+      'options' => 'link',
+    ),
+    array (
+      'tablename' => 'node_data_field_details',
+      'field' => 'field_details_value',
+      'label' => 'Details',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'og_node_data',
+      'field' => 'title',
+      'label' => 'Maps',
+    ),
+    array (
+      'tablename' => 'og_ancestry',
+      'field' => 'is_public',
+      'label' => 'Public',
+    ),
+    array (
+      'tablename' => 'node_data_field_web',
+      'field' => 'field_web_url',
+      'label' => 'Web Address',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'plain',
+    ),
+    array (
+      'tablename' => 'node_data_field_email',
+      'field' => 'field_email_email',
+      'label' => 'Email',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_phone',
+      'field' => 'field_phone_value',
+      'label' => 'Phone',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_child_friendly',
+      'field' => 'field_child_friendly_value',
+      'label' => 'Children Welcome',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_wheelchair_accessible',
+      'field' => 'field_wheelchair_accessible_value',
+      'label' => 'Accessible',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_appointment_needed',
+      'field' => 'field_appointment_needed_value',
+      'label' => 'Appointment Needed',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_accessible_by_public_tran',
+      'field' => 'field_accessible_by_public_tran_value',
+      'label' => 'Accessible by Public Transport',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_public_transport_directio',
+      'field' => 'field_public_transport_directio_value',
+      'label' => 'Directions',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_free_entry',
+      'field' => 'field_free_entry_value',
+      'label' => 'Free Entry',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_entry_cost',
+      'field' => 'field_entry_cost_value',
+      'label' => 'Entry Cost',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_volunteer_opportunities_a',
+      'field' => 'field_volunteer_opportunities_a_value',
+      'label' => 'Volunteer',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_volunteer_details',
+      'field' => 'field_volunteer_details_value',
+      'label' => 'Volunteer Details',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_image',
+      'field' => 'field_image_embed',
+      'label' => 'Image',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_image_caption',
+      'field' => 'field_image_caption_value',
+      'label' => 'Image Caption',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_video',
+      'field' => 'field_video_embed',
+      'label' => 'Video',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_video_caption',
+      'field' => 'field_video_caption_value',
+      'label' => 'Video Caption',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'node_data_field_involved',
+      'field' => 'field_involved_value',
+      'label' => 'Involvement',
+      'handler' => 'content_views_field_handler_group',
+      'options' => 'default',
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'street',
+      'label' => 'Street',
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'additional',
+      'label' => 'Additional',
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'city',
+      'label' => 'City',
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'province',
+      'label' => 'Province',
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'postal_code',
+      'label' => 'Postal Code',
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'country',
+      'label' => 'Country',
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'latitude',
+      'label' => 'Latitude',
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'longitude',
+      'label' => 'Longitude',
+    ),
+    array (
+      'tablename' => 'node_comment_statistics',
+      'field' => 'comment_count',
+      'label' => 'Number of Comments',
+      'handler' => 'views_handler_field_int',
+    ),
+    array (
+      'tablename' => 'node',
+      'field' => 'created',
+      'label' => 'Created',
+      'handler' => 'views_handler_field_date_small',
+    ),
+    array (
+      'tablename' => 'node',
+      'field' => 'changed',
+      'label' => 'Last Edited',
+      'handler' => 'views_handler_field_date_small',
+    ),
+    array (
+      'tablename' => 'users',
+      'field' => 'name',
+      'label' => 'Added By',
+    ),
+  );
+  $view->filter = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'type',
+      'operator' => 'OR',
+      'options' => '',
+      'value' => array (
+  0 => 'green_site',
+),
+    ),
+    array (
+      'tablename' => 'node',
+      'field' => 'status',
+      'operator' => '=',
+      'options' => '',
+      'value' => '1',
+    ),
+    array (
+      'tablename' => 'og_ancestry',
+      'field' => 'is_public',
+      'operator' => '=',
+      'options' => '',
+      'value' => '1',
+    ),
+    array (
+      'tablename' => 'node',
+      'field' => 'distinct',
+      'operator' => '=',
+      'options' => '',
+      'value' => array (
+  0 => 'distinct',
+),
+    ),
+  );
+  $view->exposed_filter = array (
+  );
+  $view->requires = array(node, primary_term, term_node_1, term_node_4, node_data_field_details, og_node_data, og_ancestry, node_data_field_web, node_data_field_email, node_data_field_phone, node_data_field_child_friendly, node_data_field_wheelchair_accessible, node_data_field_appointment_needed, node_data_field_accessible_by_public_tran, node_data_field_public_transport_directio, node_data_field_free_entry, node_data_field_entry_cost, node_data_field_volunteer_opportunities_a, node_data_field_volunteer_details, node_data_field_image, node_data_field_image_caption, node_data_field_video, node_data_field_video_caption, node_data_field_involved, location, node_comment_statistics, users);
+  $views[$view->name] = $view;
+
+
+  return $views;
+}

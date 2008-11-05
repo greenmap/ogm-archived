@@ -1,0 +1,5 @@
+; $Id$
+name = homepage
+description = Homepage
+package = GreenMap
+core= 5.x

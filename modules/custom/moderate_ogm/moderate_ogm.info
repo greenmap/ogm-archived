@@ -1,0 +1,5 @@
+; $Id$
+name = moderate_ogm
+description = This is a module to customize Mapmaker Profile
+package = GreenMap
+core= 5.x

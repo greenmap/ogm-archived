@@ -1,0 +1,320 @@
+<?php
+
+// $Id: og_taxonomy_subset.module,v 0.1 2008/03/13 16:39:43 tom_o_t Exp $
+
+/**
+ * hook_nodeapi
+ * Whenever the green_map content type is created or updated it will create the og_taxonomy in cache
+ * But first we need to remove the taxonomy for that map from the cache if it's there so that it is recreated when the map is next viewed
+ */
+
+function og_taxonomy_subset_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  switch($op) {
+    case 'insert':
+	if ($node->type == 'green_map') {
+		  // remove taxonomy from cache when new map is added (although by definition it shouldn't be there)
+		cache_clear_all( 'og_taxonomy_subset_'.($node->nid), 'cache_og_taxonomy_subset' );
+
+	  }
+
+    case 'update':
+      if ($node->type == 'green_map') {
+		  // remove taxonomy from cache when map is updated
+		cache_clear_all( 'og_taxonomy_subset_'.($node->nid), 'cache_og_taxonomy_subset' );
+
+	  }
+      break;
+
+  }
+}
+
+
+/**
+ * Change the  primary term form on node/add form 
+ * Remove all the terms not allowed within this group
+ */
+
+function og_taxonomy_subset_form_alter($form_id, &$form) { 
+
+  
+  if($form_id == 'green_site_node_form'){
+  	// creates or gets from cache the options for the taxonomy of icons
+    // get_taxonomy_pruned() only effects exposed filter
+    get_taxonomy_pruned( $form_id, $form);
+	
+    // alter form for adding Map
+    $type = $form['type']['#value'];
+    $node = $form['#node'];
+  	// first check if node is being submitted to a group, or is already in a group
+	if($group = og_get_group_context()) {	
+	
+		   // this returns the $node object for the group
+		  
+		  
+		  // copied from primary_term - gets vocabs that are set to use primary_term
+		  if ($vids = variable_get('pt_vocabs_'. $form['type']['#value'], array())) {
+			
+		    // go through all taxonomy terms for this type:
+			$terms = array();
+			if(is_array($form['taxonomy'])){
+			  foreach($form['taxonomy'] as $vid => $vocab){
+				// if the current taxonomy form is one that is set to use primary_term
+				if(in_array($vid, $vids)){
+				  if(is_array($vocab['#options'])){
+					//if(strlen(trim($vocab['#options']))){
+					  // not sure why we have the line below. from old days.
+					  // unset($vocab['#options'][0]);
+					//}
+					// get taxonomy terms for group for this vocab - this replaces $vocab['#options']
+					$group_terms = taxonomy_node_get_terms_by_vocabulary($group->nid, $vid);
+				//	print_r($group_terms);
+					if($group_terms == null){return;}
+					$options = array();
+					// turn these into options
+					foreach ($group_terms as $term) {
+						$choice = new stdClass();
+						// depth thing doesn't work as not got from taxonomy_node_get_terms_by_vocabulary
+						$choice->option = array($term->tid => str_repeat('-', $term->depth) . t($term->name));
+						$options[] = $choice;
+					}
+					// $terms = $terms + $vocab['#options'];
+					$terms +=  $options;
+				  }
+				}
+			  }
+			}
+			
+			if(count($terms) == 0){return;}
+			
+			// stick a <none> value on the front of the array
+			array_unshift($terms, t('<none>'));
+			$types = node_get_types('names');
+			$type = $types[$node->type];
+			
+			// create a new field
+			$form['taxonomy']['primaryterm'] = array(
+			  '#type' => 'select',
+			  '#multiple' => 0,
+			  '#title' => t('Primary Icon'),
+			  '#default_value' => array(primary_term_get_term($form['#node']->vid)),
+			  '#options' => $terms,
+          	  '#description' => t('Select a primary category for this %type.', array('%type' => $type)),
+			  '#theme' => 'taxonomy_term_select',
+			  '#required' => FALSE,
+			  '#weight' => -4,
+			  '#tree' => FALSE, // keep value out of $node->taxonomy
+			  );
+		  }
+	  }			  
+  } 
+}
+
+
+/**
+ * Gets icons for current node when node is a map. Will add and get from cache as necessary.
+ * Returns an array of stdClasses in icon hierarchical order where each stdClass has all needed 
+ * data for that icon.
+ */
+function prune_it(){
+
+	// ID of icons vocabulary
+	$vid = 1;
+
+	// Gets current nodeID
+	if (arg(0) == 'node' && is_numeric(arg(1))) {
+               $nid = arg(1);
+       	}
+
+	// This if/else checks cache for node specific icon set, if not will calculate and add to cache
+	if( ($cached = cache_get( "og_taxonomy_subset_".$nid, 'cache_og_taxonomy_subset' )) &&
+		!empty($cached->data)){
+		
+		return unserialize($cached->data);
+	}
+	else{
+		$vocab_terms = taxonomy_get_tree( $vid );
+		$group_terms = taxonomy_node_get_terms_by_vocabulary( $nid, $vid );
+		if($group_terms == null || $group_terms == false || count($group_terms) == 0){
+			// if mapmaker has not selected any primary terms return full tree.
+			$pruned = taxonomy_get_tree(1);
+			cache_set( "og_taxonomy_subset_".$nid, 'cache_og_taxonomy_subset', serialize($pruned));
+			return $pruned;
+		}
+		$image_paths = db_query( "SELECT ti.* FROM term_image ti" );
+
+		// Array with all needed icon data once filled
+		$pruned = array();
+		// Array for image paths
+		$image_paths_array = array(); 
+	
+		// Variables used to keep track of current level 0 and 1 in icon hierarchy
+		$last_0 = NULL;
+		$last_1 = NULL;
+		$last_0_check = FALSE;
+		$last_1_check = FALSE;
+
+		// Creates image paths array
+	
+		while( $a_path = mysql_fetch_assoc($image_paths) ){
+			$image_paths_array[ $a_path['tid'] ] = $a_path['path']; 		
+		}
+
+		// Loops through tree to find relevent icons
+		foreach( $vocab_terms as $icon ){
+
+			$icon->path = NULL;
+
+			switch( $icon->depth ){
+				case 0:
+					$last_0 = $icon;
+					$last_0_check = TRUE;
+					break;
+				case 1:
+					$last_1 = $icon;
+					$last_1_check = TRUE;
+					break;
+				case 2:
+					if( array_key_exists( $icon->tid, $group_terms ) ){
+						
+						if( $last_0_check ){
+							array_push( $pruned, $last_0 );
+							$last_0_check = FALSE;
+						}
+						if( $last_1_check ){
+							array_push( $pruned, $last_1 );
+							$last_1_check = FALSE;
+						}
+						
+						$icon->path = $image_paths_array[ $icon->tid ];
+						$icon->display_size = getimagesize($icon->path);
+						$pruned[] = $icon;
+					}
+					break;
+			}
+		} // End foreach
+
+	// Adds icon data to cache
+	cache_set( "og_taxonomy_subset_".$nid, 'cache_og_taxonomy_subset', serialize($pruned));
+
+	/*  // For testing icon image paths
+	foreach( $pruned as $icon ){
+		printit("<img src=http://www.greenmap.org/dev/ogmlee/".$icon->path."></img>");
+		printit($icon);}
+	*/
+
+	return $pruned;
+
+	} // End else
+
+} // End prune_it() function
+
+
+//test print function
+function printit($it){
+	print '<pre>';
+	print_r ($it);
+	print '</pre>';
+}
+
+
+/**
+ * Gets all the og_taxonomies and prunes them for the indiviual node, saving in cache if needed
+ */
+function get_taxonomy_pruned($form_id, &$form){
+
+	// print $form_id . ' '; // this prints form_id's of all forms on every page - development feature
+	
+	// theme the views filters for the school search 
+	if($form_id == 'views_filters' && $form['#view_name'] == 'og_ghp_map') {
+
+		// gets the vocab_terms in less DB heavy way independent from the $form, just using organic groups
+		$vocab_terms = prune_it();
+	
+		// finally go through the trimmed vocab_terms and add to options array
+		foreach($vocab_terms as $term){
+			
+			$choice = new stdClass();
+			$choice->option = array($term->tid => str_repeat('--', $term->depth) . t($term->name));
+			$options[] = $choice;
+		}
+			
+		$group_terms = $vocab_terms = $group = '';
+		
+		// return all the terms as $options in the filter form
+		$form['filter0'] = array(
+		  '#type' => 'select',
+		  '#options' => $options,
+		  '#multiple' => 1,
+		  '#size' => 10,
+		  '#weight' => -15,
+		  '#theme' => 'taxonomy_term_select',
+		);	
+			
+	} // End view type checking IF statement
+
+} // End get_taxonomy_pruned
+
+
+
+
+
+
+
+
+
+
+
+/*  
+	$group = og_get_group_context();
+	$nid = $group->nid;
+	$vid = 1;
+
+	// get tree for this vocabulary (need hierarchy )
+	$vocab_terms = taxonomy_get_tree($vid);
+
+	// get terms for this node/map/group
+	// this is an array of objects, but with tid also as key $group_terms[176][tid] = 174	
+	$group_terms = taxonomy_node_get_terms_by_vocabulary($group->nid, $vid);
+
+// will eventually replace all functionality in this function
+prune_it();
+
+
+
+	// first go through vocab_terms and remove all where depth is 2 and key doesn't exist in group_terms
+	foreach($vocab_terms as $key=>$term) {
+		if($term->depth > 1) {
+			if(!(array_key_exists($term->tid, $group_terms))) {
+				// delete from array because it's not used
+				// $vocab_terms[$key] = NULL;
+				unset($vocab_terms[$key]);
+			}
+		}
+	}
+	
+	// then go through all where depth is 1, get their children, and see if any of these exist in group_terms. If not then remove them. Add kept ones to separate array
+	$category_terms = array();
+	foreach($vocab_terms as $key=>$term) {
+		if($term->depth == 1) {
+			$child_terms = taxonomy_get_children($term->tid);
+			if(array_intersect_key($child_terms,$group_terms)) {
+				// add to separate array of used categories - same structure as $group_terms
+				$category_terms[$term->tid] = $term->name;	
+			} else {
+				// remove from $vocab_terms
+				unset($vocab_terms[$key]);
+			}
+		}
+	}
+		
+	// then go through all where depth is 0, get their children, and see if any of these exist in the separate array just created. If not then remove them
+	foreach($vocab_terms as $key=>$term) {
+		if($term->depth < 1) {
+			$child_terms = taxonomy_get_children($term->tid);
+			if(!array_intersect_key($child_terms,$category_terms)) {
+				// remove from $vocab_terms
+				unset($vocab_terms[$key]);
+			}
+		}
+	}
+*/

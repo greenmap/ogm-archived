@@ -1,0 +1,5 @@
+; $Id$
+name = sync
+description = Synchronous module for ogm and greenhouse
+package = GreenMap
+core= 5.x

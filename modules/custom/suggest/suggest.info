@@ -1,0 +1,5 @@
+; $Id: suggest.info,v 0.1 2008/09/03 15:27:03 tom_o_t Exp $
+name = suggest
+description =  Allows people to suggest a site
+dependencies = og
+package = GreenMap

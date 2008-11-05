@@ -1,0 +1,6 @@
+; $Id$
+name = all_flags
+description = This is a module to filter all flags from current site
+dependencies = abuse
+package = Administration
+core= 5.x

@@ -1,0 +1,6 @@
+<?php
+
+function impacts_install() {
+  // weight module to run after taxonomy and primary_term and primary_icon
+  db_query("UPDATE {system} SET weight = 1 WHERE name = 'impacts'");
+}

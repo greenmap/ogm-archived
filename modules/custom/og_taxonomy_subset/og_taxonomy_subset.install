@@ -1,0 +1,43 @@
+<?php
+
+function og_taxonomy_subset_install() {
+  // weight module to run after taxonomy and primary_term and primary_icon
+  db_query("UPDATE {system} SET weight = 11 WHERE name = 'og_taxonomy_subset'");
+
+// creates table for caching module data
+db_query("CREATE TABLE {cache_og_taxonomy_subset} (
+          cid varchar(255) NOT NULL,
+	  data longblob default NULL,
+	  expire int(11) default '0' NOT NULL,
+	  created int(11) default '0' NOT NULL,
+	  headers text default NULL,
+	  PRIMARY KEY (cid),
+	  INDEX (expire)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+}
+
+/*
+
+// Used for reference in learning table creation
+  
+  db_query("CREATE TABLE {cache_og_taxonomy_subset} (
+          cid varchar(255) unsigned NOT NULL,
+          data longblob BINARY default NULL,
+	  expire int(11) default NOT NULL,
+	  created int(11) default NOT NULL,
+	  headers text default NULL,
+	  PRIMARY KEY (cid),
+	  INDEX (expire)
+        );");
+
+content_type varchar(20) default NULL,
+          content_id int(10) unsigned default NULL,
+          value float(10) default NULL,
+          value_type varchar(20) NOT NULL,
+          tag varchar(128) default 'vote',
+          function varchar(128) default 'count',
+          timestamp int(11) default NULL,
+          PRIMARY KEY (cid),
+          INDEX content (content_type, content_id)
+      
+*/
