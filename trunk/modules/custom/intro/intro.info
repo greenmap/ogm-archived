@@ -1,0 +1,5 @@
+; $Id$ tom_o_t
+name = intro
+description = Creates a block for the intro tab on the world view, and edit link for nav
+package = GreenMap
+core= 5.x

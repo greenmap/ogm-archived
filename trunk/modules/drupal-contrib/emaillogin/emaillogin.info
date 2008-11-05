@@ -1,0 +1,5 @@
+; $Id$
+name = emaillogin
+description = Allows for login with email address
+package = GreenMap
+core = 5.x

@@ -1,0 +1,210 @@
+<?php
+// $Id: impacts.module,v 0.1 2008/06/23 16:39:43 tom_o_t Exp $
+
+/*
+ * hook_form_alter()
+ * alters the form to submit an impact in the infowindow when viewing a site
+ */
+
+ function impacts_form_alter($form_id, &$form){
+
+	switch ($form_id) {
+		case 'impact_node_form':
+		if($site_nid = $_GET['nid']) {
+			$form['field_site']['nids']['#default_value'] = array($site_nid => $_GET['node_title']);
+			$form['field_site']['nids']['#options'] = array($site_nid => $_GET['node_title']);
+			$form['field_site']['nids']['#attributes'] = array('class' => 'hidden');
+			$form['field_site']['nids']['#title'] = '';
+		}
+		if($impact_type = $_GET['impacttype'] && ($_GET['impacttype'] > '') && ($_GET['impacttype'] > 'Choose an action')) {
+			
+			$form['field_because_of_this_site']['key']['#default_value'] = array($_GET['impacttype'] => $_GET['impacttype']);
+			$form['field_because_of_this_site']['key']['#options'] = array($_GET['impacttype'] => $_GET['impacttype']);
+			$form['field_because_of_this_site']['key']['#attributes'] = array('class' => 'hidden');
+			$form['field_because_of_this_site']['key']['#title'] = '';
+		}
+		unset($form['preview']);
+		break;
+	}
+ }
+
+/*
+ * hook_views_default_views()
+ * list of impacts for a site
+ */
+
+function impacts_views_default_views(){
+	$view = new stdClass();
+	  $view->name = 'list_of_impacts_for_site';
+	  $view->description = 'List of impacts for a site, used in infowindow';
+	  $view->access = array ();
+	  $view->view_args_php = '';
+	  $view->page = TRUE;
+	  $view->page_title = '';
+	  $view->page_header = '';
+	  $view->page_header_format = '1';
+	  $view->page_footer = '';
+	  $view->page_footer_format = '1';
+	  $view->page_empty = 'No impacts have been left for this site yet - be the first!';
+	  $view->page_empty_format = '1';
+	  $view->page_type = 'list';
+	  $view->url = 'node/$arg/impacts';
+	  $view->use_pager = TRUE;
+	  $view->nodes_per_page = '10';
+	  $view->sort = array (
+	  );
+	  $view->argument = array (
+	    array (
+	      'type' => 'content: field_site',
+	      'argdefault' => '1',
+	      'title' => '',
+	      'options' => '',
+	      'wildcard' => '',
+	      'wildcard_substitution' => '',
+	    ),
+	  );
+	  $view->field = array (
+	    array (
+	      'tablename' => 'node',
+	      'field' => 'title',
+	      'label' => '',
+	      'handler' => 'views_handler_field_nodelink',
+	      'options' => 'link',
+	    ),
+	    array (
+	      'tablename' => 'node',
+	      'field' => 'created',
+	      'label' => '',
+	      'handler' => 'views_handler_field_date_custom',
+	      'options' => 'M Y',
+	    ),
+	    array (
+	      'tablename' => 'node_data_field_comments_about_the_impact',
+	      'field' => 'field_comments_about_the_impact_value',
+	      'label' => '',
+	      'handler' => 'content_views_field_handler_group',
+	      'options' => 'default',
+	    ),
+	  );
+	  $view->filter = array (
+	    array (
+	      'tablename' => 'node',
+	      'field' => 'status',
+	      'operator' => '=',
+	      'options' => '',
+	      'value' => '1',
+	    ),
+	    array (
+	      'tablename' => 'node',
+	      'field' => 'type',
+	      'operator' => 'OR',
+	      'options' => '',
+	      'value' => array (
+	  0 => 'impact',
+	),
+	    ),
+	  );
+	  $view->exposed_filter = array (
+	  );
+	  $view->requires = array(node, node_data_field_comments_about_the_impact);
+	  $views[$view->name] = $view;
+
+}
+
+
+
+// this function is called by green-site-full.tpl.php
+// it creates the impacts tab
+function output_impacts($node)
+{
+	// create the form to add a new impact
+	$add_impact = '<div id="addimpact"><form method="get" action="' . base_path() . 'node/add/impact"><label>';
+	$add_impact .= t('Because of this site, I ') . '<select id="impacttype" name="impacttype">' ;
+	$add_impact .= '<option id="">choose one</option>';
+	$add_impact .= '<option id="Changed a Habit">Changed a Habit</option>';
+	$add_impact .= '<option id="Greened my Work">Greened my Work</option>';
+	$add_impact .= '<option id="Saved CO2">Saved CO2</option>';
+	$add_impact .= '<option id="Protected Nature">Protected Nature</option>';
+	$add_impact .= '<option id="Raised Awareness">Raised Awareness</option>';
+	$add_impact .= '<option id="Connected Locally">Connected Locally</option>';
+	$add_impact .= '<option id="Took Action">Took Action</option>';
+	$add_impact .= '<option id="Other">Other</option>';
+	$add_impact .= '</select> <input type="submit" value="Add Yours!" />';
+	// this ensures that the next page works inside the iframe
+	$add_impact .= '<input type="hidden" name="theme" value="simple" />';
+	// this ensures that we return to the green site when we submit the impact
+	$add_impact .= '<input type="hidden" name="destination" value="node/' . $node->nid . '/simple" />';
+	// this passes the node id of the site to the impact form
+	$add_impact .= '<input type="hidden" name="nid" value="' . $node->nid . '" />';
+	$add_impact .= '<input type="hidden" name="node_title" value="' . $node->title . '" />';
+	$add_impact .= '</form></div>';
+
+	// query database for impacts
+	$result = db_query('SELECT field_because_of_this_site_value AS action, COUNT(1) AS actioncount
+						FROM {content_type_impact} 
+						WHERE field_site_nid = %d
+						GROUP BY action', $node->nid);
+
+	// set basic details for chart
+	$chart = array(
+	  '#chart_id' => 'test_chart',
+	  '#title' => t('Impacts'),
+	  '#type' => CHART_TYPE_BAR_H_GROUPED,
+	  '#adjust_resolution' => TRUE,
+	  
+	);
+
+	$colors = array(
+		'Changed a Habit' => 'f89938',
+		'Greened my Work' => 'fdbb30',
+		'Saved CO2' => 'fedb91',
+		'Protected Nature' => '099848',
+		'Raised Awareness' => '8cc63f',
+		'Connected Locally' => '7fb3d8',
+		'Other' => '666666',
+	);
+
+	$max = 0;
+	// get data for chart
+	while ($impact = db_fetch_object($result)) {
+		$chart['#data'][] = array($impact->actioncount);
+		$chart['#legends'][] = $impact->action;
+		// set colours automatically, can over-ride with our own colors if we want
+		$chart['#data_colors'][] = $colors[$impact->action];
+		if($impact->actioncount > $max){
+			$max = $impact->actioncount;
+		}
+	}
+	
+	// automatically set x axis labels for bottom. 
+	$chart['#mixed_axis_labels'][CHART_AXIS_X_BOTTOM][1][] = chart_mixed_axis_range_label(0, $max);
+
+
+
+	// add the chart to the impacts section
+	$add_impact .= '<div id="impacts_chart">';
+	$add_impact .= chart_render($chart);
+	$add_impact .= '</div>';
+
+	// this embeds a list of all current impacts
+	$add_impact .= '<div id="impacts_right">';
+
+	$add_impact .= '<div id="impacts_list">';
+	$list_of_impacts_view = views_get_view('list_of_impacts_for_site');
+	$list_of_impacts_view->args[0]=$node->nid;
+	$add_impact .= views_build_view('embed', $list_of_impacts_view, $list_of_impacts_view->args, false, false); 
+	$add_impact .= '</div>';
+
+	$res = db_query('SELECT COUNT(vid) AS cnt FROM {content_type_impact} WHERE field_site_nid = %d AND field_discover_site_value = 1', $node->nid);
+	$line = db_fetch_object($res);
+	if ($line->cnt > 0) {
+		$count = format_plural($line->cnt, '1 person', '@count people');
+		$add_impact .= '<p id="impacts_stats">' . t('@count discovered this site because of this map. ', array('@count' => $count));
+		$add_impact .= l(t('Did you?'), 'node/add/impact', NULL, 'theme=simple&destination=node/' . $node->nid . '/simple&nid=' . $node->nid . '&node_title=' . $node->title);
+		$add_impact .= '</p>';
+	}
+	$add_impact .= '</div>'; // end impacts_right div
+
+	// return the impacts section to the main info window building function
+	return $add_impact;
+}

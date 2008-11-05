@@ -1,0 +1,402 @@
+<?php
+// $Id: l10n_client.module,v 1.1.2.9 2008/10/22 20:22:44 goba Exp $
+
+/**
+ * @file
+ *   Localization client. Provides on-page translation editing.
+ */
+
+// Number of strings for paging on translation pages
+define('L10N_CLIENT_STRINGS', 100);
+
+/**
+ * Implementation of hook_menu().
+ */
+function l10n_client_menu($may_cache) {
+  $items = array();
+  
+  if ($may_cache) {
+    $access = user_access('use on-page translation');
+    $items[] = array(
+      'path' => 'locale',
+      'title' => t('Translate interface'),
+      'callback' => 'l10n_client_translate_page',
+      'access' => $access,
+    );
+    $items[] = array(
+      'path' => 'locale/untranslated',
+      'title' => t('Untranslated'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+    );
+    $items[] = array(
+      'path' => 'locale/translated',
+      'title' => t('Translated'),
+      'type' => MENU_LOCAL_TASK,
+    );
+
+    // AJAX callback path for strings.
+    $items[] = array(
+      'path' => 'l10n_client/save',
+      'title' => 'Save string',
+      'callback' => 'l10n_client_save_string',
+      'access' => $access,
+      'type' => MENU_CALLBACK,
+    );
+  }
+  
+  return $items;
+}
+
+/**
+ * Menu callback. Translation pages.
+ */
+function l10n_client_translate_page($op = 'untranslated') {
+  global $locale, $l10n_client_strings;
+
+  $output = '';
+  // Build query for strings
+  $sql = "SELECT s.source, t.translation, t.locale FROM {locales_source} s ";
+  switch ($op) {
+    case 'translated':
+      $sql .= " INNER JOIN {locales_target} t ON s.lid = t.lid";
+      $sql .= " WHERE t.locale = '$locale' AND t.translation != ''";
+      break;
+    case 'untranslated':
+    default:
+      $sql .= " LEFT JOIN {locales_target} t ON s.lid = t.lid";
+      $sql .= " WHERE t.locale = '$locale' AND (t.translation IS NULL OR t.translation = '')";
+      break;
+  }
+  // Order alphabetically
+  $sql .= ' ORDER BY s.source';
+  
+  $result = pager_query($sql, L10N_CLIENT_STRINGS);
+  while ($data = db_fetch_object($result)) {
+    // Array to display as table
+    $list[] = array($data->source, $data->translation);
+    // Add to the list for the translation tool
+    $l10n_client_strings[$data->source] = (empty($data->translation) ? TRUE : $data->translation);
+  }
+  if (!empty($list)) { 
+    // We add a pager above and below content to make navigation easier
+    $output .= theme('pager', NULL, L10N_CLIENT_STRINGS);
+    $output .= theme('table', array(), $list);
+    $output .= theme('pager', NULL, L10N_CLIENT_STRINGS);
+  } else {
+    $output .= t('No strings to translate');
+  }
+  return $output;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function l10n_client_perm() {
+  return array('use on-page translation');
+}
+
+/**
+ * Implementation of hook_init().
+ */
+function l10n_client_init() {
+  global $user, $conf, $locale;
+
+  // Check for the function because it may not be loaded on hook_init() for cached pages
+  if (function_exists('user_access') && user_access('use on-page translation')) {
+    // Turn off the short string cache *in this request*, so we will
+    // have an accurate picture of strings used to assemble the page.
+    $conf['locale_cache_strings'] = 0;
+    // Option: Delete menu cache so all item titles are run again through t()
+    // This is really bad for performance bug good for translators :-)
+    // The problem is that the whole menu is added to the translatable strings for this page :-(
+    // $cid = "$user->uid:$locale";
+    // cache_clear_all($cid, 'cache_menu');
+    
+    drupal_add_css(drupal_get_path('module', 'l10n_client') .'/l10n_client.css', 'module');
+    // Add jquery cookie plugin -- this should actually belong in 
+    // jstools (but hasn't been updated for HEAD)
+    drupal_add_js(drupal_get_path('module', 'l10n_client') .'/jquery.cookie.js', 'module');
+    drupal_add_js(drupal_get_path('module', 'l10n_client') .'/l10n_client.js', 'module');
+    // We use textareas to be able to edit long text, which need resizing.
+    drupal_add_js('misc/textarea.js', 'module');
+  }
+}
+
+/**
+ * Implementation of hook_footer().
+ *
+ * Output a form to the page and a list of strings used to build
+ * the page in JSON form.
+ */
+function l10n_client_footer() {
+  global $conf, $locale;
+  
+  if (user_access('use on-page translation') && ($strings = _l10n_client_page_strings())) {
+    // If we have strings for the page language, restructure the data.
+    $l10n_strings = array();
+    foreach ($strings as $string => $translation) {
+      // Translations can be now an object (lid, translation) or a plain string, it will work with both.
+      $l10n_strings[] = is_object($translation) ? 
+        array($string, empty($translation->translation) ? TRUE : $translation->translation, $translation->lid) : 
+        array($string, $translation, 0);
+    }
+    array_multisort($l10n_strings);      
+    // Include string selector on page.
+    $string_list = _l10n_client_string_list($l10n_strings);
+    // Include editing form on page.
+    $l10n_form = drupal_get_form('l10n_client_form', $l10n_strings);
+    // Include search form on page.
+    $l10n_search = drupal_get_form('l10n_client_search_form');
+
+    // We need this hack as JS addition does not work this late on the page.
+    //$l10n_json = '<script type="text/javascript">Drupal.extend({ l10nStrings: '. drupal_to_js($l10n_strings) .' });</script>';
+    $l10n_dom = _l10n_client_dom_strings($l10n_strings);
+
+    // UI Labels
+    $string_label = '<h2>'.t('Page Text').'</h2>';
+    $source_label = '<h2>'.t('Source').'</h2>';
+    // Get language name
+    $languages = locale_supported_languages();
+    $languages = $languages['name'];
+    $translation_label = '<h2>'.t('Translation to %language', array('%language' => $languages[$locale])).'</h2>';
+    $toggle_label = t('Translate Text');
+
+
+    $output = "
+      <div id='l10n-client' class='hidden'>
+        <div class='labels'>
+          <span class='toggle'>$toggle_label</span>
+          <div class='label strings'>$string_label</div>
+          <div class='label source'>$source_label</div>
+          <div class='label translation'>$translation_label</div>
+        </div>
+        <div id='l10n-client-string-select'>
+          $string_list
+          $l10n_search
+        </div>
+        <div id='l10n-client-string-editor'>
+          <div class='source'>
+            <div class='source-text'></div>
+          </div>
+          <div class='translation'>
+            $l10n_form
+          </div>
+        </div>
+      </div>
+      $l10n_dom
+    ";
+
+    return $output;
+  }
+}
+
+/**
+ * String selection has been moved to a jquery-based list.
+ * Todo: make this a themeable function.
+ */
+function _l10n_client_string_list($strings) {
+  // Build a list of short string excerpts for a selectable list.
+  foreach ($strings as $values) {
+    // Add a class to help identify translated strings
+    if ($values[1] === TRUE) {
+      $str_class = 'untranslated';
+    }
+    else {
+      $str_class = 'translated';
+    }
+    // TRUE means we don't have translation, so we use the original string,
+    // so we always have the string displayed on the page in the dropdown.
+    $original = $values[1] === TRUE ? $values[0] : $values[1];
+    // Remove html tags, at least for display
+    $original = htmlentities($original);
+    // Truncate and add ellipsis if too long.
+    $string = strip_tags(truncate_utf8($values[1] === TRUE ? $values[0] : $values[1], 78, TRUE));
+    $select_list[] = "<li class='$str_class'>" . $string . ($original == $string ? '' : '...') . "</li>";
+  }
+  $output = implode("\n",$select_list);
+  return "<ul class='string-list'>$output</ul>";
+}
+
+/**
+ * Get the strings to translate for this page. These will be:
+ * - The ones added in $l10n_client_strings by this or other modules
+ * - The strings tored by the local function (not for for this module's own pages)
+ * 
+ * Any module can add strings to translate into the global variable $l10n_client_strings
+ */
+function _l10n_client_page_strings() {
+  global $locale, $l10n_client_strings;
+  // Get the page strins stored by this or other modules
+  $strings = !empty($l10n_client_strings) ? $l10n_client_strings : array();
+  
+  // If this is not the module's translation page, merge all strings used on the page.
+  if (arg(0) != 'locale' && is_array($locale_strings = locale())){
+    $strings = array_merge($strings, $locale_strings);
+    // Also select other strings for this path. 
+    // Other users may have run into these strings for the same page.
+    $result = db_query("SELECT s.source, t.translation FROM {locales_source} s LEFT JOIN {locales_target} t ON s.lid = t.lid AND t.locale = '%s' WHERE location = '%s'", $locale, request_uri());
+    while ($data = db_fetch_object($result)) {
+      if (!array_key_exists($data->source, $strings)) {
+        $strings[$data->source] = (empty($data->translation) ? TRUE : $data->translation);
+      }
+    }
+  }
+  return $strings;
+}
+
+/**
+ * String editing form. Source & selection moved to UI components outside the form.
+ * Backed with jquery magic on the client.
+ *
+ * @todo
+ *   This form has nothing to do with different plural versions yet.
+ */
+function l10n_client_form($strings) {
+  global $language;
+
+  // Selector and editing form.
+  $form = array();
+  $form['#action'] = url('l10n_client/save');
+
+  $form['target'] = array(
+    '#type' => 'textarea',
+    '#resizable' => false,
+    '#rows' => 6,
+  );
+  $form['save'] = array(
+    '#value' => t('Save translation'),
+    '#type' => 'submit',
+  );
+  // Store location in the form to pass to the ajax save function
+  $form['location'] = array(
+    '#type' => 'hidden',
+    '#value' => request_uri(),
+  );
+  // Store lid in the form too
+  $form['lid'] = array(
+    '#type' => 'hidden',
+    '#value' => 0,
+  );  
+  $form['copy'] = array(
+    '#value' => "<input id='edit-copy' class='form-submit' type='button' value='".t('Copy Source')."'/>",
+  );
+  $form['clear'] = array(
+    '#value' => "<input id='edit-clear' class='form-submit' type='button' value='".t('Clear')."'/>",
+  );
+  
+  return $form;
+}
+
+
+function l10n_client_search_form() {
+  global $language;
+
+  // Selector and editing form.
+  $form = array();
+
+  $form['search'] = array(
+    '#type' => 'textfield',
+  );
+  $form['search-button'] = array(
+    '#value' => "<input id='search-filter-go' class='form-submit' type='button' value='".t('Search')."'/>",
+  );
+  $form['clear-button'] = array(
+    '#value' => "<input id='search-filter-clear' class='form-submit' type='button' value='".t('X')."'/>",
+  );
+
+  return $form;
+}
+
+/**
+ * Extended: The $strings array elements can now have a third 'lid' value 
+ */
+function _l10n_client_dom_strings($strings) {
+  $output = '';
+  foreach($strings as $values) {
+    $lid = $values[2];
+    $source = $values[0] === TRUE ? '' : $values[0];
+    $target = $values[1] === TRUE ? '' : $values[1];
+    $output .= "<div><span class='lid'>$lid</span><span class='source'>$source</span><span class='target'>$target</span></div>";
+  }
+  return "<div id='l10n-client-data'>$output</div>";
+}
+
+/**
+ * Menu callback. Saves a string translation coming as POST data.
+ * 
+ * Extended: it can now save strings by lid or source, preferred the first one.
+ */
+function l10n_client_save_string() {
+  global $locale;
+  
+  if (user_access('use on-page translation')) {
+    if (isset($_POST['source']) && isset($_POST['target']) && !empty($_POST['form_token']) && drupal_valid_token($_POST['form_token'], 'l10n_client_form')) {
+      include_once 'includes/locale.inc';
+      $report = array(0, 0, 0);
+      _l10n_client_import_one_string_db($report, $locale, $_POST['lid'], $_POST['source'], $_POST['target'], $_POST['location']);
+      locale_refresh_cache();
+    }
+  }
+}
+
+/**
+ * Import one string into the database.
+ * 
+ * Note: Backport of Drupal 6 _locale_import_one_string_db basically 
+ * copy and paste, removing textgroup parameters and asuming OVERWRITE mode.
+ * Also, locales_target:locale field has been renamed to language
+ *
+ * @param $report
+ *   Report array summarizing the number of changes done in the form:
+ *   array(inserts, updates, deletes).
+ * @param $langcode
+ *   Language code to import string into.
+ * @param $source
+ *   Source string.
+ * @param $translation
+ *   Translation to language specified in $langcode.
+ * @param $location
+ *   Location value to save with source string.
+ * @param $plid
+ *   Optional plural ID to use.
+ * @param $plural
+ *   Optional plural value to use.
+ * @return
+ *   The string ID of the existing string modified or the new string added.
+ */
+function _l10n_client_import_one_string_db(&$report, $langcode, $lid, $source, $translation, $location, $plid = NULL, $plural = NULL) {
+  if (!$lid) {
+    $lid = db_result(db_query("SELECT lid FROM {locales_source} WHERE source = '%s'", $source));
+  }  
+  if (!empty($translation)) {
+    if ($lid) {
+      // We have this source string saved already.
+      // Changed: Do not update location
+      $exists = (bool) db_result(db_query("SELECT lid FROM {locales_target} WHERE lid = %d AND locale = '%s'", $lid, $langcode));
+      if (!$exists) {
+        // No translation in this language.
+        db_query("INSERT INTO {locales_target} (lid, locale, translation, plid, plural) VALUES (%d, '%s', '%s', %d, %d)", $lid, $langcode, $translation, $plid, $plural);
+        $report[0]++;
+      }
+      else {
+        // Translation exists, only overwrite if instructed.
+        db_query("UPDATE {locales_target} SET translation = '%s', plid = %d, plural = %d WHERE locale = '%s' AND lid = %d", $translation, $plid, $plural, $langcode, $lid);
+        $report[1]++;
+      }
+    }
+    else {
+      // No such source string in the database yet.
+      db_query("INSERT INTO {locales_source} (location, source) VALUES ('%s', '%s')", $location, $source);
+      $lid = db_result(db_query("SELECT lid FROM {locales_source} WHERE source = '%s' ", $source));
+      db_query("INSERT INTO {locales_target} (lid, locale, translation, plid, plural) VALUES (%d, '%s', '%s', %d, %d)", $lid, $langcode, $translation, $plid, $plural);
+      $report[0]++;
+    }
+  }
+  else {
+    // Empty translation, remove existing if instructed.
+    db_query("DELETE FROM {locales_target} WHERE language = '%s' AND lid = %d AND plid = %d AND plural = %d", $translation, $langcode, $lid, $plid, $plural);
+    $report[2]++;
+  }
+
+  return $lid;
+}

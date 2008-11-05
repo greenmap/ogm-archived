@@ -1,0 +1,30 @@
+/* $Id: changelog.txt,v 1.5 2007/10/08 15:45:55 aaron Exp $ */
+
+2007-10-04
+add hooks to allow import of media sets
+
+2007-09-12
+fixed error: warning: array_shift() [function.array-shift]: The argument should be an array...
+
+2007-09-06
+added hook_emfield_rss so modules/providers can provide rss enclosures
+
+2007-07-26
+fixed fatal string error in php5 -- http://drupal.org/node/153261
+
+2007-06-25
+rename ncck to emfield
+
+2007-06-19
+remove need for redundant helper_module column from widgets
+merge video_cck into ncck
+
+2007-06-15
+default links to content w/ preview/thumbnail size
+allow ability to determine link w/ various sizes in field
+
+2007-06-14
+add flickr support
+
+2007-06-13
+create engine, using video_cck as a base

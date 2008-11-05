@@ -1,0 +1,12 @@
+<?php
+
+// ; $Id: login_link.info,v 0.1 2008/06/18 15:27:03 tom_o_t Exp $
+
+function login_link_form_alter($form_id, &$form){
+	// print $form_id . ' '; // this prints form_id's of all forms on every page - development feature
+
+	// Alters login form so that if it's in a lightbox iframe it loads in the main window
+	if($form_id == 'user_login') {
+		   $form['#attributes'] = array('target' => '_top');
+	}
+}

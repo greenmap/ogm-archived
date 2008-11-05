@@ -1,0 +1,39 @@
+<?php
+
+function primary_term_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':  
+      db_query("CREATE TABLE {primary_term} (
+        vid int(10) NOT NULL default '0',
+        tid int(10) NOT NULL default '0',
+        PRIMARY KEY vid (vid)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      break;
+
+    case 'pgsql':
+      db_query('CREATE TABLE {primary_term} (
+        vid int NOT NULL,
+        tid int NOT NULL,
+        PRIMARY KEY (vid)
+        );');
+      break;
+  }
+
+  // weight module to run after taxonomy
+  db_query("UPDATE {system} SET weight = 9 WHERE name = 'primary_term'");
+}
+
+function primary_term_update_1() {
+  $ret = array();
+  // We did not support pgsql prior to update_1 so don't need to
+  // handle it here.  New pgsql installations will already have this.
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $ret[] = update_sql('ALTER TABLE {primary_term} DROP INDEX vid');
+      $ret[] = update_sql('ALTER TABLE {primary_term} ADD PRIMARY KEY (vid)');
+      break;
+  }
+  return $ret;
+}

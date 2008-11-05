@@ -1,0 +1,11 @@
+; $Id: taxonomy_image_blocks.info,v 1.1.4.2 2008/03/28 22:18:57 nancyw Exp $
+name = Taxonomy Image Blocks
+description = Provides blocks for Taxonomy Image.
+dependencies = taxonomy_image
+package = Taxonomy Image
+
+; Information added by drupal.org packaging script on 2008-09-16
+version = "5.x-1.4"
+project = "taxonomy_image"
+datestamp = "1221584129"
+

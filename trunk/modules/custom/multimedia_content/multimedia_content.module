@@ -1,0 +1,62 @@
+<?php
+
+
+/**
+ *	hook_form_alter()
+ *
+ *	Alters the form that is being displayed after a user chooses to add a video or an image 
+ *	in the Multimedia tab, so that the Site selector is not being shown.
+ *	This code was taken from impacts/imapacts.module.
+ */
+function multimedia_content_form_alter($form_id, &$form)
+{
+	switch ($form_id) {
+		case 'video_node_form':
+			if ($site_nid = $_GET['nid']) {
+				$form['field_site_0']['nids']['#default_value'] = array($site_nid => $_GET['node_title']);
+				$form['field_site_0']['nids']['#options'] = array($site_nid => $_GET['node_title']);
+				$form['field_site_0']['nids']['#attributes'] = array('class' => 'hidden');
+				$form['field_site_0']['nids']['#title'] = '';
+			}
+			unset($form['preview']);
+			break;
+		case 'photo_node_form':
+			if ($site_nid = $_GET['nid']) {
+				$form['field_site_1']['nids']['#default_value'] = array($site_nid => $_GET['node_title']);
+				$form['field_site_1']['nids']['#options'] = array($site_nid => $_GET['node_title']);
+				$form['field_site_1']['nids']['#attributes'] = array('class' => 'hidden');
+				$form['field_site_1']['nids']['#title'] = '';
+			}
+			unset($form['preview']);
+			break;
+	}
+}
+
+// GH: added for the Multimedia tab
+/**
+ *	return the description <div> of a media item.
+ *
+ *	@param $m		media item (array), see Multimedia tab code
+ *	@param $name		username
+ *	@return		HTML code
+ */
+function outputMediaDescription($m, $name)
+{
+	$ret = '';
+	if (!empty($m['title']))
+		$ret .= '<p class="multimedia_description_title">'.$m['title'].'</p>';
+	$ret .= '<p class="multimedia_description_author">';
+	if ($m['type'] == 'video')
+		$ret .= '<img src="'.base_path().path_to_subtheme().'/images/video.png" alt="video" title="video">';
+	else if ($m['type'] == 'image')
+		$ret .= '<img src="'.base_path().path_to_subtheme().'/images/camera.png" alt="image" title="image">';
+	$ret .= ' added by '.$m['author'];
+	$ret .= '</p>';
+	if (!empty($m['nid']))
+		$ret .= '<p class="multimedia_description_flag"><a href="'.base_path().'abuse/report/node/'.$m['nid'].'/simple"><img src="'.base_path().path_to_subtheme().'/images/flag.png" alt="flag" title="Flag this content as inappropriate"></a> <a href="'.base_path().'abuse/report/node/'.$m['nid'].'/simple">flag this</a></p>';
+	if (!empty($m['description']))
+		$ret .= '<p class="multimedia_description_description">'.$m['description'].'</p>';
+
+
+	return $ret;
+}

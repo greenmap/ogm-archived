@@ -1,0 +1,178 @@
+<?php
+/*
+ * hook_menu()
+ * Extra menu items, mostly for mapmakers
+ */
+
+// not working 
+
+function user_menu_menu($may_cache){
+	$items = array();
+	global $user;
+	// print_r($user);
+	if(!$may_cache){
+		// check if user has permission to join groups
+		if(user_access('create green_site content')){
+			global $user;
+			if($user->og_groups > '' && $user->og_groups != NULL){
+				$items[] = array(
+					'path' => 'my_maps',
+					'type' => MENU_NORMAL_ITEM,
+					'title' => t('My maps'),
+					'access' => user_access('access content'),
+					'callback' => 'user_menu_list',
+				);
+			}
+			// for each group that they're a member of, add an item
+			foreach($user->og_groups as $group){
+				$items[] = array(
+					'path' => 'my_maps/' . $group['nid'],
+					'type' => MENU_NORMAL_ITEM,
+					'title' => $group['title'],
+					'callback' => 'user_menu_do',
+					'callback arguments' => array($group['nid'], 'view'),
+					'access' => user_access('access content'),
+				);
+				// anyone who's a member of a group should get a view link
+				$items[] = array(
+					'path' => 'my_maps/' . $group['nid'] . '/view',
+					'type' => MENU_NORMAL_ITEM,
+					'title' => t('View'),
+					'callback' => 'user_menu_do',
+					'callback arguments' => array($group['nid'], 'view'),
+					'access' => user_access('access content'),
+					'weight' => '-10',
+				);
+				// if they have edit permission - give link to edit
+				$items[] = array(
+					'path' => 'my_maps/' . $group['nid'] . '/edit',
+					'type' => MENU_NORMAL_ITEM,
+					'title' => t('Edit'),
+					'callback' => 'user_menu_do',
+					'callback arguments' => array($group['nid'], 'edit'),
+					'access' => $group['is_admin'],
+					'weight' => '-8',
+				);
+				
+				// mapboard
+				$items[] = array(
+					'path' => 'my_maps/' . $group['nid'] . '/mapboard',
+					'type' => MENU_NORMAL_ITEM,
+					'title' => t('Mapboard'),
+					'callback' => 'user_menu_do',
+					'callback arguments' => array($group['nid'], 'mapboard'),
+					'access' => $group['is_admin'],
+					'weight' => '-6',
+				);
+				
+				// members
+				$items[] = array(
+					'path' => 'my_maps/' . $group['nid'] . '/members',
+					'type' => MENU_NORMAL_ITEM,
+					'title' => t('Manage members'),
+					'callback' => 'user_menu_do',
+					'callback arguments' => array($group['nid'], 'members'),
+					'access' => $group['is_admin'],
+					'weight' => '-4',
+				);
+				
+				// membership - leave, change notification
+				$items[] = array(
+					'path' => 'my_maps/' . $group['nid'] . '/membership',
+					'type' => MENU_NORMAL_ITEM,
+					'title' => t('My membership'),
+					'callback' => 'user_menu_do',
+					'callback arguments' => array($group['nid'], 'membership'),
+					'access' => $group['is_admin'],
+					'weight' => '-5',
+				);
+				
+				// widget
+				$items[] = array(
+					'path' => 'my_maps/' . $group['nid'] . '/widget',
+					'type' => MENU_NORMAL_ITEM,
+					'title' => t('Get widget'),
+					'callback' => 'user_menu_do',
+					'callback arguments' => array($group['nid'], 'widget'),
+					'access' => $group['is_admin'],
+					'weight' => '-2',
+				);
+				
+				// if they have add permission - give add link - any member of map should have add permission
+				$items[] = array(
+					'path' => 'my_maps/' . $group['nid'] . '/add',
+					'type' => MENU_NORMAL_ITEM,
+					'title' => t('Add site'),
+					'callback' => 'user_menu_do',
+					'callback arguments' => array($group['nid'], 'add'),
+					'access' => user_access('access content'),
+					'weight' => '0',
+				);
+			}
+			// if they have lead mapmaker permission give link to add site	
+		$items[] = array(
+			'path' => 'my_maps/add_map',
+			'type' => MENU_NORMAL_ITEM,
+			'title' => t('Add a map'),
+			'callback' => 'user_menu_add_map',
+			'access' => $group['is_admin'],
+			'weight' => '2',
+		);			
+			
+		}
+		
+
+	}
+	return $items;
+	
+}
+
+/*
+ * hook_menu -calls this function
+ */
+
+function user_menu_do($gid, $action){
+	// print $gid . ' x ';
+	// print $action;
+	// drupal_goto('node/' . $gid);
+	if(!isset($gid)){
+		drupal_set_message($message = 'Error with user_menu', $type = 'error');
+		drupal_goto('user');
+	} elseif ($action == 'view') {
+		drupal_goto('node/' . $gid);
+	} elseif ($action == 'edit'){
+		drupal_goto('node/' . $gid . '/edit');
+	} elseif ($action == 'mapboard'){
+		drupal_goto('node/' . $gid . '/dashboard');
+	} elseif ($action == 'members'){
+		drupal_goto('node/' . $gid . '/members');
+	}elseif ($action == 'membership'){
+		drupal_goto('og/manage/' . $gid);
+	} elseif ($action == 'widget'){
+		drupal_goto('node/' . $gid . '/widget');
+	} elseif ($action == 'add'){
+		drupal_goto('node/add/green_site', 'gids[]=' . $gid);
+	}
+	
+}
+
+function user_menu_list() {
+	drupal_goto('user');
+}
+
+function user_menu_add_map(){
+	drupal_goto('node/add/green_map');
+}
+
+function user_menu_user($op, &$edit, &$account, $category = NULL){
+	switch ($op) {
+		case login:
+			global $user;
+			// print_r($user);
+			if((count($user->og_groups) == 0) && user_access('create green_map content')){
+				$message = t('You have not added any maps yet. To add your first map !link. You use the link in the "My maps" menu on the bottom right to add a map at any time.', array('!link' => l(t('click here'),'node/add/green-map')));
+				drupal_set_message($message, 'status');	
+			} 
+		break;
+	}
+}

@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * hook_menu()
+ * create a callback url to get the count - easiest way to access it in JS I think
+ */
+
+function sms_menu($may_cache){
+	$items = array();
+	if ($may_cache) {
+  
+		
+	} else {
+		$items[] = array(
+	      'path' => 'sms', 
+	      'title' => t('SMS Query'),
+	      'callback' => 'sms_lookup',
+		  'callback_arguments' => arg(1),
+	      'type' => MENU_CALLBACK,
+	      'access' => TRUE,
+	    );
+	}
+	return $items;
+}
+
+function sms_lookup($arg=NULL){
+	// echo $_GET[address];
+	// echo 'hello world';
+	
+	//Three parts to the querystring: q is address, output is the format, key is the GAPI key
+	$key = variable_get('googlemap_api_key','ABQIAAAA1P6vBz0CKnLVelm4sfu7shT2yXp_ZAY8_ufC3CFXhHIE1NvwkxTrGJODvKAg_vTWRxila0Fn6T6FVA');
+	//$address = urlencode("columbia MO");
+	
+	$address = urlencode($_GET[address]);
+	// echo $address;
+	//If you want an extended data set, change the output to "xml" instead of csv
+	$url = "http://maps.google.com/maps/geo?q=".$address."&output=xml&key=".$key;
+	//Set up a CURL request, telling it not to spit back headers, and to throw out a user agent.
+	$ch = curl_init();
+	 
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_HEADER,0); //Change this to a 1 to return headers
+	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER["HTTP_USER_AGENT"]);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	 
+	$data = curl_exec($ch);
+	curl_close($ch);
+	 
+	echo "Data: ". $data;
+	echo $data->postalcodenumber;
+	die();
+	
+	//Check our Response code to ensure success
+	if (substr($data,0,3) == "200")
+	{
+		$data = explode(",",$data);
+		 
+		$precision = $data[1];
+		$latitude = $data[2];
+		$longitude = $data[3];
+	 
+	} else {
+		echo "Could not understand your address, sorry! Http error ".substr($data,0,3);
+		echo $address;
+		echo $latitude . ',' . $longitude;
+		die();
+	}	
+	
+	// stick lat & long into our database query
+	drupal_goto($path = 'sms_list', $query = 'op0=1&latitude=' . $latitude . '&longitude=' . $longitude);
+	
+	// die();
+}

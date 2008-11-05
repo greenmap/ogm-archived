@@ -1,0 +1,147 @@
+<?php
+// $Id$
+
+function all_flags_init() {
+  // only bother when we are not serving a cached page. check for which function that only exists afterwards
+  if (function_exists('drupal_set_content')) {    
+    // we have to perform a load in order to assure that the $user->og_groups bits are present.
+    global $user;
+    if ($user->uid) {
+      $user = user_load(array('uid' => $user->uid));
+    }
+    else {
+      $user->og_groups = array();
+    }
+    
+    require dirname(__FILE__). '/all_flags_views.inc';
+
+  }
+}
+
+
+
+/**
+* Display help and module information
+* @param path whitch path of the site we're displaying help
+* @param arg array that holds the current path as vould be returned from arg() function
+* @return help text for the path
+*/
+
+function all_flags_help($path){
+  $output = '';
+  switch($path){
+	case "admin/modules#all_flags":
+    case "admin/help#all_flags":
+   // $output = '<p>'. t("Displays all flags") . '</p>';
+    break;
+	case "user/help#all_flags":
+	break;
+  }
+  return $output;
+}
+
+/**
+* Valid permissions for this module
+* @return array An array of valid permissions for the all_flags module
+*/
+
+function all_flags_perm() {
+  return array('access all_flags content', 'administer all_flags');
+} // function all_flags_perm()
+
+
+function all_flags_menu($may_cache){
+	$items = array();
+	if(!$may_cache){return $items;}
+	$items[] = array(
+      'path' => 'all_flags/allow', 
+      'title' => t('Flag'),
+      'callback' => 'all_flags_allow',
+	  /*'callback arguments' => array(
+	  	'type' => ,
+		'oid' => 
+	  ),*/
+      'type' => MENU_CALLBACK,
+      'access' => (user_access('report abuse') || user_access('direct flag')),
+    );
+	return $items;
+	
+}
+function all_flags_allow($type,$oid) {
+	//echo $type ." ". $oid;
+	switch ($type) {
+      case 'node':
+        $que = db_query("SELECT uid FROM {node} WHERE nid = %d", $oid);
+        break;
+      case 'comment':
+        $que = db_query("SELECT uid FROM {comments} WHERE cid = %d", $oid);
+        break;
+    }
+	$returnValue = db_fetch_object($que);
+	
+	if($GLOBALS['user']->uid == $returnValue->uid || user_access('moderate')){
+		_abuse_allow($type,$oid);
+		drupal_set_message(t('This flag has been ignored.'));
+	}else {
+		drupal_set_message(t('You haven\'t permission to ignore this flag.'));
+	}
+	drupal_goto('user');
+}
+/*
+function all_flags_admin_settings(){
+	$form['numb'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('all_flags figures'),
+    '#collapsible' => FALSE,
+  );
+  
+  $form['numb']['all_flags_interval'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Day interval'),
+    '#default_value' => variable_get("all_flags_interval", "10"),
+	'#size' => 3,
+    '#maxlength' => 3,
+    '#required' => TRUE,
+    '#description' => t('How meny days back you wan\'t to watch'),
+   );
+   return system_settings_form($form);
+}
+*/
+/*
+function all_flags_realall_flags(){
+// select * from flag_content where eid = '575'
+	$result =  db_query("SELECT a.* FROM node AS a LEFT OUTER JOIN og_ancestry AS b ON a.nid = b.nid WHERE b.nid IS NULL AND a.uid = $user->uid;");
+	$block_content = array();
+    while ($links = db_fetch_object($result)) {
+      $block_content[] = l($links->title, 'node/'.$links->nid);
+    }
+	
+	return date('l jS \of F Y h:i:s A') . theme_item_list($block_content);
+}
+*/
+/**
+* Generate HTML for the all_flags block
+* @param op the operation from the URL
+* @param delta offset
+* @returns block HTML
+*/
+/*
+function all_flags_block($op='list', $delta=0) {
+	
+  // listing of blocks, such as on the admin/block page
+  if ($op == "list") {
+    $block[0]["info"] = t("all_flags date thing");
+    return $block;
+  } else if ($op == 'view') {
+  // our block content
+    // content variable that will be returned for display
+    $block_content = all_flags_realall_flags();
+
+    // set up the block
+    $block['subject'] = 'On This Date2';
+    $block['content'] = $block_content;
+    return $block;
+  }
+  
+}
+*/

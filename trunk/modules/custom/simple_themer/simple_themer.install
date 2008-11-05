@@ -1,0 +1,7 @@
+<?php
+
+function simple_themer_install() {
+  // weight module to run after taxonomy and primary_term and primary_icon
+  db_query("UPDATE {system} SET weight = 12 WHERE name = 
+'simple_themer'");
+}

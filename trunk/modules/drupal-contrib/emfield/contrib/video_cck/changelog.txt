@@ -1,0 +1,74 @@
+/* $Id: changelog.txt,v 1.8 2007/10/17 17:28:02 aaron Exp $ */
+
+2007-10-17
+#179454 fix youtube's new &rel=1 url structure
+
+2007-09-12
+better support for blip.tv's rss (allow overriding type given)
+
+2007-09-06
+added rss support for blip.tv
+added data versioning to allow nodes to save more data, but respect older nodes
+
+2007-07-27
+ignore case when matching video url's
+don't show 'show video' on thumbnails if no embed code value
+
+2007-06-27
+clean old variables during install, sorry, new update again.
+fix install -- change ncck to emfield
+
+2007-06-19
+add update code to change variables and remove old menu item
+require dependency on ncck
+
+2007-06-09
+fixed embed pasting for blip.tv
+added support for blip.tv
+added serialized data array for extra provider-specific node-level data
+added thumbnail width/height
+
+2007-06-07
+created 'supported features' sections of settings page
+added support for 'related videos' for youtube
+
+2007-06-05
+add 'embed code' filter for views -- note: run update.php to see it
+increase maxlength on embed textfield for better embed code support
+added support for ifilm
+
+2007-06-03
+began support for autoplay (starting with youtube)
+added support for sevenload
+
+2007-04-25
+added support for brightcove videos. thanks, recidive!
+
+2007-04-12
+text link for thumbnail when thumbnail not available
+link thumbnails to node view
+fix youtube thumbnails
+
+2007-04-04
+some code documentation
+
+2007-03-24
+simplified api
+added video link hook to api
+
+2007-03-23
+begin bliptv, but waiting on email re. api
+add google, metacafe, myspace, revver, jumpcut
+change structure to use .inc files for 3rd party providers
+describe api in readme
+
+2007-03-22
+fix bug w/ blank video when no embed code entered
+call youtube api to fetch thumbnails
+parse video code from the YouTube video URL
+
+2007-03-14
+branch to video_cck for more generic video integration
+
+2007-02-23
+began development for YouTube integration; release as youtube_cck

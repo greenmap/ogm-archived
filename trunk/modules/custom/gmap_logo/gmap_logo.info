@@ -1,0 +1,5 @@
+; $Id$
+name = gmap_logo
+description = Embedd the GreenMap logo on every map
+package = GreenMap
+core= 5.x

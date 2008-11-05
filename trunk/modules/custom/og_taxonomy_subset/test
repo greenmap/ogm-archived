@@ -1,0 +1,365 @@
+<?php
+
+// $Id: og_taxonomy_subset.module,v 0.1 2008/03/13 16:39:43 tom_o_t Exp $
+
+
+
+/**
+ * hook_nodeapi
+ * Whenever the green_map content type is created or updated it will cache the og_taxonomy in cache
+ */
+ 
+function og_taxonomy_subset_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  switch($op) {
+    case 'insert': 
+	if ($node->type == 'green_map') {
+		  // Move everything into here so that map's menu options are saved to cache
+			  
+		  		  
+	  }
+
+    case 'update':
+      if ($node->type == 'green_map') {
+		  // Move everything into here so that map's menu options are saved to cache
+		  
+		  		  
+	  }
+      break;
+
+  }
+}
+
+
+/**
+ * Change the  primary term form on node/add form 
+ * Remove all the terms not allowed within this group
+ */
+
+function og_taxonomy_subset_form_alter($form_id, &$form) { 
+	
+	// Get's the taxonomy options w/o any caching considerations
+	$options[] = get_taxonomy_pruned($form_id, $form);
+
+	// think about caching all this using cache_set($cid, $table = 'cache', $data, $expire = CACHE_PERMANENT, $headers = NULL) *****************************
+    $group_terms = $vocab_terms = $group = '';
+    $form['filter0'] = array(
+	  '#type' => 'select',
+	  '#options' => $options,
+	  '#multiple' => 1,
+	  '#size' => 10,
+	  '#weight' => -15,
+	  '#theme' => 'taxonomy_term_select',
+    );	
+	
+  // *** Lee - don't edit below here - Below here is altering the node editing/adding form	  ***
+  $type = $form['type']['#value'];
+  $node = $form['#node'];
+
+  switch ($form_id) {
+    case $type .'_node_form':
+  	// first check if node is being submitted to a group, or is already in a group
+	if($group = og_get_group_context()) {	
+	
+		   // this returns the $node object for the group
+		  
+		  
+		  // copied from primary_term - gets vocabs that are set to use primary_term
+		  if ($vids = variable_get('pt_vocabs_'. $form['type']['#value'], array())) {
+			
+			// go through all taxonomy terms for this type:
+			$terms = array();
+			if(is_array($form['taxonomy'])){
+			  foreach($form['taxonomy'] as $vid => $vocab){
+				// if the current taxonomy form is one that is set to use primary_term
+				if(in_array($vid, $vids)){
+				  if(is_array($vocab['#options'])){
+					if(strlen(trim($vocab['#options']))){
+					  // not sure why we have the line below. from old days.
+					  // unset($vocab['#options'][0]);
+					}
+					// get taxonomy terms for group for this vocab - this replaces $vocab['#options']
+					$group_terms = taxonomy_node_get_terms_by_vocabulary($group->nid, $vid);
+					// turn these into options
+					foreach ($group_terms as $term) {
+						$choice = new stdClass();
+						// depth thing doesn't work as not got from taxonomy_node_get_terms_by_vocabulary
+						$choice->option = array($term->tid => str_repeat('-', $term->depth) . $term->name);
+						$options[] = $choice;
+					}
+					// $terms = $terms + $vocab['#options'];
+					$terms = $terms + $options;
+				  }
+				}
+			  }
+			}
+			
+			// stick a <none> value on the front of the array
+			array_unshift($terms, t('<none>'));
+			$types = node_get_types('names');
+			$type = $types[$node->type];
+			
+			// create a new field
+			$form['taxonomy']['primaryterm'] = array(
+			  '#type' => 'select',
+			  '#multiple' => 0,
+			  '#title' => t('Primary Icon'),
+			  '#default_value' => array(primary_term_get_term($form['#node']->vid)),
+			  '#options' => $terms,
+          	  '#description' => t('Select a primary category for this %type.', array('%type' => $type)),
+			  '#theme' => 'taxonomy_term_select',
+			  '#required' => FALSE,
+			  '#weight' => -4,
+			  '#tree' => FALSE, // keep value out of $node->taxonomy
+			  );
+		  }
+	  }			  
+      break;
+  }
+}
+
+
+/**
+ * Gets all the og_taxonomies and prunes them for the indiviual node
+ */
+function get_taxonomy_pruned($form_id, &$form){
+
+  // print $form_id . ' '; // this prints form_id's of all forms on every page - development feature
+  
+  // theme the views filters for the school search 
+  if($form_id == 'views_filters' && $form['#view_name'] == 'og_ghp_map') {
+  
+  	// THINK ABOUT GETTING THIS ARRAY OF OPTIONS FROM CACHE *****************************************************************
+	
+	$vid = 1; // hard-coded for now
+	
+	// get tree for this vocabulary (need hierarchy )
+	$vocab_terms = taxonomy_get_tree($vid);
+	
+	// get terms for this node/map/group
+	// this is an array of objects, but with tid also as key $group_terms[176][tid] = 174
+	$group = og_get_group_context();
+	$group_terms = taxonomy_node_get_terms_by_vocabulary($group->nid, $vid);
+	
+	// first go through vocab_terms and remove all where depth is 2 and key doesn't exist in group_terms
+	foreach($vocab_terms as $key=>$term) {
+		if($term->depth > 1) {
+			if(!(array_key_exists($term->tid, $group_terms))) {
+				// delete from array because it's not used
+				// $vocab_terms[$key] = NULL;
+				unset($vocab_terms[$key]);
+			}
+		}
+	}
+	
+	// then go through all where depth is 1, get their children, and see if any of these exist in group_terms. If not then remove them. Add kept ones to separate array
+	$category_terms = array();
+	foreach($vocab_terms as $key=>$term) {
+		if($term->depth == 1) {
+			$child_terms = taxonomy_get_children($term->tid);
+			if(array_intersect_key($child_terms,$group_terms)) {
+				// add to separate array of used categories - same structure as $group_terms
+				$category_terms[$term->tid] = $term->name;	
+			} else {
+				// remove from $vocab_terms
+				unset($vocab_terms[$key]);
+			}
+		}
+	}
+		
+	// then go through all where depth is 0, get their children, and see if any of these exist in the separate array just created. If not then remove them
+	foreach($vocab_terms as $key=>$term) {
+		if($term->depth < 1) {
+			$child_terms = taxonomy_get_children($term->tid);
+			if(!array_intersect_key($child_terms,$category_terms)) {
+				// remove from $vocab_terms
+				unset($vocab_terms[$key]);
+			}
+		}
+	}
+
+	// finally go through the trimmed vocab_terms and add to options array
+	foreach($vocab_terms as $term){
+		
+		$choice = new stdClass();
+		$choice->option = array($term->tid => str_repeat('--', $term->depth) . $term->name);
+		$options[] = $choice;
+	}
+
+	return $options;
+	}
+}// End get_taxonomy_pruned
+
+
+
+/**
+ * hook_perm 
+ * don't need as this is going to go to group admins at first only
+ */
+ 
+/** 
+ * hook_menu
+ * create a page for group admins
+ * for now just pull in groups they're an admin of as a dropdown list, or pull from url args?
+ */
+
+function og_taxonomy_subset_menu ($may_cache) {
+  $items = array();
+  
+  if ($may_cache) {
+    $items[] = array('path' => 'og_taxonomy_subset', // should change this to be dynamic based on path node/edit/nid/vid or similar **************
+      'title' => t('OG Taxonomy Subset'),
+      'description' => t('Administer vocabularys subset for a group'),
+      'callback' => 'og_taxonomy_subset_list',
+      'access' => user_access('create green_map content'), // generalize this some more **************
+      'type' => MENU_NORMAL_ITEM
+    );
+  }
+  
+  return $items;
+
+}
+
+function og_taxonomy_subset_list() {
+	$form['multiedit'] = array('#tree' => TRUE);
+	$vid = 1; // change to be not hard coded **********
+	$vocabulary = taxonomy_get_vocabulary($vid);
+	$tree = taxonomy_get_tree($vocabulary->vid);
+	
+  foreach ($tree as $term) {
+    $total_entries++; // we're counting all-totals, not displayed
+    
+    $form['multiedit'][$term->tid]['name'] = array(
+      '#value' => str_repeat('--', $term->depth) . ' ' . l($term->name, "taxonomy/term/$term->tid", array('title' => $term->description)),
+    );
+    $form['multiedit'][$term->tid]['check'] = array(
+      '#type' => 'checkbox',
+      '#default_value' => 0
+    );
+
+    $displayed_count++; // we're counting tids displayed
+  }
+  
+  if (count($tree) > 0) {
+    // we don't need the buttons if the vocabulary is empty
+    $form['save'] = array('#type' => 'submit', '#value' => t('Save'));
+    $form['delete'] = array('#type' => 'submit', '#value' => t('Delete Selected'));
+  }
+  
+  return drupal_get_form('og_taxonomy_subset_form', $form);
+  
+}
+
+// don't know why using this function - copied from taxonomy_batch_operations
+function og_taxonomy_subset_form($record) {
+  return($record);
+}
+
+
+function theme_og_taxonomy_subset_form($form) {
+
+  $header = array(
+              array("data" => t('Name'),
+                    "sort" => '',
+                    "field" => '',
+              ),
+              t(''),
+            );
+
+  foreach(element_children($form['multiedit']) as $i) {
+    $rows[] = array(
+      drupal_render($form['multiedit'][$i]['name']),
+      drupal_render($form['multiedit'][$i]['check'])
+    );
+  }
+
+  $rows[] = array(array('data' => drupal_render($form['save']), 'colspan' => 1),
+                  array('data' => drupal_render($form['delete']), 'colspan' => 1)
+            );
+
+  $output = theme_table($header, $rows, array('id' => 'taxonomy'));
+  $output .= drupal_render($form);
+
+  return $output;
+}
+
+// not used yet
+function og_taxonomy_subset_form_validate($form_id, $form_values) {
+}
+
+function og_taxonomy_subset_form_submit($form_id, $form_values) {
+  switch ($form_values['op']) {
+    case t('Save'):
+      $nid = 283; // hardcoded for now - would pass from form - it's the group id, or nid of the map
+	  $terms = array();
+	  foreach ($form_values[multiedit] as $key => $tid) {
+        // $term = taxonomy_get_term($key);
+	    // $parents = taxonomy_get_parents($key); // don't think I need this, though will be important to do something sensible with parent/child relationship 
+        // unset($tid['check']); // why?
+        // $tid['tid'] = $term->tid; 
+		// $term = array();
+		// $term['tid'] = $key; 
+        // $tid['name'] = $term->name;
+        // $tid['description'] = $term->description;
+        // $tid['synonyms'] = $term->synonyms;
+        // weight is already set
+        // $tid['vid'] = $term->vid;
+        // $tid['parent'] = array_keys($parents);
+		// $term['gid'] = '283'; // get group ID/ node ID from somewhere. hardcoding for now **************
+		// $term['use'] = $tid['check']; // get true or false
+
+        // taxonomy_save_term($tid);
+		// og_taxonomy_subset_save_term($term);
+		
+		// see if it's checked
+		if($tid['check']) {
+			// add $tid to $terms array
+			$terms[] = $key;
+		}
+      }
+	  
+	  taxonomy_node_save($nid, $terms);
+	  
+      drupal_set_message(t('Updated terms'));
+      break;
+  }
+
+}
+
+// function to save terms into custom table
+function og_taxonomy_subset_save_term($term){
+	// drupal_set_message(t('term: %term-tid %term-checked', array('%term-tid' => $term['tid'], '%term-checked' => $term['use'])));
+	// delete from database
+	
+	// save in database
+}
+
+
+
+function og_taxonomy_subset_form_alter($form_id, &$form) {
+
+        // Get's the taxonomy options w/o any caching considerations
+        $options[] = get_taxonomy_pruned($form_id, $form);
+
+        // think about caching all this using cache_set($cid, $table = 'cache', $data, $expire = CACHE_PERMANENT, $headers = NULL) *************************\
+****
+    $group_terms = $vocab_terms = $group = '';
+    $form['filter0'] = array(
+          '#type' => 'select',
+          '#options' => $options,
+          '#multiple' => 1,
+          '#size' => 10,
+          '#weight' => -15,
+          '#theme' => 'taxonomy_term_select',
+    );
+
+
+  }
+  // *** Lee - don't edit below here - Below here is altering the node editing/adding form        ***
+  $type = $form['type']['#value'];
+  $node = $form['#node'];
+
+  switch ($form_id) {
+    case $type .'_node_form':
+        // first check if node is being submitted to a group, or is already in a group
+        if($group = og_get_group_context()) {
+

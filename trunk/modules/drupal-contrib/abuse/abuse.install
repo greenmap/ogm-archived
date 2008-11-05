@@ -1,0 +1,188 @@
+<?php
+
+// $Id: abuse.install,v 1.5 2008/03/15 15:46:08 jaydub Exp $
+
+function abuse_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      $result1 = db_query("
+        CREATE TABLE {abuse} (
+          aid int(11) unsigned NOT NULL,       
+          type varchar(255) NOT NULL DEFAULT 'node',
+          oid int(11) unsigned NOT NULL,
+          created int(11) NOT NULL,
+          body text,
+          reason varchar(255),
+          uid int(11) unsigned NOT NULL,
+          name varchar(255),
+          mail varchar(255),
+          valid int(4) NOT NULL DEFAULT 0,
+          primary key (aid)
+        ) TYPE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 */;
+      ");
+      $result2 = db_query("
+        CREATE TABLE {abuse_warnings} (
+          type varchar(255) NOT NULL DEFAULT 'node',
+          oid int(11) unsigned NOT NULL,
+          created int(11) NOT NULL,
+          uid int(11) unsigned NOT NULL
+        ) TYPE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 */;
+      ");
+      $result3 = db_query("
+        CREATE TABLE {abuse_status} (
+          type varchar(255) NOT NULL DEFAULT 'node',
+          oid int(11) unsigned NOT NULL,
+          changed int(11) NOT NULL,
+          status int(11) NOT NULL default '0'
+        ) TYPE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 */;
+      ");
+      //Create the reasons table
+      $result4 = db_query("
+        CREATE TABLE {abuse_reasons} (
+          arid int(11) unsigned NOT NULL,
+          reason varchar(72) NOT NULL DEFAULT '',
+          description text NOT NULL,
+          argumentation text NOT NULL,
+          PRIMARY KEY (arid)
+        ) TYPE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 */;
+      ");
+      break;
+    case 'pgsql':
+      $result1 = db_query("
+        CREATE TABLE {abuse} (
+          aid int_unsigned NOT NULL,       
+          type varchar(255) NOT NULL DEFAULT 'node',
+          oid int_unsigned NOT NULL,
+          created int NOT NULL,
+          body text,
+          reason varchar(255),
+          uid int_unsigned NOT NULL,
+          name varchar(255),
+          mail varchar(255),
+          valid int NOT NULL DEFAULT 0,
+          PRIMARY KEY (aid)
+        );
+      ");
+      db_query("CREATE SEQUENCE {abuse}_aid_seq");
+      $result2 = db_query("
+        CREATE TABLE {abuse_warnings} (
+          type varchar(255) NOT NULL DEFAULT 'node',
+          oid int_unsigned NOT NULL,
+          created int NOT NULL,
+          uid int_unsigned NOT NULL
+        );
+      ");
+      $result3 = db_query("
+        CREATE TABLE {abuse_status} (
+          type varchar(255) NOT NULL DEFAULT 'node',
+          oid int_unsigned NOT NULL,
+          changed int NOT NULL,
+          status int NOT NULL default '0'
+        );
+      ");
+      //Create the reasons table
+      $result4 = db_query("
+        CREATE TABLE {abuse_reasons} (
+          arid int_unsigned NOT NULL,
+          reason varchar(72) NOT NULL DEFAULT '',
+          description text NOT NULL,
+          argumentation text NOT NULL,
+          PRIMARY KEY (arid)
+        );
+      ");
+      db_query("CREATE SEQUENCE {abuse_reasons}_arid_seq");
+      break;
+  }
+  if ($result1) {
+    drupal_set_message(t('abuse module database table {abuse} created successfully.'));
+  }
+  else {
+    drupal_set_message(t("abuse module database table {abuse} creation failure. Please view the abuse module folder and read the README.txt"), 'error');      
+  }
+  if ($result2) {
+    drupal_set_message(t('abuse module database table {abuse_warnings} created successfully.'));
+  }
+  else {
+    drupal_set_message(t("abuse module database table {abuse_warnings} creation failure. Please view the abuse module folder and read the README.txt"), 'error');      
+  }
+  if ($result3) {
+    drupal_set_message(t('abuse module database table {abuse_status} created successfully.'));
+  }
+  else {
+    drupal_set_message(t("abuse module database table {abuse_status} creation failure. Please view the abuse module folder and read the README.txt"), 'error');      
+  }
+  if ($result4) {
+    drupal_set_message(t('abuse module database table {abuse_reasons} created successfully.'));
+  }
+  else {
+    drupal_set_message(t("abuse module database table {abuse_reasons} creation failure. Please view the abuse module folder and read the README.txt"), 'error');      
+  }
+  
+  $sql_template = "INSERT INTO {abuse_reasons} (arid, reason, description, argumentation) VALUES (%d, '%s', '%s', '%s')";
+  $result5 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "foul language", t('The user wrote very mean things'), t('Please refrain from writing such mean things'));
+  $result6 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "adult themes", t('The user\'s wrote very explicit language'), t('Please refrain from writing such mean things'));
+  $result7 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "racist or sexist language", t('The user wrote very derogatory comments'), t('Please refrain from writing such mean things'));
+  $result8 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "contains private information", t('The user wrote about private information'), t('Please refrain from writing such mean things'));
+  $result9 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "other", t('The user wrote about other types of mean things'), t('Please refrain from writing such mean things'));
+  if ($result1 && $result2 && $result3 && $result4 && $result5 && $result6 && $result7 && $result8 && $result9) {
+    drupal_set_message('Abuse reason table installation was a success');
+  }
+  else {
+    drupal_set_message('Retry from the start (remove abuse sequence and abuse reasons table)');
+  }
+}
+
+function abuse_update_1() {
+  $items = array();
+  if (!db_table_exists('abuse_reasons')) {
+    $result1 = db_query("
+      CREATE TABLE {abuse_reasons} (
+        arid int(11) unsigned NOT NULL,
+        reason varchar(72) NOT NULL DEFAULT '',
+        description text NOT NULL DEFAULT '',
+        argumentation text NOT NULL DEFAULT '',
+        PRIMARY KEY (arid)
+      ) TYPE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 */;
+    ");
+  
+    $sql_template = "INSERT INTO {abuse_reasons} (arid, reason, description, argumentation) VALUES (%d, '%s', '%s', '%s')";
+    $result2 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "foul language", t('The user wrote very mean things'), t('Please refrain from writing such mean things'));
+    $result3 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "adult themes", t('The user\'s wrote very explicit language'), t('Please refrain from writing such mean things'));
+    $result4 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "racist or sexist language", t('The user wrote very derogatory comments'), t('Please refrain from writing such mean things'));
+    $result5 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "contains private information", t('The user wrote about private information'), t('Please refrain from writing such mean things'));
+    $result6 = db_query($sql_template, db_next_id('{abuse_reasons}_arid'), "other", t('The user wrote about other types of mean things'), t('Please refrain from writing such mean things'));
+    if ($result1 && $result2 && $result3 && $result4 && $result5 && $result6) {
+      drupal_set_message('Abuse reason table installation was a success');
+    } 
+    else {
+      drupal_set_message('Retry from the start (remove abuse sequence and abuse reasons table)');
+    }
+  }
+  return $items;
+}
+
+function abuse_update_2() {
+  _system_update_utf8(array('abuse', 'abuse_warnings', 'abuse_status', 'abuse_reasons'));
+}
+
+function abuse_uninstall() {
+  variable_del('abuse_threshold');
+  variable_del('abuse_warn_subject');
+  variable_del('abuse_warn_body');
+  variable_del('abuse_warn_bcc');
+  variable_del('abuse_form_pre');
+  foreach (node_get_types() as $name => $type) {
+    variable_del('abuse_content_node_type_'. $name);
+  }
+  db_query('DROP TABLE {abuse}');
+  db_query('DROP TABLE {abuse_status}');
+  db_query('DROP TABLE {abuse_warnings}');
+  db_query('DROP TABLE {abuse_reasons}');
+  switch ($GLOBALS['db_type']) {
+    case 'pgsql':
+      db_query("DROP SEQUENCE {abuse}_aid_seq");
+      db_query('DROP SEQUENCE {abuse_reasons}_arid_seq');
+      break;
+  }
+}
