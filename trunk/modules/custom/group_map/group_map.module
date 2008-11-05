@@ -469,7 +469,7 @@ function group_map_block_1_contents() {
 	
 	 
 	// embed the regular search block
-	$explorecontent .= '<h3>' . t('Search') . '</h3>';
+	$explorecontent .= '<h3>' . t('Search This Map') . '</h3>';
 	$searchblock = module_invoke('search', 'block' , 'view', 0); 
 	$explorecontent .= $searchblock['content']; 
 	
