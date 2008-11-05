@@ -111,6 +111,7 @@ if ($teaser) {
 				<?php print fivestar_static($content_type = 'node', $content_id = $node->nid, $node_type = 'green_site'); ?>
 			</div>
 			<div id="bubble_small_comment">
+			
 				<img src="<?php print base_path(); ?>files/comments_bubble.gif">
 				<!-- TODO: add link -->
 				<a href="#" rel='2' class='maximize'>
@@ -120,6 +121,21 @@ if ($teaser) {
 						<?php print $node->comment_count.' '.t('comments'); ?>
 					<?php } ?>
 				</a>
+				 <?php
+				 $contents .= '<br><span class="submitted">';
+		$contents .= '<img src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="' . t('added') . date('m/Y', $node->created) . t('by') . $node->name . '"/>';
+		$contents .= t('added') . ' ' . date('m/Y', $node->created) . ' ' ;
+		if($node->uid){
+			$contents .= t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
+		}
+		if($node->og_groups_both[$node->og_groups[0]] > '') {
+			$contents .= t('to') . ' ' . l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
+		}
+		// debug
+		//print_r($node);
+		$contents .= '</span>';
+		print $contents;
+		?>
 			</div>
 		</div>
 
@@ -150,6 +166,7 @@ if ($teaser) {
 				<strong>Flagged Site.</strong> Please view with caution!
 			</div>
 		<?php } ?>
+		
 	</div>
 <?php
 
