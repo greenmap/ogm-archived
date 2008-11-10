@@ -542,7 +542,7 @@ function views_build_view($type, &$view, $args = array(), $use_pager = false, $l
     }
     ob_end_clean();
   }
-
+ 
   $view->use_pager = $use_pager;
   $view->pager_limit = $limit;
   $view->current_page = $page;
