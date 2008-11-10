@@ -278,12 +278,29 @@ div.culture div.taxname {
 	color: #F79838;
 }
 
-div#address, div#siteactions, div#mediathumbs {
+div#address, div#mediathumbs {
 	float: right;
-	width: 150px;
-	/* GH: added to limit the address to four lines for now */
+	width: 120px;
+}
+
+div#address {
+  /* GH: added to limit the address to four lines for now */
 	max-height: 68px;
 	overflow: hidden;
+}
+
+img.submitted_icon {
+  float: left;
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
+#bubble_small .submitted_text {
+  float: left;
+}
+
+#bubble_small .submitted_icon {
+  clear: left;
 }
 
 div#siteactions ul {

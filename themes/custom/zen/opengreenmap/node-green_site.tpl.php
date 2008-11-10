@@ -116,26 +116,11 @@ if ($teaser) {
 				<!-- TODO: add link -->
 				<a href="#" rel='2' class='maximize'>
 					<?php if ($node->comment_count == 0) { ?>
-						<?php print t('comment'); ?>
+						<?php print t('Add first comment'); ?>
 					<?php } else { ?>
 						<?php print $node->comment_count.' '.t('comments'); ?>
 					<?php } ?>
 				</a>
-				 <?php
-				 $contents .= '<br><span class="submitted">';
-		$contents .= '<img src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="' . t('added') . date('m/Y', $node->created) . t('by') . $node->name . '"/>';
-		$contents .= t('added') . ' ' . date('m/Y', $node->created) . ' ' ;
-		if($node->uid){
-			$contents .= t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
-		}
-		if($node->og_groups_both[$node->og_groups[0]] > '') {
-			$contents .= t('to') . ' ' . l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
-		}
-		// debug
-		//print_r($node);
-		$contents .= '</span>';
-		print $contents;
-		?>
 			</div>
 		</div>
 
@@ -159,6 +144,19 @@ if ($teaser) {
 			</div>
 		</div>
 
+    <img class="submitted_icon" src="<?php print base_path() . path_to_theme(); ?>/img/mapper.gif" width="20px" height="19px" alt="<?php print t('added') . date('m/Y', $node->created) . t('by') . $node->name; ?>" />
+    <div class="submitted_text">
+    
+        <?php print t('added') . ' ' . date('m/Y', $node->created) . ' ' ;
+        if($node->og_groups_both[$node->og_groups[0]] > '') {
+          print t('to') . ' ' . l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
+        }
+        if($node->uid){
+          print '<br />' . t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
+        }
+        ?>
+
+    </div>
 
 		<?php $flag = _abuse_get_status('node', $node->nid); ?>
 		<?php if ($flag == 'Pending' || $flag == 'Hidden') { ?>
