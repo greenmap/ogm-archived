@@ -298,6 +298,7 @@ img.submitted_icon {
 
 #bubble_small .submitted_text {
   float: left;
+  font-size: 0.9em;
 }
 
 #bubble_small .submitted_icon {
