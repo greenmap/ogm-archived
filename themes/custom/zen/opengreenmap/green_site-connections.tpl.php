@@ -17,7 +17,7 @@ function output_connections($node)
 
 	$list_related_sites = views_get_view('list_related_sites');
 	$list_related_sites->args[0]=$node->primary_term->tid;
-	$rel = views_build_view('embed', $list_related_sites, $list_related_sites->args, FALSE, 10);
+	$rel = views_build_view('embed', $list_related_sites, $list_related_sites->args, FALSE, 10,0);
 	$rel = str_replace('<a href=', '<a target="_parent" href=', $rel);
 	$rel = escape_js($rel);
 
