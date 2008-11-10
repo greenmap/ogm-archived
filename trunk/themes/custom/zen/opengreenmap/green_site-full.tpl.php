@@ -31,7 +31,6 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
 	<?php if ($location[postal_code] > '' || $location[province] > '') { ?>
 		<div class="location postalcode"> 
 			<?php print $location[province] . ' ' . $location[postal_code]; ?> 
-			<a href="#tabs-tabs-3"><img src="<?php print base_path() . path_to_subtheme(); ?>/images/green_arrow.png" alt="Get directions"></a>
 		</div>
 	<?php } ?>
 
@@ -143,8 +142,7 @@ if($node->field_involved[0]['value'] == 'yes') {
 	// needs images/{camera,video}.png, multimedia.{css,js}
 	$multimedia = '';
 
-	// add custom CSS and JavaScript
-	drupal_add_css(drupal_get_path('theme', 'zen').'/opengreenmap/multimedia.css');
+	// add custom  JavaScript
 	drupal_add_js(drupal_get_path('theme', 'zen').'/opengreenmap/multimedia.js');
 	$media = array();
 	// add site video
