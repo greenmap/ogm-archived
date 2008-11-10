@@ -143,8 +143,8 @@ if ($teaser) {
 				<?php } ?>
 			</div>
 		</div>
-
-    <img class="submitted_icon" src="<?php print base_path() . path_to_theme(); ?>/img/mapper.gif" width="20px" height="19px" alt="<?php print t('added') . date('m/Y', $node->created) . t('by') . $node->name; ?>" />
+    <?php $img_alt = t('This site was added by an official Mapmaker'); ?>
+    <img class="submitted_icon" src="<?php print base_path() . path_to_theme(); ?>/img/mapper.gif" width="20px" height="19px" alt="<?php print $img_alt; ?>" title="<?php print $img_alt; ?>"  />
     <div class="submitted_text">
     
         <?php print t('added') . ' ' . date('m/Y', $node->created) . ' ' ;

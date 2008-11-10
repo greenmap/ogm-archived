@@ -106,8 +106,8 @@ if($node->field_involved[0]['value'] == 'yes') {
 		$contents .= '</div>';
 	$contents .= '</div>';
 	$contents .= '<div class="meta">';
-
-  $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="' . t('added') . date('m/Y', $node->created) . t('by') . $node->name . '"/>';
+  $img_alt = t('This site was added by an official Mapmaker');
+  $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="'  . $img_alt . '" title="'  . $img_alt . '"/>';
 
       
   $contents .= '<div class="submitted_text">';
