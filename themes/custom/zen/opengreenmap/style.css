@@ -568,3 +568,116 @@ div#block-i18n-0 ul, div#block-i18n-0 li {
 .view-empty-list-of-impacts-for-site {
 	text-align: center;
 }
+
+/* Multimedia */
+
+#multimedia_main {
+	height: 240px;
+	margin-left: 0;
+	margin-top: 10px;
+	position: absolute;
+	width: 320px;
+}
+
+div#comment .resizable-textarea textarea {
+	height: 50px;
+}
+
+#multimedia_main_na {
+	/* no media available */
+  background: #fff;
+  height: 200px;
+  width: 500px;
+}
+
+
+#multimedia_description {
+	/* font-size: 11px;  /* Removed by TT as avoiding fixed size fonts */
+	height: 229px;
+	left: 366px;
+	line-height: 1.15;
+	margin-top: 26px;
+	max-height: 229px;
+	max-width: 160px;
+	overflow: hidden;
+	position: absolute;
+	width: 160px;
+}
+
+
+.multimedia_description_title {
+	max-height: 165px;
+	overflow: hidden;
+	padding-bottom: 2px;
+}
+
+
+.multimedia_description_flag {
+
+}
+
+
+.multimedia_description_description {
+	padding-top: 1em;
+}
+
+
+#multimedia_selector_title {
+	/* font-size: 11px;  /* Removed by TT as avoiding fixed size fonts */
+	left: 545px;
+	margin: 0px;
+	margin-top: 10px;
+	position: absolute;
+}
+
+
+#multimedia_selector_title a {
+	color: rgb(140, 198, 65);
+}
+
+
+#multimedia_selector {
+	border-color: #cccccc;
+	border-style: solid;
+	border-width: 1px;
+	height: 217px;
+	left: 545px;
+	margin-top: 37px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	position: absolute;
+	width: 96px;
+}
+
+
+#multimedia_selector ul {
+	margin: 0px;
+	padding: 0px;
+}
+
+
+#multimedia_selector li {
+	border-bottom-width: 1px;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-top-width: 0px;
+	border-color: #cccccc;
+	border-style: dotted;
+	cursor: pointer;
+	line-height: 1em;
+	list-style-type: none;
+	padding-bottom: 8px;
+	padding-top: 8px;
+	text-align: center;
+}
+
+
+#multimedia_selector li:hover {
+	background-color: #eeeeee;
+}
+
+
+#multimedia_selector li img {
+	vertical-align: middle;
+	margin-left: 1px;
+}
