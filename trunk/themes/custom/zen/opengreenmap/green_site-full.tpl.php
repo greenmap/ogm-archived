@@ -56,12 +56,23 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
 
   <?php
   // prepare content for MAIN tab
-  if($node->field_video[0]['value'] > '') {
-  	$media_thumb = theme('video_cck_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
-  } elseif($node->field_image[0]['value'] > '') {
+  if($node->field_image[0]['value'] > '') {
   	$media_thumb = theme('image_ncck_image_thumbnail', $node->field_image, $node->field_image[0], 'image_thumbnail', $node);
+  } elseif($node->field_video[0]['value'] > '') {
+  	$media_thumb = theme('video_cck_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
   }
-  $contents = '<div id="mediathumbs">' . $media_thumb . '</div>'; 
+  $contents = '<div id="mediathumbs">' . $media_thumb ; 
+  
+  	$contents .= '<div id="siteactions">';
+  		$contents .= '<ul>';
+  			$contents .= '<li>' . format_plural($comment_count, '1 comment', '@count comments') . '</li>';
+  			$contents .= '<li>' . l(t('share this site'), 'forward/' . $node->nid . '/simple') . '</li>';
+  			$contents .= '<li>' . l(t('flag this'),'abuse/report/node/' . $node->nid . '/simple') . '</li>';
+  		$contents .= '</ul>';
+  	$contents .= '</div>';  
+  
+  $contents .= '</div>'; // end of media & actions
+  
   $contents .= content_format('field_details', $field_details[0]);
 
 	if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
@@ -96,27 +107,26 @@ if($node->field_involved[0]['value'] == 'yes') {
 		$contents .= '</div>';
 	$contents .= '</div>';
 	$contents .= '<div class="meta">';
-		$contents .= '<span class="submitted">';
-		$contents .= '<img src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="' . t('added') . date('m/Y', $node->created) . t('by') . $node->name . '"/>';
+
+  $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="' . t('added') . date('m/Y', $node->created) . t('by') . $node->name . '"/>';
+
+      
+  $contents .= '<div class="submitted_text">';
 		$contents .= t('added') . ' ' . date('m/Y', $node->created) . ' ' ;
-		if($node->uid){
-			$contents .= t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
-		}
 		if($node->og_groups_both[$node->og_groups[0]] > '') {
 			$contents .= t('to') . ' ' . l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
 		}
+    if($node->uid){
+			$contents .= '<br />' . t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
+		}
+		
 		// debug
 		//print_r($node);
-		$contents .= '</span>';
+		$contents .= '</div>';
+ 
 	$contents .= '</div>';
 
-	$contents .= '<div id="siteactions">';
-		$contents .= '<ul>';
-			$contents .= '<li>' . format_plural($comment_count, '1 comment', '@count comments') . '</li>';
-			$contents .= '<li>' . l(t('share this site'), 'forward/' . $node->nid . '/simple') . '</li>';
-			$contents .= '<li>' . l(t('flag this'),'abuse/report/node/' . $node->nid . '/simple') . '</li>';
-		$contents .= '</ul>';
-	$contents .= '</div>';
+
 
 
   // prepare content for COMMENT tab
