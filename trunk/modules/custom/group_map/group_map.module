@@ -573,7 +573,7 @@ function group_map_block_0_contents() {
 
 	// set up the content for the 'info' tab
 	// ***** THIS IS WRONG - should use theme_username here - not everyone can always view mapmaker profiles
-	$infocontent .= '<p><span class="label">' . t('Mapmaker') . ':</span>&nbsp;' . l($node->name, 'user/' . $node->uid) . '</p>';
+	//$infocontent .= '<p><span class="label">' . t('Mapmaker') . ':</span>&nbsp;' . l($node->name, 'user/' . $node->uid) . '</p>';
 	
 	// get images 
 	
@@ -591,9 +591,13 @@ function group_map_block_0_contents() {
 	// get user info etc.
 	$account = user_load($array = array('uid' => $node->uid));
 	if($account->profile_greenhouse_uid){
-		$infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Mapmaker Profile'),'http://www.greenmap.org/greenhouse/user/'. $account->profile_greenhouse_uid) . '</div>';
+		$infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Mapmaker Profile'),'http://www.greenmap.org/greenhouse/user/'. $account->profile_greenhouse_uid, array('class'=>'external', 'target'=>'_blank')) . '</div>';
+		
 	}
-	
+	if($node->field_map_website[0]['url'])
+	{
+		$infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Map Website'),$node->field_map_website[0]['url'], array('class'=>'external', 'target'=>'_blank')) . '</div>';
+	}
 	// get map info
 	if($node->field_map_in_greenhouse[0]['url']){
 		$infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Map Profile'), $node->field_map_in_greenhouse[0]['url']) . '</div>';
@@ -650,7 +654,17 @@ function group_map_block_0_contents() {
     if (module_exists('search') && user_access('search content')) {
 	  $searchcontent .= '<p>' . t('Search this Map') . '</p>';
       $searchcontent .= drupal_get_form('og_search_form', $node);
+	  // list all maps this mapmaker has made
+	$list_mapmaker_maps = views_get_view('list_mapmaker_maps');
+	// $list_mapmaker_maps->args[0]=$node->uid;
+	$args=array($node->uid);
+	$rel = views_build_view('block', $list_mapmaker_maps, $args, FALSE, 10,0);
+	//$rel = str_replace('<a href=', '<a target="_parent" href=', $rel);
+	$rel = '<strong>' . t('@name also made the following maps:', array('@name'=>$account->name)).'</strong>'.$rel;
+	$searchcontent .= $rel;
     }
+	
+	
 	
 	// change location
 	
