@@ -701,8 +701,15 @@ function group_map_block_0_contents() {
 	//*****
 	
 	$infocontent .= '<hr />';
+	//add number of sites, number of people in team, number of comments here
+	$num_sites = db_result(db_query("SELECT count(*) FROM {og_ancestry} n WHERE n.group_nid = %d and is_public = 1", $node->nid));
+	$infocontent .= '<div class="leftalign">' . '<span class="label">' . t('Number of sites') . ':</span>&nbsp;' . $num_sites . '</div>';
+	$num_members = db_result(db_query("SELECT count(*) FROM {og_uid} n WHERE n.nid = %d and is_active = 1", $node->nid));
+	$infocontent .= '<div class="leftalign">' . '<span class="label">' . t('Number of members') . ':</span>&nbsp;' . $num_members . '</div>';
+	$num_comments = db_result(db_query("SELECT count(*) FROM {comments} c, {og_ancestry} og where c.nid = og.nid and og.group_nid = %d and c.status = 0", $node->nid));
+	$infocontent .= '<div class="leftalign">' . '<span class="label">' . t('Number of commentss') . ':</span>&nbsp;' . $num_comments . '</div>';
 
-	
+	$infocontent .= '<hr />';
 	// Need to insert survey on impact
 	// *****
 	
