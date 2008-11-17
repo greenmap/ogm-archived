@@ -2,6 +2,38 @@
 // $Id: impacts.module,v 0.1 2008/06/23 16:39:43 tom_o_t Exp $
 
 /*
+* hook_menu() 
+* Create a page listing all the impacts/outcomes for a map
+*/
+
+function impacts_menu($may_cache){
+	$items = array();
+	if($may_cache){
+	} else {
+		if (arg(0) == 'node' && is_numeric(arg(1))) {
+      $items[] = array(
+        'path' 				=> 'node/'. arg(1). '/outcomes', 
+        'title' 			=> t('Outcomes'),
+        'access' 			=> TRUE,
+        'callback' 			=> 'impacts_outcomes_page',
+        'callback arguments' => array(arg(1)),
+        'type'    			=> MENU_LOCAL_TASK,
+        'weight' 			=> 8
+        );
+    }
+  }
+  return $items;
+}    
+  
+function impacts_outcomes_page($nid) {
+  $outcomes .= 'add some stuff here';
+  // get the mapid  from $nid
+  // $mapid = ;
+  $outcomes .= output_impacts($nid, $mapid);
+  return $outcomes;
+}
+  
+/*
  * hook_form_alter()
  * alters the form to submit an impact in the infowindow when viewing a site
  */
@@ -115,7 +147,7 @@ function impacts_views_default_views(){
 
 // this function is called by green-site-full.tpl.php
 // it creates the impacts tab
-function output_impacts($node)
+function output_impacts($node, $mapid=NULL)
 {
 	// create the form to add a new impact
 	$add_impact = '<div id="addimpact"><form method="get" action="' . base_path() . 'node/add/impact"><label>';
