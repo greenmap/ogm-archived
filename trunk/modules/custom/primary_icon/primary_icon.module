@@ -22,10 +22,12 @@ function primary_icon_form_alter($form_id, &$form) {
 		$form['taxonomy']['primaryterm']['#required'] = 1;
 		// re-order the list to be alphabetical
 		// add js
+    /* // Removing this code for now - it messed up when you edited a node - random wrong icons were selected
 		drupal_add_js(drupal_get_path('module', 'primary_icon') .'/jquery.selectboxes.min.js');
 		// do the re-order using jquery code
 		$js = '$(document).ready(function() { $("#edit-primaryterm").sortOptions() });'; 
 		drupal_add_js($js,'inline');
+        */
 		
 		// change title of secondary icons field
 		$form['taxonomy'][1]['#title'] = t('Secondary Icons');
