@@ -191,7 +191,7 @@ function onMapChange_case0($args = array()) {
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude , m.marker, m.tid, og.nid AS og_nid
 		 FROM {node} AS n
 		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
-		 INNER JOIN {gmap_taxonomy_node} m ON n.vid = m.vid
+		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 LEFT JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid
 		 LEFT JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
 		 LEFT JOIN {og}   AS og  ON  n2.nid = og.nid
@@ -255,7 +255,7 @@ function onMapChange_casezoom($args = array()) {
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude  , m.marker, m.tid
 		 FROM {node} AS n
 		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
-		 INNER JOIN {gmap_taxonomy_node} m ON n.vid = m.vid
+		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 ".$og1."
 		 ".$nid_q1."
 		 WHERE l.type = 'node' AND (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' ".$og2." ".$nid_q2."
@@ -284,7 +284,7 @@ function onMapChange_caseborder($args = array()) {
 		 FROM {node} AS n
 		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
 		 
-		 INNER JOIN {gmap_taxonomy_node} m ON n.vid = m.vid
+		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 INNER JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid
 		 INNER JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
 		 INNER JOIN {og}   AS og  ON  n2.nid = og.nid
@@ -312,7 +312,7 @@ function onMapChange_casemove($args = array()) {
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude ,tn.tid , m.marker, m.tid
 		 FROM {node} AS n
 		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
-		 INNER JOIN {gmap_taxonomy_node} m ON n.vid = m.vid
+		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 INNER JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
 		 INNER JOIN {og}   AS og  ON  n2.nid = og.nid
 		 
@@ -344,7 +344,7 @@ function onMapChange_casenid($args = array()) {
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude ,tn.tid , m.marker, m.tid
 		 FROM {node} AS n
 		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
-		 INNER JOIN {gmap_taxonomy_node} m ON n.vid = m.vid
+		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 
 		 INNER JOIN nodefamily AS nf ON n.nid = nf.child_nid
 		 
@@ -366,7 +366,7 @@ function onMapChange_query($q,$args,&$data,$mapcid=NULL){
 	// If a cid (cache ID) has been passed, see if there's anything in cache for this
 	if($mapcid){
 		if($r = cache_get($mapcid)){
-			return $r->data;
+			return $r->data; 
 		} 
 	}
 	// if there is something in cache, return it
@@ -383,7 +383,6 @@ function onMapChange_query($q,$args,&$data,$mapcid=NULL){
 		$cCountry = ''; // this used to represent countries, but now actually represents group nid, og_nid
 		$icoImgs = gmap_marker_map_ggm_bubbleIcons();
 		while ($row = db_fetch_object($result)) {
-			
 			if($limit && $i >= $limit) { // if limit is set and limit is full we can break the loop
 			  break;
 			}
@@ -412,8 +411,8 @@ function onMapChange_query($q,$args,&$data,$mapcid=NULL){
 			$r .= $row->nid."*".$row->latitude."*".$row->longitude."*opt.icon= getIcon('".$icoImgs[$row->marker]."'); opt.title= \"".str_replace("\"","\\\"",$row->title)."\";";
 			$r .= "*~*".$g;
 			$r .= "\n";
-		}
-	}
+    }
+	} 
 	if($mapcid){
 		cache_set($mapcid, 'cache', $r, CACHE_TEMPORARY);
 	}
@@ -476,7 +475,7 @@ function getShapes_casezoom($args = array()) {
 	
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude  , m.marker, m.tid
 		 FROM {node} AS n
-		 INNER JOIN {gmap_taxonomy_node} m ON n.vid = m.vid
+		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 ".$og1."
 		 ".$nid_q1."
 		 WHERE n.type ='green_site' ".$og2." ".$nid_q2."
