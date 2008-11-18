@@ -47,8 +47,8 @@ function sms_lookup($arg=NULL){
 	$data = curl_exec($ch);
 	curl_close($ch);
 	 
-	echo "Data: ". $data ' end ' ;
-  echo "Code: ". substr($data,0,3) ' end ' ;
+	echo "Data: ". $data . ' end ' ;
+  echo "Code: ". substr($data,0,3) . ' end ' ;
 	// echo $data->postalcodenumber;
 	die();
 	
