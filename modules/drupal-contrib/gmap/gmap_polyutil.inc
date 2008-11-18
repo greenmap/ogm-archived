@@ -1,5 +1,5 @@
 <?php
-// $Id: gmap_polyutil.inc,v 1.1.2.2 2008/06/11 18:24:13 bdragon Exp $
+// $Id: gmap_polyutil.inc,v 1.1.2.3 2008/07/15 18:01:51 bdragon Exp $
 
 /**
  * @file
@@ -57,7 +57,7 @@ function gmap_polyutil_distance($p, $lp1, $lp2) {
   }
   // mathematica code: (q-p1).(p2-p1)/(p2-p1).(p2-p1);
   // I asked maxima, and it said ((p2y-p1y)*(qy-p1y)+(p2x-p1x)*(qx-p1x))/((p2y-p1y)^2+(p2x-p1x)^2).
-  $tmp = (($lp2[1]-$lp1[1])*($p[1]-$lp1[1])+($lp2[0]-$lp1[0])*($p[0]-$lp1[0]))/(pow($lp2[1]-$lp1[1],2) + pow($lp2[0]-$lp1[0], 2));
+  $tmp = (($lp2[1]-$lp1[1])*($p[1]-$lp1[1])+($lp2[0]-$lp1[0])*($p[0]-$lp1[0]))/(pow($lp2[1]-$lp1[1], 2) + pow($lp2[0]-$lp1[0], 2));
   // Point is not alongside segment, is further off in $lp1's direction.
   if ($tmp <= 0) {
     return gmap_polyutil_dist($lp1, $p);

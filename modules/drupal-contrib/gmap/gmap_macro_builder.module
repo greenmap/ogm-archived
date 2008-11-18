@@ -1,5 +1,5 @@
 <?php
-// $Id: gmap_macro_builder.module,v 1.1.2.11 2008/06/13 16:47:54 bdragon Exp $
+// $Id: gmap_macro_builder.module,v 1.1.2.12 2008/11/07 19:33:59 bdragon Exp $
 
 /**
  * @file
@@ -45,6 +45,8 @@ function gmap_macro_builder_menu($may_cache) {
 
 /**
  * Macro builder form.
+ * @param &$form_state
+ *   The $form_state array.
  * @param $settings
  *   Additional settings to apply to the macro map.
  * @param $hide

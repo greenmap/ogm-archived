@@ -1,5 +1,5 @@
 <?php
-// $Id: gmap_settings_ui.inc,v 1.1.2.33 2008/07/07 16:43:53 bdragon Exp $
+// $Id: gmap_settings_ui.inc,v 1.1.2.39 2008/10/29 18:09:34 bdragon Exp $
 
 /**
  * @file
@@ -35,19 +35,26 @@ function _gmap_admin_settings() {
       '#value' => t("Managed by <a href='@url'>keys api</a>.", array('@url' => url('admin/settings/keys'))),
     );
   }
-  $form['initialization']['gmap_load_zoom_plugin'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Enable mousewheel zooming'),
-    '#default_value' => variable_get('gmap_load_zoom_plugin', TRUE),
-    '#description' => t('Enables the mousewheel.js jQuery plugin, which adds the ability to use the mouse wheel to zoom the map.'),
-  );
-  if (!file_exists(drupal_get_path('module', 'gmap') .'/thirdparty/mousewheel.js')) {
-    variable_set('gmap_load_zoom_plugin', FALSE);
-    $form['initialization']['gmap_load_zoom_plugin']['#default_value'] = FALSE;
-    $form['initialization']['gmap_load_zoom_plugin']['#value'] = FALSE;
-    $form['initialization']['gmap_load_zoom_plugin']['#disabled'] = TRUE;
-    $form['initialization']['gmap_load_zoom_plugin']['#description'] += '<br />'. t('<em>The mousewheel.js file was not found. Please download and place in the <b>thirdparty/</b> folder.</em>');
+
+  if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) != FILE_DOWNLOADS_PUBLIC) {
+    $form['initialization']['gmap_private_markerfile'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Path to gmap_markers.js'),
+      '#description' => t('You are using the <em>Private</em> download method. For markers to work properly. you must press the <em>Regenerate</em> button, manually copy js/gmap_markers.js from the files directory to a location accessible by the webserver, and enter the file path relative to the Drupal root in this field.'),
+      '#default_value' => variable_get('gmap_private_markerfile', ''),
+    );
   }
+
+  $form['initialization']['rebuild'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Regenerate marker cache'),
+    '#description' => t('If you are having problems with markers, or have modified the .ini files in the markers folder, click here to rebuild the marker cache file.'),
+  );
+
+  $form['initialization']['rebuild']['rebuild_marker_js'] = array(
+    '#type' => 'submit',
+    '#value' => t('Regenerate'),
+  );
 
   $defaults = gmap_defaults();
 
@@ -218,7 +225,7 @@ function _gmap_admin_settings() {
       '#default_value' => isset($defaults['behavior'][$k]) ? $defaults['behavior'][$k] : $v['default'],
       '#description' => isset($v['help']) ? $v['help'] : '',
     );
-    if ($v['internal']) {
+    if (isset($v['internal']) && $v['internal']) {
       $form['gmap_default']['behavior'][$k]['#disabled'] = TRUE;
       // Compensate for behaviors becoming internal after acquiring the wrong value.
       $form['gmap_default']['behavior'][$k]['#value'] = $v['default'];
@@ -259,13 +266,13 @@ function _gmap_admin_settings() {
   );
 
   $opts = variable_get('gmap_markermanager', array());
-  if (!is_array($opts['gmap'])) {
+  if (!isset($opts['gmap']) || !is_array($opts['gmap'])) {
     $opts['gmap'] = array();
   }
-  if (!is_array($opts['gmarkermanager'])) {
+  if (!isset($opts['gmarkermanager']) || !is_array($opts['gmarkermanager'])) {
     $opts['gmarkermanager'] = array();
   }
-  if (!is_array($opts['clusterer'])) {
+  if (!isset($opts['clusterer']) || !is_array($opts['clusterer'])) {
     $opts['clusterer'] = array();
   }
 
@@ -415,6 +422,11 @@ function _gmap_admin_settings() {
 }
 
 function gmap_admin_settings_validate($form_id, $form_values, $form) {
+  if ($form_values['op'] == t('Regenerate')) {
+    gmap_regenerate_markers();
+    drupal_set_message(t('Marker cache regenerated.'));
+  }
+
   $found = FALSE;
   foreach ($form_values['gmap_default']['baselayers'] as $l) {
     if ($l) {
