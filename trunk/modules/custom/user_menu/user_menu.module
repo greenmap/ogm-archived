@@ -176,3 +176,16 @@ function user_menu_user($op, &$edit, &$account, $category = NULL){
 		break;
 	}
 }
+
+function user_menu_form_alter($form_id, &$form){
+	//print $form_id . ' '; // this prints form_id's of all forms on every page - development feature
+	
+	if($form_id == 'user_register') {
+		drupal_set_title(t('Get Started'));   
+    $form['account']['name']['#description'] = t('Your preferred public username; punctuation is not allowed except for periods, hyphens, and underscores.');
+		   /*$form['form_info'] = array(
+			 '#value' => '<pre>'. print_r($form, TRUE) .'</pre>'
+		   );  // */
+		   	   
+	}
+}  
