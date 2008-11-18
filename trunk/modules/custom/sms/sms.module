@@ -42,13 +42,15 @@ function sms_lookup($arg=NULL){
 	curl_setopt($ch, CURLOPT_HEADER,0); //Change this to a 1 to return headers
 	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER["HTTP_USER_AGENT"]);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
 	 
 	$data = curl_exec($ch);
 	curl_close($ch);
+  $data = xml2array($data);
+  print_r($data);
 	 
-	echo "Data: ". $data . ' end ' ;
-  echo "Code: ". substr($data,0,3) . ' end ' ;
+	//echo "Data: ". $data . ' end ' ;
+  //echo "Code: ". substr($data,0,3) . ' end ' ;
 	// echo $data->postalcodenumber;
 	die();
 	
@@ -72,4 +74,36 @@ function sms_lookup($arg=NULL){
 	drupal_goto($path = 'sms_list', $query = 'op0=1&latitude=' . $latitude . '&longitude=' . $longitude);
 	
 	// die();
+}
+
+function xml2array($xml) {
+        $xmlary = array();
+               
+        $reels = '/<(\w+)\s*([^\/>]*)\s*(?:\/>|>(.*)<\/\s*\\1\s*>)/s';
+        $reattrs = '/(\w+)=(?:"|\')([^"\']*)(:?"|\')/';
+
+        preg_match_all($reels, $xml, $elements);
+
+        foreach ($elements[1] as $ie => $xx) {
+                $xmlary[$ie]["name"] = $elements[1][$ie];
+               
+                if ($attributes = trim($elements[2][$ie])) {
+                        preg_match_all($reattrs, $attributes, $att);
+                        foreach ($att[1] as $ia => $xx)
+                                $xmlary[$ie]["attributes"][$att[1][$ia]] = $att[2][$ia];
+                }
+
+                $cdend = strpos($elements[3][$ie], "<");
+                if ($cdend > 0) {
+                        $xmlary[$ie]["text"] = substr($elements[3][$ie], 0, $cdend - 1);
+                }
+
+                if (preg_match($reels, $elements[3][$ie]))
+                        $xmlary[$ie]["elements"] = xml2array($elements[3][$ie]);
+                else if ($elements[3][$ie]) {
+                        $xmlary[$ie]["text"] = $elements[3][$ie];
+                }
+        }
+
+        return $xmlary;
 }
