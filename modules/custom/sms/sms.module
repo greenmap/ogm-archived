@@ -71,3 +71,84 @@ function sms_lookup($arg=NULL){
 	// die();
 }
 
+/*
+* default sms view 
+*/
+
+function sms_views_default_views() {
+// sms list view _ NOT WORKING - perhaps update location.module?
+// using this for textmarks
+
+  $view = new stdClass();
+  $view->name = 'sms_list';
+  $view->description = '';
+  $view->access = array (
+);
+  $view->view_args_php = '';
+  $view->page = TRUE;
+  $view->page_title = '';
+  $view->page_header = '';
+  $view->page_header_format = '1';
+  $view->page_footer = '';
+  $view->page_footer_format = '1';
+  $view->page_empty = '';
+  $view->page_empty_format = '1';
+  $view->page_type = 'table';
+  $view->url = 'sms_list';
+  $view->use_pager = TRUE;
+  $view->nodes_per_page = '3';
+  $view->sort = array (
+  );
+  $view->argument = array (
+  );
+  $view->field = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => '',
+      'handler' => 'views_handler_field_nodelink',
+      'options' => 'link',
+    ),
+  );
+  $view->filter = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'type',
+      'operator' => 'OR',
+      'options' => '',
+      'value' => array (
+  0 => 'green_site',
+),
+    ),
+    array (
+      'tablename' => 'node',
+      'field' => 'distinct',
+      'operator' => '=',
+      'options' => '',
+      'value' => array (
+  0 => 'distinct',
+),
+    ),
+    array (
+      'tablename' => 'location',
+      'field' => 'proximity_map',
+      'operator' => '5',
+      'options' => '',
+      'value' => 'Array',
+    ),
+  );
+  $view->exposed_filter = array (
+    array (
+      'tablename' => 'location',
+      'field' => 'proximity_map',
+      'label' => '',
+      'optional' => '1',
+      'is_default' => '0',
+      'operator' => '1',
+      'single' => '0',
+    ),
+  );
+  $view->requires = array(node, location);
+  $views[$view->name] = $view;
+  return $views;
+}
