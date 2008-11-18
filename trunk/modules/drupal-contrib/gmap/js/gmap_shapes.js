@@ -1,4 +1,4 @@
-/* $Id: gmap_shapes.js,v 1.1.2.7 2008/06/13 16:25:56 bdragon Exp $ */
+/* $Id: gmap_shapes.js,v 1.1.2.8 2008/10/20 21:02:05 bdragon Exp $ */
 
 /**
  * GMap Shapes
@@ -49,7 +49,14 @@ Drupal.gmap.addHandler('gmap', function(elem) {
       style = obj.vars.styles['line_default'].slice();
     }
     if (shape.style) {
-      style = shape.style.slice();
+      if (typeof shape.style == 'string') {
+        if (obj.vars.styles[shape.style]) {
+          style = obj.vars.styles[shape.style].slice();
+        }
+      }
+      else {
+        style = shape.style.slice();
+      }
     }
     style[0] = '#' + style[0];
     style[1] = Number(style[1]);

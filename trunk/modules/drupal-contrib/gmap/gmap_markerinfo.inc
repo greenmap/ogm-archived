@@ -1,5 +1,5 @@
 <?php
-// $Id: gmap_markerinfo.inc,v 1.1.2.5 2008/05/27 18:21:11 bdragon Exp $
+// $Id: gmap_markerinfo.inc,v 1.1.2.6 2008/07/15 20:12:23 bdragon Exp $
 
 /**
  * @file
@@ -177,7 +177,7 @@ function _gmap_compress_icon_def($iconset) {
     for ($c1=0; $c1<count($iconset); $c1++) {
       $temp = isset($iconset[$c1][$order[$c0]]) ? $iconset[$c1][$order[$c0]] : $nulls[$c0];
       // Ensure that numeric quantities are encoded as ints, not strings.
-      if ($ints[$c0]) {
+      if (isset($ints[$c0])) {
         $temp = (int)$temp;
       }
       $a[$c0][$c1] = $temp;
@@ -199,6 +199,9 @@ function _gmap_compress_icon_def($iconset) {
  * Remove trailing duplicates from an array.
  */
 function _gmap_compress_array(&$arr) {
+  if (empty($arr)) {
+    return;
+  }
   $c = count($arr) - 1;
   // Walk backwards and unset duplicates...
   for ($cval = $arr[$c]; $c>0; $c--) {
