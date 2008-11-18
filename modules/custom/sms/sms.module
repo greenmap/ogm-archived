@@ -42,11 +42,12 @@ function sms_lookup($arg=NULL){
 	curl_setopt($ch, CURLOPT_HEADER,0); //Change this to a 1 to return headers
 	curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER["HTTP_USER_AGENT"]);
 	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	 
 	$data = curl_exec($ch);
 	curl_close($ch);
 
+  
 	
 	//Check our Response code to ensure success
 	if (substr($data,0,3) == "200")
