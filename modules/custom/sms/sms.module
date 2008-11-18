@@ -47,9 +47,9 @@ function sms_lookup($arg=NULL){
 	$data = curl_exec($ch);
 	curl_close($ch);
 	 
-	echo "Data: ". $data;
-	echo $data->postalcodenumber;
-	die();
+	//echo "Data: ". $data;
+	// echo $data->postalcodenumber;
+	// die();
 	
 	//Check our Response code to ensure success
 	if (substr($data,0,3) == "200")
