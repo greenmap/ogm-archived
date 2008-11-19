@@ -10,8 +10,11 @@ function impacts_menu($may_cache){
 	$items = array();
 	if($may_cache){
 	} else {
+		
 		if (arg(0) == 'node' && is_numeric(arg(1))) {
-      $items[] = array(
+		$node = node_load(arg(1));
+		if($node->type == 'green_map'){
+	  $items[] = array(
         'path' 				=> 'node/'. arg(1). '/outcomes', 
         'title' 			=> t('Outcomes'),
         'access' 			=> TRUE,
@@ -20,7 +23,7 @@ function impacts_menu($may_cache){
         'type'    			=> MENU_LOCAL_TASK,
         'weight' 			=> 8
         );
-    }
+    }}
   }
   return $items;
 }    
