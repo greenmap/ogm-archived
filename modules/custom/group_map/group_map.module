@@ -709,7 +709,7 @@ function group_map_block_0_contents() {
 	$infocontent .= '<div class="leftalign">' . '<span class="label">' . t('Team members') . ':</span>&nbsp;' . $num_members . '</div>';
 	$num_comments = db_result(db_query("SELECT count(*) FROM {comments} c, {og_ancestry} og where c.nid = og.nid and og.group_nid = %d and c.status = 0", $node->nid));
 	$infocontent .= '<div class="leftalign">' . '<span class="label">' . t('Comments') . ':</span>&nbsp;' . $num_comments . '</div>';
-
+	$infocontent .= '<div class="rightalign">' . '<span>' . l('more','node/'.$node->nid.'/outcomes') . '</span></div>';
 	$infocontent .= '<hr />';
 	// Need to insert survey on impact
 	// *****
