@@ -54,9 +54,17 @@ function impacts_outcomes_page($mapid) {
 	{
 	$outcomes .= '<hr />';
 	$outcomes .=impacts_comments_list($mapid);
-	$outcomes .= '<hr />';
-	}
+
 	
+	}
+	$res = db_query('SELECT COUNT(vid) AS cnt FROM {content_type_impact}, {og_ancestry} og WHERE og.group_nid = %d AND field_discover_site_value = 1 AND field_site_nid = og.nid', $mapid);
+	$line = db_fetch_object($res);
+	if ($line->cnt > 0) {
+		$count = format_plural($line->cnt, '1 person', '@count people');
+		$outcomes .= '<p id="impacts_stats">' . t('@count discovered green places because of this map. ', array('@count' => $count));
+		
+		$outcomes .= '</p>';
+	}
 	return $outcomes;
 }
   
