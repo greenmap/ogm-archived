@@ -948,3 +948,9 @@ div#l10n-client.hidden {
 div.fivestar-widget-static .star span.on {
 	background-position: center -32px;
 }
+
+/* links on large bubble */
+
+div#siteactions ul {
+  height: auto;
+}
