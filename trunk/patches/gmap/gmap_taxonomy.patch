@@ -1,0 +1,15 @@
+--- gmap_taxonomy.module	Mon Nov 24 16:06:49 2008
++++ gmap_taxonomy.module	Mon Nov 24 15:08:31 2008
+@@ -86,7 +86,11 @@
+ 
+           // Be a helpful module and make the change retroactive.
+           db_query('DELETE FROM {gmap_taxonomy_node} WHERE tid = %d', $array['tid']);
+-          db_query('INSERT INTO {gmap_taxonomy_node} (nid, tid, marker) (SELECT t.nid, t.tid, g.marker FROM {term_node} t INNER JOIN {gmap_taxonomy_term} g ON t.tid = g.tid WHERE t.tid = %d)', $array['tid']);
++          if(module_exists('primary_term')){
++            db_query('INSERT INTO {gmap_taxonomy_node} (nid, tid, marker) (SELECT distinct(n.nid), p.tid, g.marker FROM {primary_term} p JOIN {node} n ON p.vid = n.vid JOIN {gmap_taxonomy_term} g ON p.tid = g.tid WHERE p.tid = %d ORDER BY n.vid)', $array['tid']);
++          } else {
++            db_query('INSERT INTO {gmap_taxonomy_node} (nid, tid, marker) (SELECT t.nid, t.tid, g.marker FROM {term_node} t INNER JOIN {gmap_taxonomy_term} g ON t.tid = g.tid WHERE t.tid = %d)', $array['tid']);
++          }
+         }
+         break;
+       case 'delete':
