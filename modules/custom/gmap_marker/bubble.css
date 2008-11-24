@@ -1,6 +1,7 @@
 #bubble_small {
 	/* small InfoWindow bubble */
 	padding: 5px;
+  max-width: 400px;
 }
 
 #bubble_small_more {
@@ -86,6 +87,7 @@
 	height: 60px;
 	margin-top: 18px;
 	width: 80px;
+  overflow: hidden;
 }
 
 #bubble_media a {
