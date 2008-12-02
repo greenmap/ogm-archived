@@ -108,6 +108,7 @@ span.ogm {
 	margin-bottom: 1em;
 	border: 1px solid #999;
 	font-weight: bold;
+  overflow: hidden;
   }
 
 #bigbuttons li.explore
