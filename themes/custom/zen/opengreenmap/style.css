@@ -684,3 +684,8 @@ div#comment .resizable-textarea textarea {
 	vertical-align: middle;
 	margin-left: 1px;
 }
+
+/* sponsors page */
+#node-2734 img {
+	float: left;
+}
