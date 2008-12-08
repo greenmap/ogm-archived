@@ -954,3 +954,9 @@ div.fivestar-widget-static .star span.on {
 div#siteactions ul {
   height: auto;
 }
+
+/* make stuff the default OGM Green */
+
+.green {
+	color: #8cc63f;
+}
