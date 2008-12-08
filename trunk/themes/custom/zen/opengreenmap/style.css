@@ -688,4 +688,8 @@ div#comment .resizable-textarea textarea {
 /* sponsors page */
 #node-2734 img {
 	float: left;
+	margin-right: 10px
+}
+#node-2734 {
+	max-width: 500px;
 }
