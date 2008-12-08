@@ -530,7 +530,6 @@ div#block-i18n-0 ul, div#block-i18n-0 li {
 /* Impacts tab */
 
 #addimpact {
-	text-align: right;
 	margin-right: 10px;
 	margin-top: 15px;
 }
@@ -555,7 +554,7 @@ div#block-i18n-0 ul, div#block-i18n-0 li {
 	border-color: #cccccc;
 	border-style: solid;
 	border-width: 1px;
-	max-height: 152px;
+	height: 130px;
 	overflow-x: hidden;
 	overflow-y: scroll;
 }
