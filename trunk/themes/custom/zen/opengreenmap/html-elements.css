@@ -292,9 +292,9 @@
 /** horizontal rules **/
   hr
   {
-    height: 0px;
+    /*height: 0px;
     border: none;
-    background: transparent url(../images/tab-bar.png) repeat-x scroll left bottom;
+    background: transparent url(../images/tab-bar.png) repeat-x scroll left bottom;*/
   }
 
 /** forms **/
