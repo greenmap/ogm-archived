@@ -692,3 +692,8 @@ div#comment .resizable-textarea textarea {
 #node-2734 {
 	max-width: 600px;
 }
+
+/* simple pages - hide admin menu */
+body.simple #admin-menu {
+    display: none;
+}
