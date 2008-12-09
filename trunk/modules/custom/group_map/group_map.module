@@ -548,6 +548,8 @@ function group_map_block_1_contents() {
 	// $recent_maps_view = views_get_view('recent_maps');
 	// $explorecontent .= views_build_view('block', $recent_maps_view, null, false, '5'); 
 	
+	// load js to hide search box
+	drupal_add_js(drupal_get_path('module', 'group_map'). '/group_map.js');
 	 
 	// embed the regular search block
 	$explorecontent .= '<h3>' . t('Search This Map') . '</h3>';
@@ -599,7 +601,7 @@ function group_map_block_1_contents() {
 
 function group_map_block_0_contents() {
 	// load the javascript (not needed any more)
-	// drupal_add_js(drupal_get_path('module', 'group_map'). '/group_map.js');
+	drupal_add_js(drupal_get_path('module', 'group_map'). '/group_map.js');
 	// drupal_add_css(drupal_get_path('module', 'fivestar'). '/fivestar.css', $type = 'module');
 	// drupal_add_css(drupal_get_path('module', 'fivestar'). '/widgets/small/small.css', $type = 'module');
 	
