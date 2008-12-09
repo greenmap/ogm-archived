@@ -44,7 +44,11 @@ print($nid);
 
 
       </div></div> <!-- /#content-inner, /#content -->
+    <?php if ($closure_region): ?>
+      <div id="closure-blocks"><?php print $closure_region; ?></div>
+    <?php endif; ?>
 
+    <?php print $closure; ?>
 </div></div>
 </body>
 </html>
