@@ -1,4 +1,4 @@
-﻿/**
+/**
  * by tom_o_t - aka Thomas Turnbull for Green Map System
  * Javascript for the map 
  */
@@ -7,6 +7,12 @@
 /**
  * links to the tabs in the navigation
  */
+ 
+/**
+*   Decided not to use this function
+*/
+ 
+/* 
 $(function() { 
 	$('<span class="more"><a href="#">more >><\/a><\/span>').appendTo('#trimmed-description').find('a').click(function() {
 		// $('#tabs-tabskey > ul').tabs('select', 2);
@@ -20,6 +26,7 @@ $(function() {
 	
 
 });
+*/
 
 
 /**

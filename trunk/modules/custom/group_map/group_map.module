@@ -598,8 +598,8 @@ function group_map_block_1_contents() {
 
 
 function group_map_block_0_contents() {
-	// load the javascript
-	drupal_add_js(drupal_get_path('module', 'group_map'). '/group_map.js');
+	// load the javascript (not needed any more)
+	// drupal_add_js(drupal_get_path('module', 'group_map'). '/group_map.js');
 	// drupal_add_css(drupal_get_path('module', 'fivestar'). '/fivestar.css', $type = 'module');
 	// drupal_add_css(drupal_get_path('module', 'fivestar'). '/widgets/small/small.css', $type = 'module');
 	
@@ -639,12 +639,13 @@ function group_map_block_0_contents() {
 	//$keyform = views_filters($view);
 	//drupal_process_form('views_filters', $keyform);
 	
-	$description = $node->field_description[0]['value'];
+	// $description = $node->field_description[0]['value'];
 	
 	// set up trimming
-	$trimmed_description = truncate_utf8($description, 100, $wordsafe = TRUE, $dots = FALSE);
-	// group_map.js contains code that adds 'more' link to js-enabled browsers to go to info tab
-	$trimmed_description = '<span id="trimmed-description">' . $trimmed_description . '&nbsp;' . '</span>';
+	// $trimmed_description = truncate_utf8($description, 100, $wordsafe = TRUE, $dots = FALSE);
+	// $trimmed_description = '<span id="trimmed-description">' . $trimmed_description . '&nbsp;' . '</span>';
+	$trimmed_description = '<span id="trimmed-description">' . t('Toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />' . t('Coming soon: lines and areas') . '</span>';
+
 	$description = content_format('field_description',$node->field_description[0], 'default', $node);
 
 
