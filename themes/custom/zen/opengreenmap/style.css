@@ -480,7 +480,7 @@ div.block div.node p {
 
 /* have to hide this - for some reason search block embedded doesn't work with out the real block on the page */
 div#block-search-0 {
-	display: none;
+	/* display: none; */
 }
 
 /** end of new **/ 
