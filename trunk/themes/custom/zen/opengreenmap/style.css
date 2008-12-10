@@ -19,9 +19,10 @@
 body.front div#content div.node
   {
 	background-image: url(images/homepage/worldmap-faded.png);
-	height: 540px;
 	background-repeat: repeat-x;
   background-position: left bottom;
+  height:460px;
+  padding-top:1px;
   }
   
 /*
