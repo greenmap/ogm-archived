@@ -21,6 +21,7 @@ body.front div#content div.node
 	background-image: url(images/homepage/worldmap-faded.png);
 	height: 540px;
 	background-repeat: repeat-x;
+  background-position: left bottom;
   }
   
 /*
@@ -84,7 +85,7 @@ span.ogm {
 	background: #fff;
 	margin-left: auto;
 	margin-right: auto;	
-	margin-top: 2em;
+	margin-top: 1em;
 	max-width: 700px;
 	border: 1px solid #999999;
   }
