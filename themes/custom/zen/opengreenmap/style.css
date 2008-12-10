@@ -175,6 +175,12 @@ span.ogm {
 	padding: 0 3em 2em 2em;
 }
 
+
+/* donate button on homepage */
+#block-block-5 {
+  text-align: center;
+}
+
 /* floats the filter for the view to the right */
 /* currently just hiding the exposed filter on the map */
 
