@@ -702,6 +702,6 @@ div#comment .resizable-textarea textarea {
 }
 
 /* simple pages - hide admin menu */
-body.simple #admin-menu {
+body.simple #admin-menu, body.simple #closure-blocks {
     display: none;
 }
