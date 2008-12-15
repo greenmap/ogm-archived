@@ -214,7 +214,7 @@ function createMarker(point, opts,nid) {
 				maxContentDiv.innerHTML = '<iframe frameborder="0" src="' + Drupal_base_path + 'node/' + nid + '/simple" width="670" height="360"></iframe>';
 				GlobalMap.openInfoWindowHtml(point, html.responseText,
 				{maxContent: maxContentDiv,
-				maxTitle: 'Details'});
+				maxTitle: ''});
 
 				// java script code for the stars rating
 				// jQuery(function(){jQuery('input.fivestar-submit').hide();});
