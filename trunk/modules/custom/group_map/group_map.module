@@ -662,9 +662,7 @@ function group_map_block_0_contents() {
 
 
 	// set up the content for the 'info' tab
-	// ***** THIS IS WRONG - should use theme_username here - not everyone can always view mapmaker profiles
-	//$infocontent .= '<p><span class="label">' . t('Mapmaker') . ':</span>&nbsp;' . l($node->name, 'user/' . $node->uid) . '</p>';
-	
+
 	// get images 
 	
 	if($node->field_map_photo[0]['fid']) {
@@ -691,6 +689,10 @@ function group_map_block_0_contents() {
 	// get map info
 	if($node->field_map_in_greenhouse[0]['url']){
 		$infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Map Profile'), $node->field_map_in_greenhouse[0]['url']) . '</div>';
+	}
+  // download link
+	if($node->field_map_pdf[0]['value']){
+		$infocontent .= '<div><span class="label">' . t('Download') . ':</span>&nbsp;' . l(t('Map'), $node->field_map_pdf[0]['value']) . '</div>';
 	}
 	
 	// Need to add a link to download locally made pdf/image
