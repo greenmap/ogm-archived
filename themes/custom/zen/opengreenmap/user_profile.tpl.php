@@ -36,7 +36,7 @@ while(list($key,$group) = each($user->og_groups)){
 				echo l(t(" Edit map"),'node/' . $key. "/edit");
 			}
 			if($allowed_adder){
-				echo l(t(" Add green site"),'node/add/green_site',null,'gids[]='.$key);
+				echo l(t(" Add Green Site"),'node/add/green_site',null,'gids[]='.$key);
 			}
 	
 	echo	"<h3>".t("Sites:")."</h3>";
