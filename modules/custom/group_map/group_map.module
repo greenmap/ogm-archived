@@ -566,7 +566,7 @@ function group_map_block_1_contents() {
 	// add the themes filter
 	
 	$legend = display_key(taxonomy_get_tree(1));
-	$legend .= "<p>Welcome to the Open Green Map!</p>
+	$legend .= "<p><strong>Welcome to the Open Green Map!</strong></p>
  
 				<p>This view combines all the sites on every map at this platform. Zoom in to see more sites (or click Maps in the top menu to explore each separately). </p>
 				
