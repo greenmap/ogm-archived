@@ -565,7 +565,13 @@ function group_map_block_1_contents() {
 	
 	// add the themes filter
 	
-	
+	$legend = display_key(taxonomy_get_tree(1));
+	$legend .= "<p>Welcome to the Open Green Map!</p>
+ 
+				<p>This view combines all the sites on every map at this platform. Zoom in to see more sites (or click Maps in the top menu to explore each separately). </p>
+				
+				<p>Use the Icons Tab to explore the map by toggling different icons.</p>
+				<p>Find out more by clicking Info - it introduces each map on this platform.</p>";
 
   // this sets up the tabs for the key
   $form = array();
@@ -579,7 +585,7 @@ function group_map_block_1_contents() {
 	'#weight' => '-6',
 	// GH: display the key with all icons 
 	// TT: We could cache this bit as it rarely changes ***** TODO
-	'#content' => display_key(taxonomy_get_tree(1)),
+	'#content' => $legend,
   );
   $form['tabskey']['tab2'] = array(
     '#type' => 'tabpage',
