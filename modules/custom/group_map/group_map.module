@@ -652,7 +652,7 @@ function group_map_block_0_contents() {
 	// set up trimming
 	// $trimmed_description = truncate_utf8($description, 100, $wordsafe = TRUE, $dots = FALSE);
 	// $trimmed_description = '<span id="trimmed-description">' . $trimmed_description . '&nbsp;' . '</span>';
-	$trimmed_description = '<span id="trimmed-description">' . t('Toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />' . t('Coming soon: lines and areas') . '</span>';
+	$trimmed_description = '<span id="trimmed-description">' . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />' . t('Coming soon: lines and areas') . '</span>';
 
 	$description = content_format('field_description',$node->field_description[0], 'default', $node);
 
