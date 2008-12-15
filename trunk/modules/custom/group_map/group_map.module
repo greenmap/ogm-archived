@@ -480,7 +480,7 @@ function display_key($icons)
 	drupal_add_css(drupal_get_path('module', 'group_map').'/key.css');
 	
 	$key = '<form>';
-	$key .= '<h3>' . t('Green Map Icons') . '</h3>';
+	$key .= '<h3>' . t('Green Map Legend') . '</h3>';
 	$key .= '<ul id="keys">';
 	// iterate through all icons for the map
 	foreach ($icons as $genre) {
