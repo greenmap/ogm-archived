@@ -39,7 +39,7 @@ while(list($key,$group) = each($user->og_groups)){
 				echo l(t(" Add Green Site"),'node/add/green_site',null,'gids[]='.$key);
 			}
 	
-	echo	"<h3>".t("Sites:")."</h3>";
+	echo	"<h3>".t("Green Sites:")."</h3>";
 	echo	$site_list;
 	echo	"<h3>".t("Recent Comments:")."</h3>";
 			$comment_view = views_get_view('comments_recent_dashboard');
