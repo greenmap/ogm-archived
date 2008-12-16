@@ -1,16 +1,8 @@
 <?php
-// $Id: emfield.install,v 1.1 2007/06/26 01:15:26 aaron Exp $
+// $Id: emfield.install,v 1.2 2008/02/17 19:05:51 aaron Exp $
 
 /**
  * Implementation of hook_install().
  */
 function emfield_install() {
 }
-
-function _emfield_update_reset_cache() {
-  $ret = array();
-  $ret[] = update_sql("DELETE FROM {cache_content}");
-  $ret[] = update_sql("DELETE FROM {cache_views}");
-  return $ret;
-}
-
