@@ -143,7 +143,7 @@ if($node->field_involved[0]['value'] == 'yes') {
 	$multimedia = '';
 
 	// add custom  JavaScript
-	drupal_add_js(drupal_get_path('theme', 'zen').'/opengreenmap/multimedia.js');
+	drupal_add_js(drupal_get_path('theme', 'zen').'/opengreenmap/multimedia.js', 'theme', 'footer');
 	$media = array();
 	// add site video
 	if (!empty($node->field_video[0]['view'])) {
