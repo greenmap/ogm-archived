@@ -212,7 +212,7 @@ if($node->field_involved[0]['value'] == 'yes') {
 			$multimedia .= '<ul>';
 				for ($i=0; $i<count($media); $i++) {
 					// add to the javascript array
-					$js .= 'multimedia_main[\'multimedia_item_'.$i.'\'] = \''.addslashes($media[$i]['view']).'\';';
+					$js .= 'multimedia_main[\'multimedia_item_'.$i.'\'] = \''.str_replace(array("\r\n", "\n", "\r"), '', addslashes($media[$i]['view'])).'\';';
 					$js .= 'multimedia_description[\'multimedia_item_'.$i.'\'] = \''.addslashes(outputMediaDescription($media[$i], $name)).'\';';
 					// display a custom thumbnail
 					if ($media[$i]['type'] == 'video') {
