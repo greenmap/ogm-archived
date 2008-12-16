@@ -190,7 +190,7 @@ if($node->field_involved[0]['value'] == 'yes') {
 
 	$multimedia .= '<div id="multimedia_main">';
 		if (empty($media))
-			$multimedia .= '<div id="multimedia_main_na">' . t(' Be the first to add a photo or video about this site! Each image expresses a personal perspective. ') . '<a href="'.base_path().'node/add/photo?theme=simple&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.$node->title.'">' . t('photo') . '</a> ' . t('or') . ' <a href="'.base_path().'node/add/video?theme=simple&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title).'">' . t('video') . '</a>!</div>';
+			$multimedia .= '<div id="multimedia_main_na">' . t(' Be the first to add a ') . '<a href="'.base_path().'node/add/photo?theme=simple&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.$node->title.'">' . t('photo') . '</a> ' . t('or') . ' <a href="'.base_path().'node/add/video?theme=simple&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title).'">' . t('video') . '</a>' . t( ' about this site! Each image expresses a personal perspective. ') . '</div>';
 		else
 			// display first video
 			$multimedia .= $media[0]['view'];
