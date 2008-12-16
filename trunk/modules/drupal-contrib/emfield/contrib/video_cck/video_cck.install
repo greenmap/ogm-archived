@@ -1,5 +1,5 @@
 <?php
-// $Id: video_cck.install,v 1.4 2007/10/08 15:45:55 aaron Exp $
+// $Id: video_cck.install,v 1.6 2008/05/12 04:10:54 alexua Exp $
 
 /**
  * Implementation of hook_install().
@@ -44,9 +44,8 @@ function video_cck_update_2() {
 }
 
 function _video_cck_update_reset_cache() {
-  $ret = array();
+  $ret = _video_cck_update_reset_cache_views();
   $ret[] = update_sql("DELETE FROM {cache_content}");
-  $ret[] = update_sql("DELETE FROM {cache_views}");
   return $ret;
 }
 
@@ -57,9 +56,9 @@ function video_cck_update_3() {
   $ret = array();
   foreach (emfield_system_list('video_cck') as $provider) {
     // TODO: this will need some attention when we upgrade to d6
-    $test = variable_get('video_cck_allow_' . $provider->name, NULL);
+    $test = variable_get('video_cck_allow_'. $provider->name, NULL);
     if (isset($test)) {
-      variable_set('emfield_' . $module . '_allow_' . $provider->name, variable_get('video_cck_allow_' . $provider->name, true));
+      variable_set('emfield_'. $module .'_allow_'. $provider->name, variable_get('video_cck_allow_'. $provider->name, true));
     }
   }
   $ret[] = array(
@@ -81,9 +80,9 @@ function video_cck_update_4() {
   $ret = array();
   foreach (emfield_system_list('video_cck') as $provider) {
     // TODO: this will need some attention when we upgrade to d6
-    $test = variable_get('video_cck_allow_' . $provider->name, NULL);
+    $test = variable_get('video_cck_allow_'. $provider->name, NULL);
     if (isset($test)) {
-      variable_set('video_cck_allow_' . $provider->name, NULL);
+      variable_set('video_cck_allow_'. $provider->name, NULL);
     }
   }
   $ret[] = array(
@@ -100,5 +99,18 @@ function video_cck_update_4() {
 function video_cck_update_5() {
   $ret = _video_cck_update_reset_cache();
   $ret[] = update_sql("DELETE FROM {cache}");
+  return $ret;
+}
+
+function video_cck_update_6() {
+  $ret = _video_cck_update_reset_cache_views();
+  return $ret;
+}
+
+// I'd like this to be conditional, so it only runs if they don't have views installed.
+// however, module_exists doesn't actually work in the update scripts.
+function _video_cck_update_reset_cache_views() {
+  $ret = array();
+  $ret[] = update_sql("DELETE FROM {cache_views}");
   return $ret;
 }
