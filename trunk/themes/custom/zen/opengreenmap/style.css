@@ -589,6 +589,10 @@ div#block-i18n-0 ul, div#block-i18n-0 li {
 	width: 320px;
 }
 
+div.multimedia {
+  height: 250px;
+}
+
 div#comment .resizable-textarea textarea {
 	height: 50px;
 }
