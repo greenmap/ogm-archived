@@ -135,10 +135,18 @@ function group_map_form_alter($form_id, &$form){
 	
 	if($form_id == 'green_map_node_form') {
 
+  
+       /* $form['form_info'] = array(
+			 '#value' => '<pre>'. print_r($form, TRUE) .'</pre>'
+		   ); */
+      
+      
 		   // first off, hide the preview button as it doesn't work
 		   unset($form['preview']);
 		   
-		   // $form['i18n'] = ''; // hiding the i18n stuff for now - multilingual settings for taxonomy
+       // Changing language section to be friendlier
+		   $form['i18n']['#title'] = t('Language Settings'); 
+		   $form['i18n']['language']['#description'] = t('If your language is not on the list, leave this blank.'); 
 		   
 		   $form['field_icons_to_use']['tid']['#description'] = t('Choose which Green Map Icons can be used on this map. 
 		   														These are the only icons that that will appear on your map and its legend.
