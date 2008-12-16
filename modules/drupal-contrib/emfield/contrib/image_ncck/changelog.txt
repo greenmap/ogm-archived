@@ -1,4 +1,24 @@
-/* $Id: changelog.txt,v 1.6 2007/10/08 15:45:55 aaron Exp $ */
+/* $Id: changelog.txt,v 1.14 2008/08/05 17:11:39 alexua Exp $ */
+2008-08-04 
+#281334 - a_c_m added classes to images
+
+2008-07-02
+ * Simplify regex for image_ncck_flickr_extract, to eventually allow better photoset imports (a_c_m).
+
+2008-05-20
+#254028 - bangpound fixed regex problem with Picassa to support new address for images
+
+2008-02-19
+fix error in flickr when importing (args)
+
+2008-02-17
+add provider views handlers
+
+2007-12-18
+alerts when flickr api is missing (when uploading flickr content)
+
+2007-11-07
+add support for picasa -- thanks alexua!
 
 2007-10-08
 make sure xml in data knows whether an array is returned for tags
