@@ -1,5 +1,5 @@
 <?php
-// $Id: myspace.inc,v 1.3 2007/09/06 22:18:25 aaron Exp $
+// $Id: myspace.inc,v 1.6 2008/05/12 04:10:54 alexua Exp $
 
 define('VIDEO_CCK_MYSPACE_MAIN_URL', 'http://vids.myspace.com/index.cfm?fuseaction=vids.videos');
 
@@ -33,24 +33,24 @@ function video_cck_myspace_request($code, $cacheable = TRUE) {
  *  this scrapes the thumbnail from the video page and caches it
  */
 function _video_cck_myspace_scrape_thumbnail($video, $cached = true) {
-  if (!$cached || !$cache = cache_get('myspace:thumbnail:' . $video, 'cache')) {
+  if (!$cached || !$cache = cache_get('myspace:thumbnail:'. $video, 'cache')) {
     $vidid = substr($video, 0, 10);
-    $vidlink = 'http://vids.myspace.com/index.cfm?fuseaction=vids.individual&videoid='.$vidid.'';
+    if ($str = file_get_contents("http://vids.myspace.com/index.cfm?fuseaction=vids.individual&videoid=$vidid")) {
+      // grab videos channel-id first
+      $channel_id = preg_replace('/.*tvchanid=([0-9]+);.*/si', '\1', $str);
 
-    $str=file_get_contents($vidlink);
-    if ($str) {
-//       $regex = '@src="((?=/' . $vidid . '_thumb1\.jpg)[^"]*)"@';
-//       if (preg_match($regex, $str, $matches)) {
-//         $thumbnail = $matches[1];
-//         cache_set('myspace:thumbnail:' . $video, 'cache', $thumbnail, time() + 3600);
-//       }print_r($regex);print_r($matches);
+      if (is_numeric($channel_id)) {
+        // now from channel-page grab videos thumbnail
+        $str2 = file_get_contents("http://vids.myspace.com/index.cfm?fuseaction=vids.viewVideos&channelid=$channel_id");
 
-      $pos = strpos($str, $vidid."_thumb1.jpg")-44;
-      $post = strpos($str, $vidid."_thumb1.jpg")-$pos;
-      $picturelink = substr($str,$pos,$post);
-      if ($picturelink) {
-        $thumbnail = $picturelink.$vidid."_thumb1.jpg";
-        cache_set('myspace:thumbnail:' . $video, 'cache', $thumbnail, time() + 3600);
+        if ($str2) {
+          $picturelink = preg_replace('@.*href="[^"]+'. $vidid .'"[^>]+><img[^>]+src="([^"]+)".*@si', '\1',  $str2);
+
+          if ($picturelink) {
+            $thumbnail = $picturelink;
+            cache_set('myspace:thumbnail:'. $video, 'cache', $thumbnail, time() + 3600);
+          }
+        }
       }
     }
   }
@@ -61,25 +61,39 @@ function _video_cck_myspace_scrape_thumbnail($video, $cached = true) {
 }
 
 function video_cck_myspace_extract($embed) {
+  // <a href="http://myspacetv.com/index.cfm?fuseaction=vids.individual&videoid=14686340">What's That Floating In The Water Part 1</a><br><embed src="http://lads.myspace.com/videos/vplayer.swf" flashvars="m=14686340&v=2&type=video" type="application/x-shockwave-flash" width="430" height="346"></embed><br><a href="http://myspacetv.com/index.cfm?fuseaction=vids.addToProfileConfirm&videoid=14686340&title=What's That Floating In The Water Part 1">Add to My Profile</a> | <a href="http://myspacetv.com/index.cfm?fuseaction=vids.home">More Videos</a>
   return array(
-    '@src="myspace\.com/index.cfm\?fuseaction=vids\.individual&videoid=([^"]*)"@i',
-    '@myspace\.com/index\.cfm\?fuseaction=vids\.individual&videoid=(.*)@i',
+    '@src="myspace\.com/index.cfm\?fuseaction=vids\.individual&videoid=([^&"]+)@i',
+    '@myspace\.com/index\.cfm\?fuseaction=vids\.individual&videoid=([^&"]+)@i',
+    '@src="myspacetv\.com/index.cfm\?fuseaction=vids\.individual&videoid=([^&"]+)"@i',
+    '@myspacetv\.com/index\.cfm\?fuseaction=vids\.individual&videoid=([^&"]+)@i',
   );
 }
 
 function video_cck_myspace_video_link($video_code) {
-  return 'http://vids.myspace.com/index.cfm?fuseaction=vids.individual&videoid=' . $video_code;
+  return 'http://vids.myspace.com/index.cfm?fuseaction=vids.individual&videoid='. $video_code;
 }
 
 function theme_video_cck_myspace_flash($embed, $width, $height) {
+  static $count = 0;
   if ($embed) {
-    $output .= '<embed src="http://lads.myspace.com/videos/vplayer.swf" flashvars="m=' . $embed . '&type=video" type="application/x-shockwave-flash" width="' . $width . '" height="' . $height . '"></embed>';
+    $output .= "    <object type=\"application/x-shockwave-flash\" height=\"$height\" width=\"$width\" data=\"http://lads.myspace.com/videos/vplayer.swf\" id=\"emfield-video-myspace-$count\" >
+      <param name=\"movie\" value=\"http://lads.myspace.com/videos/vplayer.swf\" />
+      <param name=\"allowScriptAcess\" value=\"sameDomain\"/>
+      <param name=\"quality\" value=\"best\"/>
+      <param name=\"bgcolor\" value=\"#FFFFFF\"/>
+      <param name=\"scale\" value=\"noScale\"/>
+      <param name=\"salign\" value=\"TL\"/>
+      <param name=\"FlashVars\" value=\"m=$embed&type=video\" />
+      <param name=\"wmode\" value=\"transparent\" />
+    </object>\n";
   }
+  $count++;
   return $output;
 }
 
 function video_cck_myspace_thumbnail($field, $item, $formatter, $node, $width, $height) {
-  return _video_cck_myspace_scrape_thumbnail($item['value'], false);
+  return _video_cck_myspace_scrape_thumbnail($item['value']);
 }
 
 function video_cck_myspace_video($embed, $width, $height, $field, $item) {
