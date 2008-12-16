@@ -1,4 +1,84 @@
-/* $Id: changelog.txt,v 1.8 2007/10/17 17:28:02 aaron Exp $ */
+/* $Id: changelog.txt,v 1.43 2008/08/07 19:00:01 aaron Exp $ */
+
+August 2008
+-----------
+ * Add support for swfobject to youtube, taking swfobject_api into account (aaron).
+
+2008-06-23
+----------
+ * Add TODO for thumbnails for spike.tv (aaron).
+ * Add placeholder ifilm.inc to help with updates after ifilm-spike switch (aaron).
+
+2008-05-28
+utilize $options arrays in other theme functions
+
+2008-05-27
+allow w/h (and other) overrides to thumbnails
+
+2008-05-23
+#261999 - chirale fixed XHTML validation errors in YouTube.inc
+
+2008-05-10
+#208963 - robomalo + darrenmUK  added Vimeo support
+#249255 - ekes added MRSS support to multiple files
+#170799 - ekes added support for google video URLs from '.com.au', 'co.uk' etc.
+#199189 - vsnguyen + Rysk added support for Veoh
+#253389 - Rysk updated Veoh support + added providers guba and imeem
+
+2008-04-30
+change 'thumbnail' text on widget settings form
+
+2008-04-29
+dailymotion thumbnails
+
+2008-04-07
+support for blip.tv's new player
+added $options=array() to themes for future expansion of options
+
+2008-03-14
+#216796/jhedstrom - extended brightcove support
+ifilm.inc was changed to spike.inc to reflect the change in site name and url, and the provider file was fixed.
+
+2008-03-21
+add support for last.fm videos
+
+2008-02-22
+#217339/fjen fix myspace thumbnails
+myspace now is also myspacetv.com
+fix myspace to use object instead of embed
+
+2008-02-17
+removed goleft support -- no user contributed videos, and no thumbnails.
+add provider views handlers
+
+2008-02-16
+#178299/dalin - modified patch to allow filter by video present
+
+2008-02-09
+#211529 - MrKatz fixed the revver url
+
+2008-02-07
+support for goleft.tv
+
+2008-01-06
+grab random youtube thumbnail
+#200435/jhedstrom - default thumbnail when video thumbnail not available
+
+2008-01-04
+remove bliptv debugging printout on node submission
+dailymotion autoplay support
+added dailymotion support
+#181095:alley youtube thumbnails w/o api or requests
+#177593:anonymous5190 parse new google embed code
+add <param name=\"wmode\" value=\"transparent\" /> to youtube & google
+integrate with colorpicker module; add border options for youtube
+#201855;jhedstrom add color options for youtube player
+#184980 cache youtube thumbnails (cache was accidentally left off while debugging)
+#173780;alexua - fix 'Cannot find server or DNS Error' in ie6 for youtube
+add support for emthumb, so that custom thumbnails may be stored and displayed for videos
+
+2007-12-07
+change url for brightcove to .tv
 
 2007-10-17
 #179454 fix youtube's new &rel=1 url structure
