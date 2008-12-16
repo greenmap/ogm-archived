@@ -1,10 +1,12 @@
 <?php
-// $Id: youtube.inc,v 1.4 2007/10/17 17:28:02 aaron Exp $
+// $Id: youtube.inc,v 1.18 2008/08/07 19:00:01 aaron Exp $
 
 define('VIDEO_CCK_YOUTUBE_MAIN_URL', 'http://www.youtube.com/');
 define('VIDEO_CCK_YOUTUBE_API_INFO', 'http://youtube.com/dev');
 define('VIDEO_CCK_YOUTUBE_API_APPLICATION_URL', 'http://www.youtube.com/my_profile_dev');
 define('VIDEO_CCK_YOUTUBE_REST_ENDPOINT', 'http://www.youtube.com/api2_rest');
+define('VIDEO_CCK_YOUTUBE_COLOR1_DEFAULT', '#FFFFFF');
+define('VIDEO_CCK_YOUTUBE_COLOR2_DEFAULT', '#CCCCCC');
 
 /**
  * hook video_cck_PROVIDER_info
@@ -21,9 +23,10 @@ function video_cck_youtube_info() {
   $name = t('YouTube');
   $features = array(
     array(t('Autoplay'), t('Yes'), ''),
-    array(t('RSS Attachment'), t('No'), ''),
+    array(t('RSS Attachment'), t('Yes'), ''),
     array(t('Show related videos'), t('Yes'), t('This is embedded in the video itself when enabled; currently not available with other providers. Set the feature above.')),
-    array(t('Thumbnails'), t('Yes'), t('May not currently resize thumbnails. Must have an API key for thumbnails at the moment, although research is underway to determine an alternative to this. Set your API key above.')),
+    array(t('Thumbnails'), t('Yes'), t('')),
+    array(t('Custom player colors'), t('Yes'), t('You may customize the player\'s skin by choosing your own colors, and/or border in that setting field set.')),
   );
   return array(
     'provider' => 'youtube',
@@ -47,32 +50,140 @@ function video_cck_youtube_settings() {
     '#default_value' => variable_get('video_cck_youtube_show_related_videos', 0),
     '#description' => t('If checked, then when playing a video from YouTube, users may hover over the video to see thumbnails & links to related videos.'),
   );
+  $api_desc = module_exists('youtube_api') ? t('Please make sure to enter your YouTube API key here.') : t('You will have access to more advanced features if you install and enable the !youtube_api module.', array('!youtube_api' => l(t('YouTube API'), 'http://drupal.org/project/youtube_api')));
   $form['youtube']['api'] = array(
     '#type' => 'fieldset',
     '#title' => t('YouTube API'),
-    '#description' => t('If you wish to be able to display YouTube thumbnails automatically, you will first need to apply for an API Developer Key from the !youtube. Note that you do not need this key to display YouTube videos themselves.', array('!youtube' => l('YouTube Developer Profile page', VIDEO_CCK_YOUTUBE_API_APPLICATION_URL, array('target' => '_blank')))),
-    '#collapsible' => true,
-    '#collapsed' => true,
+    '#description' => $api_desc,
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
-  $form['youtube']['api']['video_cck_youtube_api_key'] = array(
+//   $form['youtube']['api'] = youtube_api_admin_form();
+//   $form['youtube']['api'] = array(
+//     '#type' => 'fieldset',
+//     '#title' => t('YouTube API'),
+//     '#description' => t('The API is no longer required. However, there may be future features requiring it (such as the ability to display otherwise private videos). You will first need to apply for an API Developer Key from the !youtube. Note that you do not need this key to display YouTube videos or their thumbnails.', array('!youtube' => l('YouTube Developer Profile page', VIDEO_CCK_YOUTUBE_API_APPLICATION_URL, array('target' => '_blank')))),
+//     '#collapsible' => TRUE,
+//     '#collapsed' => TRUE,
+//   );
+//   $form['youtube']['api']['video_cck_youtube_api_key'] = array(
+//     '#type' => 'textfield',
+//     '#title' => t('YouTube API Key'),
+//     '#default_value' => variable_get('video_cck_youtube_api_key', ''),
+//     '#description' => t('Please enter your YouTube Developer Key here.'),
+//   );
+//   $form['youtube']['api']['video_cck_youtube_api_secret'] = array(
+//     '#type' => 'textfield',
+//     '#title' => t('YouTube API Secret'),
+//     '#default_value' => variable_get('video_cck_youtube_api_secret', ''),
+//     '#description' => t('If you have a secret for the YouTube API, enter it here.'),
+//   );
+  $form['youtube']['colors'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Embedded Video Player Colors'),
+    '#description' => t('If allowed, these two colors, in hexidecimal form (#RRGGBB), will be used to skin the YouTube player.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  $form['youtube']['colors']['video_cck_youtube_show_colors'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Override player colors'),
+    '#default_value' => variable_get('video_cck_youtube_show_colors', FALSE),
+  );
+  $form['youtube']['colors']['video_cck_youtube_show_border'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display border around player'),
+    '#default_value' => variable_get('video_cck_youtube_show_border', FALSE),
+  );
+  $form['youtube']['colors']['video_cck_youtube_colors_color1'] = array(
     '#type' => 'textfield',
-    '#title' => t('YouTube API Key'),
-    '#default_value' => variable_get('video_cck_youtube_api_key', ''),
-    '#description' => t('Please enter your YouTube Developer Key here.'),
+    '#title' => t('Color 1'),
+    '#default_value' => variable_get('video_cck_youtube_colors_color1', VIDEO_CCK_YOUTUBE_COLOR1_DEFAULT),
   );
-  $form['youtube']['api']['video_cck_youtube_api_secret'] = array(
+  $form['youtube']['colors']['video_cck_youtube_colors_color2'] = array(
     '#type' => 'textfield',
-    '#title' => t('YouTube API Secret'),
-    '#default_value' => variable_get('video_cck_youtube_api_secret', ''),
-    '#description' => t('If you have a secret for the YouTube API, enter it here.'),
+    '#title' => t('Color 2'),
+    '#default_value' => variable_get('video_cck_youtube_colors_color2', VIDEO_CCK_YOUTUBE_COLOR2_DEFAULT),
   );
+  if (module_exists('colorpicker')) {
+    $form['youtube']['colors']['video_cck_youtube_colors_color1']['#type'] = 'colorpicker_textfield';
+    $form['youtube']['colors']['video_cck_youtube_colors_color1']['#colorpicker'] = 'colorpicker_1';
+    $form['youtube']['colors']['video_cck_youtube_colors_color2']['#type'] = 'colorpicker_textfield';
+    $form['youtube']['colors']['video_cck_youtube_colors_color2']['#colorpicker'] = 'colorpicker_2';
+    $form['youtube']['colors']['colorpicker_1'] = array(
+      '#type' => 'colorpicker',
+      '#title' => t('Color 1 picker'),
+      '#description' => t('Click in this textfield to start picking your color'),
+    );
+    $form['youtube']['colors']['colorpicker_2'] = array(
+      '#type' => 'colorpicker',
+      '#title' => t('Color 2 picker'),
+      '#description' => t('Click in this textfield to start picking your color'),
+    );
+  }
+  else {
+    $form['youtube']['colors']['#description'] .= t(' The !colorpicker, if active, gives an easy way to select these colors.', array('!colorpicker' => l(t('Colorpicker module'), 'http://drupal.org/project/colorpicker')));
+  }
   return $form;
+}
+
+/**
+ * hook emfield_PROVIDER_data
+ *
+ * provides an array to be serialised and made available with $item elsewhere
+ */
+function video_cck_youtube_data($field, $item) {
+  $data = array();
+  // create some 'field' version control
+  $data['video_cck_youtube_version'] = 1;
+
+  // be nice to make this an array for changing media:thumbnail?
+  $data['thumbnail']['url'] = 'http://img.youtube.com/vi/'. $item['value'] .'/0.jpg';
+
+  // gather info about the item
+  // RSS / MRSS feeds with the item would have enough info
+  // alternative try getting the minimum from an http get
+  $url = 'http://youtube.com/v/'. $item['value'];
+  $response = emfield_request_header('youtube', $url);
+
+  if ($response->code == 200) {
+    // probably shouldn't give the 303 path
+    $data['flash']['url'] = $url;
+    $data['flash']['size'] = $response->headers['Content-Length'];
+    $data['flash']['mime'] = $response->headers['Content-Type'];
+  }
+
+  return $data;
+}
+
+/**
+ *
+ */
+function video_cck_youtube_rss($item, $teaser = NULL) {
+  if ($item['value']) {
+    if ($item['data']['video_cck_youtube_data_version'] >= 1) {
+      $data = $item['data'];
+    }
+    else {
+      $data = video_cck_youtube_data(NULL, $item);
+    }
+
+    $file = array();
+    if (is_array($data['flash'])) {
+      $file['filepath'] = $data['flash']['url'];
+      $file['filesize'] = $data['flash']['size'];
+      $file['filemime'] = $data['flash']['mime'];
+    }
+    $file['thumbnail']['filepath'] = $data['thumbnail']['url'];
+
+    return $file;
+  }
 }
 
 /**
  * this is a wrapper for video_cck_request_xml that includes youtube's api key
  */
-function video_cck_youtube_request($method, $args = array(), $cached = false) {
+function video_cck_youtube_request($method, $args = array(), $cached = TRUE) {
   $args['dev_id'] = trim(variable_get('video_cck_youtube_api_key', ''));
   $args['method'] = $method;
 
@@ -103,6 +214,7 @@ function video_cck_youtube_extract($embed = '') {
   return array(
     '@youtube\.com/v/([^"\&]+)@i',
     '@youtube\.com/watch\?v=([^"\&]+)@i',
+     '@youtube\.com/\?v=([^"\&]+)@i',
   );
 }
 
@@ -115,19 +227,74 @@ function video_cck_youtube_extract($embed = '') {
  *    a string containing the URL to view the video at the original provider's site
  */
 function video_cck_youtube_embedded_link($video_code) {
-  return 'http://www.youtube.com/watch?v=' . $video_code;
+  return 'http://www.youtube.com/watch?v='. $video_code;
+}
+
+function video_cck_youtube_convert_color($color = NULL) {
+  if ($color{0} == '#') {
+    return substr($color, 1);
+  }
+  return $color;
 }
 
 /**
- * the embedded flash displaying the youtube video
+ * The embedded flash displaying the youtube video.
  */
-function theme_video_cck_youtube_flash($embed, $width, $height, $autoplay) {
+function theme_video_cck_youtube_flash($embed, $width, $height, $autoplay, $options = array()) {
+  static $count;
   if ($embed) {
-    if ($autoplay) {
-      $autoplay_value = '&autoplay=1';
+    $related = isset($options['related']) ? $options['related'] : variable_get('video_cck_youtube_show_related_videos', 0);
+    $related = "rel=$related";
+    $autoplay = isset($options['autoplay']) ? $options['autoplay'] : $autoplay;
+    $autoplay_value = $autoplay ? '&autoplay=1' : '';
+    $show_colors = isset($options['show_colors']) ? $options['show_colors'] : variable_get('video_cck_youtube_show_colors', FALSE);
+    if ($show_colors) {
+      $color1 = isset($options['color1']) ? $options['color1'] : variable_get('video_cck_youtube_colors_color1', VIDEO_CCK_YOUTUBE_COLOR1_DEFAULT);
+      $color2 = isset($options['color2']) ? $options['color2'] : variable_get('video_cck_youtube_colors_color2', VIDEO_CCK_YOUTUBE_COLOR2_DEFAULT);
+      $colors='&color1=0x'. video_cck_youtube_convert_color($color1) .'&color2=0x'. video_cck_youtube_convert_color($color2);
     }
-    $related = variable_get('video_cck_youtube_show_related_videos', 0);
-    $output .= "<object height=\"$height\" width=\"$width\"><param name=\"movie\" value=\"http://www.youtube.com/v/$embed\"><param name=\"wmode\" value=\"transparent\"><embed src=\"http://www.youtube.com/v/$embed&rel=$related" . $autoplay_value . "\" type=\"application/x-shockwave-flash\" wmode=\"transparent\" height=\"$height\" width=\"$width\"></object>";
+    $border = isset($options['border']) ? $options['border'] : variable_get('video_cck_youtube_show_border', FALSE);
+    $border = $border ? '&border=1' : '';
+    $enablejsapi = isset($options['enablejsapi']) ? $options['enablejsapi'] : variable_get('video_cck_youtube_enablejsapi', TRUE);
+    $enablejsapi = $enablejsapi ? '&enablejsapi=1&playerapiid=ytplayer' : '';
+    $allowScriptAcess = $enablejsapi ? 'always' : 'sameDomain';
+    $id = isset($options['id']) ? $options['id'] : 'video-cck-youtube-flash-'. (++$count);
+    $div_id = isset($options['div_id']) ? $options['div_id'] : 'video-cck-youtube-flash-wrapper-'. $count;
+    $url = "http://www.youtube.com/v/$embed&amp;$related$autoplay_value$colors$border$enablejsap";
+    if (variable_get('emfield_swfobject', FALSE) && (module_exists('swfobject_api') || variable_get('emfield_swfobject_location', ''))) {
+      if (module_exists('swfobject_api')) {
+        $params['width'] = $width;
+        $params['height'] = $height;
+        $params['div_id'] = $id;
+        $output .= theme('swfobject_api', $url, $params, $vars, $id);
+      }
+      else {
+        drupal_add_js(variable_get('emfield_swfobject_location', ''));
+        $output .= <<<FLASH
+          <div id="$div_id">
+            Sorry, you need to install flash to see this content.
+          </div>
+          <script language="JavaScript" type="text/javascript">
+            var so = new SWFObject("$url", "$id", "$width", "$height", "7");
+            so.write("$div_id");
+          </script>
+FLASH;
+      }
+    }
+    else {
+      $output .= <<<FLASH
+        <div id="$div_id"><object type="application/x-shockwave-flash" height="$height" width="$width" data="$url" id="$id">
+          <param name="movie" value="$url" />
+          <param name="allowScriptAcess" value="sameDomain"/>
+          <param name="quality" value="best"/>
+          <param name="bgcolor" value="#FFFFFF"/>
+          <param name="scale" value="noScale"/>
+          <param name="salign" value="TL"/>
+          <param name="FlashVars" value="playerMode=embedded" />
+          <param name="wmode" value="transparent" />
+        </object></div>
+FLASH;
+    }
   }
   return $output;
 }
@@ -145,8 +312,19 @@ function theme_video_cck_youtube_flash($embed, $width, $height, $autoplay) {
  */
 function video_cck_youtube_thumbnail($field, $item, $formatter, $node, $width, $height) {
   $youtube_id = $item['value'];
-  $request = video_cck_youtube_request('youtube.videos.get_details', array('video_id' => $youtube_id));
-  $tn = $request['THUMBNAIL_URL'][0];
+  // old code to grab thumbnail via api
+//   $request = video_cck_youtube_request('youtube.videos.get_details', array('video_id' => $youtube_id));
+//   $tn = $request['THUMBNAIL_URL'][0];
+
+  // if we have a large thumbnail size, then get the larger version available.
+  if ($width > 130 || $height > 97) {
+    $tn = "http://img.youtube.com/vi/$youtube_id/0.jpg";
+  }
+  else {
+    // youtube offers 3 thumbnails. select one randomly.
+    $rand = rand(0, 2) + 1;
+    $tn = "http://img.youtube.com/vi/$youtube_id/$rand.jpg";
+  }
   return $tn;
 }
 

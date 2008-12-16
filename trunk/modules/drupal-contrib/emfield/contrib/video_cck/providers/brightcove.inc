@@ -1,7 +1,7 @@
 <?php
-// $Id: brightcove.inc,v 1.3 2007/09/06 22:18:25 aaron Exp $
+// $Id: brightcove.inc,v 1.6 2008/05/12 04:10:54 alexua Exp $
 
-define('VIDEO_CCK_BRIGHTCOVE_MAIN_URL', 'http://www.brightcove.com/');
+define('VIDEO_CCK_BRIGHTCOVE_MAIN_URL', 'http://www.brightcove.tv/');
 
 /**
  * hook video_cck_PROVIDER_info
@@ -51,15 +51,16 @@ function video_cck_brightcove_settings() {
  */
 function video_cck_brightcove_extract($embed = '') {
   return array(
-    //<embed src='http://admin.brightcove.com/destination/player/player.swf' bgcolor='#FFFFFF' flashVars='allowFullScreen=true&initVideoId=686946261&servicesURL=http://www.brightcove.com&viewerSecureGatewayURL=https://www.brightcove.com&cdnURL=http://admin.brightcove.com&autoStart=false' base='http://admin.brightcove.com' name='bcPlayer' width='486' height='412' allowFullScreen='true' allowScriptAccess='always' seamlesstabbing='false' type='application/x-shockwave-flash' swLiveConnect='true' pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash'></embed>
-    '@brightcove\.com/destination/player/player\.swf\' bgcolor\=\'\#FFFFFF\' flashVars\=\'allowFullScreen\=true\&initVideoId\=([^\&]*)\&@i',
+    //<embed src='http://www.brightcove.tv/playerswf' bgcolor='#FFFFFF' flashVars='allowFullScreen=true&initVideoId=1155177265&servicesURL=http://www.brightcove.tv&viewerSecureGatewayURL=https://www.brightcove.tv&cdnURL=http://admin.brightcove.com&autoStart=false' base='http://admin.brightcove.com' name='bcPlayer' width='425' height='350' allowFullScreen='true' allowScriptAccess='always' seamlesstabbing='false' type='application/x-shockwave-flash' swLiveConnect='true' pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash'></embed>
+
+    '@brightcove\.tv/playerswf\' bgcolor\=\'\#FFFFFF\' flashVars\=\'initVideoId\=([^\&]*)\&@i',
 
     // was:
     // &initVideoId=753308735&
     // '@\&initVideoId=([^\&]*)\&@',
 
-    // http://www.brightcove.com/title.jsp?title=753308735
-    '@brightcove\.com/title\.jsp\?title=(.*)@i',
+    // http://www.brightcove.tv/title.jsp?title=753308735
+    '@brightcove\.tv/title\.jsp\?title=(.*)@i',
   );
 }
 
@@ -72,7 +73,7 @@ function video_cck_brightcove_extract($embed = '') {
  *    a string containing the URL to view the video at the original provider's site
  */
 function video_cck_brightcove_video_link($video_code) {
-  return 'http://www.brightcove.com/title.jsp?title=' . $video_code;
+  return 'http://www.brightcove.tv/title.jsp?title='. $video_code;
 }
 
 /**
@@ -81,7 +82,7 @@ function video_cck_brightcove_video_link($video_code) {
 function theme_video_cck_brightcove_flash($embed, $width, $height, $autoplay) {
   if ($embed) {
     $autostart = $autoplay ? 'autoStart=true' : 'autoStart=false';
-    $output .= "<embed src=\"http://admin.brightcove.com/destination/player/player.swf\" bgcolor=\"#FFFFFF\" flashVars=\"allowFullScreen=true&initVideoId=$embed&servicesURL=http://www.brightcove.com&viewerSecureGatewayURL=https://www.brightcove.com&cdnURL=http://admin.brightcove.com&$autostart\" base=\"http://admin.brightcove.com\" name=\"bcPlayer\" width=\"$width\" height=\"$height\" allowFullScreen=\"true\" allowScriptAccess=\"always\" seamlesstabbing=\"false\" type=\"application/x-shockwave-flash\" swLiveConnect=\"true\" pluginspage=\"http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash\"></embed>";
+    $output .= "<embed src='http://www.brightcove.tv/playerswf' bgcolor='#FFFFFF' flashVars='initVideoId=$embed&servicesURL=http://www.brightcove.tv&viewerSecureGatewayURL=https://www.brightcove.tv&cdnURL=http://admin.brightcove.com&$autostart' base='http://admin.brightcove.com' name='bcPlayer' width='$width' height='$height' allowFullScreen='true' allowScriptAccess='always' seamlesstabbing='false' type='application/x-shockwave-flash' swLiveConnect='true' pluginspage='http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash'></embed>";
   }
   return $output;
 }
