@@ -78,7 +78,7 @@ function dashboard_menu($may_cache){
 			if  ($GLOBALS['user']->og_groups[arg(1)] || $access) {
 		 		$items[] = array(
 					'path' 				=> 'node/'. arg(1). '/dashboard', 
-					'title' 			=> t('Mapboard'),
+					'title' 			=> t('Map Dashboard'),
 					'access' 			=> $member,
 					'callback' 			=> 'dashboard_leadmapmaker',
       				'callback arguments'=> array(arg(1)),
@@ -87,7 +87,7 @@ function dashboard_menu($may_cache){
 	  			);
 				$items[] = array(
 					'path' 				=> 'node/'. arg(1). '/members', 
-					'title' 			=> t('Members'),
+					'title' 			=> t('Map Team'),
 					'access' 			=> $access,
 					'callback' 			=> 'dashboard_members_redirect',
       				'callback arguments'=> array(arg(1)),
