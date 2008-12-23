@@ -574,12 +574,11 @@ function group_map_block_1_contents() {
 	// add the themes filter
 	
 	$legend = display_key(taxonomy_get_tree(1));
-	$legend .= "<p><strong>Welcome to the Open Green Map!</strong></p>
+	$legend .= "<p><strong>Explore our World View!</strong></p>
  
-				<p>This view combines all the sites on every map at this platform. Zoom in to see more sites (or click Maps in the top menu to explore each separately). </p>
-				
-				<p>Use the Icons Tab to explore the map by toggling different icons.</p>
-				<p>Find out more by clicking Info - it introduces each map on this platform.</p>";
+				<p>This map view starts with 2 sites from every Open Green Map. Zoom in to see more (or click Maps above to explore each map separately). </p>				
+				<p>At Legend, click categories, then toggle different icons to filter your view. Use the Search Tab to jump to different world locations. Each map's introduction will appear on the Info Tab. </p>
+				<p>Find out more by clicking About, and take part in this social mapping platform!</p>";
 
   // this sets up the tabs for the key
   $form = array();
