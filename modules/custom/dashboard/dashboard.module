@@ -124,7 +124,7 @@ function dashboard_add($nid){
 function dashboard_leadmapmaker($nid){
 	drupal_add_js("misc/collapse.js");
 	$node = node_load($nid);
-	drupal_set_title(t('Mapboard for %group', array('%group' => $node->title)));
+	drupal_set_title(t('Map Dashboard for %group', array('%group' => $node->title)));
 	
 	//echo $nid;
 	/* ************************************ *\
@@ -147,7 +147,7 @@ function dashboard_leadmapmaker($nid){
 	
 	
 	
-	$content .= "<p>" . t('Use this page to manage sites on the map. You can also use the <a href="@advanced-mapboard">advanced Mapboard</a>, which lets you filter and search.', array('@advanced-mapboard' => url('advanced/' . $nid))) . "</p>";
+	$content .= "<p>" . t('Use this page to manage sites on the map. You can also use the <a href="@advanced-mapboard">advanced Map Dashboard</a>, which lets you filter and search.', array('@advanced-mapboard' => url('advanced/' . $nid))) . "</p>";
 	$content .=	"<h3>".t("Published Sites:")."</h3>";
 	$content .= "<div style='overflow:auto;max-height:150px;'>";
 				$view = views_get_view('dashboard_published_sites');
