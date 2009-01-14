@@ -93,7 +93,7 @@ if($node->field_free_entry[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/free.png" alt="' . t('free entry') . '" title="' . t('free entry') . '">' . '</li>';
 }
 if($node->field_involved[0]['value'] == 'yes') { 
-	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/insider_icon.gif" alt="' . t('the person who mapped this is involved in this site') . '">' . '</li>';
+	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/insider_icon.gif" alt="' . t('the person who mapped this is involved in this site') . '" title="' . t('the person who mapped this is involved in this site') . '">' . '</li>';
 }
 
 	$contents .= '<div id="iconsandstars">';
