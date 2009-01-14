@@ -56,7 +56,10 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
   <?php
   // prepare content for MAIN tab
   if($node->field_image[0]['value'] > '') {
-  	$media_thumb = theme('image_ncck_image_thumbnail', $node->field_image, $node->field_image[0], 'image_thumbnail', $node);
+    $image = $node->field_image;
+    $image['widget']['thumbnail_width'] = '100';
+    
+  	$media_thumb = theme('image_ncck_image_thumbnail', $image, $node->field_image[0], 'image_thumbnail', $node);
   } elseif($node->field_video[0]['value'] > '') {
   	$media_thumb = theme('video_cck_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
   }
