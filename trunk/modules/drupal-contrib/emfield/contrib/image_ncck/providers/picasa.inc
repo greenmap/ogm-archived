@@ -46,7 +46,7 @@ function image_ncck_picasa_request($data = array(), $kind = '', $cached = TRUE) 
 
 function image_ncck_picasa_data($field, $item) {
   $data = array();
-  if (preg_match('!picasaweb\.google\.com/([^/]*)/([^/]*)/photo\#(.*)!i', $item['embed'], $matches)) {
+  if (preg_match('!picasaweb\.google\.com/([^/]*)/([^/]*)\#(.*)!i', $item['embed'], $matches)) {
     $data = array(
       'userid' => $matches[1],
       'album' => $matches[2],
@@ -69,7 +69,7 @@ function image_ncck_picasa_data($field, $item) {
 
 function image_ncck_picasa_extract($embed = '') {
   // http://picasaweb.google.com/kaos777/YearlyKos/photo#5119063656501095090
-  if (preg_match('!picasaweb\.google\.com/([^/]*)/([^/]*)/photo\#(.*)!i', $embed, $matches)) {
+  if (preg_match('!picasaweb\.google\.com/([^/]*)/([^/]*)\#(.*)!i', $embed, $matches)) {
     return $matches[3];
   }
   return array();
@@ -87,7 +87,7 @@ function image_ncck_picasa_embedded_link($code, $data) {
   $userid = $data['userid'];
   $album= $data['album'];
   $photoid= $data['photoid'];
-  return "http://picasaweb.google.com/$userid/$album/photo#$photoid";
+  return "http://picasaweb.google.com/$userid/$album#$photoid";
 }
 
 /**
