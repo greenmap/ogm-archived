@@ -115,6 +115,8 @@ function _image_ncck_photobucket_scrape_image_title($url) {
     return $title[$url];
   }
 
-  $html = file_get_contents($url);
+  // $html = file_get_contents($url);
+  $rs = drupal_http_request($url);
+  $html = $rs->data;
   return $title[$url] = preg_match('@<span id="photoTitle">(.+?)</span>@is', $html, $matches)? $matches[1] : '';
 }
