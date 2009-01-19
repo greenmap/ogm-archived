@@ -412,7 +412,8 @@ div.taximage img {
 /* end of tabs */
 
 div.fivestar {
-	display: inline;
+	display: block;
+  margin-top: 10px;
 }
 
 div.siteicons {
