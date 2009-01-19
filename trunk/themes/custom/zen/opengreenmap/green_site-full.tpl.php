@@ -63,8 +63,33 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
   } elseif($node->field_video[0]['value'] > '') {
   	$media_thumb = theme('video_cck_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
   }
+	
+// RM $siteicons code moved up along with icons display code ////////////	
+	if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
+	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/accessible.png" alt="' . t('accessible') . '" title="' . t('accessible') . '">' . '</li>';
+}
+if($node->field_child_friendly[0]['value'] == 1) { 
+	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/youth.png" alt="' . t('youth friendly') . '" title="' . t('youth friendly') . '">' . '</li>';
+}
+if($node->field_appointment_needed[0]['value'] == 1) { 
+	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/appointment.png" alt="' . t('appointment necessary - call first') . '" title="' . t('appointment necessary - call first') . '">' . '</li>';
+}
+if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
+	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/transport.png" alt="' . t('accessible by public transport') . '" title="' . t('accessible by public transport') . '">' . '</li>';
+}
+if($node->field_free_entry[0]['value'] == 1) { 
+	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/free.png" alt="' . t('free entry') . '" title="' . t('free entry') . '">' . '</li>';
+}
+if($node->field_involved[0]['value'] == 'yes') { 
+	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/insider_icon.gif" alt="' . t('the person who mapped this is involved in this site') . '" title="' . t('the person who mapped this is involved in this site') . '">' . '</li>';
+}
+
   $contents = '<div id="mediathumbs">' . $media_thumb ; 
   
+  $contents .= '<div class="fivestar">';//RM relocated here
+			$contents .= fivestar_widget_form($node);
+		$contents .= '</div>';
+	
   	$contents .= '<div id="siteactions">';
   		$contents .= '<ul>';
   			$contents .= '<li>' . format_plural($comment_count, '1 comment', '@count comments') . '</li>';
@@ -72,12 +97,21 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
   			$contents .= '<li>' . l(t('flag this'),'abuse/report/node/' . $node->nid . '/simple') . '</li>';
   		$contents .= '</ul>';
   	$contents .= '</div>';  
-  
+   
+	 if($siteicons > '') {  // RM - relocated here
+		$contents .= '<div class="siteicons">';
+			$contents .= '<ul class="links">';
+				$contents .= $siteicons;
+			$contents .= '</ul>';
+		$contents .= '</div>';
+	}
+	
   $contents .= '</div>'; // end of media & actions
   
   $contents .= content_format('field_details', $field_details[0]);
-
-	if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
+	
+/* // RM moved all this up so as sit in right side ///////
+if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/accessible.png" alt="' . t('accessible') . '"  title="' . t('accessible') . '">' . '</li>';
 }
 if($node->field_child_friendly[0]['value'] == 1) { 
@@ -107,7 +141,7 @@ if($node->field_involved[0]['value'] == 'yes') {
 		$contents .= '<div class="fivestar">';
 			$contents .= fivestar_widget_form($node);
 		$contents .= '</div>';
-	$contents .= '</div>';
+	$contents .= '</div>'; // */
 	$contents .= '<div class="meta">';
   $img_alt = t('This site was added by an official Mapmaker');
   $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="'  . $img_alt . '" title="'  . $img_alt . '"/>';
