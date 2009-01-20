@@ -100,24 +100,27 @@ function output_connections($node)
 {
 	$js = '';
 	$js .= 'var c_content = [];';
-
+  
+  // build a variable containing the embedded view of all related sites
 	$list_related_sites = views_get_view('list_related_sites');
 	$list_related_sites->args[0]=$node->primary_term->tid;
-	$rel = views_build_view('block', $list_related_sites, $list_related_sites->args, FALSE, 10);
+	$rel = views_build_view('page', $list_related_sites, $list_related_sites->args, FALSE, 10);
 	$rel = str_replace('<a href=', '<a target="_parent" href=', $rel);
 	$rel = escape_js($rel);
-
+  
+  // build up the javascript containing the content for each of the connections tabs
 	$js .= 'c_content["Links"] = "not available yet";';
-	$js .= 'c_content["Related Sites"] = "' . $rel . '";';
+	$js .= 'c_content["Related Sites"] = "' . $rel . '";'; // could add in another embedded view based on similar sites on this map. Current embedded view is sites on all maps with the same primary icon
 	$js .= 'c_content["Related Green Maps"] = "not available yet";';
-	$js .= 'c_content["Events"] = "not available yet";';
-	$js .= 'c_content["Contacts at this Site"] = "not available yet";';
-	$js .= 'c_content["Getting Here"] = "' . escape_js(content_format('field_public_transport_directiod', $node->field_public_transport_directio[0])) . '";';
+	$js .= 'c_content["Events"] = "not available yet";'; // just delete this line
+	$js .= 'c_content["Contacts at this Site"] = "not available yet";'; // pull in here the phone number, address, web address, email, etc. - but only fields that have a value. - something like if(!empty(content_format('field_phone_ [etc]
+	$js .= 'c_content["Getting Here"] = "' . escape_js(content_format('field_public_transport_directio', $node->field_public_transport_directio[0])) . '";';
 	$js .= 'function replace_connections_content(item) {';
 	$js .= 'document.getElementById("connections_content").innerHTML = c_content[item];';
 	$js .= '}';
 	drupal_add_js($js, 'inline');
-
+  
+  // create the div to contain all the connections stuff
 	$ret = '';
 	$ret .= '<div id="connections_container">';
 		$ret .= '<div id="connections_menu">';
