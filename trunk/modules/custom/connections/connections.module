@@ -103,7 +103,7 @@ function output_connections($node)
 
 	$list_related_sites = views_get_view('list_related_sites');
 	$list_related_sites->args[0]=$node->primary_term->tid;
-	$rel = views_build_view('embedd', $list_related_sites, $list_related_sites->args, views_build_view, 10);
+	$rel = views_build_view('block', $list_related_sites, $list_related_sites->args, FALSE, 10);
 	$rel = str_replace('<a href=', '<a target="_parent" href=', $rel);
 	$rel = escape_js($rel);
 
@@ -112,7 +112,7 @@ function output_connections($node)
 	$js .= 'c_content["Related Green Maps"] = "not available yet";';
 	$js .= 'c_content["Events"] = "not available yet";';
 	$js .= 'c_content["Contacts at this Site"] = "not available yet";';
-	$js .= 'c_content["Getting Here"] = "' . escape_js(content_format('field_public_transport_directio', $node->field_public_transport_directio[0])) . '";';
+	$js .= 'c_content["Getting Here"] = "' . escape_js(content_format('field_public_transport_directiod', $node->field_public_transport_directio[0])) . '";';
 	$js .= 'function replace_connections_content(item) {';
 	$js .= 'document.getElementById("connections_content").innerHTML = c_content[item];';
 	$js .= '}';
