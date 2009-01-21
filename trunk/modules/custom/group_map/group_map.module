@@ -695,7 +695,7 @@ function group_map_block_0_contents() {
 	}
 	// get map info
 	if($node->field_map_in_greenhouse[0]['url']){
-		$infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Map Profile'), 'http://www.greenmap.org/greenhouse/' . $node->field_map_in_greenhouse[0]['url']) . '</div>';
+		$infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Map Profile'), 'http://www.greenmap.org/greenhouse/node' . $node->field_map_in_greenhouse[0]['url']) . '</div>';
 	}
   // download link
 	if($node->field_map_pdf[0]['value']){
