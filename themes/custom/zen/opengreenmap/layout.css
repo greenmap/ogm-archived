@@ -119,6 +119,11 @@
     float: left;
   }
   
+  #header_advert  .block
+  {
+    margin-bottom: 0;
+  }
+  
   #logo-title .maptitle
   {
     float: left;
