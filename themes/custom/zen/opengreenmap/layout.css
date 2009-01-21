@@ -113,6 +113,18 @@
   {
     clear: both; /* Clear the logo */
   }
+  
+  #header_advert 
+  {
+    float: left;
+  }
+  
+  #logo-title .title
+  {
+    float: left;
+    margin-right: 20px;
+  }
+  
 
 /** main (container for everything else) **/
   #main
