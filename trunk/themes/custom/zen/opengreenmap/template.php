@@ -89,8 +89,8 @@ zen_add_print_css(path_to_subtheme() .'/print.css');
  * @return
  *   An array of regions.
  */
-/* -- Delete this line if you want to use this function
-function STARTERKIT_regions() {
+
+function opengreenmap_regions() {
   return array(
     'left' => t('left sidebar'),
     'right' => t('right sidebar'),
@@ -100,6 +100,7 @@ function STARTERKIT_regions() {
     'header' => t('header'),
     'footer' => t('footer'),
     'closure_region' => t('closure'),
+    'header_advert' => t('header advert'),
   );
 }
 // */

@@ -48,9 +48,9 @@ if ($_GET['isSimple']) {
     <div id="header"><div id="header-inner" class="clear-block">
       
 	  
-	  <?php if ($header): ?>
+      <?php if ($header): ?>
         <div id="header-blocks">
-		  <?php print $header; ?>
+          <?php print $header; ?>
         </div> <!-- /#header-blocks -->
       <?php endif; ?>
 	  
@@ -86,9 +86,15 @@ if ($_GET['isSimple']) {
 		  <?php endif; ?>
 
 
-          <?php if ($site_slogan): ?>
-            <div id='site-slogan'><?php print $site_slogan; ?></div>
-          <?php endif; ?>
+      <?php if ($site_slogan): ?>
+        <div id='site-slogan'><?php print $site_slogan; ?></div>
+      <?php endif; ?>
+      
+      <?php if ($header_advert): ?>
+        <div id="header_advert">
+          <?php print $header_advert; ?>
+        </div> <!-- /#header-advert -->
+      <?php endif; ?>
 
         </div> <!-- /#logo-title -->
       <?php endif; ?>
