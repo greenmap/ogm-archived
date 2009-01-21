@@ -119,10 +119,15 @@
     float: left;
   }
   
-  #logo-title .title
+  #logo-title .maptitle
   {
     float: left;
     margin-right: 20px;
+  }
+  
+  #logo-title #location 
+  {
+    float: left;
   }
   
 
