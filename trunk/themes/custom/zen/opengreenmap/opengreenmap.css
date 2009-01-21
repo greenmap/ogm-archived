@@ -195,6 +195,7 @@
 
   #content-area /* Wrapper for the actual page content */
   {
+		padding-top: 10px;
   }
 
   .pager /* A list of page numbers when more than 1 page of content is available */
@@ -281,7 +282,7 @@
 /** Drupal nodes **/
   .node /* Node wrapper */
   {
-  	padding: 10px;
+  	padding: 0; /*10px*/
   }
   
   body.simple .node /* for simple theme */
@@ -774,12 +775,16 @@
     margin: 0.4em 0;
   }
 
-  .form-submit /* The submit button */
+	.form-submit /* The submit button - RM - reduce submit buttona  */
   {
+		font-size: 0.86em;
+		margin: 0;
+		padding:0;
   }
 
-  .container-inline .form-submit
+  .container-inline .form-submit /* search submit button width - RM  */
   {
+		width: 50px;
   }
 
   .tips /* Tips for Drupal's input formats */
@@ -789,6 +794,12 @@
     font-size: 0.9em;
   }
 
+	input#edit-search-block-form-keys /** search form needs to be smaller - RM 1/15/09 **/
+	{ 
+		width: 110px;
+	}
+	
+	
 /** Drupal admin tables **/
   /* We overrode these styles in html-elements.css, but restore them for the
    * admin section of the site.
@@ -946,7 +957,7 @@ div#l10n-client.hidden {
 /* rating star */
 
 div.fivestar-widget-static .star span.on {
-	background-position: center -32px;
+	background-position: center -28px; /* was -32px */
 }
 
 /* links on large bubble */
@@ -959,4 +970,39 @@ div#siteactions ul {
 
 .green {
 	color: #8cc63f;
+}
+
+/* ************ map lists styles * RM added 12/08 **************************** */
+
+.view-content th, .view-content td, .view-content th, .view-content td
+{
+	padding: 0 4px;
+}
+
+.view-content tr.even, .view-content tr.even
+{
+	background-color: #eee;  /* Drupal core uses a #eee background */
+}
+
+.view-content  tr.odd, .view-content tr.odd
+{
+	background-color: #fff;  /* Drupal core uses a #eee background */
+}
+
+.view-content .view-cell-header, .view-content .view-cell-header  
+{
+	background-color: #8CC63F;
+}
+
+.view-content td.view-field.view-field-node-title, .view-content  td.view-field.view-field-node-title
+{
+}
+
+.view-content td.view-field.view-field-node-data-field-country-field-country-value, .view-content td.view-field.view-field-node-data-field-country-field-country-value
+{
+	text-transform: uppercase;
+}
+
+.view-content td.view-field.view-field-og-post-count, .view-content td.view-field.view-field-og-post-count
+{
 }
