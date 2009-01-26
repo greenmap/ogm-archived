@@ -366,7 +366,7 @@ div.taximage img {
     background: url(images/tab-left.png) no-repeat left -38px;  	
   }
   
-  div#tabs-tabs ul {
+  div#tabs-tabs ul.tabs {
 	height: 2em;
   }
 
