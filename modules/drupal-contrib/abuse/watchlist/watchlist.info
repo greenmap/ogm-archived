@@ -1,0 +1,12 @@
+; $Id: watchlist.info,v 1.4 2008/03/17 09:07:40 jaydub Exp $
+name = Watchlist
+description = "Allows nodes and comments to be automatically marked into a pending pile and so extension of the abuse module"
+package = Administration
+dependencies = abuse
+
+
+; Information added by drupal.org packaging script on 2008-03-28
+version = "5.x-1.0-beta"
+project = "abuse"
+datestamp = "1206714902"
+

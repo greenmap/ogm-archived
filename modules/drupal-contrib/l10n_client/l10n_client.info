@@ -1,0 +1,9 @@
+; $Id: l10n_client.info,v 1.1.2.4 2007/12/04 10:58:47 jareyero Exp $
+name = Localization client
+description = Provides on-page localization
+dependencies = locale
+; Information added by drupal.org packaging script on 2008-10-22
+version = "5.x-1.1"
+project = "l10n_client"
+datestamp = "1224707721"
+
