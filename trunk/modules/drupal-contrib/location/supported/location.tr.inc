@@ -1,5 +1,5 @@
 <?php
-// $Id: location.tr.inc,v 1.2 2006/03/08 06:53:39 dww Exp $
+// $Id: location.tr.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Turkey
 
@@ -86,5 +86,3 @@ function location_province_list_tr() {
     'YOZ' => "Yozgat",
     'ZON' => "Zonguldak");
 }
-
-?>

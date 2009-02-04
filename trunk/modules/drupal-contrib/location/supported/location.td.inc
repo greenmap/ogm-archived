@@ -1,5 +1,5 @@
 <?php
-// $Id: location.td.inc,v 1.2 2006/03/08 06:53:39 dww Exp $
+// $Id: location.td.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Chad
 
@@ -19,5 +19,3 @@ function location_province_list_td() {
     'SA' => "Salamat",
     'TA' => "Tandjile");
 }
-
-?>

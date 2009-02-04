@@ -1,5 +1,5 @@
 <?php
-// $Id: location.ph.inc,v 1.2 2006/03/08 06:53:39 dww Exp $
+// $Id: location.ph.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Philippines
 
@@ -84,5 +84,3 @@ function location_province_list_ph() {
     'ZSU' => "Zamboanga del Sur",
     'ZSI' => "Zamboanga Sibugay");
 }
-
-?>

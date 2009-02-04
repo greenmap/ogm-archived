@@ -1,5 +1,5 @@
 <?php
-// $Id: location.jo.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.jo.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Jordan
 
@@ -17,5 +17,3 @@ function location_province_list_jo() {
     'MN' => "Ma'an",
     'MD' => "Madaba");
 }
-
-?>

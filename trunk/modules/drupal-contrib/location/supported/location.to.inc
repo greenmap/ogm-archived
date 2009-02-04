@@ -1,5 +1,5 @@
 <?php
-// $Id: location.to.inc,v 1.2 2006/03/08 06:53:39 dww Exp $
+// $Id: location.to.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Tonga
 
@@ -8,5 +8,3 @@ function location_province_list_to() {
     'T' => "Tongatapu",
     'V' => "Vava'u");
 }
-
-?>

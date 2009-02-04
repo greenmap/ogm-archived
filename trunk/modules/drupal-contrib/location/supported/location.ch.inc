@@ -1,5 +1,5 @@
 <?php
-// $Id: location.ch.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.ch.inc,v 1.6 2008/01/24 09:00:02 bdragon Exp $
 
 // Switzerland
 
@@ -27,9 +27,7 @@ function location_province_list_ch() {
     'TI' => "Ticino",
     'VD' => "Vaud",
     'VS' => "Valais",
-    'NE' => "Neuchâtel",
+    'NE' => "Neuchï¿½tel",
     'GE' => "Geneva",
     'JU' => "Jura");
 }
-
-?>

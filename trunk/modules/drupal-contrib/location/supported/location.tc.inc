@@ -1,5 +1,5 @@
 <?php
-// $Id: location.tc.inc,v 1.2 2006/03/08 06:53:39 dww Exp $
+// $Id: location.tc.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Turks and Caicos Islands
 
@@ -19,5 +19,3 @@ function location_province_list_tc() {
     'PR' => "Providenciales",
     'WC' => "West Caicos");
 }
-
-?>

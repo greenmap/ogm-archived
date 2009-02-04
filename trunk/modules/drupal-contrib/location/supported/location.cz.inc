@@ -1,5 +1,5 @@
 <?php
-// $Id: location.cz.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.cz.inc,v 1.6 2008/01/24 09:00:02 bdragon Exp $
 
 // Czech Republic
 
@@ -19,5 +19,3 @@ function location_province_list_cz() {
     'US' => "Usti nad Labem Region (Ustecky kraj)",
     'ZL' => "Zlin Region (Zlinsky kraj)");
 }
-
-?>

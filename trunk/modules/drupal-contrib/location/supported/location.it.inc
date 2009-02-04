@@ -1,10 +1,11 @@
 <?php
-// $Id: location.it.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.it.inc,v 1.7 2008/02/04 02:05:32 bdragon Exp $
 
 // Italy
 
 function location_province_list_it() {
-  return array('AG' => "Agrigento",
+  return array(
+    'AG' => "Agrigento",
     'AL' => "Alessandria",
     'AN' => "Ancona",
     'AO' => "Aosta",
@@ -13,6 +14,7 @@ function location_province_list_it() {
     'AT' => "Asti",
     'AV' => "Avellino",
     'BA' => "Bari",
+    'BT' => "Barletta-Andria-Trani",
     'BL' => "Belluno",
     'BN' => "Benevento",
     'BG' => "Bergamo",
@@ -24,6 +26,7 @@ function location_province_list_it() {
     'CA' => "Cagliari",
     'CL' => "Caltanissetta",
     'CB' => "Campobasso",
+    'CI' => "Carbonia-Iglesias",
     'CE' => "Caserta",
     'CT' => "Catania",
     'CZ' => "Catanzaro",
@@ -34,10 +37,11 @@ function location_province_list_it() {
     'KR' => "Crotone",
     'CN' => "Cuneo",
     'EN' => "Enna",
+    'FM' => "Fermo",
     'FE' => "Ferrara",
     'FI' => "Firenze",
     'FG' => "Foggia",
-    'FO' => "Forlì-Cesena",
+    'FC' => "ForlÃ¬-Cesena",
     'FR' => "Frosinone",
     'GE' => "Genova",
     'GO' => "Gorizia",
@@ -56,19 +60,23 @@ function location_province_list_it() {
     'MN' => "Mantova",
     'MS' => "Massa-Carrara",
     'MT' => "Matera",
+    'VS' => "Medio Campidano",
     'ME' => "Messina",
     'MI' => "Milano",
     'MO' => "Modena",
-    'NA' => "Naploli",
+    'MB' => "Monza e Brianza",
+    'NA' => "Napoli",
     'NO' => "Novara",
     'NU' => "Nuoro",
+    'OG' => "Ogliastra",
+    'OT' => "Olbia-Tempio",
     'OR' => "Oristano",
     'PD' => "Padova",
     'PA' => "Palermo",
     'PR' => "Parma",
     'PV' => "Pavia",
     'PG' => "Perugia",
-    'PS' => "Pesaro e Urbino",
+    'PU' => "Pesaro e Urbino",
     'PE' => "Pescara",
     'PC' => "Piacenza",
     'PI' => "Pisa",
@@ -106,7 +114,6 @@ function location_province_list_it() {
     'VR' => "Verona",
     'VV' => "Vibo Valentia",
     'VI' => "Vicenza",
-    'VT' => "Viterbo");
+    'VT' => "Viterbo",
+  );
 }
-
-?>

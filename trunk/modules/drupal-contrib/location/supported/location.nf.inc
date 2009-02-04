@@ -1,10 +1,8 @@
 <?php
-// $Id: location.nf.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.nf.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Norfolk Island
 
 function location_province_list_nf() {
   return array();
 }
-
-?>

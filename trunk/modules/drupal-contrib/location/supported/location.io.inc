@@ -1,5 +1,5 @@
 <?php
-// $Id: location.io.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.io.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // British Indian Ocean Territory
 
@@ -13,5 +13,3 @@ function location_province_list_io() {
     'EG' => "Egmont Islands",
     'DG' => "Diego Garcia");
 }
-
-?>

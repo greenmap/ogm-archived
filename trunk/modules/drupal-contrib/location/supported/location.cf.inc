@@ -1,5 +1,5 @@
 <?php
-// $Id: location.cf.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.cf.inc,v 1.6 2008/01/24 09:00:02 bdragon Exp $
 
 // Central African Republic
 
@@ -10,7 +10,7 @@ function location_province_list_cf() {
     'HMB' => "Haut-Mbomou",
     'KEM' => "Kemo",
     'LOB' => "Lobaye",
-    'MKD' => "Mambere-Kadeï",
+    'MKD' => "Mambere-Kadeï¿½",
     'MBO' => "Mbomou",
     'NMM' => "Nana-Mambere",
     'OMP' => "Ombella-M'Poko",
@@ -22,5 +22,3 @@ function location_province_list_cf() {
     'SMB' => "Sangha-Mbaere",
     'BAN' => "Bangui");
 }
-
-?>

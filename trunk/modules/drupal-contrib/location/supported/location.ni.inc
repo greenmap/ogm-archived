@@ -1,5 +1,5 @@
 <?php
-// $Id: location.ni.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.ni.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Nicaragua
 
@@ -22,5 +22,3 @@ function location_province_list_ni() {
     'AN' => "Region Autonoma del Atlantico Norte",
     'AS' => "Region Autonoma del Atlantico Sur");
 }
-
-?>

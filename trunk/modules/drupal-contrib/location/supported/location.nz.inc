@@ -1,5 +1,5 @@
 <?php
-// $Id: location.nz.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.nz.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // New Zealand
 
@@ -21,5 +21,3 @@ function location_province_list_nz() {
     'WKO' => "Waikato",
     'WTC' => "West Coast");
 }
-
-?>

@@ -1,5 +1,5 @@
 <?php
-// $Id: location.mu.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.mu.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Mauritius
 
@@ -22,5 +22,3 @@ function location_province_list_mu() {
     'RR' => "Riviere du Rempart",
     'SA' => "Savanne");
 }
-
-?>

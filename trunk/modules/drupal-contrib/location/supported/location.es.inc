@@ -1,5 +1,5 @@
 <?php
-// $Id: location.es.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.es.inc,v 1.7 2008/01/24 09:00:02 bdragon Exp $
 
 // Spain
 
@@ -35,7 +35,7 @@ function location_province_list_es() {
     'LG' => "Lugo",
     'MD' => "Madrid",
     'ML' => "Malaga",
-    'MU' => "Mucria",
+    'MU' => "Murcia",
     'NV' => "Navarra",
     'OU' => "Ourense",
     'PL' => "Palencia",
@@ -55,5 +55,3 @@ function location_province_list_es() {
     'ZM' => "Zamora",
     'ZR' => "Zaragoza");
 }
-
-?>
