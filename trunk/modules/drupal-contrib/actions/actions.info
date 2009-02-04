@@ -1,9 +1,0 @@
-; $Id: actions.info,v 1.2 2008/03/17 04:21:38 jvandyk Exp $
-name = Actions
-description = Enables actions to be fired on certain system events, such as when new content is created.
-package = Actions
-; Information added by drupal.org packaging script on 2008-05-19
-version = "5.x-2.5"
-project = "actions"
-datestamp = "1211166302"
-
