@@ -1,0 +1,256 @@
+<?php
+// $Id: phone.module,v 1.3 2007/05/11 13:35:30 thierrygd Exp $
+
+// Copyright 2007 Thierry GUEGAN http://www.arvoriad.com 
+
+/**
+ * @file
+ * Defines phone number fields for CCK.
+ * Provide some verifications on the phone numbers 
+ */
+
+/**
+ * Implementation of hook_field_info().
+ */
+function phone_field_info() {
+  return array(
+    'fr_phone' => array('label' => t('French Phone Numbers')),
+    'ca_phone' => array('label' => t('US & Canadian Phone Numbers')),
+   );
+}
+
+/**
+ * Implementation of hook_field_settings().
+ */
+function phone_field_settings($op, $field) {      
+  switch ($op) {      
+    case 'database columns':
+      if ($field['type'] == 'fr_phone'){ 
+      	$columns = array(
+        	'value' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      	);
+      }
+      if ($field['type'] == 'ca_phone'){ 
+      	$columns = array(
+        	'value' => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE),
+      	);
+      }      
+      return $columns;     
+  }
+}
+
+/**
+ * Implementation of hook_field().
+ */
+function phone_field($op, &$node, $field, &$node_field, $teaser, $page) {
+  switch ($op) {
+    case 'view':
+      foreach ($node_field as $delta => $item) {
+        //$node_field[$delta]['view'] = zipcode_field_view_item($field, $item);
+        $node_field[$delta]['view'] = content_format($field, $item, 'default', $node);
+      }
+      return theme('field', $node, $field, $node_field, $teaser, $page); 
+  }
+}
+
+/**
+ * Implementation of hook_field_view_item().
+ *
+ */
+/*
+function phone_field_view_item($field, $node_field_item) {
+    $phonenumber =  check_plain($node_field_item['value']);
+    return $phonenumber;
+}
+*/
+ 
+/**
+ *Implementation of hook_field_formatter_info
+ *
+ */
+function phone_field_formatter_info() {
+  return array(
+    'default' => array(
+      'label' => 'Default',
+      'field types' => array('fr_phone', 'ca_phone'),
+    ),
+  );
+ } 
+ 
+/**
+* Implementation of hook_field_formatter().
+**/
+function phone_field_formatter($field, $item, $formatter, $node) {
+  if (!isset($item['value'])) {
+    return '';
+  }
+  if ($field['text_processing']) {
+    $text = check_markup($item['value'], $item['format'], is_null($node) || isset($node->in_preview));
+  }
+  else {
+    $text = check_plain($item['value']);
+  }
+  return $text;
+}
+
+/**
+ * Implementation of hook_widget_info().
+ */
+function phone_widget_info() {
+  return array(
+    'phone' => array(
+      'label' => t('Textfield'),
+      'field types' => array('fr_phone', 'ca_phone'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_widget_settings().
+ */
+function phone_widget_settings($op, $widget) {
+  switch ($op) {
+    case 'form':
+
+    case 'validate':
+      break; //do nothing 
+
+    case 'save':
+      return array();
+  }
+}
+
+/**
+ * Implementation of hook_widget().
+ */
+function phone_widget($op, &$node, $field, &$node_field) {
+  switch ($op) {   
+    case 'form':
+      $form = array();
+      
+      $form[$field['field_name']] = array('#tree' => TRUE);
+      
+      if ($field['multiple']) {
+        $form[$field['field_name']]['#type'] = 'fieldset';
+        $form[$field['field_name']]['#title'] = t($field['widget']['label']);
+        foreach (range(0,2) as $delta) {
+          $form[$field['field_name']][$delta]['value'] = array(
+            '#type' => 'textfield',
+            '#title' => '',
+            '#default_value' => isset($node_field[$delta]['value']) ? $node_field[$delta]['value'] : '',
+            '#required' => $field['required'] ? $field['required'] : FALSE,
+            '#maxlength' => 255,
+            '#weight' => $field['widget']['weight'],
+            '#size' => isset($field['widget']['size']) ? $field['widget']['size'] : 20,
+          );
+        }
+      }        
+      else {
+        $form[$field['field_name']][0]['value'] = array(
+          '#type' => 'textfield',
+          '#title' => $field['widget']['label'],
+          '#default_value' => isset($node_field[0]['value']) ? $node_field[0]['value'] : '',
+          '#required' => $field['required'] ? $field['required'] : FALSE,
+          '#maxlength' => 255,
+          '#weight' => $field['widget']['weight'],
+          '#size' => isset($field['widget']['size']) ? $field['widget']['size'] : 20,
+        );
+      }
+               
+      return $form;
+    
+    case 'process form values':
+          if (is_array($node_field)) {
+            foreach ($node_field as $delta => $item) {
+    	    //format the phone number
+    	      if ($item['value'] != '') 
+	      { 
+    	        if ($field['type'] == 'fr_phone') { 
+	  	  $node_field[0]['value'] = format_phone_number('fr', $node_field[0]['value']);
+	        }
+    	        if ($field['type'] == 'ca_phone') { 
+	          $node_field[0]['value'] = format_phone_number('ca', $node_field[0]['value']);
+	        }
+	      }
+	    }
+	  }
+    break;
+    
+    case 'validate':
+      if (is_array($node_field)) {
+          foreach ($node_field as $delta => $item) {
+
+	    if ($item['value'] != '') 
+	    { 
+              if ($field['type'] == 'fr_phone' && !valid_phone_number('fr', $item['value'])) {
+                form_set_error($field['field_name'],t('"%value" is not a valid French phone number<br>French phone numbers should only contains numbers and spaces and be like 99 99 99 99 99', array('%value' => $item['value'])));
+              }
+              if ($field['type'] == 'ca_phone' && !valid_phone_number('ca', $item['value'])) {
+                form_set_error($field['field_name'],t('"%value" is not a valid North American phone number<br>North American Phone numbers should only contains numbers and + and - and ( and ) and spaces and be like 999-999-9999. Please enter a valid ten-digit phone number with optional extension.', array('%value' => $item['value'])));
+              }
+            }
+          }
+      }      
+      break;
+  }                   
+}
+
+/**
+ * Verification for Phone Numbers.  
+ *
+ * @param string $countrycode
+ * @param string $phonenumber
+ * @return boolean Returns boolean FALSE if the phone number is not valid.  
+ */
+function valid_phone_number($countrycode, $phonenumber) {
+
+  $countrycode = trim($countrycode); 
+  $phonenumber = trim($phonenumber);
+
+  if ($countrycode == 'fr' 
+  	|| $countrycode == 'ca') { 
+	
+        //drupal_set_message('langue = ' . $countrycode, 'error');
+
+  	$valid_phone_function = 'valid_'. $countrycode . '_phone_number';  	
+  	include_once('./'. drupal_get_path('module', 'phone') . '/phone.'. $countrycode . '.inc');
+  	
+	if (function_exists($valid_phone_function)) {
+	    return $valid_phone_function($phonenumber);
+	}
+  }
+  else {
+  	return false; 
+  }
+}  
+
+/**
+ * Verification for Phone Numbers.  
+ *
+ * @param string $countrycode
+ * @param string $phonenumber
+ * @return boolean Returns boolean FALSE if the phone number is not valid.  
+ */
+function format_phone_number($countrycode, $phonenumber) {
+
+  $countrycode = trim($countrycode); 
+  $phonenumber = trim($phonenumber);
+
+  if ($countrycode == 'fr' 
+  	|| $countrycode == 'ca') { 
+	
+        //drupal_set_message('langue = ' . $countrycode, 'error');
+
+  	$valid_phone_function = 'format_'. $countrycode . '_phone_number';  	
+  	include_once('./'. drupal_get_path('module', 'phone') . '/phone.'. $countrycode . '.inc');
+  	
+	if (function_exists($valid_phone_function)) {
+	    return $valid_phone_function($phonenumber);
+	}
+  }
+  else {
+  	return false; 
+  }
+}  
+
+

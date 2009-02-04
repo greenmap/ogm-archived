@@ -1,0 +1,8 @@
+; $Id: keys_api.info,v 1.2 2007/08/20 19:19:50 greenskin Exp $
+name = Keys API
+description = "API Key manager. Allows management of keys dependent on domain, modules can access the correct key based on the domain. Helpful when using a version control system."
+; Information added by drupal.org packaging script on 2008-04-10
+version = "5.x-1.0"
+project = "keys_api"
+datestamp = "1207798810"
+
