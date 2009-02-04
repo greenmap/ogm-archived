@@ -1,5 +1,5 @@
 <?php
-// $Id: location.ls.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.ls.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Lesotho
 
@@ -15,5 +15,3 @@ function location_province_list_ls() {
     'QT' => "Quthing",
     'TT' => "Thaba-Tseka");
 }
-
-?>

@@ -1,17 +1,28 @@
 <?php
-// $Id: earth.inc,v 1.4.4.1 2007/03/16 23:52:24 ankur Exp $
+// $Id: earth.inc,v 1.10 2008/05/20 22:55:25 bdragon Exp $
 
-// Trigonometry for calculating geographical distances.
-// All function arguments and return values measure distances in metres
-// and angles in degrees.  The ellipsoid model is from the WGS-84 datum.
-// Ka-Ping Yee, 2003-08-11
+/**
+ * License clarification:
+ *
+ * On Feb 13, 2005, in message <Pine.LNX.4.58.0502131827510.5072@server1.LFW.org>,
+ * the creator of these routines, Ka-Ping Yee, authorized these routines to be
+ * distributed under the GPL.
+ */
+
+/**
+ * @file
+ * Trigonometry for calculating geographical distances.
+ * All function arguments and return values measure distances in metres
+ * and angles in degrees.  The ellipsoid model is from the WGS-84 datum.
+ * Ka-Ping Yee, 2003-08-11
+ */
 
 //$earth_radius_semimajor = 6378137.0;
 //$earth_flattening = 1/298.257223563;
 //$earth_radius_semiminor = $earth_radius_semimajor * (1 - $earth_flattening);
 //$earth_eccentricity_sq = 2*$earth_flattening - pow($earth_flattening, 2);
 
-// I don't know what's up: PHP is hating on my global variables (commented out above), 
+// I don't know what's up: PHP is hating on my global variables (commented out above),
 // so I have to write functions that return them! (-Ankur)
 // Commenting out the global variables above and replacing them with functions that
 // return the same values is the only thing I changed since, for some reason, my
@@ -42,7 +53,7 @@ function earth_radius($latitude=37.9) {
   //global $earth_radius_semimajor, $earth_radius_semiminor;
   // Estimate the Earth's radius at a given latitude.
   // Default to an approximate average radius for the United States.
-  
+
   $lat = deg2rad($latitude);
 
   $x = cos($lat)/earth_radius_semimajor();
@@ -103,7 +114,7 @@ function earth_distance_sql($longitude, $latitude, $tbl_alias = '') {
   $radius = earth_radius($latitude);
 
   // If the table alias is specified, add on the separator.
-  $tbl_alias = empty($tbl_alias) ? $tbl_alias : ($tbl_alias . '.');
+  $tbl_alias = empty($tbl_alias) ? $tbl_alias : ($tbl_alias .'.');
 
   $coslong = cos($long);
   $coslat = cos($lat);
@@ -151,5 +162,3 @@ function earth_latitude_range($longitude, $latitude, $distance) {
   }
   return array(rad2deg($minlat), rad2deg($maxlat));
 }
-
-?>

@@ -1,5 +1,5 @@
 <?php
-// $Id: location.bb.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.bb.inc,v 1.6 2008/01/24 09:00:02 bdragon Exp $
 
 // Barbados
 
@@ -16,5 +16,3 @@ function location_province_list_bb() {
     'PHI' => "Saint Philip",
     'THO' => "Saint Thomas");
 }
-
-?>

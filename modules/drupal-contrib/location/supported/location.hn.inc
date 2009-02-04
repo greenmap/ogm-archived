@@ -1,5 +1,5 @@
 <?php
-// $Id: location.hn.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.hn.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Honduras
 
@@ -23,5 +23,3 @@ function location_province_list_hn() {
     'VA' => "Valle",
     'YO' => "Yoro");
 }
-
-?>

@@ -1,5 +1,5 @@
 <?php
-// $Id: location.gr.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.gr.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Greece
 
@@ -18,5 +18,3 @@ function location_province_list_gr() {
     'WG' => "West Greece",
     'WM' => "West Macedonia");
 }
-
-?>

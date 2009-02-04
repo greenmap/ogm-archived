@@ -1,5 +1,5 @@
 <?php
-// $Id: location.hr.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.hr.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Croatia
 
@@ -26,5 +26,3 @@ function location_province_list_hr() {
     '20' => "Medjimurje county",
     '21' => "Zagreb (city)");
 }
-
-?>

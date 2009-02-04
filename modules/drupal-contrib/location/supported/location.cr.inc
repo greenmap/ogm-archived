@@ -1,5 +1,5 @@
 <?php
-// $Id: location.cr.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.cr.inc,v 1.6 2008/01/24 09:00:02 bdragon Exp $
 
 // Costa Rica
 
@@ -12,5 +12,3 @@ function location_province_list_cr() {
     'PU' => "Puntarenas",
     'SJ' => "San Jose");
 }
-
-?>

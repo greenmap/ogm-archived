@@ -1,5 +1,5 @@
 <?php
-// $Id: location.vn.inc,v 1.2 2006/03/08 06:53:39 dww Exp $
+// $Id: location.vn.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Vietnam
 
@@ -37,5 +37,3 @@ function location_province_list_vn() {
     'HU' => "Hau Giang",
     'HY' => "Hung Yen");
 }
-
-?>

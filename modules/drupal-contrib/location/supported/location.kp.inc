@@ -1,5 +1,5 @@
 <?php
-// $Id: location.kp.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.kp.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Korea, Democratic People's Republic Of (North Korea)
 
@@ -16,5 +16,3 @@ function location_province_list_kp() {
     'NAJ' => "Rason Directly Governed City",
     'PYO' => "P'yongyang Special City");
 }
-
-?>

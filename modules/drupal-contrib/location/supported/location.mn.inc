@@ -1,5 +1,5 @@
 <?php
-// $Id: location.mn.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.mn.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Mongolia
 
@@ -27,5 +27,3 @@ function location_province_list_mn() {
     '071' => "Bayan-Olgiy",
     '073' => "Arhangay");
 }
-
-?>

@@ -1,5 +1,5 @@
 <?php
-// $Id: location.cm.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.cm.inc,v 1.6 2008/01/24 09:00:02 bdragon Exp $
 
 // Cameroon
 
@@ -7,7 +7,7 @@ function location_province_list_cm() {
   return array('ADA' => "Adamawa Province (Adamaoua)",
     'CEN' => "Centre Province",
     'EST' => "East Province (Est)",
-    'EXN' => "Extreme North Province (Extrême-Nord)",
+    'EXN' => "Extreme North Province (Extrï¿½me-Nord)",
     'LIT' => "Littoral Province",
     'NOR' => "North Province (Nord)",
     'NOT' => "Northwest Province (Nord-Ouest)",
@@ -15,5 +15,3 @@ function location_province_list_cm() {
     'SUD' => "South Province (Sud)",
     'SOU' => "Southwest Province (Sud-Ouest).");
 }
-
-?>

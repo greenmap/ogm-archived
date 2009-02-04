@@ -1,5 +1,5 @@
 <?php
-// $Id: location.tv.inc,v 1.2 2006/03/08 06:53:39 dww Exp $
+// $Id: location.tv.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Tuvalu
 
@@ -14,5 +14,3 @@ function location_province_list_tv() {
     'NLL' => "Nukulaelae",
     'VAI' => "Vaitupu");
 }
-
-?>

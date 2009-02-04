@@ -1,5 +1,5 @@
 <?php
-// $Id: location.np.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.np.inc,v 1.6 2008/01/24 09:00:03 bdragon Exp $
 
 // Nepal
 
@@ -19,5 +19,3 @@ function location_province_list_np() {
     'SA' => "Sagarmatha",
     'SE' => "Seti");
 }
-
-?>

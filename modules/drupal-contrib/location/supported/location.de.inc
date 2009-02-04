@@ -1,124 +1,178 @@
 <?php
-// $Id: location.de.inc,v 1.8.4.1 2007/02/25 00:01:50 ankur Exp $
+// $Id: location.de.inc,v 1.16 2008/06/05 15:28:12 bdragon Exp $
 
-/**
-* Parameters:
-*   -> $locationA is an associative array that represents a full location where
-*        'street'       => the street portions of the location
-*        'supplemental' => additional street portion of the location
-*        'province'     => the province, state, or territory
-*        'country'      => lower-cased two-letter ISO code (REQUIRED)
-*   -> $locationB is associative array that represents a full location in the same way that
-*       parameter $locationB does.
-*
-* Returns: a link to driving directions
-*/
-function location_map_link_de($location = array(), $hide = array()) {
-  $map_links = array();
-  // For now, just call the tinfo function.  May want to make this configurable on some level
-  // in order to maintain freedom of choice so users and site-admins don't have to be slaves
-  // to tinfo!.... not that I have anything personal against tinfo!.
-  if ($link = _location_map_link_de_tinfo($location)) {
-    $map_links['T-info'] = $link;
+function location_province_list_de() {
+  return array(
+    'BB' => 'Brandenburg',
+    'BE' => 'Berlin',
+    'BW' => 'Baden-Württemberg',
+    'BY' => 'Bayern',
+    'HB' => 'Bremen',
+    'HE' => 'Hessen',
+    'HH' => 'Hamburg',
+    'MV' => 'Mecklenburg-Vorpommern',
+    'NI' => 'Niedersachsen',
+    'NW' => 'Nordrhein-Westfalen',
+    'RP' => 'Rheinland-Pfalz',
+    'SH' => 'Schleswig-Holstein',
+    'SL' => 'Saarland',
+    'SN' => 'Sachsen',
+    'ST' => 'Sachsen-Anhalt',
+    'TH' => 'Thüringen'
+  );
 }
 
+/**
+ * Parameters:
+ *   -> $location_a is an associative array that represents a full location where
+ *        'street'       => the street portions of the location
+ *        'supplemental' => additional street portion of the location
+ *        'province'     => the province, state, or territory
+ *        'country'      => lower-cased two-letter ISO code (REQUIRED)
+ *   -> $location_b is associative array that represents a full location in the same way that
+ *       parameter $location_b does.
+ *
+ * Returns: a link to driving directions
+ */
+function location_map_link_de($location = array(), $hide = array()) {
+  $map_links = array();
+  // For now, just call the suchen (tinfo) function.  May want to make this configurable on some level
+  // in order to maintain freedom of choice so users and site-admins don't have to be slaves
+  // to tinfo!.... not that I have anything personal against tinfo!.
+  if ($link = _location_map_link_de_suchen($location)) {
+    $map_links['suchen'] = $link;
+  }
   return $map_links;
 }
 
-function _location_map_link_de_tinfo($location = array()) {
+function _location_map_link_de_suchen($location = array()) {
   $get_query = '?';
-  $get_query .= 'map_input.country=2';
+  $get_query .= 'where=';
+  $query_parts = array();
   if (isset($location['street'])) {
-    $get_query .= '&amp;' . 'map_input.street='. urlencode($location['street']);
+    $query_parts[] = $location['street'];
   }
   if ($location['postal_code'] != '') {
-    $get_query .= '&amp;' . 'map_input.zip='. urlencode($location['postal_code']);
+    $query_parts[] = $location['postal_code'];
   }
   if ($location['city'] != '') {
-    $get_query .= '&amp;' . 'map_input.city_manual='. urlencode($location['city']);
+    $query_parts[] = $location['city'];
   }
 //  if ($location['number'] != '') {
-//    $get_query .= '&amp;' . 'map_input.number='. urlencode($location['number']);
+//    $query_parts[] = $location['number'];
 //  }
-  return ('http://www.t-info.de/map/jumppage/map.jsp'. $get_query);
+  $get_query .= urlencode(implode(', ', $query_parts));
+  return ('http://www.suchen.de/lokalmap'. $get_query);
 }
 
-
 function location_map_link_de_providers() {
-  return array('tinfo' => array('name' => 'T-Info', 'url' => 'http://www.t-info.de/map/index.jsp', 'tos' => 'http://www.t-info.de/map/application?origin=note.jsp&event=bea.portal.framework.internal.refresh&pageid=TermsOfUse&portal.content_id=30600'));
+  return array(
+    'suchen' => array(
+      'name' => 'suchen.de (T-Info)',
+      'url' => 'http://www.suchen.de/',
+      'tos' => 'http://www.suchen.de/agb',
+    ),
+    'google' => array(
+      'name' => 'Google Maps',
+      'url' => 'http://maps.google.com',
+      'tos' => 'http://www.google.com/help/terms_local.html',
+    ),
+  );
 }
 
 function location_map_link_de_default_providers() {
-  return array();
+  return array('google');
 }
 
 /**
-* Parameters:
-*   -> $locationA is an associative array that represents a full location where
-*        'street'       => the street portions of the location
-*        'supplemental' => additional street portion of the location
-*        'province'     => the province, state, or territory
-*        'country'      => lower-cased two-letter ISO code (REQUIRED)
-*   -> $locationB is associative array that represents a full location in the same way that
-*       parameter $locationB does.
-*
-* Returns: a link to driving directions
-*
-* For now, assume site-admin wants driving directions linked to tinfo!
-* Maybe later, we can add some kind of country-specific settings page that allows the site-admin to
-* decide which site to link to for driving directions.
-*/
-function location_driving_directions_link_de($locationA, $locationB) {
-  return _location_driving_directions_link_de_tinfo($locationA, $locationB);
+ * Parameters:
+ *   -> $location_a is an associative array that represents a full location where
+ *        'street'       => the street portions of the location
+ *        'supplemental' => additional street portion of the location
+ *        'province'     => the province, state, or territory
+ *        'country'      => lower-cased two-letter ISO code (REQUIRED)
+ *   -> $location_b is associative array that represents a full location in the same way that
+ *       parameter $location_b does.
+ *
+ * Returns: a link to driving directions
+ *
+ * For now, assume site-admin wants driving directions linked to tinfo!
+ * Maybe later, we can add some kind of country-specific settings page that allows the site-admin to
+ * decide which site to link to for driving directions.
+ */
+function location_driving_directions_link_de($location_a, $location_b) {
+  return _location_driving_directions_link_de_suchen($location_a, $location_b);
 }
 
-
 /**
-* Parameters:
-*    Function that is called by location_driving_directions_link_ca() under assumption that it
-*    is the chosen function
-*
-* Returns:
-*    a URL with HTTP GET variables
-*    Depending on how full the locationes are, the URL will either point to the driving directions
-*    on tinfo! or, if only partial locationes are provided, a URL that points to the *form* for
-*    tinfo! driving directions where the form is filled with whatever fields have been provided
-*    for the partial location(es).  
-*/
-function _location_driving_directions_link_de_tinfo($locationA, $locationB) {
-  
-  foreach ($locationA as $field => $value) {
-    $locationA[$field] = trim($value);
+ * Parameters:
+ *    Function that is called by location_driving_directions_link_ca() under assumption that it
+ *    is the chosen function
+ *
+ * Returns:
+ *    a URL with HTTP GET variables
+ *    Depending on how full the locationes are, the URL will either point to the driving directions
+ *    on tinfo! or, if only partial locationes are provided, a URL that points to the *form* for
+ *    tinfo! driving directions where the form is filled with whatever fields have been provided
+ *    for the partial location(es).
+ */
+function _location_driving_directions_link_de_suchen($location_a, $location_b) {
+
+  foreach ($location_a as $field => $value) {
+    $location_a[$field] = trim($value);
   }
-  
-  foreach ($locationB as $field => $value) {
-    $locationB[$field] = trim($value);
+
+  foreach ($location_b as $field => $value) {
+    $location_b[$field] = trim($value);
   }
-  
-  if ($locationA['country'] == 'de' && $locationB['country'] == 'de') {
-  
+
+  if ($location_a['country'] == 'de' and $location_b['country'] == 'de') {
     $get_query = '?';
-    $get_query .= 'route_input.start_country=2';
-    if (isset($location['street'])) {
-      $get_query .= '&amp;' . 'route_input.start_street='. urlencode($location['street']);
+
+    // VON
+    $query_parts = array();
+    if (isset($location_a['street'])) {
+      $query_parts[] = $location_a['street'];
     }
-    if ($location['postal_code'] != '') {
-      $get_query .= '&amp;' . 'route_input.start_zip='. urlencode($location['postal_code']);
+    if ($location_a['postal_code'] != '') {
+      $query_parts[] = $location_a['postal_code'];
     }
-    if ($location['city'] != '') {
-      $get_query .= '&amp;' . 'route_input.start_city_manual='. urlencode($location['city']);
+    if ($location_a['city'] != '') {
+      $query_parts[] = $location_a['city'];
     }
-    $get_query .= 'route_input.target_country=2';
-    if (isset($location['street'])) {
-      $get_query .= '&amp;' . 'route_input.target_street='. urlencode($location['street']);
+    $get_query .= 'route_from='. urlencode(implode(', ', $query_parts));
+
+    // NACH
+    $query_parts = array();
+    if (isset($location_b['street'])) {
+      $query_parts[] = $location_b['street'];
     }
-    if ($location['postal_code'] != '') {
-      $get_query .= '&amp;' . 'route_input.target_zip='. urlencode($location['postal_code']);
+    if ($location_b['postal_code'] != '') {
+      $query_parts[] = $location_b['postal_code'];
     }
-    if ($location['city'] != '') {
-      $get_query .= '&amp;' . 'route_input.target_city_manual='. urlencode($location['city']);
+    if ($location_b['city'] != '') {
+      $query_parts[] = $location_b['city'];
     }
-    return ('http://www.t-info.de/map/jumppage/route_stations.jsp'. $get_query);
+    $get_query .= '&amp;route_to='. urlencode(implode(', ', $query_parts));
+
+    return ('http://www.suchen.de/route'. $get_query);
+  }
+}
+
+function location_map_link_de_google($location = array()) {
+  $query_params = array();
+
+  foreach (array('street', 'postal_code', 'city', 'country') as $field) {
+    if (isset($location[$field])) {
+      $query_params[] = $location[$field];
+    }
+  }
+
+  if (count($query_params)) {
+    return ('http://maps.google.com?q='. urlencode(implode(', ', $query_params)));
+  }
+  else {
+    return NULL;
   }
 }
 
@@ -128,13 +182,13 @@ function theme_location_de($location = array(), $hide = array()) {
     $output .= "\n";
     $output .= '<div class="location vcard"><div class="adr">'."\n";
     if (!empty($location['name']) && !in_array('name', $hide)) {
-       $output .= '<div class="fn">'. $location['name'] .'</div>';
+      $output .= '<div class="fn">'. $location['name'] .'</div>';
     }
 
     if (!empty($location['street']) && !in_array('street', $hide)) {
       $output .= '<div class="street-address">'. $location['street'];
       if (!empty($location['additional']) && !in_array('street', $hide)) {
-        $output .= ' ' . $location['additional'];
+        $output .= ' '. $location['additional'];
       }
       $output .='</div>';
     }
@@ -160,7 +214,7 @@ function theme_location_de($location = array(), $hide = array()) {
     }
 
     if (isset($location['latitude']) && isset($location['longitude'])) {
-      $output .=  '<div class="geo"><abbr class="latitude" title="'. $location['latitude'] .'" /><abbr class="longitude" title="'. $location['latitude']. '" /></div>';
+      $output .=  '<div class="geo"><abbr class="latitude" title="'. $location['latitude'] .'" /><abbr class="longitude" title="'. $location['latitude'] .'" /></div>';
     }
 
     $output .= '</div></div>';
@@ -192,7 +246,7 @@ function location_get_postalcode_data_de($location = array()) {
   if ($dash_index === FALSE) {
     $location['postal_code'] = substr($location['postal_code'], 0, $dash_index);
   }
-  
+
   // Now we pad the thing and query.
   $res = db_query("SELECT * FROM {zipcodes} where country = '%s' AND zip = '%s'", $location['country'], str_pad($location['postal_code'], 5, "0", STR_PAD_LEFT));
   if ($row = db_fetch_object($res)) {
@@ -200,27 +254,5 @@ function location_get_postalcode_data_de($location = array()) {
   }
   else {
     return NULL;
-  } 
-}
- 
- 
-function location_province_list_de() {
-  return array(
-         'BB' => 'Brandenburg',
-         'BE' => 'Berlin',
-         'BW' => 'Baden-Württemberg',
-         'BY' => 'Bayern',
-         'HB' => 'Bremen',
-         'HE' => 'Hessen',
-         'HH' => 'Hamburg',
-         'MV' => 'Mecklenburg-Vorpommern',
-         'NI' => 'Niedersachsen',
-         'NW' => 'Nordrhein-Westfalen',
-         'RP' => 'Rheinland-Pfalz',
-         'SH' => 'Schleswig-Holstein',
-         'SL' => 'Saarland',
-         'SN' => 'Sachsen',
-         'ST' => 'Sachsen-Anhalt',
-         'TH' => 'Thüringen'
-         );
+  }
 }

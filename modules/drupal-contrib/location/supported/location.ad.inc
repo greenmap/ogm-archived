@@ -1,5 +1,5 @@
 <?php
-// $Id: location.ad.inc,v 1.2 2006/03/08 06:53:38 dww Exp $
+// $Id: location.ad.inc,v 1.6 2008/01/24 09:00:02 bdragon Exp $
 
 // Andorra
 
@@ -10,7 +10,5 @@ function location_province_list_ad() {
     'ESE' => "Escaldes-Engordany",
     'LMA' => "La Massana",
     'ORD' => "Ordino",
-    'SJL' => "Sant Julia de Lòria");
+    'SJL' => "Sant Julia de Lï¿½ria");
 }
-
-?>
