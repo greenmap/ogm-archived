@@ -1,9 +1,0 @@
-; $Id: primary_term.info,v 1.1 2007/03/20 15:27:03 weitzman Exp $
-name = Primary term
-description =  Allows selection of a primary term for nodes
-dependencies = taxonomy
-; Information added by drupal.org packaging script on 2007-11-01
-version = "5.x-1.2"
-project = "primary_term"
-datestamp = "1193935506"
-
