@@ -11,14 +11,14 @@ function gmap_marker_menu($may_cache){
 
   if ($may_cache) {
 	$items[] = array(
-      'path' => 'node/gmap_marker/onmapchange', 
+      'path' => 'node/gmap_marker/onmapchange',
       'title' => t('OnMapChange'),
       'callback' => 'gmap_marker_onMapChange',
       'type' => MENU_CALLBACK,
       'access' => TRUE,
     );
 	$items[] = array(
-      'path' => 'node/gmap_marker/getshapes', 
+      'path' => 'node/gmap_marker/getshapes',
       'title' => false,
       'callback' => 'gmap_marker_getShapes',
       'type' => MENU_CALLBACK,
@@ -26,13 +26,13 @@ function gmap_marker_menu($may_cache){
     );
 
 	$items[] = array(
-      'path' => 'node/gmap_marker/clearnids', 
+      'path' => 'node/gmap_marker/clearnids',
       'title' => t('Clear nid from the session'),
       'callback' => 'gmap_marker_clearnids',
       'type' => MENU_CALLBACK,
       'access' => TRUE,
     );
-		
+
 	$items[] = array(
 		'path' => 'node/gmap_marker/getMiniBubble',
 		'title' => t('GetMiniBubble'),
@@ -47,8 +47,8 @@ function gmap_marker_menu($may_cache){
 		'type' => MENU_CALLBACK,
 		'access' => TRUE,
 	);
-	
-  } 
+
+  }
   return $items;
 }
 
@@ -57,9 +57,9 @@ function gmap_marker_menu($may_cache){
 function gmap_marker_gmap($op, $map=null) {
   switch ($op) {
     case 'pre_theme_map':
-		
+
 		$path = drupal_get_path('module', 'gmap_marker');
-		
+
 		if(  ( arg(0) == 'node' || arg(0) == 'greenmap_widget' ) && is_numeric(arg(1))) {
 			$nid = arg(1);
 			$nidJS = "var mapNid = '".$nid."';\n";
@@ -67,10 +67,10 @@ function gmap_marker_gmap($op, $map=null) {
 		}else if(arg(0) == 'greenmap'){
 			$nidJS = "var mapNid;\n";
 			drupal_add_js( $nidJS,'inline');
-		}		
-		
+		}
+
 		if(arg(0) == 'greenmap_widget'){
-			
+
 			// drupal_add_js( $path.'/ajax.js' );
 			// drupal_add_js( $icons,'inline');
 			drupal_add_js( $path.'/gmap_marker.js','module','header' );
@@ -78,12 +78,12 @@ function gmap_marker_gmap($op, $map=null) {
 			drupal_add_js(drupal_get_path('module', 'group_map').'/key.js');
 			// break;
 		}
-	
-		
 
-		
+
+
+
 		if((arg(0) == 'node' && is_numeric(arg(1))) || (arg(0) == 'greenmap') || (arg(0) == 'greenmap_widget') ) {
-			$icons = '';  
+			$icons = '';
 			$icons .= "function getIcon(img){\n";
 			$icons .= "  var ico = new GIcon();\n";
 			$icons .= "  if(!img){return ico;}\n";
@@ -94,8 +94,8 @@ function gmap_marker_gmap($op, $map=null) {
 			$icons .= "  ico.iconAnchor = new GPoint(1 ,40);\n";
 			$icons .= "  return ico;\n";
 			$icons .= "}\n\n";
- 
-			
+
+
 			drupal_add_js( $path.'/ajax.js' );
 			drupal_add_js( $icons,'inline');
 			drupal_add_js( $path.'/gmap_marker.js','module','footer' );
@@ -103,14 +103,14 @@ function gmap_marker_gmap($op, $map=null) {
 			//GH: added
 			drupal_add_css($path.'/bubble.css');
 			// drupal_add_js(drupal_get_path('module', 'fivestar') . '/js/fivestar.js'); // perhaps redundant
-			drupal_add_css(drupal_get_path('module', 'fivestar') . '/css/fivestar.css'); 
-			
-			
+			drupal_add_css(drupal_get_path('module', 'fivestar') . '/css/fivestar.css');
+
+
 		}
-	
+
 		if ($map['markers'] || $map['lines']) {
 			drupal_add_js($path .'/markerloader_greenmap.js');
-		
+
 		}
       break;
   }
@@ -134,7 +134,7 @@ function gmap_marker_zoomlevel($zoom){
 		case 5:  case 6:  case 7:  case 8:  case 9: $r = 9;break;
 		case 10: case 11: case 12: case 13: case 14:$r = 7;break;
 		case 15: case 16: case 17: 					$r = 5;break;
-		
+
 	}
 	return $r;
 }
@@ -156,29 +156,29 @@ function gmap_marker_clearnids(){
 function gmap_marker_onMapChange() {
 
 	//$nid  = (is_numeric(arg(3)) && arg(3) > 0) ? arg(3): null; //mapID
-	
+
 	$args = array();
 	if(arg(3)){
 		$case = arg(3);
 	}else {
-		$case = 0;	
+		$case = 0;
 	}
-	
+
 	$args['lat']  = (is_numeric(arg(4))) ? arg(4): null;
 	$args['lon']  = (is_numeric(arg(5))) ? arg(5): null;
 	$args['nid']  = (is_numeric(arg(6)) && arg(6) > 0) ? arg(6): null; //mapID
 
-	
+
 	// mpc (Markers per country)
 	// The number of countries in the World is 194 (06/05/2008)
 	$r = '';
 	if(function_exists("onMapChange_case".$case)){
 		$r .= call_user_func("onMapChange_case".$case, $args);
 	}
-	
+
 	//$_SESSION['gmap_marker'] = $data;
 	echo $r;
-	
+
 	die();
 }
 
@@ -187,16 +187,16 @@ function onMapChange_case0($args = array()) {
 	$mpc = 2; // This was sites per country,  but now is sites per GROUP (ie sites per map) - a much better way of getting a good spread of sites from around the world
 	$maxZoom = 0;
 	$data = array();
-	
+
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude , m.marker, m.tid, og.nid AS og_nid
 		 FROM {node} AS n
-		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
+		 INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
 		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 LEFT JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid
 		 LEFT JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
 		 LEFT JOIN {og}   AS og  ON  n2.nid = og.nid
 
-		 WHERE l.type = 'node' AND (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND ( (oa.is_public = '1' ) AND n2.status = '1' AND og.private = '0') 
+		 WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND ( (oa.is_public = '1' ) AND n2.status = '1' AND og.private = '0')
 		 ORDER BY og_nid DESC";
 
 	$prevousNid = null;
@@ -216,7 +216,7 @@ function onMapChange_casezoom($args = array()) {
 	$zoom = $_POST['zoom'];
 	$nid = $_POST['nid'];
 	$limit = $_POST['limit'];
-		
+
 	if(!$lat || !$lon || !$dx || !$dy || !$zoom){return;}
 	// we use left join because of sites which are not in the map. In these cases oa.is_public will be null.
 	$og1 =	" LEFT JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid ".
@@ -224,13 +224,13 @@ function onMapChange_casezoom($args = array()) {
  			"LEFT JOIN {og}   AS og  ON  n2.nid = og.nid ";
 	$og2 = " AND n.status = '1' AND ( (oa.is_public = '1') AND n2.status = '1' AND og.private = '0') ";
 
-	
+
 	if(is_numeric($nid) && $nid > 0) {
 		// this inner join takes care of that all markers haveto be made for this map
 		$nid_q2 = " AND oa.group_nid = '".$nid."'";
 		// $mapcid = 'gmap_marker:' . $nid; // not setting mapcid yet, because it breaks all zooming.
 
-		
+
 		if (array_key_exists($nid, $user->og_groups) || user_access('edit green_map content')) { // if user is part of a group, all private sites are shown
 			// $og1 = ''; // if we are part of a group we do need to see all sites
 			$og2 = ''; // if we are part of a group we do need to see all sites
@@ -238,30 +238,30 @@ function onMapChange_casezoom($args = array()) {
 
 		}
 	}
-	
+
 
 	$data =($_SESSION['gmap_marker'])?$_SESSION['gmap_marker']:array();
 	$data = array(); // we don't care sessions
 	$mpc = false;
-	$limit = ($limit)?$limit:($zoom * 10); // this is made for maps (not the global view). 
-	/* Because we are giving zoomlevel 1 as a parameter, normal zoom times 10 is too few markers on the screen. 
+	$limit = ($limit)?$limit:($zoom * 10); // this is made for maps (not the global view).
+	/* Because we are giving zoomlevel 1 as a parameter, normal zoom times 10 is too few markers on the screen.
 	   That's why we are giving another parameter called limit which overrides this calculation.
 	   Look gmap_marker.js: function mapNodeLoad
 	 */
 	//echo $limit;
 	$maxZoom = $zoom;
-	
-	
+
+
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude  , m.marker, m.tid
 		 FROM {node} AS n
-		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
+		 INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
 		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 ".$og1."
 		 ".$nid_q1."
-		 WHERE l.type = 'node' AND (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' ".$og2." ".$nid_q2."
-		 AND (".$lat."< l.latitude AND  l.latitude < ".($lat + $dy)." AND ".($lon)." < l.longitude AND l.longitude < ".($lon + $dx).") 
+		 WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' ".$og2." ".$nid_q2."
+		 AND (".$lat."< l.latitude AND  l.latitude < ".($lat + $dy)." AND ".($lon)." < l.longitude AND l.longitude < ".($lon + $dx).")
 		 LIMIT ".($limit * 4);
-		 
+
 	//echo $q;
 	//print_r($data);
 	$prevousNid = null;
@@ -278,19 +278,19 @@ function onMapChange_caseborder($args = array()) {
 	$mpc = false;
 	$maxZoom = 10;
 	$add_zoomSQL = "AND (l.latitude > ".($args['lat'] - 0.35)." AND  l.latitude < ".($args['lat'] + 0.35)." AND l.longitude > ".($args['lon'] - 0.75)." AND l.longitude < ".($args['lon'] + 0.75).")";
-	
-	
+
+
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude ,tn.tid , m.marker, m.tid
 		 FROM {node} AS n
-		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
-		 
+		 INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
+
 		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 INNER JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid
 		 INNER JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
 		 INNER JOIN {og}   AS og  ON  n2.nid = og.nid
-		 
-		 WHERE l.type = 'node' AND (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND oa.is_public = '1' AND n2.status = '1' AND og.private = '0' ".
-		 $add_zoomSQL	
+
+		 WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND oa.is_public = '1' AND n2.status = '1' AND og.private = '0' ".
+		 $add_zoomSQL
 		."ORDER BY l.country, RAND()";
 
 	$prevousNid = null;
@@ -303,29 +303,29 @@ function onMapChange_casemove($args = array()) {
 	if(!$args['lat'] || !$args['lon']){
 	  return;
 	}
-	
+
 	$data =($_SESSION['gmap_marker'])?$_SESSION['gmap_marker']:array();
 	$mpc = false;
 	$maxZoom = 10;
 	$add_zoomSQL = "AND (l.latitude > ".($args['lat'] - 0.35)." AND  l.latitude < ".($args['lat'] + 0.35)." AND l.longitude > ".($args['lon'] - 0.75)." AND l.longitude < ".($args['lon'] + 0.75).")";
-	
+
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude ,tn.tid , m.marker, m.tid
 		 FROM {node} AS n
-		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
+		 INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
 		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
 		 INNER JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
 		 INNER JOIN {og}   AS og  ON  n2.nid = og.nid
-		 
-		 WHERE l.type = 'node' AND (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND oa.is_public = '1' AND n2.status = '1' AND og.private = '0' ".
-		 $add_zoomSQL	
+
+		 WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND oa.is_public = '1' AND n2.status = '1' AND og.private = '0' ".
+		 $add_zoomSQL
 		."ORDER BY l.country, RAND()";
 
 	$prevousNid = null;
 	$r  = $maxZoom. "%%";
 	$r .= onMapChange_query($q,array('mpc' => $mpc),$data);
 	$_SESSION['gmap_marker'] = $data;
-	return $r;	
-	
+	return $r;
+
 }
 /*
  * muista luoda testi mitä käyttäjä näkee! jos ryhmän jäsen -> näkee myös privaatit, muuten PIILOON!
@@ -336,22 +336,22 @@ function onMapChange_casenid($args = array()) {
 	if(!is_numeric($args['nid']) || $args['nid'] <= 0) {
 		return;
 	}
-	
+
 	$mpc = false;
 	$maxZoom = 0;
 	$add_zoomSQL = '';
-		
+
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude ,tn.tid , m.marker, m.tid
 		 FROM {node} AS n
-		 INNER JOIN {location}   AS l  ON  n.vid = l.eid
+		 INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
 		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
-		 
+
 		 INNER JOIN nodefamily AS nf ON n.nid = nf.child_nid
-		 
-		 WHERE l.type = 'node' AND (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1'
+
+		 WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1'
 		 AND nf.parent_nid = '".$args['nid']."'
 		 ORDER BY l.country, RAND()";
-/*		
+/*
 		 INNER JOIN {term_node}  AS tn ON  n.nid = tn.nid
 		 INNER JOIN {term_image}  AS ti ON  tn.tid = ti.tid
 */
@@ -366,18 +366,18 @@ function onMapChange_query($q,$args,&$data,$mapcid=NULL){
 	// If a cid (cache ID) has been passed, see if there's anything in cache for this
 	if($mapcid){
 		if($r = cache_get($mapcid)){
-			return $r->data; 
-		} 
+			return $r->data;
+		}
 	}
 	// if there is something in cache, return it
-	
+
 	// else do the query and store in cache for that cid
 	$result = db_query($q);
 	$r = '';
 	$mpc = $args['mpc']; // this is set to false unless we're on the worldview
 	$limit = $args['limit'];
 	if($result){
-		
+
 		$i = 0;
 		$c = 0;
 		$cCountry = ''; // this used to represent countries, but now actually represents group nid, og_nid
@@ -386,7 +386,7 @@ function onMapChange_query($q,$args,&$data,$mapcid=NULL){
 			if($limit && $i >= $limit) { // if limit is set and limit is full we can break the loop
 			  break;
 			}
-			
+
 			if($row->nid == $prevousNid) {
 				continue;
 			}else {
@@ -399,20 +399,20 @@ function onMapChange_query($q,$args,&$data,$mapcid=NULL){
 			if($mpc && $c >= $mpc) {
 			  continue;
 			}
-			
+
 			if(in_array($row->nid,$data)){ continue;}
 			array_push($data,$row->nid);
 			$c++;
 			$i++;
-	
+
 			$parents = getMarkerTaxonomy($row->tid);
 			$g = $row->tid.':'.$parents[0].':'.$parents[1];
-			
+
 			$r .= $row->nid."*".$row->latitude."*".$row->longitude."*opt.icon= getIcon('".$icoImgs[$row->marker]."'); opt.title= \"".str_replace("\"","\\\"",$row->title)."\";";
 			$r .= "*~*".$g;
 			$r .= "\n";
     }
-	} 
+	}
 	if($mapcid){
 		cache_set($mapcid, 'cache', $r, CACHE_TEMPORARY);
 	}
@@ -420,12 +420,12 @@ function onMapChange_query($q,$args,&$data,$mapcid=NULL){
 }
 
 function gmap_marker_getShapes() {
-	
+
 	$args = array();
 	if(arg(3)){
 		$case = arg(3);
 	}else {
-		$case = 0;	
+		$case = 0;
 	}
 
 	$r = '';
@@ -445,7 +445,7 @@ function getShapes_casezoom($args = array()) {
 	$zoom = $_POST['zoom'];
 	$nid = $_POST['nid'];
 	$limit = $_POST['limit'];
-		
+
 	if(!$lat || !$lon || !$dx || !$dy || !$zoom){return;}
 	// we use left join because of sites which are not in the map. In these cases oa.is_public will be null.
 	$og1 =	" LEFT JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid ".
@@ -453,26 +453,26 @@ function getShapes_casezoom($args = array()) {
  			"LEFT JOIN {og}   AS og  ON  n2.nid = og.nid ";
 	$og2 = " AND n.status = '1' AND ((oa.is_public = '1' AND n2.status = '1' AND og.private = '0') OR (oa.is_public IS NULL))";
 
-	
+
 	if(is_numeric($nid) && $nid > 0) {
 		$nid_q2 = " AND oa.group_nid = '".$nid."'";
 		if (array_key_exists($nid, $user->og_groups) || user_access('edit green_map content')) { // if user is part of a group, all private sites are shown
 			$og2 = ''; // if we are part of a group we do need to see all sites
 		}
 	}
-	
+
 
 	$data =($_SESSION['gmap_marker'])?$_SESSION['gmap_marker']:array();
 	$data = array(); // we don't care sessions
 	$mpc = false;
-	$limit = ($limit)?$limit:($zoom * 10); // this is made for maps (not the global view). 
-	/* Because we are giving zoomlevel 1 as a parameter, normal zoom times 10 is too few markers on the screen. 
+	$limit = ($limit)?$limit:($zoom * 10); // this is made for maps (not the global view).
+	/* Because we are giving zoomlevel 1 as a parameter, normal zoom times 10 is too few markers on the screen.
 	   That's why we are giving another parameter called limit which overrides this calculation.
 	   Look gmap_marker.js: function mapNodeLoad
 	 */
 	$maxZoom = $zoom;
-	
-	
+
+
 	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude  , m.marker, m.tid
 		 FROM {node} AS n
 		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
@@ -480,7 +480,7 @@ function getShapes_casezoom($args = array()) {
 		 ".$nid_q1."
 		 WHERE n.type ='green_site' ".$og2." ".$nid_q2."
 		 LIMIT ".($limit * 4);
-		 
+
 	$prevousNid = null;
 	$r  = $maxZoom. "%%";
 	$r .= onMapChange_query($q,array('mpc' => $mpc,'limit'=>$limit),$data);
