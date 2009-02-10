@@ -2,7 +2,7 @@
 
 
 function connections_views_default_views()
-{
+{ 
 
     $view = new stdClass();
     $view->name = 'list_sites_map';
@@ -96,16 +96,6 @@ function connections_views_default_views()
       'label' => '',
       'handler' => 'views_handler_field_nodelink',
       'options' => 'link',
-        ),
-        array (
-      'tablename' => 'location',
-      'field' => 'city',
-      'label' => '',
-        ),
-        array (
-      'tablename' => 'location',
-      'field' => 'country',
-      'label' => '',
         ),
     );
     $view->filter = array (
@@ -295,6 +285,8 @@ function escape_js($str)
 
 function output_connections($node)
 {
+
+
     $js = '';
     $js .= 'var c_content = [];';
 
@@ -304,18 +296,18 @@ function output_connections($node)
 
     $list_related_sites = views_get_view('list_related_sites');
     $list_related_sites->args[0]=$node->primary_term->tid;
-    $relsite1 = views_build_view('embed', $list_related_sites, $list_related_sites->args, FALSE, false);
+    $relsite1 = views_build_view('embed', $list_related_sites, $list_related_sites->args, true, 10);
     $relsite1 = str_replace('<a href=', '<a target="_parent" href=', $relsite1);
 
     $list_related_sites_loc = views_get_view('list_sites_map');
-    $relsite2 = views_build_view('embed', $list_related_sites_loc, null, FALSE, false);
+    $relsite2 = views_build_view('embed', $list_related_sites_loc, null, true, 10);
     $relsite2 = str_replace('<a href=', '<a target="_parent" href=', $relsite2);
 
     $relsite = $rel1;
-    $relsite .= '<div style=""><div style=""><div style=""><b>Other Site on Map</b></div>';
+    $relsite .= '<div style=""><div style=""><div style=""><b>Other Sites on Map</b></div>';
     $relsite .= $relsite1;
     $relsite .= '</div><div style=""><b>Other Sites in World</b></div><div style="">';
-    $relsite .= $relsite1;
+    $relsite .= $relsite2;
     $relsite .= '</div></div>';
     $relsite = escape_js($relsite);
 
@@ -339,18 +331,28 @@ function output_connections($node)
     $cont .= '<br />' . escape_js(content_format('field_web', $node->field_web[0]));
 
     // build a variable containing the Releted Maps
+    $res = db_query("select latitude, longitude from {location} loc, {location_instance} loci where loci.nid = " . $node->nid . " and loc.lid = loci.lid");
+    $row = db_fetch_object($res);
 
-    $list_related_sites = views_get_view('list_related_sites');
-    $list_related_sites->args[0]='us';
-    $remap1 = views_build_view('page', $list_related_sites, $list_related_sites->args, FALSE, 10);
+    $list_proximity = views_create_view('list_proximity_custom', 'list_proximity_custom');
+    views_view_add_page($list_proximity, t('proximity'), NULL, 'list', true, 10, '', 1, false);
+    views_view_add_field($list_proximity, 'node', 'title', '', false, 0, 'views_handler_field_nodelink');
+    views_view_add_filter($list_proximity, 'location', 'latitude',   '<',  $row->latitude + 5, '');
+    views_view_add_filter($list_proximity, 'location', 'latitude',   '>',  $row->latitude - 5, '');
+    views_view_add_filter($list_proximity, 'location', 'longitude',   '<',  $row->longitude + 5, '');
+    views_view_add_filter($list_proximity, 'location', 'longitude',   '>',  $row->longitude - 5, '');
+    views_load_cache();
+    views_sanitize_view($list_proximity);
+    $list_proximity->args[0]='';
+    $remap1 = views_build_view('embed', $list_proximity, $list_proximity->args, true, 10);
     $remap1 = str_replace('<a href=', '<a target="_parent" href=', $remap1);
 
 
     $list_mapmaker_maps = views_get_view('list_mapmaker_maps');
     $list_mapmaker_maps->args[0]=$node->uid;
-    $remap2 = views_build_view('page', $list_mapmaker_maps, $list_mapmaker_maps->args, FALSE, 10);
+    $remap2 = views_build_view('embed', $list_mapmaker_maps, $list_mapmaker_maps->args, true, 10);
     $remap2 = str_replace('<a href=', '<a target="_parent" href=', $remap2);
-    $relmap = '<div><div style=""><div style=""><b>Other Nearby ' . $node->name . '</b></div>';
+    $relmap = '<div><div style=""><div style=""><b>Other Maps by ' . $node->name . '</b></div>';
     $relmap .= $remap2;
     $relmap .= '<div style=""><div style=""><div style=""><b>Other Nearby Maps</b></div>';
     $relmap .= $remap1;
@@ -389,6 +391,7 @@ function output_connections($node)
     $ret .= '</div>';
     $ret .= '<div style="clear: left;"></div>';
     $ret .= '</div>';
+
 
     return $ret;
 }
