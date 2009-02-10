@@ -10,7 +10,7 @@
 function group_map_menu ($may_cache){
 	$items = array();
 	if($may_cache){
-	
+
 	}else {
 		if (arg(0) == 'node' && is_numeric(arg(1))) {
 			if( check_type(arg(1),'green_map') ){
@@ -18,9 +18,9 @@ function group_map_menu ($may_cache){
 				$node = node_load(arg(1));
 				if  (!($GLOBALS['user']->og_groups[arg(1)]) && ($node->og_selective < 2 ) ) {
 					// make sure that this is a green map
-					
+
 					$items[] = array(
-						'path' 				=> 'node/'. arg(1) . '/join' , 
+						'path' 				=> 'node/'. arg(1) . '/join' ,
 						'title' 			=> t('Join this Map'),
 						'access' 			=> TRUE,
 						'callback' 			=> 'request_join',
@@ -28,13 +28,13 @@ function group_map_menu ($may_cache){
 						'type'    			=> MENU_LOCAL_TASK,
 						'weight' 			=> 8
 		  			);
-							
+
 				}
 			}
 	    }
 	}
 	return $items;
-	
+
 }
 
 function request_join($gid){
@@ -50,7 +50,7 @@ function request_join($gid){
 
 function group_map_form_alter($form_id, &$form){
 	// print $form_id . ' '; // this prints form_id's of all forms on every page - development feature
-	
+
 	// this one is useful for debugging - replace form_id_here with name of form
 	/* if($form_id == 'form_id_here') {
 		   $form['form_info'] = array(
@@ -63,62 +63,63 @@ function group_map_form_alter($form_id, &$form){
 
 		// first off, hide the preview button as it doesn't work
 		unset($form['preview']);
-		
+
 		// Change the group section to 'map'
 		$form[og_nodeapi]['#title'] = t('Maps');
 		$form[og_nodeapi]['visible']['og_groups']['#title'] = t('Select Maps');
 		$form[og_nodeapi]['visible']['og_groups']['#description'] = t('You can include this site on any of the maps that you belong to. Use the control key on a PC or the Apple/Command key on a Mac to select multiple maps.');
 		$form[og_nodeapi]['visible']['og_public']['#description'] = t('Show this site to everyone, or only to members of the maps selected above. Sites on private maps will only be shown to members of the map so will not be affected by this setting. Sites without any maps are always Public.');
 		$form[og_nodeapi]['visible']['og_public']['#default_value'] = $form['#node']->nid ? $form['#node']->og_public : 1; // override og module which defaults it tor private
-		
-		
-		
+
+
+
 		//Changes dropdowns to free text in location block
 		$countries_array = $form[locations][0][country]['#options'];
 		// $form[locations][0][country] = $form[locations][0][city];
 		$form[locations][0][country]['#title'] = t('Country');
 		// $form[locations][0][province] = $form[locations][0][city];
 		$form[locations][0][province]['#title'] = t('Province');
-		
-		
+
+
 		// If site is being added to a map
 		if( (is_numeric($_GET['gids'][0]) && trim($_GET['gids'][0]) != null && trim($_GET['gids'][0]) != '') || (is_numeric($_GET['suggest']) && trim($_GET['suggest']) != null && trim($_GET['suggest']) != '')){
 			$mapNID = $_GET['gids'][0];
 			if (!$mapNID) { $mapNID = $_GET['suggest']; }
-	
-			// look up database to get the zoom, lat, long, etc. for the parent map			
-			$result = db_query(" 
-	
+
+			// look up database to get the zoom, lat, long, etc. for the parent map
+			$result = db_query("
+
 			SELECT n.nid, gm.field_gmap_type_value MapTYPE, gm.field_city_region_value City, gm.field_province_value Province, gm.field_country_value Country, l.latitude LAT, l.longitude LON, gm.field_map_zoom_value ZOOM
-			FROM {node} n, {location} l, {content_type_green_map} gm
-			WHERE 
-				n.vid = l.eid
-				AND n.vid = gm.vid
+			FROM {content_type_green_map} gm, {node} n
+      INNER JOIN {location_instance} li ON n.vid = li.vid AND n.nid = li.nid
+      INNER JOIN {location} AS l  ON  li.lid = l.lid
+			WHERE
+				n.vid = gm.vid
 				AND n.nid = %d
-			",$mapNID); 
-			
+			",$mapNID);
+
 			if( $resultArray = mysql_fetch_array($result) ){
 				$newZoom = $resultArray["ZOOM"];
 				$newLat = $resultArray["LAT"];
 				$newLong = $resultArray["LON"];
 				$type = $resultArray["MapTYPE"];
-			
+
 				// Cuts the postal code field - TT - don't know why Lee did this. Reversed
 				// array_splice( $form[locations][0], 9, 1 );
-				
+
 				// Perform necessary formatting of Form based on querry results
 				// but first check if values are already there, and if so don't override
 				if($form[locations][0][city]['#default_value'] == ''){
-					$form[locations][0][city]['#default_value'] = $resultArray["City"];	
+					$form[locations][0][city]['#default_value'] = $resultArray["City"];
 				}
 				// if(($form[locations][0][province]['#default_value'] == '') && ($resultArray["Province"] != '')){
 					$form[locations][0][province]['#default_value'] = $resultArray["Province"];
 				// }
 				// $form[locations][0][country]['#default_value'] = $countries_array[$resultArray["Country"]];
 				$form[locations][0][country]['#default_value'] = $resultArray["Country"];
-				
+
 			}
-			
+
 			// Creates variables for the Green Site's location and zoom in javascript
 			$js  = ''; //<script type="text/javascript">
 			$js .= 'var newLat = '.$newLat.';';
@@ -127,67 +128,67 @@ function group_map_form_alter($form_id, &$form){
 			//$js .= '</script>';
 			drupal_add_js($js, 'inline', 'header');
 			//echo drupal_get_path('module', 'group_map');
-			// Adds the javascript that alters map into website 
+			// Adds the javascript that alters map into website
 			drupal_add_js(drupal_get_path('module', 'group_map').'/edit_zoom.js', 'module', 'footer');
 		}
 	}
-	
-	
+
+
 	if($form_id == 'green_map_node_form') {
 
-  
+
        /* $form['form_info'] = array(
 			 '#value' => '<pre>'. print_r($form, TRUE) .'</pre>'
 		   ); */
-      
-      
+
+
 		   // first off, hide the preview button as it doesn't work
 		   unset($form['preview']);
-		   
+
        // Changing language section to be friendlier
-		   $form['i18n']['#title'] = t('Language Settings'); 
-		   $form['i18n']['language']['#description'] = t('If your language is not on the list, leave this blank.'); 
-		   
-		   $form['field_icons_to_use']['tid']['#description'] = t('Choose which Green Map Icons can be used on this map. 
+		   $form['i18n']['#title'] = t('Language Settings');
+		   $form['i18n']['language']['#description'] = t('If your language is not on the list, leave this blank.');
+
+		   $form['field_icons_to_use']['tid']['#description'] = t('Choose which Green Map Icons can be used on this map.
 		   														These are the only icons that that will appear on your map and its legend.
 		 														You can always edit your map and change these.
 		 														');
-																
+
 		   $form['field_description']['0']['format'] = ''; // hide the formatting information
-		   
+
 		   // changing these address fields to be drop-downs so that they are same format as for location module
 		   $form['field_province']['0']['value']['#type'] = 'select';
 		   $form['field_province']['0']['value']['#options'] = $form['locations']['0']['province']['#options'];
 		   $form['field_country']['0']['value']['#type'] = 'select';
 		   $form['field_country']['0']['value']['#options'] = $form['locations']['0']['country']['#options'];
-		   
-		   
-		   // improving instructions on how to let people join the group/map		   
+
+
+		   // improving instructions on how to let people join the group/map
 		   $form['og_selective']['#title'] = t('Building Your Map Team');
 		   $form['og_selective']['#options']['0'] = t('open - anyone can join your team by clicking a link on your map (not available for private maps).');
 		   $form['og_selective']['#options']['1'] = t('moderated - anyone can request to join your team, but you must approve them.');
 		   $form['og_selective']['#options']['2'] = t('invite only - you must send an email from the website to invite new team members.');
 		   array_pop($form['og_selective']['#options']); // remove the last item from the list of subscription options - it's confusing
 		   $form['og_selective']['#description'] = t('Team members will be able to add sites to your map. At a later stage you can give each team member
-														extra privileges.');		   
+														extra privileges.');
 
 		   $form['og_private']['#title'] = t('private map');
 		   $form['og_private']['#description'] = t('You should keep your map private while you are developing it.
 		   											When you have added some sites and are happy with how it looks you can change this.') .
-													'<br>' . 
+													'<br>' .
 													t('A private map can be seen by you and your team members, but not by anyone else.');
-		 		   
-		   $form['locale'] = ''; // hiding the locale stuff for now - multilingual settings 
+
+		   $form['locale'] = ''; // hiding the locale stuff for now - multilingual settings
 
 		   $form['locations']['0']['province'] = ''; // hiding the province as it's being stored in CCK
 		   $form['locations']['0']['country'] = '';
 		   $form['locations']['#description'] = t('Choose the center of your map. Zoom in as far as necessary to be accurate. You may need to switch to satellite view
 		   											if Google does not have good coverage of your neighborhood.');
-		   
-		   
-		   
-	}	
-	
+
+
+
+	}
+
 
 }
 
@@ -204,13 +205,14 @@ function group_map_views_default_views() {
 );
   $view->view_args_php = '$nodeID = arg(1);
 $zoom = 0;
-$result = db_query(" 
+$result = db_query("
 
 SELECT n.nid, gm.field_gmap_type_value MapTYPE, l.latitude LAT, l.longitude LON, gm.field_map_zoom_value ZOOM
-FROM node n, location l, content_type_green_map gm
-WHERE 
-	n.vid = l.eid
-	AND n.vid = gm.vid
+FROM {content_type_green_map} gm, {node} n
+      INNER JOIN {location_instance} li ON n.vid = li.vid AND n.nid = li.nid
+      INNER JOIN {location} AS l  ON  li.lid = l.lid
+WHERE
+	n.vid = gm.vid
 	AND n.nid = $nodeID
 ");
 
@@ -309,9 +311,9 @@ $view->gmap_macro = "[gmap |center=$lat,$lon|zoom=$zoom |type=$type]";
   $view->requires = array(node, term_node_1, location);
   $views[$view->name] = $view;
 
-  
-  
-  
+
+
+
 // all the maps by the maker used in the key
   $view = new stdClass();
   $view->name = 'list_mapmaker_maps';
@@ -388,9 +390,9 @@ $view->gmap_macro = "[gmap |center=$lat,$lon|zoom=$zoom |type=$type]";
   );
   $view->requires = array(node, og);
   $views[$view->name] = $view;
-  
-  
-  
+
+
+
 return $views;
 }
 
@@ -399,7 +401,7 @@ return $views;
  *  hook_block()
  *  custom block with key and all that navigation & search stuff
  */
- 
+
 function group_map_block($op = 'list', $delta = 0, $edit = array()){
   // The $op parameter determines what piece of information is being requested.
   switch ($op) {
@@ -412,17 +414,17 @@ function group_map_block($op = 'list', $delta = 0, $edit = array()){
       return $blocks;
     case 'configure':
 	  // nothing
-	  return;	
+	  return;
 	case 'view': default:
       // If $op is "view", then we need to generate the block for display
       // purposes. The $delta parameter tells us which block is being requested.
       switch ($delta) {
         case 0:
 		  $block = group_map_block_0_contents();
-		  break; 
+		  break;
 	    case 1:
 		  $block = group_map_block_1_contents();
-		  break; 
+		  break;
 		case 2:
           // The subject is displayed at the top of the block. Note that it
           // should be passed through t() for translation.
@@ -434,7 +436,7 @@ function group_map_block($op = 'list', $delta = 0, $edit = array()){
 		  $block['status'] = 1;
 		  $block['weight'] = -11; // to show at the top above any others
           break;
-		    
+
       }
 	  return $block;
   }
@@ -486,7 +488,7 @@ function display_key($icons)
 {
 	drupal_add_js(drupal_get_path('module', 'group_map').'/key.js');
 	drupal_add_css(drupal_get_path('module', 'group_map').'/key.css');
-	
+
 	$key = '<form>';
 	$key .= '<h3>' . t('Green Map Legend') . '</h3>';
 	$key .= '<ul id="keys">';
@@ -510,7 +512,7 @@ function display_key($icons)
 								// that's for prune_it()
 								$img = '<img '.str_replace('"', '\'', $icon->display_size[3]).' src="'.base_path().$icon->path.'" title="' . t($icon->name) . '"> ';
 								$key .= scaleTaxonomyImg($img, 0.75);
-								
+
 							} else {
 								// that's the taxonomy_get_tree codepath
 								// we somehow need some extra margins here
@@ -520,13 +522,13 @@ function display_key($icons)
 								$key .= scaleTaxonomyImg($img, 0.74);
 								$key .= '</div>';
 							} */
-							
+
 							// TT - imagecache resizing was horrifically slow, don't quite understand why
 							//$key .= taxonomy_image_display($icon->tid, NULL, NULL, array('imagecache_preset' => 'iconkey'));
-							
+
 							// TT: Resizing taxonomy images for key by overriding the size. This is basically a CSS resize. Quick.
 							$key .= taxonomy_image_display($icon->tid, NULL, NULL, array('resize' => '1', 'width' => '21', 'height' => '18', 'imagecache_preset' => 'ORIGINAL'));
-							
+
 							$key .= '</span>';
 						}
 					}
@@ -550,33 +552,33 @@ function display_key($icons)
 
 function group_map_block_1_contents() {
 	// build up the explore tab
-	
+
 	// get the 'recent maps' list from view
 	// $explorecontent .= '<h3>' . t('Recent Maps') . '</h3>';
 	// $recent_maps_view = views_get_view('recent_maps');
-	// $explorecontent .= views_build_view('block', $recent_maps_view, null, false, '5'); 
-	
+	// $explorecontent .= views_build_view('block', $recent_maps_view, null, false, '5');
+
 	// load js to hide search box
 	drupal_add_js(drupal_get_path('module', 'group_map'). '/group_map.js');
-	 
+
 	// embed the regular search block
 	$explorecontent .= '<h3>' . t('Search This Map') . '</h3>';
-	$searchblock = module_invoke('search', 'block' , 'view', 0); 
-	$explorecontent .= $searchblock['content']; 
-	
+	$searchblock = module_invoke('search', 'block' , 'view', 0);
+	$explorecontent .= $searchblock['content'];
+
 	$explorecontent .= '<h3>' . t('Jump To...') . '</h3>';
 	$explorecontent .= '<form>';
 	$explorecontent .= "<input type='text' id='location_search' value='".t('Address / City')."' />";
 	$explorecontent .= "<input type='submit' id='location_search_button' value='Search' />";
 	$explorecontent .= "<div id='address_options'></div>";
 	$explorecontent .= '</form>';
-	
+
 	// add the themes filter
-	
+
 	$legend = display_key(taxonomy_get_tree(1));
 	$legend .= "<p><strong>Explore our World View!</strong></p>
- 
-				<p>This map view starts with 2 sites from every Open Green Map. Zoom in to see more (or click Maps above to explore each map separately). </p>				
+
+				<p>This map view starts with 2 sites from every Open Green Map. Zoom in to see more (or click Maps above to explore each map separately). </p>
 				<p>At Legend, click categories, then toggle different icons to filter your view. Use the Search Tab to jump to different world locations. Each map's introduction will appear on the Info Tab. </p>
 				<p>Find out more by clicking About, and take part in this social mapping platform!</p>";
 
@@ -590,7 +592,7 @@ function group_map_block_1_contents() {
     '#type' => 'tabpage',
     '#title' => t('Legend'),
 	'#weight' => '-6',
-	// GH: display the key with all icons 
+	// GH: display the key with all icons
 	// TT: We could cache this bit as it rarely changes ***** TODO
 	'#content' => $legend,
   );
@@ -598,17 +600,17 @@ function group_map_block_1_contents() {
     '#type' => 'tabpage',
     '#title' => t('Info'),
 	'#weight' => '0',
-    '#content' => '<p>' . variable_get('intro_block_text', t('Welcome to the Open Green Map')) . '</p>', 
+    '#content' => '<p>' . variable_get('intro_block_text', t('Welcome to the Open Green Map')) . '</p>',
   );
   $form['tabskey']['tab3'] = array(
     '#type' => 'tabpage',
     '#title' => t('Search'),
 	'#weight' => '0',
-    '#content' => $explorecontent, 
+    '#content' => $explorecontent,
   );
-	
+
   $block['content'] = tabs_render($form);
-  return $block;	
+  return $block;
 }
 
 
@@ -617,14 +619,14 @@ function group_map_block_0_contents() {
 	drupal_add_js(drupal_get_path('module', 'group_map'). '/group_map.js');
 	// drupal_add_css(drupal_get_path('module', 'fivestar'). '/fivestar.css', $type = 'module');
 	// drupal_add_css(drupal_get_path('module', 'fivestar'). '/widgets/small/small.css', $type = 'module');
-	
+
 	// load the node we're looking at (nid of the Map)
 	if (arg(0) == 'node' && is_numeric(arg(1))) {
 		$node = node_load(arg(1));
-		
+
 		// if node is a Map then we're fine, if it's a green site we need to do something about this
-		// had commented this out pre-oct 2nd, not sure why 
-		
+		// had commented this out pre-oct 2nd, not sure why
+
 		if($node->type == 'green_site') {
 			// print_r($node);
 			return NULL; // new code to fix ie bug?
@@ -632,30 +634,30 @@ function group_map_block_0_contents() {
 				// if the green site is in a group (i.e. on a Map) then load the Map as the $node to use for the key
 				$node = node_load($node->og_groups[0]);
 			} else {
-				
+
 				// need to get rid of this block and not show if the site isn't on a Map
 				return NULL;
 			}
-		} 
+		}
 		elseif ($node->type != 'green_map'){
 			return NULL; // don't show block if this is not a map or a green site
-		} 
+		}
 		// if node is a site without a Map, then we need to not show the key block
 	} else {
 		return NULL;
-		// don't return a block 
+		// don't return a block
 	}
-	
+
 	// let's try getting the icon navigation key from the exposed filter of the view
 	// from http://www.angrydonuts.com/displaying_views_exposed_filters
-	
+
 	//$view = views_get_view('og_ghp_map');
-	
+
 	//$keyform = views_filters($view);
 	//drupal_process_form('views_filters', $keyform);
-	
+
 	// $description = $node->field_description[0]['value'];
-	
+
 	// set up trimming
 	// $trimmed_description = truncate_utf8($description, 100, $wordsafe = TRUE, $dots = FALSE);
 	// $trimmed_description = '<span id="trimmed-description">' . $trimmed_description . '&nbsp;' . '</span>';
@@ -670,8 +672,8 @@ function group_map_block_0_contents() {
 
 	// set up the content for the 'info' tab
 
-	// get images 
-	
+	// get images
+
 	if($node->field_map_photo[0]['fid']) {
 		// resize using imagecache - 80px wide
 		$images .= theme('imagecache', 'mapkey', $node->field_map_photo[0]['filepath'], $node->field_map_photo[0]['alt'] );
@@ -680,14 +682,14 @@ function group_map_block_0_contents() {
 		// resize using imagecache - 80px wide
 		$images .= theme('imagecache', 'mapkey', $node->field_map_logo[0]['filepath'], $node->field_map_photo[0]['alt'] );
 	}
-	
+
 	$infocontent .= $images;
-	
+
 	// get user info etc.
 	$account = user_load($array = array('uid' => $node->uid));
 	if($account->profile_greenhouse_uid){
 		$infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Mapmaker Profile'),'http://www.greenmap.org/greenhouse/user/'. $account->profile_greenhouse_uid, array('class'=>'external', 'target'=>'_blank')) . '</div>';
-		
+
 	}
 	if($node->field_map_website[0]['url'])
 	{
@@ -701,23 +703,23 @@ function group_map_block_0_contents() {
 	if($node->field_map_pdf[0]['value']){
 		$infocontent .= '<div><span class="label">' . t('Download') . ':</span>&nbsp;' . l(t('Map'), $node->field_map_pdf[0]['value']) . '</div>';
 	}
-	
+
 	// Need to add a link to download locally made pdf/image
 	//*****
-	
+
 	$infocontent .= '<hr />';
-	
+
 	$infocontent .= '<p>' . $description . '</p>';
 	$start_date = strtotime($node->field_start_date[0]['value']);
 	$start_date = date("M Y",$start_date);
 	$infocontent .= '<div class="rightalign">' . '<span class="label">' . t('Begun') . ':</span>&nbsp;' . $start_date . '</div>';
-	
+
 	$infocontent .= '<div class="rightalign">' . '<span class="label">' . t('Updated') . ':</span>&nbsp;' . format_interval(mktime() - $node->changed, 1) . '&nbsp;' . t('ago') . '</div>';
 
 	// need to add in most recent site here?
-	
+
 	//*****
-	
+
 	$infocontent .= '<hr />';
 	//add number of sites, number of people in team, number of comments here
 	$infocontent .= '<strong>' . t('Outcomes') . '</strong>';
@@ -731,9 +733,9 @@ function group_map_block_0_contents() {
 	$infocontent .= '<hr />';
 	// Need to insert survey on impact
 	// *****
-	
+
 	// How can people add to this map?
-	
+
 	// can add?
 	if($GLOBALS['user']->og_groups[$node->nid] && user_access('create green_site content')){
 		$add_link = l(t('add a site'),'node/' . $node->nid . '/add');
@@ -742,20 +744,20 @@ function group_map_block_0_contents() {
 		// else, can they suggest?
 		$add_link = l(t('suggest a site'),'node/' . $node->nid . '/suggest');
 	}
-	// can they join? - i.e. if mapmaker has set group to be open, or moderated,  (not invite only or closed) 
+	// can they join? - i.e. if mapmaker has set group to be open, or moderated,  (not invite only or closed)
 	if($node->og_selective < 2){
 		$join_link = ' | ' . l(t('join team'),'og/subscribe/' . $node->nid );
 	}
-	
+
 	$infocontent .= '<strong>' . t('Add to this Green Map') . '</strong>';
 	if(!$add_link && !$join_link){
 		$infocontent .= '<div>' .  t('!mapmaker is not allowing public suggestions for this map.', array('!mapmaker' => theme_username($account))) . '</div>';
 	} else {
 		$infocontent .= '<div>' .  $add_link . $join_link . '</div>';
 	}
-	
+
 	// Set up content for the search tab
-	
+
 	$searchblock = module_invoke('search', 'block', 'view', 0);
 	// $searchcontent .= $searchblock['content'];
     if (module_exists('search') && user_access('search content')) {
@@ -770,26 +772,26 @@ function group_map_block_0_contents() {
 	$rel = '<strong>' . t('@name also made the following maps:', array('@name'=>$account->name)).'</strong>'.$rel;
 	$searchcontent .= $rel;
     }
-	
-	
-	
+
+
+
 	// change location
-	
+
 	/* // not implementing yet
 	* But to make this work, could do a text field that geocodes the location, and passes lat and long
 	* to the Gmap macro in the arguments section of the gmap_view it's being passed to.
-	* See Lee's work line 97 of group_map_views_default_views in this module 
-	
+	* See Lee's work line 97 of group_map_views_default_views in this module
+
 	$searchcontent .= '<hr />';
 	$searchcontent .= '<p>' . t('Change Location') . '</p>';
 	*/
-	
+
 	/* Need to implement more stuff here
 	* Recent maps
 	* search whole website
-	* other maps by this mapmaker 
+	* other maps by this mapmaker
 	*/
-	
+
   // this sets up the tabs for the key
   $form = array();
 
@@ -807,15 +809,15 @@ function group_map_block_0_contents() {
     '#type' => 'tabpage',
     '#title' => t('Info'),
 	'#weight' => '0',
-    '#content' => $infocontent, 
+    '#content' => $infocontent,
   );
   $form['tabskey']['tab3'] = array(
     '#type' => 'tabpage',
     '#title' => t('Search'),
 	'#weight' => '6',
-    '#content' => $searchcontent, 
+    '#content' => $searchcontent,
   );
-	
+
 //  $block['subject'] = t('Map Navigation');
   $block['content'] = tabs_render($form);
   return $block;

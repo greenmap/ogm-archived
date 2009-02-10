@@ -47,7 +47,7 @@
  *   STARTERKIT_preprocess_node(&$vars)     to add variables to the node.tpl.php
  *   STARTERKIT_preprocess_comment(&$vars)  to add variables to the comment.tpl.php
  *   STARTERKIT_preprocess_block(&$vars)    to add variables to the block.tpl.php
- */ 
+ */
 
 
 /*
@@ -127,7 +127,7 @@ function zen_breadcrumb($breadcrumb) {
  * @param $vars
  *   A sequential array of variables to pass to the theme template.
  */
- 
+
 function opengreenmap_preprocess_page(&$vars) {
   //if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) == '') {
    // $vars['content_is_node'] = TRUE;
@@ -136,11 +136,12 @@ function opengreenmap_preprocess_page(&$vars) {
   if($vars['node']->type == 'green_map'){
   	$vars['node_is_map'] = TRUE;
 	if($country = $vars['node']->field_country[0]['value']){
-		  $countries = location_views_countries();
+// 		  $countries = location_views_countries();
+  $countries =  _location_supported_countries();
    		  $countryname = $countries[$country];
 	}
 	$vars['location'] = array('city' => $vars['node']->field_city_region[0]['value'], 'country' => $countryname);
-  } 
+  }
 }
 
 /**
@@ -305,11 +306,11 @@ function phptemplate_views_filters($form) {
 		   $formelement = drupal_render($form["op$count"]) . drupal_render($form["filter$count"]);
 		   $o .= '<div class="form-element-'.$count.'">'.$label.$formelement.'</div>';
 		}
-		
+
 	$o .=  drupal_render($form['submit']);
-	
+
 	return $o . drupal_render($form);
-}  
+}
 
 
 /***** TT - custom code to theme popup info windows *****/
@@ -319,7 +320,7 @@ function phptemplate_gmap_views_marker_label_removeme($view,$fields,$entry) {
   $marker_directions = '';
 //  drupal_add_css(path_to_theme() .'/histmarkers_map.css');
   $marker_label = '<div class="gmap-infowin">'
-        .'... <b>some html containing php to grab relevant $node info for tab1 called Marker</b>' 
+        .'... <b>some html containing php to grab relevant $node info for tab1 called Marker</b>'
         .'</div>'
   ;
 
@@ -363,7 +364,7 @@ $fields, 'entry' => $entry));
 /**
  * Switch to different tpl file if viewing simple version
  */
- 
+
 /**
 * This snippet loads up different page-type.tpl.php layout
 * files automatically. For use in a page.tpl.php file.
@@ -439,8 +440,8 @@ function phptemplate_views_view_list_list_of_impacts_for_site($view, $nodes, $ty
 
 
 /**
- * TT - Duplicate of theme_menu_local_task() 
- * But this removes the og tab for adding a user. 
+ * TT - Duplicate of theme_menu_local_task()
+ * But this removes the og tab for adding a user.
  * If we ever upgrade to Drupal 6 we can use hook_menu_alter() instead
  */
 
@@ -450,16 +451,16 @@ function zen_menu_local_task($mid, $active, $primary) {
   $pattern1 = '/og\/users\/(\d+)\/add_user/';
   preg_match($pattern1, $item['path'], $c1);
   $matches1 = count($c1);
-  
+
   // rename 'email' tab for groups, to 'email members'
   $pattern2 = '/node\/(\d+)\/email/';
   preg_match($pattern2, $item['path'], $c2);
   $matches2 = count($c2);
-  
+
   if ($matches1) {
     return '';
-  } 
-  
+  }
+
   elseif ($matches2) {
     // change title of menu link
 	$item['title'] = t('Email Team');
@@ -469,7 +470,7 @@ function zen_menu_local_task($mid, $active, $primary) {
 	}
 	return '<li class="' . $activeclass . '">'. $link ."</li>\n";
   }
-  
+
   elseif ($active) {
   	// Drupal default
     return '<li class="active">'. menu_item_link($mid) ."</li>\n";
