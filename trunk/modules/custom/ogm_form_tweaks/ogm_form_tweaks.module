@@ -19,14 +19,35 @@ function ogm_form_tweaks_form_alter($form_id, &$form){
   
   // There are several fields that appear on both the Green Site and the Green Map forms. This if statement deals with both.
   if($form_id == 'green_site_node_form' || $form_id == 'green_map_node_form') {
-    
+  
     // tweak the help text on the language selection fields for sites & maps
     $form['i18n']['language']['#description'] = t('If your language is not on this list, leave this blank.');
     
     // Add some guidance about clicking on maps for both sites & maps
     $form['locations']['0']['#description'] = t('If you click the wrong location on the map, just click the pin again to remove it, or drag the pin to the correct location. You can also just click the new location and the pin will be moved.');
-    
+   	if(isset($form['field_icons_to_use']))
+   	{
+   		insertIconRecursive($form['field_icons_to_use']);	
+   	} 
   }
   
-  
+}
+function insertIconRecursive(&$array)
+{
+	foreach($array as $key => &$item)
+	{
+		if(is_array($item))
+		{
+			if(isset($item['#type']) && $item['#type'] == 'checkbox')
+			{
+				
+				$item['#title'] = taxonomy_image_display($item['#return_value'], NULL, NULL, array('resize' => '3', 'width' => '21', 'height' => '18', 'imagecache_preset' => 'ORIGINAL')). "   ".$item['#title'];	
+
+			}
+			else
+			{
+				insertIconRecursive($item);
+			}
+		}
+	}
 }
