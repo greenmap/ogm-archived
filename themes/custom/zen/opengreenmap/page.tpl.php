@@ -1,11 +1,11 @@
 <?php
 /*
 $_GET['isSimple'] = false;
-if ( (arg(0)=='node' && arg(2) == 'simple') || (arg(0)=='forward' && arg(2) == 'simple') || (arg(0)=='abuse' && arg(4) == 'simple') || $_GET[theme] == 'simple' ) { 
+if ( (arg(0)=='node' && arg(2) == 'simple') || (arg(0)=='forward' && arg(2) == 'simple') || (arg(0)=='abuse' && arg(4) == 'simple') || $_GET[theme] == 'simple' ) {
 	$_GET['isSimple'] = true;
 	include('page-simple.tpl.php');
 	return;
-} 
+}
 if(arg(0) == 'greenmap_widget'){
 	$_GET['isSimple'] = true;
 	include('page-simple.tpl.php');
@@ -13,7 +13,7 @@ if(arg(0) == 'greenmap_widget'){
 }
 */
 if ($_GET['isSimple']) {
-	include('page-simple.tpl.php');	
+	include('page-simple.tpl.php');
 	return;
 }
 ?>
@@ -46,18 +46,18 @@ if ($_GET['isSimple']) {
     <?php /* <div id="skip-to-nav"><a href="#navigation"><?php print t('Skip to Navigation'); ?></a></div> */ ?>
 
     <div id="header"><div id="header-inner" class="clear-block">
-      
-	  
+
+
       <?php if ($header): ?>
         <div id="header-blocks">
           <?php print $header; ?>
         </div> <!-- /#header-blocks -->
       <?php endif; ?>
-	  
-	  
+
+
       <?php if ($logo || $site_name || $site_slogan || $title): ?>
         <div id="logo-title">
-
+        <?php opengreenmap_custom_login();?>
           <?php if ($logo): ?>
             <div id="logo"><a href="<?php print $base_path; ?>" title="<?php print t('Home'); ?>" rel="home"><img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" id="logo-image" /></a></div>
           <?php endif; ?>
@@ -74,14 +74,13 @@ if ($_GET['isSimple']) {
             </strong></<?php print $tag; ?>>
           <?php endif; ?>
 
-
 		  <?php $titlestyle = $node_is_map ? 'node_is_map' : ''; ?>
 		  <?php if ($title): ?>
 			  <div class="maptitle <?php print $titlestyle; ?>">
 				  <h1 class="title"><?php print $title; ?></h1>
 				  <?php if ($node_is_map): ?>
 				  	<span id="location"><?php print $location['city'] . ' ' . $location['country'] ; ?></span>
-				  <?php endif; ?>	
+				  <?php endif; ?>
 			  </div>
 		  <?php endif; ?>
 
@@ -89,7 +88,7 @@ if ($_GET['isSimple']) {
       <?php if ($site_slogan): ?>
         <div id='site-slogan'><?php print $site_slogan; ?></div>
       <?php endif; ?>
-      
+
       <?php if ($header_advert): ?>
         <div id="header_advert">
           <?php print $header_advert; ?>
@@ -101,7 +100,7 @@ if ($_GET['isSimple']) {
 
     </div></div> <!-- /#header-inner, /#header -->
 
-    <div id="main"><div id="main-inner" class="clear-block<?php if ($search_box || $secondary_links || $navbar) { print ' with-navbar'; } ?>">
+    <div id="main" class="clear-block"><div id="main-inner" class="clear-block<?php if ($secondary_links || $navbar) { print ' with-navbar'; } ?>">
       <div id="content"><div id="content-inner">
 
         <?php if ($mission): ?>
@@ -141,16 +140,10 @@ if ($_GET['isSimple']) {
 
       </div></div> <!-- /#content-inner, /#content -->
 
-      <?php if ($search_box || $secondary_links || $navbar): ?>
+      <?php if ($secondary_links || $navbar): ?>
         <div id="navbar"><div id="navbar-inner">
 
           <a name="navigation" id="navigation"></a>
-
-          <?php if ($search_box): ?>
-            <div id="search-box">
-              <?php print $search_box; ?>
-            </div> <!-- /#search-box -->
-          <?php endif; ?>
 
           <?php if ($secondary_links): ?>
             <div id="secondary">
@@ -182,14 +175,27 @@ if ($_GET['isSimple']) {
       <div id="footer-message"><?php print $footer_message; ?></div>
 
     </div></div> <!-- /#footer-inner, /#footer -->
-
-    <?php if ($closure_region): ?>
-      <div id="closure-blocks"><?php print $closure_region; ?></div>
-    <?php endif; ?>
-
-    <?php print $closure; ?>
-
   </div></div> <!-- /#page-inner, /#page -->
+
+
+  <?php if ($closure_region  || $search_box): ?>
+    <div id="closure-region" class="clear-block">
+      <div id="donte-button"><a href="http://www.greenmap.org/greenhouse/en/about/donate"><img src="<?php print base_path().path_to_theme(); ?>/opengreenmap/images/donate_button.gif" alt="Donate to GreenMaps"></a></div>
+      <div id="closure-blocks"><?php print $closure_region; ?></div>
+      <?php if ($search_box): ?>
+        <div id="search-box">
+          <?php print $search_box; ?>
+        </div> <!-- /#search-box -->
+      <?php endif; ?>
+    </div><!-- /#clusure-region -->
+  <?php endif; ?>
+
+  <?php if($devel): ?>
+    <div id="devel" class="clear-block"><?php print $devel; ?></div>
+  <?php endif;?>
+
+  <?php print $closure; ?>
+
 
 </body>
 </html>

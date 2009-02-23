@@ -32,18 +32,19 @@
   body
   {
   	padding: 0;
+    background:  #F9FBF6;
   }
 
   #page
   {
-  	background: url(images/top.png) repeat-x;
+  	background: #fff url(images/top.png) repeat-x;
   }
 
   #page-inner
   {
   	padding-left: 25px;
 	padding-right: 25px;
-	background: url(images/bottom.png) repeat-x bottom;
+/*	background: url(images/bottom.png) repeat-x bottom;*/
   }
 
 /** header **/
@@ -102,13 +103,17 @@
 
   #main-inner
   {
+    float: left;
+    width: 100%;
   }
 
 /** content **/
   #content
   {
+    width: 95%;
+    margin-left: 25px;
   }
-  
+
   body.simple #content
   {
 	background: #fff;
@@ -140,6 +145,7 @@
   h3.title /* Comment title */
   {
     margin: 0;
+    line-height: 1em;
   }
 
   div.messages /* Important messages (status, warning, and error) for the user */
@@ -228,10 +234,6 @@
   {
   }
 
-  #search-box /* Wrapper for the search form */
-  {
-  }
-
   #primary /* Primary links */
   {
   margin-left: 0;
@@ -254,6 +256,7 @@
 /** sidebar-right **/
   #sidebar-right
   {
+    margin-right: 10px;
   }
 
   #sidebar-right-inner
@@ -272,19 +275,63 @@
   #footer-message /* Wrapper for the footer message from Drupal's "Site information"
                      and for any blocks placed in the footer region */
   {
+    margin-left: 10px;
   }
 
 /** closure **/
+  #closure-region {
+  background: url(images/bottom.png) repeat-x top;
+  position: absolute;
+  width: 100%;
+  font-size: 0.75em;
+}
+
   #closure-blocks /* Wrapper for any blocks placed in the closure region */
   {
+  float: left;
+  margin-left: 20px;
+
+}
+div#donte-button {
+  float: left;
+  margin: 8px;
+}
+  #search-box /* Wrapper for the search form */
+  {
+    float:right;
+    margin: 0;
+    padding: 10px;
   }
+ #search-box .form-item {
+  margin: 0;
+  padding: 0;
+  float: left;
+}
+#search-box .form-text {
+  border: 1px #666 solid;
+  border-bottom: 2px #666 solid;
+  border-left: 2px #666 solid;
+  font-size: 1.2em;
+}
+#search-box .form-submit {
+  background: #666;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  border: 1px solid #666;
+  float:left;
+  width: auto;
+  padding: 2px;
+  vertical-align: middle;
+}
 
 /** Drupal nodes **/
   .node /* Node wrapper */
   {
   	padding: 0; /*10px*/
   }
-  
+
   body.simple .node /* for simple theme */
   {
 	padding: 0;
@@ -338,7 +385,7 @@
   .node-type-story /* Story content node */
   {
   }
-  
+
   .node-type-green_map /* Map content node */
   {
   	padding: 0;
@@ -479,7 +526,7 @@
     margin: 0;
 	float: right;
   }
-  
+
   .comment p
   {
   	display: inline;
@@ -579,18 +626,18 @@
   {
   	float: right;
   }
-  
+
   #block-menu-2 ul
   {
   margin: 0;
   }
-  
+
   #block-menu-2 li, #block-menu-143 li
   {
   display: inline;
   padding: 0pt 1em 0pt 0pt;
   }
-  
+
   div#block-menu-143
   {
   	margin-bottom: 0;
@@ -601,7 +648,7 @@
   	margin-bottom: 0;
 	padding: 0 0 3px 0;
   }
-  
+
   #block-node-0 /* "Syndicate" block for primary RSS feed */
   {
   }
@@ -625,36 +672,36 @@
   #block-user-0 /* "User login form" block */
   {
 	margin-bottom: 5em; /* large margin to compensate for all the floating */
-  } 
+  }
 
   #block-user-0 .form-item
   {
-	margin: 0.5em 0; 
+	margin: 0.5em 0;
 	font-size: 0.9em;
-  } 
-  
+  }
+
   #block-user-0 .form-item input
   {
 	font-size: 1em;
 	color: gray;
 	width: 100%;
-  } 
-  
+  }
+
   #block-user-0 div.login-links
   {
 	float: right;
   }
-  
+
   #block-user-0 div.login-links ul
   {
 	margin: 0;
   }
-  
+
   #block-user-0 input.form-submit
   {
 	float: left;
-  }  
-  
+  }
+
   #block-user-1 /* "Navigation" block for Drupal navigation menu */
   {
   }
@@ -795,11 +842,11 @@
   }
 
 	input#edit-search-block-form-keys /** search form needs to be smaller - RM 1/15/09 **/
-	{ 
+	{
 		width: 110px;
 	}
-	
-	
+
+
 /** Drupal admin tables **/
   /* We overrode these styles in html-elements.css, but restore them for the
    * admin section of the site.
@@ -895,7 +942,7 @@ div.item-list div.odd {
 
 /* Link to GreenMap.org */
 
-div#block-menu-2 ul li:last-child a {color: #C6006F;} 
+div#block-menu-2 ul li:last-child a {color: #C6006F;}
 
 /* Admin Message */
 
@@ -989,7 +1036,7 @@ div#siteactions ul {
 	background-color: #fff;  /* Drupal core uses a #eee background */
 }
 
-.view-content .view-cell-header, .view-content .view-cell-header  
+.view-content .view-cell-header, .view-content .view-cell-header
 {
 	background-color: #8CC63F;
 }
@@ -1005,4 +1052,202 @@ div#siteactions ul {
 
 .view-content td.view-field.view-field-og-post-count, .view-content td.view-field.view-field-og-post-count
 {
+}
+/* mini map style */
+.view-site-mini-map {
+  width: 200px;
+  border-top: 1px solid #cacaca;
+  border-bottom: 1px solid #cacaca;
+  margin: 50px 0 25px 0;
+}
+.view-site-mini-map p {
+  margin: 0;
+  padding: 3px 0;
+  font-weight: bold;
+  font-size: .8em;
+}
+.view-site-mini-map ul {
+  margin: 0;
+  padding: 0;
+}
+.view-site-mini-map ul li{
+  list-style-type: none;
+  display: block;
+  margin: 0;
+  padding: 0 0 3px 0;
+  font-size: 1.2em;
+}
+.view-site-mini-map a {
+  color: #9c3;
+}
+/* custom block styles */
+div#block-block-6 {
+  border: 2px solid #FFAC06;
+  color: #FFAC06;
+  font-size: 1.3em;
+  font-weight: bold;
+  padding: 5px;
+}
+div#block-views-Testimonials {
+  border: 2px solid #D7005D;
+  border-top: 1px solid #D7005D;
+  padding: 5px;
+  font-size: .9em;
+}
+div#block-views-Testimonials h2 {
+  color: #D7005D;
+  padding-left: 0;
+}
+
+div#block-block-5 {
+  border: 2px solid #909493;
+}
+
+/* custom login */
+div#custom-login .name {
+  font-weight: bold;
+  float: left;
+  padding-right: 1em;
+}
+div#custom-login {
+  float: right;
+}
+div#custom-login .additional {
+  padding: 3px 50px 3px 20px;
+  background: #fff;
+  border: 2px solid #9c3;
+  border-bottom: 1px solid #9c3;
+  float: left;
+}
+div#custom-login .additional a {
+  color: #000;
+}
+div#custom-login ul.menu {
+  margin: 0;
+  padding: 0;
+  float: right;
+}
+div#custom-login ul.menu li {
+  display:inline;
+  margin: 0;
+  padding: 0;
+  padding-right: 1em;
+}
+div#custom-login ul.menu li ul.menu {
+  display: none;
+  position: absolute;
+  z-index: 300;
+  border: 1px solid #9c3;
+  background: #fff;
+  margin-top: .25em;
+  padding: .5em;
+}
+div#custom-login ul.menu li ul.menu li{
+  display: block;
+  width: 7em;
+  margin: 1em;
+
+  }
+div#custom-login .uaction {
+  background: #9c3;
+  padding: 3px 5px;
+  border: 2px solid #9c3;
+  border-bottom: 1px solid #9c3;
+  float:right;
+}
+div#custom-login .uaction a {
+  color: #fff;
+}
+/* lightbox pop up */
+#outerImageContainer {
+  border: 3px solid #9c3;
+  border-bottom: none;
+}
+#outerImageContainer a {
+  color: #000;
+}
+#outerImageContainer .form-text {
+  border: 1px solid #9c3;
+  font-size: 1em;
+  padding: 2px;
+}
+#outerImageContainer .form-submit {
+  border: 3px solid #9c3;
+  background: #9c3;
+  color: #fff;
+  font-weight: bold;
+  font-size: .8em;
+  padding: 3px;
+}
+#imageDataContainer {
+  border: 3px solid #9c3;
+  border-top: none;
+}
+
+/* large block menus */
+div#large-block-menu ul {
+  margin: 0;
+  padding: 0;
+}
+div#large-block-menu ul li {
+  list-style-type: none;
+  text-align: center;
+  padding: 10px;
+  font-size: 1.6em;
+  margin: 0 0 10px 0;
+}
+div#large-block-menu ul li a:hover {
+  text-decoration: none;
+}
+
+div#large-block-menu ul li.grmap {
+  border: 2px solid #FE9900;
+}
+div#large-block-menu ul li.grmap a, div#large-block-menu ul li.grmap a.active {
+  color: #FE9900;
+}
+div#large-block-menu ul li.grmap-active, div#large-block-menu ul li.grmap:hover {
+  background: #fe9900;
+}
+
+div#large-block-menu ul li.maps {
+  border: 2px solid #CD0067;
+}
+div#large-block-menu ul li.maps a, div#large-block-menu ul li.maps a.active {
+  color: #cd0067;
+}
+div#large-block-menu ul li.maps-active, div#large-block-menu ul li.maps:hover {
+  background: #cd0067;
+}
+
+
+div#large-block-menu ul li.involved {
+  border: 2px solid #9c3;
+}
+div#large-block-menu ul li.involved a, div#large-block-menu ul li.involved a.active {
+  color: #9c3;
+}
+div#large-block-menu ul li.involved-active, div#large-block-menu ul li.involved:hover {
+  background: #9c3;
+}
+
+
+
+div#large-block-menu ul li.grmap a:hover, div#large-block-menu ul li.grmap-active a, div#large-block-menu ul li.maps a:hover,
+div#large-block-menu ul li.maps-active a, div#large-block-menu ul li.involved a:hover, div#large-block-menu ul li.involved-active a,  div#large-block-menu ul li a.active, div#large-block-menu ul li:hover a {
+  color: #fff;
+}
+
+/* Devel area */
+div#devel {
+  width: 100%;
+  font-size: .9em;
+}
+div#devel .block {
+  float: left;
+  margin: 50px 15px 5px 15px;
+}
+div#devel h2.title {
+  font-size: 1em;
+  line-height: 1em;
 }

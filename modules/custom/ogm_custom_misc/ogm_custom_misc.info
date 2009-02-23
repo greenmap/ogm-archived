@@ -1,0 +1,9 @@
+; $Id$
+
+name = OGM Custom Misc.
+
+description = Various stored PHP functions to be called from the database, eg: php nodes, views args handling.
+
+package = GreenMap
+
+core= "5.x"

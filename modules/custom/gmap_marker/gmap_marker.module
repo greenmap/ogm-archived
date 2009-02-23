@@ -58,16 +58,18 @@ function gmap_marker_gmap($op, $map=null) {
   switch ($op) {
     case 'pre_theme_map':
 
-		$path = drupal_get_path('module', 'gmap_marker');
+      $path = drupal_get_path('module', 'gmap_marker');
 
-		if(  ( arg(0) == 'node' || arg(0) == 'greenmap_widget' ) && is_numeric(arg(1))) {
-			$nid = arg(1);
-			$nidJS = "var mapNid = '".$nid."';\n";
-			drupal_add_js( $nidJS,'inline');
-		}else if(arg(0) == 'greenmap'){
-			$nidJS = "var mapNid;\n";
-			drupal_add_js( $nidJS,'inline');
-		}
+      if(  ( arg(0) == 'node' || arg(0) == 'greenmap_widget' ) && is_numeric(arg(1))) {
+        $nid = arg(1);
+        $type = db_result(db_query('SELECT type FROM {node} WHERE nid = %d', $nid));
+        $nidJS = "var mapNid = '".$nid."';\n";
+        drupal_add_js( $nidJS,'inline');
+      }
+      elseif(arg(0) == 'greenmap'){
+        $nidJS = "var mapNid;\n";
+        drupal_add_js( $nidJS,'inline');
+      }
 
 		if(arg(0) == 'greenmap_widget'){
 
@@ -95,7 +97,6 @@ function gmap_marker_gmap($op, $map=null) {
 			$icons .= "  return ico;\n";
 			$icons .= "}\n\n";
 
-
 			drupal_add_js( $path.'/ajax.js' );
 			drupal_add_js( $icons,'inline');
 			drupal_add_js( $path.'/gmap_marker.js','module','footer' );
@@ -107,8 +108,7 @@ function gmap_marker_gmap($op, $map=null) {
 
 
 		}
-
-		if ($map['markers'] || $map['lines']) {
+		if (($map['markers'] || $map['lines']) && $type != 'green_site') {
 			drupal_add_js($path .'/markerloader_greenmap.js');
 
 		}

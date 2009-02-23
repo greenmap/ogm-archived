@@ -9,7 +9,7 @@
  */
 
 function gmap_bubble_cron(){
-	
+
 	// get count from database
 	$count = db_result(db_query("SELECT COUNT(nid) AS count FROM {node} WHERE type = 'green_site' AND status = '1'"));
 
@@ -26,9 +26,9 @@ function gmap_bubble_cron(){
 function gmap_bubble_menu($may_cache){
 	$items = array();
 	if ($may_cache) {
-  
+
 		$items[] = array(
-	      'path' => 'greensite/count', 
+	      'path' => 'greensite/count',
 	      'title' => t('Node Count'),
 	      'callback' => 'gmap_bubble_count',
 	      'type' => MENU_CALLBACK,
@@ -45,17 +45,28 @@ function gmap_bubble_menu($may_cache){
  */
 function gmap_bubble_gmap($op, $map=null)
 {
-	switch ($op) {
-		case 'pre_theme_map':
-			// do this only for the global map
-			if((arg(0) == 'node' && is_numeric(arg(1))) || (arg(0) == 'greenmap')) {
-				drupal_add_js(drupal_get_path('module', 'gmap_bubble').'/gmap_bubble.js', 'module', 'footer');
-				drupal_add_css(drupal_get_path('module', 'gmap_bubble').'/gmap_bubble.css');
-			}
-			break;
-	}
-}
+  if(arg(0) == 'greenmap') {
+    $global_map = TRUE;
+  }
+  elseif (arg(0) == 'node' && is_numeric(arg(1)) && !arg(2)) {
+    $type = db_result(db_query('SELECT type FROM node WHERE nid = %d', arg(1)));
+    switch ($type) {
+      case 'green_map':
+        $global_map = TRUE;
+        break;
+    }
+  }
 
+  // do this only for the global map
+  if ($global_map) {
+    switch ($op) {
+      case 'pre_theme_map':
+          drupal_add_js(drupal_get_path('module', 'gmap_bubble').'/gmap_bubble.js', 'module', 'footer');
+          drupal_add_css(drupal_get_path('module', 'gmap_bubble').'/gmap_bubble.css');
+        break;
+    }
+  }
+}
 /*
  * Get count of icons - called by hook_menu above
  */

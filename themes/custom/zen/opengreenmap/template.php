@@ -1,4 +1,8 @@
 <?php
+drupal_add_js(path_to_theme() .'/opengreenmap/jquery.hoverIntent.minified.js');
+drupal_add_js(path_to_theme() .'/opengreenmap/superfish.js');
+drupal_add_js(path_to_theme() .'/opengreenmap/custom_user_menu.js');
+
 // $Id: template.php,v 1.1.2.1 2008/02/14 11:38:36 johnalbin Exp $
 
 /**
@@ -101,6 +105,7 @@ function opengreenmap_regions() {
     'footer' => t('footer'),
     'closure_region' => t('closure'),
     'header_advert' => t('header advert'),
+    'devel' => t('devel'),
   );
 }
 // */
@@ -481,4 +486,39 @@ function zen_menu_local_task($mid, $active, $primary) {
   }
 }
 
+/**
+ * Custom user login block
+ */
+
+function opengreenmap_custom_login() {
+  global $user;
+
+  $output = '<div id="custom-login">';
+  if ($user->uid == 0) {
+    $output .= '<div class="additional">';
+//     $output .= l(t('Create new account'), 'user/register');
+    $menu = module_invoke('menu', 'block', 'view', 161);
+    $output .= $menu['content'];
+
+    $output .= '</div>';
+    $output .= '<dic class="uaction">';
+    $output .= l(t('Log In'), 'user/login');
+    $output .= '</div>';
+  }
+  else {
+    $output .= '<div class="additional">';
+    $output .= '<span class="name">'. $user->name .':</span>';
+//     $output .= l(t('My account'), 'user');
+
+    $menu = module_invoke('menu', 'block', 'view', 160);
+    $output .= $menu['content'];
+
+    $output .= '</div>';
+    $output .= '<div class="uaction">';
+    $output .= l(t('Log Out'), 'logout');
+    $output .= '</div>';
+  }
+  $output .= '</div>';
+  print $output;
+}
 
