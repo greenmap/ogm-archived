@@ -12,8 +12,8 @@
 
 .pink {
 	color: #C6006F;
-} 
- 
+}
+
 /* style for the big blocks on the home page */
 
 body.front div#content div.node
@@ -24,7 +24,7 @@ body.front div#content div.node
   height:460px;
   padding-top:1px;
   }
-  
+
 /*
  * For home page
  */
@@ -48,7 +48,7 @@ div#welcomebubble a {
 	text-decoration: none;
 }
 
-div#welcometext 
+div#welcometext
 {
 	width: 280px;
 	padding-right: 10px;
@@ -81,22 +81,22 @@ span.ogm {
 
 
 /* may need IE fix for centering this */
-#bigbuttons 
-  {	
+#bigbuttons
+  {
 	background: #fff;
 	margin-left: auto;
-	margin-right: auto;	
+	margin-right: auto;
 	margin-top: 1em;
 	max-width: 700px;
 	border: 1px solid #999999;
   }
-  
+
 
 #bigbuttons ul.big
   {
     list-style-type: none;
   }
-  
+
 #bigbuttons li.big
   {
     float: left;
@@ -127,24 +127,24 @@ span.ogm {
   {
 	background-image: url(images/involved_bg.jpg);
   }
-  
+
 #bigbuttons ul.big a
 {
 	color: #000;
 }
-      
+
 #bigbuttons ul.big h2 a
   {
 	color: #fff;
 	line-height: 1.5em;
   }
-    
+
 #bigbuttons p
   {
 	margin-left:10px;
 	margin-right:10px;
   }
-  
+
 #bigbuttons div.view li
 {
 	list-style: none;
@@ -196,7 +196,7 @@ div.view-og-ghp-map form#views-filters, div.view-greenmap form#views-filters {
 	background-color:white;
 	opacity:0.85;
 	padding: 25px;
-*/	
+*/
 }
 
 
@@ -222,7 +222,7 @@ div.gmapstyle-title {
 	border-bottom-width: 1px;
 	border-bottom-style: dashed;
 	margin-bottom: 10px;
-		
+
 }
 
 div.gmapstyle-field_image_embed {
@@ -258,11 +258,11 @@ div.gmapstyle-link {
 div.gmappopup .nature, div.nature a {
 	color: #64b535;
 	border-color: #64b535;
-} 
+}
 div.gmappopup .culture, div.culture a {
 	color: #e18321;
 	border-color: #e18321;
-} 
+}
 div.gmappopup .sustainability, div.sustainability a {
 	color: #1b72d9;
 	border-color: #1b72d9;
@@ -270,7 +270,7 @@ div.gmappopup .sustainability, div.sustainability a {
 */
 
 /*****
- * TT custom styles for GGM node-green_site.tpl.php 
+ * TT custom styles for GGM node-green_site.tpl.php
  */
 
 /** New to be moved over **/
@@ -289,21 +289,26 @@ div.culture div.taxname {
 
 div#address, div#mediathumbs {
 	float: right;
-	width: 120px;
+	width: 175px;
   margin-left:10px;
 }
 
 div#address {
   /* GH: added to limit the address to four lines for now */
-	max-height: 68px;
-	overflow: hidden;
+/* 	max-height: 68px; */
+/* 	overflow: hidden; */
 }
 
 img.submitted_icon {
   float: left;
-  margin-top: 5px;
+  margin-top: 10px;
+  margin-left: 5px;
+}
+img.map_icon {
+  float: left;
   margin-right: 5px;
 }
+
 
 #bubble_small .submitted_text {
   float: left;
@@ -363,14 +368,14 @@ div.taximage img {
     text-decoration: none;
     color: #777;
     background-color: transparent;
-    background: url(images/tab-left.png) no-repeat left -38px;  	
+    background: url(images/tab-left.png) no-repeat left -38px;
   }
-  
+
   div#tabs-tabs ul.tabs {
 	height: 2em;
   }
 
-  div.drupal-tabs ul.primary li a 
+  div.drupal-tabs ul.primary li a
   {
     display: block;
     height: 20px; /* 24px (parent) - 4px (padding) */
@@ -390,24 +395,24 @@ div.taximage img {
     background: url(images/tab-left.png) no-repeat left -76px;
   }
 
-  div.drupal-tabs ul.primary li a:hover 
+  div.drupal-tabs ul.primary li a:hover
   {
     background: url(images/tab-right.png) no-repeat right -76px;
   }
 
   div.drupal-tabs ul.primary li.active ,
-  div.drupal-tabs ul.primary li.active 
+  div.drupal-tabs ul.primary li.active
   {
     border-width: 0;
     color: #000;
     background-color: transparent;
-    background: url(images/tab-left.png) no-repeat left 0; 
+    background: url(images/tab-left.png) no-repeat left 0;
   }
 
   div.drupal-tabs ul.primary li.active a ,
-  div.drupal-tabs ul.primary li.active a:hover 
+  div.drupal-tabs ul.primary li.active a:hover
   {
-    background: url(images/tab-right.png) no-repeat right 0; 
+    background: url(images/tab-right.png) no-repeat right 0;
   }
 /* end of tabs */
 
@@ -429,7 +434,9 @@ div.siteicons ul.links li {
 div.meta {
 	margin-top: 10px;
 }
-
+div.meta .submitted_text {
+  float: left;
+}
 /** Styles for navigation/key stuff **/
 
 div.fragment {
@@ -450,7 +457,7 @@ div.block-group_map select {
 
 a.downloadmap {
 	background: url(images/downloadmap.gif) no-repeat;
-	padding-left: 20px; 
+	padding-left: 20px;
 }
 
 div#tabs-tabskey-1, div#tabs-tabskey-2, div#tabs-tabskey-3 {
@@ -492,7 +499,7 @@ div#block-search-0 {
 	/* display: none; */
 }
 
-/** end of new **/ 
+/** end of new **/
 
 /* Theming the comments */
 

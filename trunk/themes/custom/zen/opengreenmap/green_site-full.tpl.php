@@ -29,8 +29,8 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
 		<div class="location city"> <?php print $location[city]; ?> </div>
 	<?php } ?>
 	<?php if ($location[postal_code] > '' || $location[province] > '') { ?>
-		<div class="location postalcode"> 
-			<?php print $location[province] . ' ' . $location[postal_code]; ?> 
+		<div class="location postalcode">
+			<?php print $location[province] . ' ' . $location[postal_code]; ?>
 		</div>
 	<?php } ?>
 
@@ -58,46 +58,46 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
   if($node->field_image[0]['value'] > '') {
     $image = $node->field_image;
     $image['widget']['thumbnail_width'] = '100';
-    
+
   	$media_thumb = theme('image_ncck_image_thumbnail', $image, $node->field_image[0], 'image_thumbnail', $node);
   } elseif($node->field_video[0]['value'] > '') {
   	$media_thumb = theme('video_cck_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
   }
-	
-// RM $siteicons code moved up along with icons display code ////////////	
-	if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
+
+// RM $siteicons code moved up along with icons display code ////////////
+	if($node->field_accessible_by_public_tran[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/accessible.png" alt="' . t('accessible') . '" title="' . t('accessible') . '">' . '</li>';
 }
-if($node->field_child_friendly[0]['value'] == 1) { 
+if($node->field_child_friendly[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/youth.png" alt="' . t('youth friendly') . '" title="' . t('youth friendly') . '">' . '</li>';
 }
-if($node->field_appointment_needed[0]['value'] == 1) { 
+if($node->field_appointment_needed[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/appointment.png" alt="' . t('appointment necessary - call first') . '" title="' . t('appointment necessary - call first') . '">' . '</li>';
 }
-if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
+if($node->field_accessible_by_public_tran[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/transport.png" alt="' . t('accessible by public transport') . '" title="' . t('accessible by public transport') . '">' . '</li>';
 }
-if($node->field_free_entry[0]['value'] == 1) { 
+if($node->field_free_entry[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/free.png" alt="' . t('free entry') . '" title="' . t('free entry') . '">' . '</li>';
 }
-if($node->field_involved[0]['value'] == 'yes') { 
+if($node->field_involved[0]['value'] == 'yes') {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/insider_icon.gif" alt="' . t('the person who mapped this is involved in this site') . '" title="' . t('the person who mapped this is involved in this site') . '">' . '</li>';
 }
 
-  $contents = '<div id="mediathumbs">' . $media_thumb ; 
-  
+  $contents = '<div id="mediathumbs">' . $media_thumb ;
+
   $contents .= '<div class="fivestar">';//RM relocated here
 			$contents .= fivestar_widget_form($node);
 		$contents .= '</div>';
-	
+
   	$contents .= '<div id="siteactions">';
   		$contents .= '<ul>';
   			$contents .= '<li>' . format_plural($comment_count, '1 comment', '@count comments') . '</li>';
   			$contents .= '<li>' . l(t('share this site'), 'forward/' . $node->nid . '/simple') . '</li>';
   			$contents .= '<li>' . l(t('flag this'),'abuse/report/node/' . $node->nid . '/simple') . '</li>';
   		$contents .= '</ul>';
-  	$contents .= '</div>';  
-   
+  	$contents .= '</div>';
+
 	 if($siteicons > '') {  // RM - relocated here
 		$contents .= '<div class="siteicons">';
 			$contents .= '<ul class="links">';
@@ -105,28 +105,28 @@ if($node->field_involved[0]['value'] == 'yes') {
 			$contents .= '</ul>';
 		$contents .= '</div>';
 	}
-	
+
   $contents .= '</div>'; // end of media & actions
-  
+
   $contents .= content_format('field_details', $field_details[0]);
-	
+
 /* // RM moved all this up so as sit in right side ///////
-if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
+if($node->field_accessible_by_public_tran[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/accessible.png" alt="' . t('accessible') . '"  title="' . t('accessible') . '">' . '</li>';
 }
-if($node->field_child_friendly[0]['value'] == 1) { 
+if($node->field_child_friendly[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/youth.png" alt="' . t('youth friendly') . '" title="' . t('youth friendly') . '">' . '</li>';
 }
-if($node->field_appointment_needed[0]['value'] == 1) { 
+if($node->field_appointment_needed[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/appointment.png" alt="' . t('appointment necessary - call first') . '" title="' . t('appointment necessary - call first') . '">' . '</li>';
 }
-if($node->field_accessible_by_public_tran[0]['value'] == 1) { 
+if($node->field_accessible_by_public_tran[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/transport.png" alt="' . t('accessible by public transport') . '" title="' . t('accessible by public transport') . '">' . '</li>';
 }
-if($node->field_free_entry[0]['value'] == 1) { 
+if($node->field_free_entry[0]['value'] == 1) {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/free.png" alt="' . t('free entry') . '" title="' . t('free entry') . '">' . '</li>';
 }
-if($node->field_involved[0]['value'] == 'yes') { 
+if($node->field_involved[0]['value'] == 'yes') {
 	$siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/insider_icon.gif" alt="' . t('the person who mapped this is involved in this site') . '" title="' . t('the person who mapped this is involved in this site') . '">' . '</li>';
 }
 
@@ -142,24 +142,35 @@ if($node->field_involved[0]['value'] == 'yes') {
 			$contents .= fivestar_widget_form($node);
 		$contents .= '</div>';
 	$contents .= '</div>'; // */
-	$contents .= '<div class="meta">';
-  $img_alt = t('This site was added by an official Mapmaker');
-  $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="'  . $img_alt . '" title="'  . $img_alt . '"/>';
-
-      
+  $contents .= '<div class="meta">';
+  $imgalt = t('Part of a community map.');
+  $contents .= '<img class="map_icon" src="' . base_path() . path_to_theme() . '/images/grey_icon.gif" width="20px" height="19px" alt="'  . $imgalt . '" title="'  . $imgalt . '"/>';
   $contents .= '<div class="submitted_text">';
-		$contents .= t('added') . ' ' . date('m/Y', $node->created) . ' ' ;
+
 		if($node->og_groups_both[$node->og_groups[0]] > '') {
-			$contents .= t('to') . ' ' . l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
+	   $contents .= l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
 		}
     if($node->uid){
-			$contents .= '<br />' . t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
+      $contents .= '<br />'. t('added') . ' ' . date('m/Y', $node->created) .' '. t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
 		}
-		
+    $contents .= '</div>';
+    $img_alt = t('This site was added by an official Mapmaker');
+    $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="'  . $img_alt . '" title="'  . $img_alt . '"/>';
+
 		// debug
 		//print_r($node);
-		$contents .= '</div>';
- 
+		$contents .= '</div><!-- /meta-->';
+
+  // ncm: insert a small map on the site pages when viewed as a node
+  // as in search click throughs.
+//   if (arg(0) != 'greenmap') {
+    $view_name = 'site_mini_map'; //name of view
+    $view_args = array();
+    $view = views_get_view($view_name);
+    $contents .= views_build_view('block', $view, $view_args, FALSE, $view->nodes_per_block);
+//   }
+
+
 	$contents .= '</div>';
 
 
@@ -169,7 +180,7 @@ if($node->field_involved[0]['value'] == 'yes') {
   $comments = '<p>' . comment_render($node) . '</p>';
 
 
-	// prepare content for CONNECTIONS tab  
+	// prepare content for CONNECTIONS tab
 	// get directions
 	$connections = output_connections($node);
 
@@ -283,14 +294,14 @@ if($node->field_involved[0]['value'] == 'yes') {
     '#type' => 'tabpage',
     '#title' => t('Overview'),
 	'#weight' => '-6',
-    '#content' => $contents, 
+    '#content' => $contents,
   );
   // theme('comment_wrapper') pulls in comments formatted in template.php, though it doesn't work. comment_render($node) does work but it shows up twice.
   $form['tabs']['tab2'] = array(
     '#type' => 'tabpage',
     '#title' => t('Comments') . ' (' . $comment_count . ')' ,
 	'#weight' => '-4',
-    '#content' => '<div class="mycomments">'  . $comments . '</div>', 
+    '#content' => '<div class="mycomments">'  . $comments . '</div>',
   );
   $form['tabs']['tab3'] = array(
     '#type' => 'tabpage',
