@@ -435,7 +435,7 @@ div.meta {
 	margin-top: 10px;
 }
 div.meta-bubble {
-
+  float: left;
 }
 div.meta .submitted_text {
   float: left;

@@ -256,7 +256,7 @@
 /** sidebar-right **/
   #sidebar-right
   {
-    margin-right: 10px;
+    margin-right: 20px;
   }
 
   #sidebar-right-inner
@@ -901,7 +901,7 @@ div#donte-button {
 	padding: 0px;
 	padding-bottom: 12px;
 	padding-top: 12px;
-	width: 155px;
+	width: 150px;
 }
 
 .connections_menu_item {
@@ -931,7 +931,7 @@ div#donte-button {
 	padding-left: 18px;
 	padding-right: 10px;
 	padding-top: 10px;
-	width: 380px;
+	width: 360px;
 }
 
 /* Impacts Tab */
@@ -1252,5 +1252,5 @@ div#devel h2.title {
   line-height: 1em;
 }
 div#devel #devel-execute-form {
-  max-width: 500px;
+  max-width: 475px;
 }
