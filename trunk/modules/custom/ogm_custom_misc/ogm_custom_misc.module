@@ -101,14 +101,14 @@ function ogm_custom_misc_front_page() {
 
 function ogm_custom_misc_large_block_menu() {
   $gmap = '<li class="grmap">'. l(t('World Map'), 'greenmap') .'</li>';
-  $maps = '<li class="maps">'. l(t('All Maps'), 'maps/recent') .'</li>';
+  $maps = '<li class="maps">'. l(t('All Maps'), 'maps') .'</li>';
   $userlink = '<li class="involved">'. l(t('Get Involved!'), 'user/register') .'</li>';
   switch (arg(0)) {
     case 'greenmap':
       $gmap = '<li class="grmap-active">'. l(t('World Map'), 'greenmap') .'</li>';
       break;
     case 'maps':
-        $maps = '<li class="maps-active">'. l(t('All Maps'), 'maps/recent') .'</li>';
+        $maps = '<li class="maps-active">'. l(t('All Maps'), 'maps') .'</li>';
 
     case 'user':
       if (arg(1) == 'register') {
