@@ -180,7 +180,7 @@ if ($_GET['isSimple']) {
 
   <?php if ($closure_region  || $search_box): ?>
     <div id="closure-region" class="clear-block">
-      <div id="donte-button"><a href="http://www.greenmap.org/greenhouse/en/about/donate"><img src="<?php print base_path().path_to_theme(); ?>/opengreenmap/images/donate_button.gif" alt="Donate to GreenMaps"></a></div>
+      <div id="donte-button"><a href="http://www.opengreenmap.org/en/donate"><img src="<?php print base_path().path_to_theme(); ?>/opengreenmap/images/donate_button.gif" alt="Donate to GreenMaps"></a></div>
       <div id="closure-blocks"><?php print $closure_region; ?></div>
       <?php if ($search_box): ?>
         <div id="search-box">
