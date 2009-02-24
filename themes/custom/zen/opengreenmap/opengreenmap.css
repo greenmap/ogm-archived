@@ -1090,7 +1090,6 @@ div#block-block-8 {
 }
 div#block-views-Testimonials {
   border: 2px solid #D7005D;
-  border-top: 1px solid #D7005D;
   padding: 5px;
   font-size: .9em;
 }
@@ -1113,10 +1112,9 @@ div#custom-login {
   float: right;
 }
 div#custom-login .additional {
-  padding: 3px 50px 3px 20px;
+  padding: 3px 10px 3px 10px;
   background: #fff;
   border: 2px solid #9c3;
-  border-bottom: 1px solid #9c3;
   float: left;
 }
 div#custom-login .additional a {
@@ -1152,7 +1150,6 @@ div#custom-login .uaction {
   background: #9c3;
   padding: 3px 5px;
   border: 2px solid #9c3;
-  border-bottom: 1px solid #9c3;
   float:right;
 }
 div#custom-login .uaction a {
