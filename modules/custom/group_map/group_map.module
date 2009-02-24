@@ -812,7 +812,10 @@ function group_map_block_0_contents() {
     '#title' => t('Legend'),
 	'#weight' => '-6',
 // GH: changed to new key UI code
-	'#content' => $key . $trimmed_description,
+//	'#content' => $key . $trimmed_description,
+// ncm modified because $trimmed_description was printing
+// a ghost array. TODO: find the real cause of the problem
+  '#content' => $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.').'<br /><br />'.t('Coming soon: lines and area'),
   );
   $form['tabskey']['tab2'] = array(
     '#type' => 'tabpage',
