@@ -496,8 +496,8 @@ function opengreenmap_custom_login() {
   $output = '<div id="custom-login">';
   if ($user->uid == 0) {
     $output .= '<div class="additional">';
-//     $output .= l(t('Create new account'), 'user/register');
-    $menu = module_invoke('menu', 'block', 'view', 161);
+    $output .= l(t('Create new account'), 'user/register');
+//     $menu = module_invoke('menu', 'block', 'view', 161);
     $output .= $menu['content'];
 
     $output .= '</div>';
