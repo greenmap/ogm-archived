@@ -1081,7 +1081,7 @@ div#siteactions ul {
   color: #9c3;
 }
 /* custom block styles */
-div#block-block-6 {
+div#block-block-8 {
   border: 2px solid #FFAC06;
   color: #FFAC06;
   font-size: 1.3em;
@@ -1099,7 +1099,7 @@ div#block-views-Testimonials h2 {
   padding-left: 0;
 }
 
-div#block-block-5 {
+div#block-block-7 {
   border: 2px solid #909493;
 }
 
@@ -1250,4 +1250,7 @@ div#devel .block {
 div#devel h2.title {
   font-size: 1em;
   line-height: 1em;
+}
+div#devel #devel-execute-form {
+  max-width: 500px;
 }

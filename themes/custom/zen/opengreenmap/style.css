@@ -316,7 +316,7 @@ img.map_icon {
 }
 
 #bubble_small .submitted_icon {
-  clear: left;
+/*   clear: left; */
 }
 
 div#siteactions ul {
@@ -433,6 +433,9 @@ div.siteicons ul.links li {
 
 div.meta {
 	margin-top: 10px;
+}
+div.meta-bubble {
+
 }
 div.meta .submitted_text {
   float: left;

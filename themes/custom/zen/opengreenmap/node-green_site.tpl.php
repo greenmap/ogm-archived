@@ -45,7 +45,7 @@ foreach ($node->taxonomy as $key => $val) {
 // GH: not sure if we want to keep this
 // TT: we do want this
 ?>
-<div id="node-<?php print $node->nid; ?>" class="node<?php if ($sticky) { print ' sticky'; } ?><?php if (!$status) { print ' node-unpublished'; } ?> <?php print $node_classes.' '.$genre_name_lc ?>"> 
+<div id="node-<?php print $node->nid; ?>" class="node<?php if ($sticky) { print ' sticky'; } ?><?php if (!$status) { print ' node-unpublished'; } ?> <?php print $node_classes.' '.$genre_name_lc ?>">
 <?php
 
 
@@ -68,7 +68,7 @@ if ($teaser) {
 			echo "<div id='bubble_small_edit'>". l(t("edit"),'node/'.$node->nid."/edit")."</div>";
 		}
 		?>
-		
+
 		<div id="bubble_icons">
 			<?php if ($primary_icon) { ?>
 				<div id="bubble_icon_primary">
@@ -111,7 +111,7 @@ if ($teaser) {
 				<?php print fivestar_static($content_type = 'node', $content_id = $node->nid, $node_type = 'green_site'); ?>
 			</div>
 			<div id="bubble_small_comment">
-			
+
 				<img src="<?php print base_path(); ?>files/comments_bubble.gif">
 				<!-- TODO: add link -->
 				<a href="#" rel='2' class='maximize'>
@@ -143,20 +143,24 @@ if ($teaser) {
 				<?php } ?>
 			</div>
 		</div>
-    <?php $img_alt = t('This site was added by an official Mapmaker'); ?>
-    <img class="submitted_icon" src="<?php print base_path() . path_to_theme(); ?>/img/mapper.gif" width="20px" height="19px" alt="<?php print $img_alt; ?>" title="<?php print $img_alt; ?>"  />
-    <div class="submitted_text">
-    
-        <?php print t('added') . ' ' . date('m/Y', $node->created) . ' ' ;
-        if($node->og_groups_both[$node->og_groups[0]] > '') {
-          print t('to') . ' ' . l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
-        }
-        if($node->uid){
-          print '<br />' . t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
-        }
-        ?>
+  <?php
+  $contents .= '<div class="meta meta-bubble">';
+  $imgalt = t('Part of a community map.');
+  $contents .= '<img class="map_icon" src="' . base_path() . path_to_theme() . '/images/grey_icon.gif" width="20px" height="19px" alt="'  . $imgalt . '" title="'  . $imgalt . '"/>';
+  $contents .= '<div class="submitted_text">';
+    if($node->og_groups_both[$node->og_groups[0]] > '') {
+     $contents .= l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
+    }
+    if($node->uid){
+      $contents .= '<br />'. t('added') . ' ' . date('m/Y', $node->created) .' '. t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
+    }
+    $contents .= '</div>';
+    $img_alt = t('This site was added by an official Mapmaker');
+    $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="'  . $img_alt . '" title="'  . $img_alt . '"/>';
 
-    </div>
+     $countents .= '</div><!-- /meta-->';
+    print $contents;?>
+
 
 		<?php $flag = _abuse_get_status('node', $node->nid); ?>
 		<?php if ($flag == 'Pending' || $flag == 'Hidden') { ?>
@@ -164,7 +168,7 @@ if ($teaser) {
 				<strong>Flagged Site.</strong> Please view with caution!
 			</div>
 		<?php } ?>
-		
+
 	</div>
 <?php
 

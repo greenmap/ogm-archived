@@ -2,7 +2,7 @@
 
 
 function connections_views_default_views()
-{ 
+{
 
     $view = new stdClass();
     $view->name = 'list_sites_map';
@@ -313,7 +313,7 @@ function output_connections($node)
 
 
     // build a variable containing the Getting Here
-    $getinghere = 'You may see directions the Mapmaker has included, or directions shared by the public on how to get here by bike, wheelchair, mass transit, etc. Follow these directions at your own risk. <a href="/drupal/en/node/add/transport-direction?theme=simple&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title).'" title="Add Directions">Add</a> directions to help people get here.';
+    $getinghere = 'You may see directions the Mapmaker has included, or directions shared by the public on how to get here by bike, wheelchair, mass transit, etc. Follow these directions at your own risk '. l(t('Add'), 'node/add/transport-direction', array('title' => t('Add Directions')), '&destination=node/'.$node->nid .'&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title)) .' directions to help people get here.';
     $getinghere .= '<p>' . content_format('field_public_transport_directio', $node->field_public_transport_directio[0]) . '</p>';
 
     $field_result = db_query("SELECT field_transport_direction_1_value as directions, w.field_web_url as url, n.title as title, n.created as tl From {content_type_transport_direction} c, {node} n, {node} sn, {content_field_web} w where c.nid = n.nid and c.field_site_2_nid = %d and c.field_site_2_nid = sn.nid and w.nid = n.nid order by n.created desc", $node->nid);
