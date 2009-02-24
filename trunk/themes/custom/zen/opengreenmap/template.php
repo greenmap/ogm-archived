@@ -506,8 +506,8 @@ function opengreenmap_custom_login() {
     $output .= '</div>';
   }
   else {
+    $output .= '<div class="name">'. $user->name .':</div>';
     $output .= '<div class="additional">';
-    $output .= '<span class="name">'. $user->name .':</span>';
 //     $output .= l(t('My account'), 'user');
 
     $menu = module_invoke('menu', 'block', 'view', 161);
