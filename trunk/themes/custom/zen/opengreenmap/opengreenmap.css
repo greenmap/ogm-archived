@@ -300,7 +300,7 @@ div#donte-button {
   {
     float:right;
     margin: 0;
-    padding: 10px;
+    padding: 10px 20px 10px 10px;
   }
  #search-box .form-item {
   margin: 0;
@@ -1103,7 +1103,7 @@ div#block-block-7 {
 div#custom-login {
   float: right;
   min-width: 180px;
-/*   margin-right: 20px; */
+  margin-right: 20px;
   border: 2px solid #9c3;
 }
 div#custom-login .additional {
