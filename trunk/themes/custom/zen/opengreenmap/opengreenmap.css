@@ -256,7 +256,7 @@
 /** sidebar-right **/
   #sidebar-right
   {
-    margin-right: 20px;
+    margin: 10px 20px 0 0;
   }
 
   #sidebar-right-inner
@@ -308,21 +308,18 @@ div#donte-button {
   float: left;
 }
 #search-box .form-text {
-  border: 1px #666 solid;
-  border-bottom: 2px #666 solid;
-  border-left: 2px #666 solid;
+  border: 2px #797979 solid;
   font-size: 1.2em;
 }
 #search-box .form-submit {
-  background: #666;
+  background: #797979;
   color: #fff;
   font-weight: bold;
-  font-size: 1.1em;
+  font-size: 1.2em;
   text-transform: uppercase;
-  border: 1px solid #666;
+  border: 2px solid #797979;
   float:left;
   width: auto;
-  padding: 2px;
   vertical-align: middle;
 }
 
@@ -1103,19 +1100,15 @@ div#block-block-7 {
 }
 
 /* custom login */
-div#custom-login .name {
-  font-weight: bold;
-  font-size: .9em;
-/*   float: left; */
-/*   padding-right: 1em; */
-}
 div#custom-login {
   float: right;
+  min-width: 180px;
+/*   margin-right: 20px; */
+  border: 2px solid #9c3;
 }
 div#custom-login .additional {
   padding: 3px 10px 3px 10px;
   background: #fff;
-  border: 2px solid #9c3;
   float: left;
 }
 div#custom-login .additional a {
@@ -1130,27 +1123,28 @@ div#custom-login ul.menu li {
   display:inline;
   margin: 0;
   padding: 0;
-  padding-right: 1em;
+}
+div#custom-login ul.menu .name {
+  font-weight: bold;
 }
 div#custom-login ul.menu li ul.menu {
   display: none;
   position: absolute;
   z-index: 300;
-  border: 1px solid #9c3;
+  border: 2px solid #9c3;
   background: #fff;
   margin-top: .25em;
-  padding: .5em;
+  padding: .5em .25em;
+  min-width: 160px;
 }
 div#custom-login ul.menu li ul.menu li{
   display: block;
-  width: 7em;
   margin: 1em;
 
   }
 div#custom-login .uaction {
   background: #9c3;
   padding: 3px 5px;
-  border: 2px solid #9c3;
   float:right;
 }
 div#custom-login .uaction a {

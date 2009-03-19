@@ -2,7 +2,7 @@
 // $Id: impacts.module,v 0.1 2008/06/23 16:39:43 tom_o_t Exp $
 
 /*
-* hook_menu() 
+* hook_menu()
 * Create a page listing all the impacts/outcomes for a map
 */
 
@@ -10,13 +10,13 @@ function impacts_menu($may_cache){
 	$items = array();
 	if($may_cache){
 	} else {
-		
+
 		if (arg(0) == 'node' && is_numeric(arg(1))) {
 		$node = node_load(arg(1));
 		if($node->type == 'green_map'){
 	  $items[] = array(
-        'path' 				=> 'node/'. arg(1). '/outcomes', 
-        'title' 			=> t('Outcomes'),
+        'path' 				=> 'node/'. arg(1). '/outcomes',
+        'title' 			=> t('About'),
         'access' 			=> TRUE,
         'callback' 			=> 'impacts_outcomes_page',
         'callback arguments' => array(arg(1)),
@@ -26,15 +26,15 @@ function impacts_menu($may_cache){
     }}
   }
   return $items;
-}    
-  
+}
+
 function impacts_outcomes_page($mapid) {
 	$map = db_result(db_query('SELECT title FROM {node} where nid = %d',$mapid));
 	$node =node_load($mapid);
-  	drupal_set_title(t('Outcomes for '.$map));
+  	drupal_set_title(t('About '.$map));
 	$outcomes .= '<hr />';
 	//add number of sites, number of people in team, number of comments here
-	$outcomes .= '<strong>' . t('Outcomes') . '</strong><br>';
+	$outcomes .= '<strong>' . t('About') . '</strong><br>';
 	$outcomes .= $node->field_outcomes[0]['value'];
 	$num_sites = db_result(db_query("SELECT count(*) FROM {og_ancestry} n WHERE n.group_nid = %d and is_public = 1", $mapid));
 	$outcomes .= '<div class="leftalign">' . '<span class="label">' . t('Number of sites') . ':</span>&nbsp;' . $num_sites . '</div>';
@@ -43,34 +43,34 @@ function impacts_outcomes_page($mapid) {
 	$num_comments = db_result(db_query("SELECT count(*) FROM {comments} c, {og_ancestry} og where c.nid = og.nid and og.group_nid = %d and c.status = 0", $mapid));
 	$outcomes .= '<div class="leftalign">' . '<span class="label">' . t('Comments') . ':</span>&nbsp;' . $num_comments . '</div>';
 	$count = 'SELECT count(*)
-						FROM {content_type_impact} 
+						FROM {content_type_impact}
 						WHERE field_site_nid IN (SELECT nid FROM {og_ancestry} where group_nid = %d)';
-						
+
 	if(db_result(db_query($count, $mapid)))
 	{
 	$outcomes .= '<hr />';
 	$outcomes .= output_impacts_formap($mapid);
 	}
-	
+
 	$count = 'SELECT count(*) FROM {content_type_impact} c, {og_ancestry} og WHERE og.group_nid = %d AND c.field_site_nid = og.nid';
 	if(db_result(db_query($count, $mapid)))
 	{
 	$outcomes .= '<hr />';
 	$outcomes .=impacts_comments_list($mapid);
 
-	
+
 	}
 	$res = db_query('SELECT COUNT(vid) AS cnt FROM {content_type_impact}, {og_ancestry} og WHERE og.group_nid = %d AND field_discover_site_value = 1 AND field_site_nid = og.nid', $mapid);
 	$line = db_fetch_object($res);
 	if ($line->cnt > 0) {
 		$count = format_plural($line->cnt, '1 person', '@count people');
 		$outcomes .= '<p id="impacts_stats">' . t('@count discovered green places because of this map. ', array('@count' => $count));
-		
+
 		$outcomes .= '</p>';
 	}
 	return $outcomes;
 }
-  
+
 /*
  * hook_form_alter()
  * alters the form to submit an impact in the infowindow when viewing a site
@@ -87,7 +87,7 @@ function impacts_outcomes_page($mapid) {
 			$form['field_site']['nids']['#title'] = '';
 		}
 		if($impact_type = $_GET['impacttype'] && ($_GET['impacttype'] > '') && ($_GET['impacttype'] > 'Choose an action')) {
-			
+
 			$form['field_because_of_this_site']['key']['#default_value'] = array($_GET['impacttype'] => $_GET['impacttype']);
 			$form['field_because_of_this_site']['key']['#options'] = array($_GET['impacttype'] => $_GET['impacttype']);
 			$form['field_because_of_this_site']['key']['#attributes'] = array('class' => 'hidden');
@@ -211,7 +211,7 @@ function output_impacts($node)
 
 	// query database for impacts
 	$result = db_query('SELECT field_because_of_this_site_value AS action, COUNT(1) AS actioncount
-						FROM {content_type_impact} 
+						FROM {content_type_impact}
 						WHERE field_site_nid = %d
 						GROUP BY action', $node->nid);
 
@@ -221,7 +221,7 @@ function output_impacts($node)
 	  '#title' => t('Impacts'),
 	  '#type' => CHART_TYPE_BAR_H_GROUPED,
 	  '#adjust_resolution' => TRUE,
-	  
+
 	);
 
 	$colors = array(
@@ -245,8 +245,8 @@ function output_impacts($node)
 			$max = $impact->actioncount;
 		}
 	}
-	
-	// automatically set x axis labels for bottom. 
+
+	// automatically set x axis labels for bottom.
 	$chart['#mixed_axis_labels'][CHART_AXIS_X_BOTTOM][1][] = chart_mixed_axis_range_label(0, $max);
 
 
@@ -262,7 +262,7 @@ function output_impacts($node)
 	$add_impact .= '<div id="impacts_list">';
 	$list_of_impacts_view = views_get_view('list_of_impacts_for_site');
 	$list_of_impacts_view->args[0]=$node->nid;
-	$add_impact .= views_build_view('embed', $list_of_impacts_view, $list_of_impacts_view->args, false, false); 
+	$add_impact .= views_build_view('embed', $list_of_impacts_view, $list_of_impacts_view->args, false, false);
 	$add_impact .= '</div>';
 
 	$res = db_query('SELECT COUNT(vid) AS cnt FROM {content_type_impact} WHERE field_site_nid = %d AND field_discover_site_value = 1', $node->nid);
@@ -284,17 +284,17 @@ function output_impacts_formap($mapid)
 {
 	// query database for impacts of this whole map
 	$result = db_query('SELECT field_because_of_this_site_value AS action, COUNT(1) AS actioncount
-						FROM {content_type_impact} 
+						FROM {content_type_impact}
 						WHERE field_site_nid IN (SELECT nid FROM {og_ancestry} where group_nid = %d)
 						GROUP BY action', $mapid);
-	
+
 	// set basic details for chart
 	$chart = array(
 	  '#chart_id' => 'test_chart',
 	  '#title' => t('Impacts'),
 	  '#type' => CHART_TYPE_BAR_H_GROUPED,
 	  '#adjust_resolution' => TRUE,
-	  
+
 	);
 
 	$colors = array(
@@ -318,8 +318,8 @@ function output_impacts_formap($mapid)
 			$max = $impact->actioncount;
 		}
 	}
-	
-	// automatically set x axis labels for bottom. 
+
+	// automatically set x axis labels for bottom.
 	$chart['#mixed_axis_labels'][CHART_AXIS_X_BOTTOM][1][] = chart_mixed_axis_range_label(0, $max);
 
 
@@ -328,9 +328,9 @@ function output_impacts_formap($mapid)
 	$add_impact .= '<div id="impacts_chart">';
 	$add_impact .= chart_render($chart);
 	$add_impact .= '</div>';
- 
 
-	
+
+
 	return $add_impact;
 }
 function impacts_comments_list($mapid)
@@ -344,7 +344,7 @@ function impacts_comments_list($mapid)
 	$sql = 'SELECT field_comments_about_the_impact_value, n.title, n.created, c.field_site_nid as sid, sn.title as tl From {content_type_impact} c, {node} n, {node} sn, {og_ancestry} og where og.group_nid = %d and c.field_comments_about_the_impact_value != "" and c.nid = n.nid and c.field_site_nid = og.nid and c.field_site_nid = sn.nid order by n.created desc';
 	$res = pager_query($sql, $page_increment, 0, NULL, $mapid);
 	while($row = db_fetch_array($res))
-	{	
+	{
 		$row['created']=date("M j Y", $row['created']);
 		$rows [] = array($row['title'],$row['created'],$row['field_comments_about_the_impact_value'],l($row['tl'],'node/'.$row['sid']));
 	}
@@ -353,5 +353,5 @@ function impacts_comments_list($mapid)
 	$output .= theme('pager', NULL, $page_increment);//pager not showing up
 	//$output .= theme_pager(NULL,1);
 	return $output;
-	
+
 }

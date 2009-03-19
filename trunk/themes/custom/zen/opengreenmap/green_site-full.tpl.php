@@ -33,23 +33,13 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
 			<?php print $location[province] . ' ' . $location[postal_code]; ?>
 		</div>
 	<?php } ?>
-
-	<?php if ($field_phone[0] > '') { ?>
-		<div class="fieldphone"> <?php print content_format('field_phone', $field_phone[0]); ?> </div>
-	<?php } ?>
-	<?php if ($field_email[0] > '') { ?>
-		<div class="fieldemail"> <?php print content_format('field_email', $field_email[0]); ?> </div>
-	<?php } ?>
-	<?php if ($field_web[0] > '') { ?>
-		<div class="fieldweb"> <?php print content_format('field_web', $field_web[0]); ?> </div>
-	<?php } ?>
 </div>
 
 
 <h2 class="icontitle"><?php print $title; ?></h2>
 
 <div class="taximage">
-	<?php print $primary_icon . implode(' ', $secondary_icons); ?>
+	<?php print $primary_icon .  $secondary_icons; ?>
 </div>
 
 
@@ -142,16 +132,30 @@ if($node->field_involved[0]['value'] == 'yes') {
 			$contents .= fivestar_widget_form($node);
 		$contents .= '</div>';
 	$contents .= '</div>'; // */
+
+    if ($field_phone[0] > '') {
+      $contents .= '<div class="fieldphone">'. content_format('field_phone', $field_phone[0]) .'</div>';
+    }
+    if ($field_email[0] > '') {
+      $contents .= '<div class="fieldemail">'. content_format('field_email', $field_email[0]) .'</div>';
+    }
+    if ($field_web[0] > '') {
+      $contents .= '<div class="fieldweb">'. content_format('field_web', $field_web[0]) .'</div>';
+    }
+
+
+
+
   $contents .= '<div class="meta">';
   $imgalt = t('Part of a community map.');
   $contents .= '<img class="map_icon" src="' . base_path() . path_to_theme() . '/images/grey_icon.gif" width="20px" height="19px" alt="'  . $imgalt . '" title="'  . $imgalt . '"/>';
   $contents .= '<div class="submitted_text">';
 
 		if($node->og_groups_both[$node->og_groups[0]] > '') {
-	   $contents .= l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
+	   $contents .= l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top', 'title' => t('View this Open Green Map')));
 		}
     if($node->uid){
-      $contents .= '<br />'. t('added') . ' ' . date('m/Y', $node->created) .' '. t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
+      $contents .= '<br />'. t('added') . ' ' . date('m/Y', $node->created) .' '. t('by') . ' ' . l($node->name,'user/' . $node->uid, array('title' => t('View Profile'))) . ' ';
 		}
     $contents .= '</div>';
     $img_alt = t('This site was added by an official Mapmaker');
