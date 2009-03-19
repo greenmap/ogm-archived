@@ -496,24 +496,25 @@ function opengreenmap_custom_login() {
   $output = '<div id="custom-login">';
   if ($user->uid == 0) {
     $output .= '<div class="additional">';
-    $output .= l(t('Create new account'), 'user/register');
+    $output .= '<ul class="menu"><li>'. l(t('Create new account'), 'user/register');
 //     $menu = module_invoke('menu', 'block', 'view', 161);
     $output .= $menu['content'];
 
-    $output .= '</div>';
-    $output .= '<dic class="uaction">';
+    $output .= '</li></ul></div>';
+    $output .= '<div class="uaction">';
     $output .= l(t('Log In'), 'user/login');
     $output .= '</div>';
   }
   else {
-    $output .= '<div class="name">'. $user->name .':</div>';
+//     $output .= '<div class="name">'. $user->name .':</div>';
     $output .= '<div class="additional">';
 //     $output .= l(t('My account'), 'user');
+    $output .= '<ul class="menu"><li><span class="name">'. $user->name .'</span>';
 
     $menu = module_invoke('menu', 'block', 'view', 161);
     $output .= $menu['content'];
 
-    $output .= '</div>';
+    $output .= '</li></ul></div>';
     $output .= '<div class="uaction">';
     $output .= l(t('Log Out'), 'logout');
     $output .= '</div>';

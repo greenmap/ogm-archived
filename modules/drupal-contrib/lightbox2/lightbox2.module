@@ -2269,30 +2269,36 @@ function sort_by_length($a, $b) {
  * Get the user login form.
  */
 function lightbox2_login() {
-  print drupal_get_form('user_login_block');
-
-  // If the OpenID module is enabled, the javascript and css may not exist
-  // on the page, so add them dynamically.
-  if (module_exists('openid')) {
-    $path = drupal_get_path('module', 'openid');
-    $file = base_path() . $path .'/openid.js';
-    print '<script type="text/javascript">$.getScript("'. $file .'");</script>';
-    $js_file = base_path() . $path .'/openid.js';
-    $css_file = base_path() . $path .'/openid.css';
-
-    // Load the javascript dynamically.
-    print '<script type="text/javascript">$.getScript("'. $js_file .'", function () {if ($.isFunction(Drupal.openid)) { Drupal.openid(document); } });</script>';
-
-    // Load the css file dynamically.
-    print '<script type="text/javascript">
-      var fileref=document.createElement("link");
-      fileref.setAttribute("rel", "stylesheet");
-      fileref.setAttribute("type", "text/css");
-      fileref.setAttribute("href", "'. $css_file .'");
-      document.getElementsByTagName("head")[0].appendChild(fileref);
-      </script>';
+  // do not use lightbox2 for failed validation ie: bad password
+  // instead, return the fully rendered Drupal page with errors.
+  if (count($_POST)) {
+    return drupal_get_form('user_login_block');
   }
+  else {
+    print drupal_get_form('user_login_block');
 
+    // If the OpenID module is enabled, the javascript and css may not exist
+    // on the page, so add them dynamically.
+    if (module_exists('openid')) {
+      $path = drupal_get_path('module', 'openid');
+      $file = base_path() . $path .'/openid.js';
+      print '<script type="text/javascript">$.getScript("'. $file .'");</script>';
+      $js_file = base_path() . $path .'/openid.js';
+      $css_file = base_path() . $path .'/openid.css';
+
+      // Load the javascript dynamically.
+      print '<script type="text/javascript">$.getScript("'. $js_file .'", function () {if ($.isFunction(Drupal.openid)) { Drupal.openid(document); } });</script>';
+
+      // Load the css file dynamically.
+      print '<script type="text/javascript">
+        var fileref=document.createElement("link");
+        fileref.setAttribute("rel", "stylesheet");
+        fileref.setAttribute("type", "text/css");
+        fileref.setAttribute("href", "'. $css_file .'");
+        document.getElementsByTagName("head")[0].appendChild(fileref);
+        </script>';
+    }
+  }
   exit;
 }
 

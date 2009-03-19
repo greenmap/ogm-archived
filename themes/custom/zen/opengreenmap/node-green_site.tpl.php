@@ -13,8 +13,8 @@
 // get all the icon/taxonomy information
 $primary_term_tid = $node->primary_term->tid;
 $primary_term_name = $node->primary_term->name;
-$primary_icon = taxonomy_image_display($primary_term_tid, "title='$primary_term_name'");
-
+  $primary_icon = taxonomy_image_display($primary_term_tid);
+  $primary_icon = str_replace('title="', 'title="'. $primary_term_name .': ', $primary_icon);
 // get genre
 $genre_name_lc = '';
 $categories = taxonomy_get_parents($primary_term_tid);
@@ -30,14 +30,13 @@ if (is_array($genres)) {
 		$genre_name_lc = str_replace('&', '', $genre_name_lc);			// special case for "culture_&_society"
 	}
 }
-
+// print '<pre>';print_r($node->taxonomy);
 // get secondary icons
-$secondary_icons = array();
-foreach ($node->taxonomy as $key => $val) {
-	if ($key != $primary_term_tid) {
+foreach ($node->taxonomy as $tid => $tax) {
+	if ($tid != $primary_term_tid) {
 		// GH: there might be a more elegant way to get the name (title) here than the hack below
-		$secondary_icons[] = taxonomy_image_display($key);
-		$secondary_icons[count($secondary_icons)-1] = str_replace('alt="', 'alt="" title="', $secondary_icons[count($secondary_icons)-1]);
+		$si = taxonomy_image_display($tid);
+		$secondary_icons .= str_replace('alt="', 'alt="" title="'. $tax->name .': '. $tax->description .'"', $si);
 	}
 }
 
@@ -70,16 +69,14 @@ if ($teaser) {
 		?>
 
 		<div id="bubble_icons">
-			<?php if ($primary_icon) { ?>
+			<?php if ($primary_icon) : ?>
 				<div id="bubble_icon_primary">
 					<?php print $primary_icon; ?>
 				</div>
-			<?php } ?>
-			<?php foreach ($secondary_icons as $si) { ?>
-				<?php // GH: change alt to title (HACK, see above) ?>
-				<?php $si = str_replace(' alt=', ' alt="" title=', $si); ?>
-				<?php print $si; ?>
-			<?php } ?>
+			<?php endif; ?>
+			<?php if ($secondary_icons): ?>
+				<?php print $secondary_icons; ?>
+			<?php endif; ?>
 		</div>
 
 		<div class="bubble_small_title <?php print $genre_name_lc; ?>">
@@ -149,10 +146,10 @@ if ($teaser) {
   $contents .= '<img class="map_icon" src="' . base_path() . path_to_theme() . '/images/grey_icon.gif" width="20px" height="19px" alt="'  . $imgalt . '" title="'  . $imgalt . '"/>';
   $contents .= '<div class="submitted_text">';
     if($node->og_groups_both[$node->og_groups[0]] > '') {
-     $contents .= l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top') );
+     $contents .= l($node->og_groups_both[$node->og_groups[0]],'node/'.$node->og_groups[0], array('target' =>'_top', 'title' => t('View this Open Green Map')) );
     }
     if($node->uid){
-      $contents .= '<br />'. t('added') . ' ' . date('m/Y', $node->created) .' '. t('by') . ' ' . l($node->name,'user/' . $node->uid) . ' ';
+      $contents .= '<br />'. t('added') . ' ' . date('m/Y', $node->created) .' '. t('by') . ' ' . l($node->name,'user/' . $node->uid, array('title' => t('View Profile'))) . ' ';
     }
     $contents .= '</div>';
     $img_alt = t('This site was added by an official Mapmaker');

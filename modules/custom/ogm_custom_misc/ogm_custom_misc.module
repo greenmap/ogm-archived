@@ -64,7 +64,7 @@ function ogm_custom_misc_front_page() {
     <ul class="big clear-block">
       <li class="explore big">
         <h2 class="explore"><a class="bigbuttons explore" href="'. url('greenmap') .'">'. t('Explore') .'</a></h2>
-        <p><a class="bigbuttons" href="'. url('greenmap') .'">'.  variable_get('gmap_bubble_site_count', t('many')) .' local green living sites! See the world from a new perspective.
+        <p><a class="bigbuttons" href="'. url('greenmap') .'">'.  variable_get('gmap_bubble_site_count', t('many')) .' green living sites! See the world from a new perspective.
 </a></p>
       </li>
       <li class="expand big">
@@ -77,7 +77,7 @@ function ogm_custom_misc_front_page() {
       $output .= '</li>
       <li class="exchange big">
         <h2 class="involved"><a class="bigbuttons involved" href="'. $involved_link .'">'. t('Get Involved!') .'</a></h2>
-        <p><a class="bigbuttons" href="'. $involved_link .'">'. t('Add comments,/ ratings, images and impacts to any site or create a new Open Green Map!') .'</a><p>
+        <p><a class="bigbuttons" href="'. $involved_link .'">'. t('Explore local sites. Add your thoughts. Suggest a new site. Or create a new map!') .'</a><p>
       </li>
     </ul>';
 
