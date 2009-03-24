@@ -316,7 +316,7 @@ function output_connections($node)
     $getinghere = 'You may see directions the Mapmaker has included, or directions shared by the public on how to get here by bike, wheelchair, mass transit, etc. Follow these directions at your own risk '. l(t('Add'), 'node/add/transport-direction', array('title' => t('Add Directions')), '&destination=node/'.$node->nid .'&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title)) .' directions to help people get here.';
     $getinghere .= '<p>' . content_format('field_public_transport_directio', $node->field_public_transport_directio[0]) . '</p>';
 
-    $field_result = db_query("SELECT field_transport_direction_1_value as directions, w.field_web_url as url, n.title as title, n.created as tl From {content_type_transport_direction} c, {node} n, {node} sn, {content_field_web} w where c.nid = n.nid and c.field_site_2_nid = %d and c.field_site_2_nid = sn.nid and w.nid = n.nid order by n.created desc", $node->nid);
+    $field_result = db_query("SELECT c.field_field_transport_direction_value AS directions, c.field_field_web_url AS url, n.title AS title, n.created AS tl FROM {content_type_transport_direction} c INNER JOIN {node} n ON c.nid = n.nid WHERE c.field_field_site_2_nid = %d ORDER BY n.created DESC", $node->nid);
     while ($result = db_fetch_object($field_result)) {
         $getinghere .= '<p>' .'Title:' . $result->title . ' ';
         $getinghere .=  'Directios:' . $result->directions . ' ' . $result->url .'</p>';
