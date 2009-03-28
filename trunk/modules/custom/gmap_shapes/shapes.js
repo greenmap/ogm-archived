@@ -88,7 +88,6 @@ var polyMap;
 $(document).ready(function() {
 	$('#'+textfield_id).change(function() {
 		//$(this).attr('value');
-		//alert($(this).attr('value'));
 		KMLParser(polyMap,$(this).attr('value'));
 	});
 });
@@ -122,10 +121,9 @@ newEmptyPoly = function(map,points){
 	}else {
 		var latlngs = [];	
 	}
-	
-  // ***** TT - Need a switch here to go between a GPolygon and a GPolyline - how to pass?
 	poly = new GPolygon(latlngs);
-  // poly = new GPolyline(latlngs);
+  poly.enableEditing();
+  
 	map.addOverlay(poly);
 	if(latlngs.length < 4){
 		poly.enableDrawing();	
@@ -146,7 +144,6 @@ newEmptyPoly = function(map,points){
 		var doc = document.getElementById(textfield_id);
 		if(doc != undefined){
 			var output = '';
-			
 			for(var i = 0; i < poly.getVertexCount();i++){
 				var tmp = "";
 				tmp += poly.getVertex(i);
@@ -175,6 +172,7 @@ newEmptyPoly = function(map,points){
 						 '</kml>\n';
 		} else {
 			// error ? what should we do ?
+      console.log('error on line 174 of shapes.js');
 		}
 	});
 	return poly;
@@ -199,6 +197,8 @@ newEmptyLine = function(map,points){
 	
   poly = new GPolyline(latlngs);
 	map.addOverlay(poly);
+  poly.enableEditing();
+  
 	if(latlngs.length < 3){
 		poly.enableDrawing();	
 	}
@@ -258,10 +258,14 @@ $(document).ready(function() {
 
     obj.bind("init",function() {
     	map = obj.map;
+      var lat = Drupal.settings.gmap_shapes.lat;
+      var lng = Drupal.settings.gmap_shapes.lng;
+      var zoom = Drupal.settings.gmap_shapes.zoom;
+      zoom = parseInt(zoom);
+      var center = new GLatLng(lat,lng)
+      map.setCenter(center, zoom);
   	polyMap = map;
     // create a new empty poly or line depending on whats set
-
-    console.log("this is " + poly_type);
     if(poly_type == 'line'){
       newEmptyLine(map);
     } else if(poly_type == 'area') {
