@@ -33,17 +33,20 @@ function geocoding_validation_help($path){
 function geocoding_validation_nodeapi(&$node, $op,$a3 = null,$a4 = null) {
 	
 	// only for green_sites
-	if($node->type != 'green_site'){return;}
+	if ($node->type != 'green_site') {return;}
+  // only for those users who have permission to edit this site
+  if (node_access('update',$node) != true) {return;}
 	
 	switch($op){
 		// only for case view
 		case 'view':
+    
+    if ($node->field_poly_0[0]['gmap_shapes'] != '') { return; }
 		
 		// only if lat and lon are not set
 		if(	(	$node->location['lat'] != '' && $node->location['lon'] != '') || 
 			(	$node->locations[0]['latitude'] != '' && $node->locations[0]['longitude'] != '' )) {break;}	
-		// only for those users who have permission to edit this site
-		if(node_access('update',$node) != true){break;}
+
 		
 		// set message
 		$message = t(
