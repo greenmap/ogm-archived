@@ -54,13 +54,15 @@ KMLParser = function(map,doc) {
         }
         var linestring=placemarks[i].getElementsByTagName("LineString");
         if (linestring.length) {
-			// this is a functionality for lines
+          // this is a functionality for lines
+          //clearPoly(map);
+          newEmptyLine(map,points);
         }
 
         var polygons=placemarks[i].getElementsByTagName("Polygon");
         if (polygons.length) {
-			clearPoly(map);
-			newEmptyPoly(map,points);
+          //clearPoly(map);
+          newEmptyPoly(map,points);
         }
 
 
@@ -121,7 +123,9 @@ newEmptyPoly = function(map,points){
 		var latlngs = [];	
 	}
 	
+  // ***** TT - Need a switch here to go between a GPolygon and a GPolyline - how to pass?
 	poly = new GPolygon(latlngs);
+  // poly = new GPolyline(latlngs);
 	map.addOverlay(poly);
 	if(latlngs.length < 4){
 		poly.enableDrawing();	
@@ -176,60 +180,140 @@ newEmptyPoly = function(map,points){
 	return poly;
 }
 
-Drupal.gmap.addHandler('gmap',function(elem) {
-	
-  var obj = this;
-  var map;
 
-  obj.bind("init",function() {
-  	map = obj.map;
-	polyMap = map;
-	newEmptyPoly(map);
-	// clear all click listeners because we need only oru own listeners not enyone elses'
-	GEvent.clearListeners(map,  "click");
+
+/**
+ * newEmptyLine
+ * @param GMap map
+ * @param Array points (not required)
+ * return GPolyline
+ * Creates a polyline with a listeners and stuff
+ */
+newEmptyLine = function(map,points){
+	// there has to be at least 2 points 
+	if(points && points.length >= 3){
+		var latlngs = points;
+	}else {
+		var latlngs = [];	
+	}
 	
-	var doc = document.getElementById(textfield_id);
-	// we test if textfield is allready valid kml
-	// so this is "the load functionality"
-	KMLParser(map,doc.value);
+  poly = new GPolyline(latlngs);
+	map.addOverlay(poly);
+	if(latlngs.length < 3){
+		poly.enableDrawing();	
+	}
 	
-	GEvent.addListener(map, "click", function(marker,point) {
+	polyMouseoverListener = GEvent.addListener(poly, "mouseover", function() {
+		polymouseOver = true;
+		poly.enableEditing(); // edit points are shown
 	});
 	
-	GEvent.addListener(map, "singlerightclick", function(a,b,overlay) {
-		if(polymouseOver){
-			var mouseLatLng = map.getCurrentMapType().getProjection().fromPixelToLatLng(a,map.getZoom());
-			var command = prompt("what do you want to do?",'deletepoint');
+	polyMouseoutListener = GEvent.addListener(poly, "mouseout", function() {
+		polymouseOver = false;
+		poly.disableEditing(); // editpoints are hided
+	});
+	
+	// this listener creates KML data to the textfield
+	polyLineUpdatedListener = GEvent.addListener(poly,"lineupdated",function(){
+		var doc = document.getElementById(textfield_id);
+		if(doc != undefined){
+			var output = '';
 			
-			switch(command){
-				case 'deletepoint':
+			for(var i = 0; i < poly.getVertexCount();i++){
+				var tmp = "";
+				tmp += poly.getVertex(i);
+				tmp = tmp.replace("(","");
+				tmp = tmp.replace(")","");
+				var tmpLatLng = tmp.split(",");
 				
-				if(overlay.index != undefined){
-					poly.deleteVertex(overlay.index);
-				}
-				
-				break;
-				case 'delete':
-					clearPoly(map);
-					document.getElementById(textfield_id).value = "";
-					newEmptyPoly(map);
-				break;
-				default:
-				break;
+				if(output != ""){output += " ";}
+				output += tmpLatLng[1] + "," + tmpLatLng[0];
 			}
-		}		
+			doc.value  = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+						 '<kml>\n' +
+						 '<Document>\n' +
+						 '<Placemark>\n' +
+						 '<LineString>\n' +
+						 '<coordinates>\n';
+			doc.value += output;
+			doc.value += '</coordinates>\n' +
+						 '</LineString>\n' +
+						 '</Placemark>\n' +
+						 '</Document>\n' +
+						 '</kml>\n';
+		} else {
+			// error ? what should we do ?
+		}
 	});
-	
-	GEvent.addListener(map, "zoomend", function(oldzoom,newzoom) {
-	});
- 
-  	// Send out outgoing moves
-	GEvent.addListener(map,"moveend",function() {
-	});
+	return poly;
+}
 
-	// Send out outgoing map type changes.
-	GEvent.addListener(map,"maptypechanged",function() {
-	});
+
+
+$(document).ready(function() {
+  Drupal.gmap.addHandler('gmap',function(elem) {
+  	
+    var obj = this;
+    var map;
+
+    obj.bind("init",function() {
+    	map = obj.map;
+  	polyMap = map;
+    // create a new empty poly or line depending on whats set
+
+    console.log("this is " + poly_type);
+    if(poly_type == 'line'){
+      newEmptyLine(map);
+    } else if(poly_type == 'area') {
+      newEmptyPoly(map);
+    }
+  	
+  	// clear all click listeners because we need only oru own listeners not enyone elses'
+  	GEvent.clearListeners(map,  "click");
+  	
+  	var doc = document.getElementById(textfield_id);
+  	// we test if textfield is allready valid kml
+  	// so this is "the load functionality"
+  	KMLParser(map,doc.value);
+  	
+  	GEvent.addListener(map, "click", function(marker,point) {
+  	});
+  	
+  	GEvent.addListener(map, "singlerightclick", function(a,b,overlay) {
+  		if(polymouseOver){
+  			var mouseLatLng = map.getCurrentMapType().getProjection().fromPixelToLatLng(a,map.getZoom());
+  			var command = prompt("what do you want to do?",'deletepoint');
+  			
+  			switch(command){
+  				case 'deletepoint':
+  				
+  				if(overlay.index != undefined){
+  					poly.deleteVertex(overlay.index);
+  				}
+  				
+  				break;
+  				case 'delete':
+  					clearPoly(map);
+  					document.getElementById(textfield_id).value = "";
+  					newEmptyPoly(map);
+  				break;
+  				default:
+  				break;
+  			}
+  		}		
+  	});
+  	
+  	GEvent.addListener(map, "zoomend", function(oldzoom,newzoom) {
+  	});
+   
+    	// Send out outgoing moves
+  	GEvent.addListener(map,"moveend",function() {
+  	});
+
+  	// Send out outgoing map type changes.
+  	GEvent.addListener(map,"maptypechanged",function() {
+  	});
+    });
+   
   });
- 
 });
