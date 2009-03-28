@@ -15,13 +15,17 @@ Need to display lines & shapes on maps
 
 TODO CURRENT
 
-Integrate with new system
-
-Deal with errors when adding - foreach error in location, no lat/lon message
-Need to make line/area selected and displayed upon edit as appropriate - mostly a map zoom problem
 Key
-Make line editable upon edit
 
 Then...
 Make lines toggle-able
 Deal with on global basis
+
+
+GOING LIVE
+
+Enable module
+Add poly_0 as a field
+Add poly taxonomy to green_site
+Enable permissions
+Fix line 572 of gmap_marker.module with correct field

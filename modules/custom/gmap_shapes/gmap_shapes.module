@@ -26,7 +26,7 @@ function gmap_shapes_help($path){
 * @return array An array of valid permissions for the gmap_shapes module
 */
 function gmap_shapes_perm() {
-  return array('access gmap_shapes content');
+  return array('access gmap_shapes content', 'create poly');
 }
 
 /**
@@ -169,6 +169,7 @@ function gmap_shapes_widget($op, &$node, $field, &$items) {
                 'line' => t('A Line'),
                 'area' => t('An Area'),
               ),
+              '#access' => user_access('create poly'),
               
         		);    		
             // add javascript
@@ -178,12 +179,23 @@ function gmap_shapes_widget($op, &$node, $field, &$items) {
             // TT - If user has selected shape or line, then show the map & shapefile field, else hide
             
             if($shape){
-              // add javascript
+
+              // need to get lat, lon & center for map
+              $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $node->og_groups[0];
+              $groupnode = node_load($gid);
+              // pass map center  to js
+              drupal_add_js(array('gmap_shapes' => array(
+              'lat' => $groupnode->location['latitude'],
+              'lng' => $groupnode->location['longitude'],
+              'zoom' => $groupnode->field_map_zoom[0]['value'],
+              )), 'setting');
+              // start the main functionality
               drupal_add_js(drupal_get_path('module', 'gmap_shapes') . '/shapes.js');
               // holder for the map
         			$form[$field['field_name']]['gmap_user'] = array(
           			'#type'=>'markup',
-          			'#value'=>''
+          			'#value'=>'',
+                '#access'=>user_access('create poly'),
           		);
               
            
@@ -262,6 +274,7 @@ function gmap_shapes_widget($op, &$node, $field, &$items) {
                 	  '#required' => $field['required'] ? $field['required'] : FALSE,
                 	  '#size' => isset($field['widget']['size']) ? $field['widget']['size'] : 60,
                 	  '#description' => isset($field['widget']['description']) ? $field['widget']['description'] : '',
+                    '#access' => user_access('create poly'),
                 	);
             }
     		}
@@ -487,7 +500,8 @@ function gmap_shapes_form_alter($form_id, &$form){
         }
         
         //  hide the wrong taxonomies, make required primaryicon not required
-        // TODO ****
+        $form['taxonomy']['1']['#required'] = 0;
+        $form['taxonomy']['5']['#required'] = 1;
         
         // hide the default location form
         $form['locations']=NULL;
