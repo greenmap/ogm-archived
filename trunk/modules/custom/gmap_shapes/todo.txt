@@ -1,0 +1,27 @@
+﻿Todo for Lines & Shapes
+
+Need a radio button in the form early on to allow people to choose between marker, line & shape (done)
+  - this will switch out the form js behaviour (done)
+  - will switch out the options (hide markers, show line/shape types as appropriate)
+      -- do this using a page reload and add something to the url so hook_form_alter kicks in 
+      -- need to change what's required
+  
+Need to display lines & shapes on maps
+  - load after points?
+  - only load at a certain zoom level?
+  - delay loading of all stuff
+  
+
+
+TODO CURRENT
+
+Integrate with new system
+
+Deal with errors when adding - foreach error in location, no lat/lon message
+Need to make line/area selected and displayed upon edit as appropriate - mostly a map zoom problem
+Key
+Make line editable upon edit
+
+Then...
+Make lines toggle-able
+Deal with on global basis

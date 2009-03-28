@@ -61,23 +61,52 @@ function gmap_shapes_field($op, &$node, $field, &$node_field, $teaser, $page) {
   switch ($op) {
     case 'insert':
     case 'update':
-		// save
+		// save if it's not a point, otherwise ignore
 		if ($field['widget']['type'] == 'gmap_shapes') {
+        // TT - ***********  -  @FIX - this is a horrible security risk from Miika's code, but i've no idea how to improve. Run through some kind of input check?
+        // putting code that a user can mess with directly into the databse is really bad.
 				$data = $_SESSION['gmap_shapes_save_data'];
-				if ($field['multiple']) {
-					// TODO: multiple field behavior
-				} else {
-					if (db_result(db_query('SELECT COUNT(*) FROM {'. $db_info['table'] .'} WHERE vid = %d AND nid = %d', $node->vid, $node->nid))) {
-            			db_query("UPDATE {". $db_info['table'] ."} SET ". $db_info['columns']['gmap_shapes']['column'] ." = GeomFromText('POLYGON((".$data."))') WHERE vid = %d AND nid = %d", $node->vid, $node->nid);
-          			} else {
-            			db_query("INSERT INTO {". $db_info['table'] ."} (". $db_info['columns']['gmap_shapes']['column'] .", vid, nid) VALUES (GeomFromText('POLYGON((".$data."))') , %d, %d)", $node->vid, $node->nid);
-          			}
-				}
-				// I kill it
+        $data = check_plain($data); // a slight security improvement, stops xss on IE6 at least
+        $data_type = $_SESSION['gmap_shapes_type'];
+        if(check_plain($data_type) == 'line'){
+          $input_type = 'linestring';
+        } else {
+          $input_type = 'polygon'; 
+        }
+
+        if($data){
+          // if there's any shape/line data then put it in the database
+  				if ($field['multiple']) {
+  					// TODO: multiple field behavior
+  				} else {
+            // how to tell between POLYGON and LINESTRING for geomfromtext
+            if($input_type == 'polygon'){
+    					if (db_result(db_query('SELECT COUNT(*) FROM {'. $db_info['table'] .'} WHERE vid = %d AND nid = %d', $node->vid, $node->nid))) {
+                db_query("UPDATE {". $db_info['table'] ."} SET ". $db_info['columns']['gmap_shapes']['column'] ." = GeomFromText('POLYGON((".$data."))') WHERE vid = %d AND nid = %d", $node->vid, $node->nid);
+              } else {
+                db_query("INSERT INTO {". $db_info['table'] ."} (". $db_info['columns']['gmap_shapes']['column'] .", vid, nid) VALUES (GeomFromText('POLYGON((".$data."))') , %d, %d)", $node->vid, $node->nid);
+              }
+            } else if($input_type == 'linestring'){
+    					if (db_result(db_query('SELECT COUNT(*) FROM {'. $db_info['table'] .'} WHERE vid = %d AND nid = %d', $node->vid, $node->nid))) {
+                db_query("UPDATE {". $db_info['table'] ."} SET ". $db_info['columns']['gmap_shapes']['column'] ." = GeomFromText('LINESTRING(".$data.")') WHERE vid = %d AND nid = %d", $node->vid, $node->nid);
+              } else {
+                db_query("INSERT INTO {". $db_info['table'] ."} (". $db_info['columns']['gmap_shapes']['column'] .", vid, nid) VALUES (GeomFromText('LINESTRING(".$data.")') , %d, %d)", $node->vid, $node->nid);
+              }
+            }
+  				}
+        }
+				// Empty the relevent sessions information
 				$_SESSION['gmap_shapes_save_data'] = '';
 				$_SESSION['gmap_shapes_save_data'] = null;
 				unset($_SESSION['gmap_shapes_save_data']);
 				session_unregister('gmap_shapes_save_data');
+        $_SESSION['gmap_shapes_type'] = '';
+				$_SESSION['gmap_shapes_type'] = null;
+				unset($_SESSION['gmap_shapes_type']);
+				session_unregister('gmap_shapes_type');
+        // TT - Unset the contents of the field so that the default CCK module doesn't mess with it
+        $node_field = NULL;
+        $field = NULL;
 		}
 	break;
   }
@@ -105,6 +134,15 @@ function gmap_shapes_widget($op, &$node, $field, &$items) {
   	
 	// "form": The node is being edited, and a form should be prepared for display to the user.
     case 'form':
+      // check if we've got a shape
+      $shape = NULL;
+      if($node->nid){
+        $shape = gmap_shapes_identify_type($node->taxonomy);
+      }
+      if($_GET[poly] == 'line'){ $shape = 'line'; }
+      else if($_GET[poly] == 'area'){ $shape = 'area'; }
+      
+      // build form for widget
       $form = array();
       $form[$field['field_name']] = array(
         '#tree' => TRUE, 
@@ -113,69 +151,121 @@ function gmap_shapes_widget($op, &$node, $field, &$items) {
 	  
       if ($field['widget']['type'] == 'gmap_shapes') {
         // issue with multiple values?? how we should deal with them?
-		
-		// single value
-		if ($field['multiple']) {
-			//TODO: multiple fields features	
-		}else {
-			
-  			$form[$field['field_name']]['gmap_user'] = array(
-    			'#type'=>'markup',
-    			'#value'=>''
-    		);
-    
-  			$form[$field['field_name']]['gmap_user']['#value'] = gmap_set_location(
-  				variable_get('gmap_user_map', '[gmap|id=usermap|center=0,30|control=Large|zoom=16|width=100%|height=400px]'),
-            ($lon = $_GET['edit']['gmap_longitude'] ? $_GET['edit']['gmap_longitude'] : $user->longitude),
-            ($lat = $_GET['edit']['gmap_latitude'] ? $_GET['edit']['gmap_latitude'] : $user->latitude));
-			
-			// default value for shape textfield
-			if($node->nid){
-				
-				$q = "SELECT AsText(".$db_info['columns']['gmap_shapes']['column'].") AS value FROM {".$db_info['table']."} where vid = %d AND nid = %d";
-				$result = db_query($q,$node->vid, $node->nid);
-				$row = db_fetch_object($result);
-				preg_match_all("/([^,( ]+)[ ]+([^,) ]+)/",$row->value,$matches,PREG_SET_ORDER);
-				$data  = "<?xml version='1.0' encoding='UTF-8'?>\n" .
-						 "<kml>\n" .
-						 "<Document>\n" .
-						 "<Placemark>\n" .
-						 "<Polygon>\n" .
-						 "<outerBoundaryIs>\n" .
-						 "<LinearRing>\n" .
-						 "<coordinates>\n";
-				for($i =0;$i < count($matches);$i++){
-						if($i != 0){$data .= " ";}
-						$data .= $matches[$i][1] . "," . $matches[$i][2];
-				}
-				
-				$data .= "</coordinates>\n" .
-						 "</LinearRing>\n" .
-						 "</outerBoundaryIs>\n" .
-						 "</Polygon>\n" .
-						 "</Placemark>\n" .
-						 "</Document>\n" .
-						 "</kml>\n";
-						 
-				$shape_textfield_default_value = $data;
-			}else {
-				$shape_textfield_default_value = "";
-			}
-			
-			// shape textfield
-			$form[$field['field_name']][0]['gmap_shapes'] = array(
-        	  '#type' => 'textarea',
-        	  '#title' => $field['widget']['label'],
-			  '#id' => 'gmap_shapes_textfield',
-			//  '#disabled' => TRUE,
-        	  '#default_value' => $shape_textfield_default_value,
-        	  '#required' => $field['required'] ? $field['required'] : FALSE,
-        	  '#size' => isset($field['widget']['size']) ? $field['widget']['size'] : 60,
-        	  '#description' => isset($field['widget']['description']) ? $field['widget']['description'] : '',
-        	);
-		}
-		// add javascript
-		drupal_add_js(drupal_get_path('module', 'gmap_shapes') . '/shapes.js');
+    		
+    		// single value
+    		if ($field['multiple']) {
+    			//TODO: multiple fields features	
+    		}else {
+    			
+            // TT - create a field to choose between point, line, or shape
+            $form[$field['field_name']]['gmap_type'] = array(
+        			'#type' => 'radios',
+        			'#title' => t('What are you adding'), 
+              '#default_value' => $shape ? $shape : 'point',
+              '#id' => 'gmap_type_radios',
+              '#attributes' => array('class' => 'gmap_type_radios'),
+              '#options' => array(
+                'point' => t('A Site'),
+                'line' => t('A Line'),
+                'area' => t('An Area'),
+              ),
+              
+        		);    		
+            // add javascript
+            drupal_add_js(drupal_get_path('module', 'gmap_shapes') . '/shapes_switcher.js');
+            
+            
+            // TT - If user has selected shape or line, then show the map & shapefile field, else hide
+            
+            if($shape){
+              // add javascript
+              drupal_add_js(drupal_get_path('module', 'gmap_shapes') . '/shapes.js');
+              // holder for the map
+        			$form[$field['field_name']]['gmap_user'] = array(
+          			'#type'=>'markup',
+          			'#value'=>''
+          		);
+              
+           
+              
+        			$form[$field['field_name']]['gmap_user']['#value'] = gmap_set_location(
+        				variable_get('gmap_user_map', '[gmap|id=usermap|center=0,30|control=Large|zoom=16|width=100%|height=400px]'),
+                  ($lon = $_GET['edit']['gmap_longitude'] ? $_GET['edit']['gmap_longitude'] : $user->longitude),
+                  ($lat = $_GET['edit']['gmap_latitude'] ? $_GET['edit']['gmap_latitude'] : $user->latitude));
+        			
+        			// default value for shape textfield
+        			if($node->nid){
+        				
+        				$q = "SELECT AsText(".$db_info['columns']['gmap_shapes']['column'].") AS value FROM {".$db_info['table']."} where vid = %d AND nid = %d";
+        				$result = db_query($q,$node->vid, $node->nid);
+        				$row = db_fetch_object($result);
+        				preg_match_all("/([^,( ]+)[ ]+([^,) ]+)/",$row->value,$matches,PREG_SET_ORDER);
+                
+                // TODO ********** FIX for lines
+                
+                if($shape == 'area') {
+                  
+          				$data  = "<?xml version='1.0' encoding='UTF-8'?>\n" .
+          						 "<kml>\n" .
+          						 "<Document>\n" .
+          						 "<Placemark>\n" .
+          						 "<Polygon>\n" .
+          						 "<outerBoundaryIs>\n" .
+          						 "<LinearRing>\n" .
+          						 "<coordinates>\n";
+          				for($i =0;$i < count($matches);$i++){
+          						if($i != 0){$data .= " ";}
+          						$data .= $matches[$i][1] . "," . $matches[$i][2];
+          				}
+          				
+          				$data .= "</coordinates>\n" .
+          						 "</LinearRing>\n" .
+          						 "</outerBoundaryIs>\n" .
+          						 "</Polygon>\n" .
+          						 "</Placemark>\n" .
+          						 "</Document>\n" .
+          						 "</kml>\n";
+                       
+                } else {
+                
+           				$data  = "<?xml version='1.0' encoding='UTF-8'?>\n" .
+          						 "<kml>\n" .
+          						 "<Document>\n" .
+          						 "<Placemark>\n" .
+          						 "<LineString>\n" .
+          						 "<coordinates>\n";
+          				for($i =0;$i < count($matches);$i++){
+          						if($i != 0){$data .= " ";}
+          						$data .= $matches[$i][1] . "," . $matches[$i][2];
+          				}
+          				
+          				$data .= "</coordinates>\n" .
+          						 "</LineString>\n" .
+          						 "</Placemark>\n" .
+          						 "</Document>\n" .
+          						 "</kml>\n";      
+                       
+                }
+        						 
+        				$shape_textfield_default_value = $data;
+        			}else {
+        				$shape_textfield_default_value = "";
+        			}
+        			
+        			// shape textfield
+        			$form[$field['field_name']][0]['gmap_shapes'] = array(
+                	  '#type' => 'textarea',
+                	  '#title' => $field['widget']['label'],
+                    '#id' => 'gmap_shapes_textfield',
+                    //  '#disabled' => TRUE,
+                	  '#default_value' => $shape_textfield_default_value,
+                	  '#required' => $field['required'] ? $field['required'] : FALSE,
+                	  '#size' => isset($field['widget']['size']) ? $field['widget']['size'] : 60,
+                	  '#description' => isset($field['widget']['description']) ? $field['widget']['description'] : '',
+                	);
+            }
+    		}
+
       }
       return $form;
 	  
@@ -186,9 +276,19 @@ function gmap_shapes_widget($op, &$node, $field, &$items) {
 				$shape = parseXMLToArray($node->{$field['field_name']}[0]['gmap_shapes']);
 				// first we are looking for a polygons
 				$polygons = _getShapeArraysByTagname('POLYGON',$shape);
-				// saves only the firs one of the polygons
-				$coordinates = _getShapeArraysByTagname('COORDINATES',$polygons[0]);
 				
+        // now look for lines
+        $lines = _getShapeArraysByTagname('LINESTRING',$shape);
+        
+        if($polygons){
+          // saves only the firs one of the polygons
+          $coordinates = _getShapeArraysByTagname('COORDINATES',$polygons[0]);
+          $_SESSION['gmap_shapes_type'] = 'polygon';
+        } else if ($lines) {
+          $coordinates = _getShapeArraysByTagname('COORDINATES',$lines[0]);
+          $_SESSION['gmap_shapes_type'] = 'line';
+        }
+        
 				// we haveto put data to mysql recognisable format
 				preg_match_all("/([^, ]+),([^, ]+)/",$coordinates[0]['value'],$matches,PREG_SET_ORDER);
 				$data = '';
@@ -196,12 +296,17 @@ function gmap_shapes_widget($op, &$node, $field, &$items) {
 						if($i != 0){$data .= ",";}
 						$data .= $matches[$i][1] . " " . $matches[$i][2];
 				}
+
 				$node->{$field['field_name']}[0]['gmap_shapes'] = $data;
 				$items[0]['gmap_shapes'] = $data;
 				
 				
 				$items = array();
 				$_SESSION['gmap_shapes_save_data'] = $data;
+        
+        $field = NULL;
+        $items = NULL;
+
 			}
 		}
 		
@@ -348,3 +453,84 @@ function gmap_shapes_field_formatter_info() {
  */
 
 
+ 
+ 
+ 
+/**
+ *	hook_form_alter()
+ *
+ *	If the user has selected to add a line or area, then we need to hide normal location form
+ */
+function gmap_shapes_form_alter($form_id, &$form){
+	switch ($form_id) {
+		case 'green_site_node_form':
+      $shape = NULL;
+      // if we're editing a form, check if it's a shape
+      if($form['#node']->nid){
+        $shape = gmap_shapes_identify_type($form['#node']->taxonomy);
+      }
+      if($_GET[poly] == 'point'){
+        $js = "var poly_type = 'point';";
+        drupal_add_js($js, 'inline');
+        // hide non-used taxonomies
+        $form['taxonomy']['5'] = NULL;
+        // TODO secondary
+        
+      } else if($_GET[poly] == 'line' || $_GET[poly] == 'area' || $shape){
+        // print_r($form);
+        if($_GET[poly] == 'line' || $shape == 'line'){
+          $js = "var poly_type = 'line';";
+          drupal_add_js($js, 'inline');
+        } else {
+          $js = "var poly_type = 'area';";
+          drupal_add_js($js, 'inline');
+        }
+        
+        //  hide the wrong taxonomies, make required primaryicon not required
+        // TODO ****
+        
+        // hide the default location form
+        $form['locations']=NULL;
+        // deal with location error
+        // TODO ****
+        
+      } else {
+        $js = "var poly_type = 'point';";
+        drupal_add_js($js, 'inline');
+        // hide non-used taxonomies
+        $form['taxonomy']['5'] = NULL;
+        // TODO secondary
+      }
+      
+			break;
+	}
+}
+ 
+/* this figures out if we've got a line or polygon based on the node's taxonomy
+* @param taxonomy - an array containing objects with tid, vid, etc
+* @return - $shape - a string - either 'line' or 'area'
+*/
+
+function gmap_shapes_identify_type($taxonomy){
+  foreach($taxonomy as $tid => $term){
+    if($term->vid == 5){
+      $term_tid = $tid;
+      break;
+    }
+  }
+  $parents = taxonomy_get_parents($term_tid); // an array of parent term objects
+  foreach($parents as $parent){
+    $parent_term = taxonomy_get_parents($parent->tid);
+  }
+  
+  $parent_term = array_values($parent_term);
+  
+  if ($parent_term[0]->tid == 306){
+    return 'area';
+  } elseif ($parent_term[0]->tid == 305){
+    return 'line';
+  } else {
+    return NULL;
+  }
+  
+}
