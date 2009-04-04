@@ -657,25 +657,11 @@ function group_map_block_0_contents() {
 		// don't return a block
 	}
 
-	// let's try getting the icon navigation key from the exposed filter of the view
-	// from http://www.angrydonuts.com/displaying_views_exposed_filters
-
-	//$view = views_get_view('og_ghp_map');
-
-	//$keyform = views_filters($view);
-	//drupal_process_form('views_filters', $keyform);
-
-	// $description = $node->field_description[0]['value'];
-
-	// set up trimming
-	// $trimmed_description = truncate_utf8($description, 100, $wordsafe = TRUE, $dots = FALSE);
-	// $trimmed_description = '<span id="trimmed-description">' . $trimmed_description . '&nbsp;' . '</span>';
-	$trimmed_description = '<span id="trimmed-description">' . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />' . t('Coming soon: lines and areas') . '</span>';
-	$trimmed_description .= print_r(taxonomy_get_tree(1), true);
+  // get mapmaker's description of this map
 	$description = content_format('field_description',$node->field_description[0], 'default', $node);
 
 
-	// GH: added
+	// GH: added - build the icon key for this map
 	$key = display_key(prune_it());
 
 
@@ -807,14 +793,11 @@ function group_map_block_0_contents() {
   $form['tabskey'] = array(
     '#type' => 'tabset',
   );
+  // @TODO - add in lines & areas key here if the gmap_shapes module exists and is in use - TT
   $form['tabskey']['tab1'] = array(
     '#type' => 'tabpage',
     '#title' => t('Legend'),
 	'#weight' => '-6',
-// GH: changed to new key UI code
-//	'#content' => $key . $trimmed_description,
-// ncm modified because $trimmed_description was printing
-// a ghost array. TODO: find the real cause of the problem
   '#content' => $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.').'<br /><br />'.t('Coming soon: lines and area'),
   );
   $form['tabskey']['tab2'] = array(
