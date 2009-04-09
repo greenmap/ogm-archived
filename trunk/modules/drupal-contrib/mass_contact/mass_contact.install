@@ -1,0 +1,59 @@
+<?php
+// $Id: mass_contact.install,v 1.2.2.2 2008/01/10 07:53:13 oadaeh Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function mass_contact_install() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {mass_contact} (
+        cid int unsigned NOT NULL auto_increment,
+        category varchar(255) NOT NULL default '',
+        recipients longtext NOT NULL,
+        reply longtext NOT NULL,
+        weight tinyint NOT NULL default '0',
+        selected tinyint NOT NULL default '0',
+        PRIMARY KEY (cid),
+        UNIQUE KEY category (category)
+      ) /*!40100 DEFAULT CHARACTER SET UTF8 */ ");
+      break;
+    case 'pgsql':
+      db_query("CREATE TABLE {mass_contact} (
+        cid serial CHECK (cid >= 0),
+        category varchar(255) NOT NULL default '',
+        recipients text NOT NULL default '',
+        reply text NOT NULL default '',
+        weight smallint NOT NULL default '0',
+        selected smallint NOT NULL default '0',
+        PRIMARY KEY (cid),
+        UNIQUE (category)
+      )");
+      break;
+  }
+
+  drupal_set_message(t('All tables and entries required by the Mass Contact module have been created.'));
+}
+
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function mass_contact_uninstall() {
+  db_query('DROP TABLE {mass_contact}');
+//  db_query('DELETE FROM node_type WHERE type = "mass_contact"');
+  variable_del('mass_contact_bcc_d');
+  variable_del('mass_contact_bcc_d_override');
+  variable_del('mass_contact_category_override');
+  variable_del('mass_contact_default_sender_email');
+  variable_del('mass_contact_default_sender_name');
+  variable_del('mass_contact_form_information');
+  variable_del('mass_contact_HTML_d');
+  variable_del('mass_contact_hourly_threshold');
+  variable_del('mass_contact_message_prefix');
+  variable_del('mass_contact_message_suffix');
+  variable_del('mass_contact_nodecc_d');
+  variable_del('mass_contact_optout_d');
+  variable_del('mass_contact_recipient_limit');
+}
