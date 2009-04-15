@@ -286,7 +286,10 @@ $(document).ready(function() {
   	GEvent.addListener(map, "singlerightclick", function(a,b,overlay) {
   		if(polymouseOver){
   			var mouseLatLng = map.getCurrentMapType().getProjection().fromPixelToLatLng(a,map.getZoom());
-  			var command = prompt("what do you want to do?",'deletepoint');
+  			// var command = prompt("what do you want to do?",'deletepoint'); // could do similar action to give options
+        if(overlay.index != undefined){
+  				poly.deleteVertex(overlay.index);
+  			}
   			
   			switch(command){
   				case 'deletepoint':
