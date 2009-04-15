@@ -1230,6 +1230,15 @@ div#large-block-menu ul li.maps-active a, div#large-block-menu ul li.involved a:
   color: #fff;
 }
 
+/* TT: Gmap shapes stuff */
+
+/* TT: hiding the kml input form temporarily - not required for functionality, and it doesn't work properly yet */
+
+#gmap_shapes_textfield-wrapper {
+  display: none;
+}
+
+
 /* Devel area */
 div#devel {
   width: 100%;
