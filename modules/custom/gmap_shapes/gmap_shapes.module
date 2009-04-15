@@ -507,11 +507,8 @@ function gmap_shapes_form_alter($form_id, &$form){
         //  hide the wrong taxonomies, make required primaryicon not required
         $form['taxonomy']['1']['#required'] = 0;
         $form['taxonomy']['5']['#required'] = 1;
-        
         // hide the default location form
         $form['locations']=NULL;
-        // deal with location error
-        // TODO ****
         
       } else {
         $js = "var poly_type = 'point';";
