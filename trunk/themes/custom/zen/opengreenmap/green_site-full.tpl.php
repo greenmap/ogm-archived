@@ -167,12 +167,14 @@ if($node->field_involved[0]['value'] == 'yes') {
 
   // ncm: insert a small map on the site pages when viewed as a node
   // as in search click throughs.
-//   if (arg(0) != 'greenmap') {
+  // TT altered to hide this if the site is a line or area
+
+  if (!$node->field_field_poly_0[0]['gmap_shapes']) {
     $view_name = 'site_mini_map'; //name of view
     $view_args = array();
     $view = views_get_view($view_name);
     $contents .= views_build_view('block', $view, $view_args, FALSE, $view->nodes_per_block);
-//   }
+  }
 
 
 	$contents .= '</div>';
