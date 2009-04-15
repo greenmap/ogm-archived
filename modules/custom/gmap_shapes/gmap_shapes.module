@@ -197,7 +197,12 @@ function gmap_shapes_widget($op, &$node, $field, &$items) {
           			'#value'=>'',
                 '#access'=>user_access('create poly'),
           		);
-              
+              // help text for the map
+              $form[$field['field_name']]['gmap_help'] = array(
+                '#type' => 'markup',
+                '#access' => user_access('create poly'),
+                '#value'=>t('Click on the map to create a line or area. To complete an area click on the first point to complete the loop. To finish a line just double click in the same place. Right click (or press control and then click on a Mac) to delete a point. Once you have finished drawing you can move your mouse over the shape and drag points or click on lines to add new points. Visit the FAQ for more information'),
+              );
            
               
         			$form[$field['field_name']]['gmap_user']['#value'] = gmap_set_location(
@@ -548,3 +553,25 @@ function gmap_shapes_identify_type($taxonomy){
   }
   
 }
+
+/*
+ * Build the key for the lines & areas
+ */
+ 
+function gmap_shapes_key_build($node) {
+  // currently ignoring the $node object - just building  a key containing all lines & areas
+  
+  // get the taxonomy
+  $terms = taxonomy_get_tree(5);
+  
+  // get array containing colors (key of array is the tid) - function is in gmap_marker.module line 840 and could use some work
+  $colors = gmap_marker_load_poly_colors();
+  
+  // get array containing widths (key of array is the tid) - function is in gmap_marker.module line 850 and could use some work
+  $widths = gmap_marker_load_poly_opacitys();
+  
+  // loop through taxonomy turning it into an un-ordered nested list
+  $key = getKeyList($terms, 'poly', $colors);
+  
+  return $key;
+} 
