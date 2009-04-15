@@ -91,6 +91,9 @@ function showAddress(address) {
     }
   );
 }
+
+// This function takes in the string containing marker data that comes from the ajax request
+
 onMapChange = function(http_request,returnArgs) {
 	
 	var obj = GlobalObj;
@@ -149,6 +152,72 @@ onMapChange = function(http_request,returnArgs) {
 	// add objects to the queue
 	obj.gm.AddObjects(objectData);
 }
+
+
+// TT - new function to handle ajax data for poly lines & shapes
+onMapChangePoly = function(http_requestZoom,returnArgs) {
+	
+	var obj = GlobalObj;
+	if (http_requestZoom.responseText == '') {return;}
+
+	var data = http_requestZoom.responseText;
+	data = data.split("%%");
+	var minZoom = data[0];
+	
+	// we add all objects to the same layer addLayer(name,minzoom,?maxzoom)
+	var layer = obj.gm.AddLayer ( minZoom,minZoom);
+	var lines = data[1].split(/\n/);
+	if(lines.length <= 0){return;}
+	
+
+	var objectData = [];
+//	for(var i =0; i< 2;i++) {
+	for(var i =0; i< lines.length;i++) {
+	  if(lines[i] == ''){continue;}
+	  var tmp = [];
+
+	  var line = lines[i].split("*");
+	  var nid = line[0];
+	  var poly = line[1];
+    var type =line[2];
+	  var color = line[3];
+    var opacity = line[4];
+	  var title =line[5];
+	  var grps = line[7];
+	    
+    // ****** Fix for type of polygon on polyline based on type
+	  tmp['object'] = createPoly(poly,color,opacity,nid);
+	  // set up layer
+	  tmp['layer'] = layer;
+	  
+	  // set up groups
+    
+	  var groups = [];
+	  
+	  
+//	  var gr =grps.split(/^([^:]+)[:]([^:]+)[:](.+)$/);
+	  var gr = grps.split(":");
+	  for (var g in gr) {
+		  if(gr[g] == ''){continue;}
+		  var group = obj.gm.AddGroup(trim(gr[g]));
+		  
+		  if(isset(key_states[group.getName()])){
+		  	
+		  	group.setVisibility(key_states[trim(gr[g])]);
+		  }
+		  groups.push(group);
+	  }
+	  
+	  tmp['groups'] = groups;
+		
+	  //add to array
+	  objectData.push(tmp);
+	}
+	// add objects to the queue
+	obj.gm.AddObjects(objectData);
+}
+
+
 function clearExtras(obj) {
 	//var obj = GlobalObj;
 	var b = obj.gm.getBounds();
@@ -235,6 +304,69 @@ function createMarker(point, opts,nid) {
   return object;
 }
 
+// create a poly on the map
+function createPoly(poly, color, opacity, nid) {
+  // var opt = {};
+  // eval(opts); // puts all options to opt-object
+  
+  // poly contains points - each pair separated by a comma, each lat/lng separated by space but the wrong way round
+  points = poly.split(",");
+  var pointsnew = [];
+  for(var i =0; i< points.length;i++) {
+	  if(points[i] == ''){continue;}
+
+	  var point = points[i].split(" ");
+	  var lat = point[1];
+	  var lon = point[0];
+    pointsnew[pointsnew.length] = new GLatLng(lat,lon);
+    
+  }  
+  
+  //GPolygon(points, color, weight, opacity, fill color, fill opacity)
+  var object = new GPolygon(pointsnew,color,2,opacity);
+  
+  //var test = dumpObj(object, 'shouldbepoly', 1, 19);
+  //alert(test); 
+  
+  object.value = nid;
+  object.setId(nid);
+  
+  // ************** NEED TO ADD BACK IN SOME KIND OF EVENT ON CLICKING A POLY
+  
+  GEvent.addListener(object, "click", function(latlng) {
+	
+  	var html = Drupal.makeReq(Drupal_base_path + 'node/gmap_marker/getMiniBubble/' + nid,'');
+	
+  	html.onreadystatechange = function() {
+     	if (html.readyState != 4) {return;}
+  		if (html.status == 200) {// success
+  			maxContentDiv = document.createElement('div');
+        // somewhere in here is a problem which results in two <html> tags
+        maxContentDiv.id = 'maxcontentdiv';
+        maxContentDiv.innerHTML = '<iframe frameborder="0" src="' + Drupal_base_path + 'node/' + nid + '/simple" width="670" height="360"></iframe>';
+        GlobalMap.openInfoWindowHtml(latlng, html.responseText,
+        {maxContent: maxContentDiv,
+        maxTitle: ''});
+
+        // java script code for the stars rating
+        // jQuery(function(){jQuery('input.fivestar-submit').hide();});
+        // jQuery(function(){jQuery('form.fivestar-widget').rating();}); // removing for now - not working in Webkit-based sites - chrome & safari - breaks other stuff too
+        jQuery(function(){
+          jQuery('.maximize').click(function() {
+            var rel = jQuery(this).attr('rel');
+            // maxContentDiv.firstChild.src = Drupal_base_path + 'node/'+nid+'/simple#tabs-tabs-' + rel; // removing for now - not working in Webkit-based sites - chrome & safari - breaks other stuff too
+            GlobalMap.getInfoWindow().maximize();
+          })
+        });
+  	  } else {
+  	        	alert('Problems with the ajax: 228');
+  		}
+    };
+    
+  }); // */
+  return object; 
+}
+
 function clearMap(gm){
 	
 	var layers = gm.getLayers();
@@ -243,6 +375,9 @@ function clearMap(gm){
 		gm.RemoveLayer(layers[l]);					
 	}
 }
+
+
+
 function mapNodeLoad(object) {
 	var obj = (object)?object:GlobalObj;
 	
@@ -257,15 +392,26 @@ function mapNodeLoad(object) {
 		post += "&nid="+mapNid;
 	}
 	//alert(post);
+  // load the markers
 	var http_requestZoom = Drupal.makeReq(Drupal_base_path + 'node/gmap_marker/onmapchange/zoom',post);
-		http_requestZoom.onreadystatechange = function() {
-			if (http_requestZoom.readyState != 4) {return;}
-			if (http_requestZoom.status == 200) {// success
-				onMapChange(http_requestZoom);
-			} else {// failed
-				alert('Problems with the ajax');
-			}
-		};	
+  http_requestZoom.onreadystatechange = function() {
+    if (http_requestZoom.readyState != 4) {return;}
+    if (http_requestZoom.status == 200) {// success
+      onMapChange(http_requestZoom);
+    } else {// failed
+      alert('Problems with the ajax');
+    }
+  };
+  // now load the poly
+  var http_requestZoomPoly = Drupal.makeReq(Drupal_base_path + 'node/gmap_marker/getshapes/zoom',post); // calls function gmap_marker_getShapes()  and then onMapChange_polyQuery() in .module
+  http_requestZoomPoly.onreadystatechange = function() {
+    if (http_requestZoomPoly.readyState != 4) {return;}
+    if (http_requestZoomPoly.status == 200) {// success
+      onMapChangePoly(http_requestZoomPoly);
+    } else {// failed
+      alert('Problems with the ajax: error T01');
+    }
+  };
 }
 function globalViewNodeLoad() {
 
@@ -323,8 +469,11 @@ Drupal.gmap.addHandler('gmap',function(elem) {
 			// mapNid
 			if(mapNid){
 				mapNodeLoad(obj);
+        // TODO: Add poly? *******************************
+        
 			} else {
 				globalViewNodeLoad();
+        // TODO: Add poly? *******************************
 			}
   
 
@@ -363,15 +512,18 @@ Drupal.gmap.addHandler('gmap',function(elem) {
 								alert('Problems with the ajax');
 							}
 						};
+            // TODO: Clear poly? *******************************
 					}
 				}catch(e){}
 				if(mapNid){
 					try {
 						mapNodeLoad();
+            // TODO: Add poly? *******************************
 					}catch(e){}
 				}else if (newzoom <= 3 && oldzoom && !mapNid) {
 					try {
 						globalViewNodeLoad();
+            // Don't really need to add poly here because we're so zoomed out
 					}catch(e){}
 				} else {
 
