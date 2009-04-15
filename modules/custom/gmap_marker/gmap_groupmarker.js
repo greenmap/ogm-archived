@@ -26,7 +26,8 @@ GGroups = function ( map ){
 		var objectData = self.objectQueue.shift();
 		var object = self.AddObject(objectData['object'],objectData['layer'],objectData['groups']);
 		
-		if ((object.getVisibility()) && (object != null) && (bounds.contains(object.getPoint()))) {
+    // TT: would be good to include && (bounds.contains(object.getPoint())) in this if, but doesn't work for polys.
+		if ((object.getVisibility()) && (object != null) ) {
 			// Display the visible objects not already up
 			if (!object.onMap) {
 	   			self.map.addOverlay( object );
@@ -418,8 +419,8 @@ GGroups.prototype.DispInt = function(){
 			this.displayCurrentObject++; // don't forget
 			return;
 		}
-
-		if ((object.getVisibility()) && (this.bounds.contains(object.getPoint()))) {
+    //TT this line was: if ((object.getVisibility()) && (this.bounds.contains(object.getPoint()))) {
+		if (object.getVisibility()) {
 			// Display the visible objects not already up
 			if (!object.onMap) {
 				this.map.addOverlay(object);
