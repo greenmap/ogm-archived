@@ -41,7 +41,7 @@ function geocoding_validation_nodeapi(&$node, $op,$a3 = null,$a4 = null) {
 		// only for case view
 		case 'view':
     
-    if ($node->field_poly_0[0]['gmap_shapes'] != '') { return; }
+    if ($node->field_field_poly_0[0]['gmap_shapes'] != '') { return; }
 		
 		// only if lat and lon are not set
 		if(	(	$node->location['lat'] != '' && $node->location['lon'] != '') || 
