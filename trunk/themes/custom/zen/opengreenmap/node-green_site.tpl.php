@@ -30,10 +30,10 @@ if (is_array($genres)) {
 		$genre_name_lc = str_replace('&', '', $genre_name_lc);			// special case for "culture_&_society"
 	}
 }
+// get secondary icons (ignoring vid5 aka lines)
 // print '<pre>';print_r($node->taxonomy);
-// get secondary icons
 foreach ($node->taxonomy as $tid => $tax) {
-	if ($tid != $primary_term_tid) {
+	if ($tid != $primary_term_tid && $tax->vid != 5) {
 		// GH: there might be a more elegant way to get the name (title) here than the hack below
 		$si = taxonomy_image_display($tid);
 		$secondary_icons .= str_replace('alt="', 'alt="" title="'. $tax->name .': '. $tax->description .'"', $si);
