@@ -156,11 +156,9 @@ function group_map_form_alter($form_id, &$form){
 
 		   $form['field_description']['0']['format'] = ''; // hide the formatting information
 
-		   // changing these address fields to be drop-downs so that they are same format as for location module
-		   $form['field_province']['0']['value']['#type'] = 'select';
-		   $form['field_province']['0']['value']['#options'] = $form['locations']['0']['province']['#options'];
+		   // changing this address field to be drop-downs so that they are same format as for location module
 		   $form['field_country']['0']['value']['#type'] = 'select';
-		   $form['field_country']['0']['value']['#options'] = $form['locations']['0']['country']['#options'];
+		   $form['field_country']['0']['value']['#options'] = location_get_iso3166_list();
 
 
 		   // improving instructions on how to let people join the group/map
