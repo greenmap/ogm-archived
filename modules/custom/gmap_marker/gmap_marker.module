@@ -419,6 +419,103 @@ function onMapChange_query($q,$args,&$data,$mapcid=NULL){
 	return $r;
 }
 
+
+/*
+* TT - Function to create the data about the poly lines & areas
+*/
+
+function onMapChange_polyQuery($q,$args,&$data,$mapcid=NULL){
+	// If a cid (cache ID) has been passed, see if there's anything in cache for this
+	if($mapcid){
+		if($r = cache_get($mapcid)){
+			return $r->data; 
+		} 
+	}
+	// if there is something in cache, return it
+	
+	// else do the query and store in cache for that cid
+	$result = db_query($q);
+	$r = '';
+	$mpc = $args['mpc']; // this is set to false unless we're on the worldview
+	$limit = $args['limit'];
+	if($result){
+		
+		$i = 0; // count number of item in while loop
+		$c = 0; // count number in current map/group
+		$cCountry = ''; // this used to represent countries, but now actually represents group nid, og_nid
+		// $icoImgs = gmap_marker_map_ggm_bubbleIcons();
+		while ($row = db_fetch_object($result)) {
+			if($limit && $i >= $limit) { // if limit is set and limit is full we can break the loop
+			  break;
+			}
+			
+			if($row->nid == $prevousNid) {
+				continue; // avoid duplication of nodes
+			}else {
+				$prevousNid = $row->nid;
+			}
+			if($mpc && $cCountry != $row->og_nid) {
+			   $cCountry = $row->og_nid;
+			   $c = 0; // reset count of nodes from a particular map
+			}
+			if($mpc && $c >= $mpc) {
+			  continue;
+			}
+			
+			if(in_array($row->nid,$data)){ continue;} // if this nid is already on the map  (i.e. in $data), don't bother adding
+			array_push($data,$row->nid);
+			$c++;
+			$i++;
+      
+			$parents = getMarkerTaxonomy($row->tid);
+			$g = $row->tid.':'.$parents[0].':'.$parents[1];
+			
+      
+      // do something with geometry data from query
+      // problem is that it's formatted differently to what's required by Google Maps API
+      // POLYGON((-112.5 49.38237278701,-116.71875 42.553080288956,-82.96875 38.822590976177,-112.5 49.38237278701))
+      // LINESTRING(-73.96614074707 40.811990328777,-73.981246948242 40.789639751635,-73.995666503906 40.768321727494)
+      $geometry = $row->shape;
+      
+      // figure out if it's a polyline or a polygon
+      if(preg_match("/POLYGON/",$geometry)){
+        $geometry_parts = explode("((",$geometry);
+        $geometry_type = $geometry_parts[0];
+        // tidy up geometry 
+        $geometry_points = str_replace("))","",$geometry_parts[1]);
+        $poly = $geometry_points; // sending geometry instead of glatlong stuff
+      } elseif(preg_match("/LINESTRING/",$geometry)) {
+        $geometry_parts = explode("(",$geometry);
+        $geometry_type = $geometry_parts[0];
+        // tidy up geometry 
+        $geometry_points = str_replace(")","",$geometry_parts[1]);
+        $poly = $geometry_points; // sending geometry instead of glatlong stuff
+      }
+      
+
+      //$points = explode(",",$geometry_points);
+      
+      /* foreach($points as $point){
+        $coordinates = explode(" ",$point);
+        //$poly .= "new GLatLng(" . $coordinates[1] . "," . $coordinates[0] . "),"; // remembering to reverse lat & lon
+        $poly .= new GLatLng($coordinates[1] . "," . $coordinates[0] . ") . ", "; // remembering to reverse lat & lon
+      } */
+      // TODO - fix colors  ********
+      $color = gmap_marker_poly_color($row->tid);
+      $opacity = gmap_marker_poly_opacity($row->tid);
+      
+			$r .= $row->nid . "*" . $poly . "*" . $geometry_type . "*" . $color . "*" . $opacity . "*" . str_replace("\"","\\\"",$row->title);
+      
+			$r .= "*~*".$g;
+			$r .= "\n";
+    }
+	} 
+	if($mapcid){
+		cache_set($mapcid, 'cache', $r, CACHE_TEMPORARY);
+	}
+	return $r;
+}
+
 function gmap_marker_getShapes() {
 
 	$args = array();
@@ -472,18 +569,21 @@ function getShapes_casezoom($args = array()) {
 	 */
 	$maxZoom = $zoom;
 
-
-	$q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude  , m.marker, m.tid
+  // AAAAAAAAAARGH - FIX FIX FIX field_field_poly_0_gmap_shapes
+	$q = "SELECT DISTINCT(n.nid), n.title, tn.tid, AsText(c.field_field_poly_0_gmap_shapes) AS shape
 		 FROM {node} AS n
-		 INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
+		 INNER JOIN {term_node} tn ON n.nid = tn.nid
+     INNER JOIN {term_data} td ON tn.tid = td.tid
+     INNER JOIN {content_type_green_site} c ON n.vid = c.vid
 		 ".$og1."
 		 ".$nid_q1."
-		 WHERE n.type ='green_site' ".$og2." ".$nid_q2."
+		 WHERE n.type ='green_site' AND td.vid = '5' " . $og2 . " " . $nid_q2 . "
 		 LIMIT ".($limit * 4);
-
+	//print $q; //debugging
+  //die();
 	$prevousNid = null;
 	$r  = $maxZoom. "%%";
-	$r .= onMapChange_query($q,array('mpc' => $mpc,'limit'=>$limit),$data);
+	$r .= onMapChange_polyQuery($q,array('mpc' => $mpc,'limit'=>$limit),$data);
 	$_SESSION['gmap_marker'] = $data;
 	return $r;
 }
@@ -678,7 +778,30 @@ function getMarkerTaxonomy($tid)
 		184 => array(42, 16),
 		185 => array(42, 16),
 		191 => array(44, 13),
-		192 => array(42, 6)
+		192 => array(42, 6),
+    // lines & areas
+    321 => array(320, 306),
+    322 => array(320, 306),
+    324 => array(323, 306),
+    325 => array(323, 306),
+    326 => array(323, 306),
+    328 => array(327, 306),
+    329 => array(327, 306),
+    330 => array(327, 306),
+    332 => array(331, 306),
+    333 => array(331, 306),
+    334 => array(331, 306),
+    309 => array(307, 305),
+    310 => array(307, 305),
+    311 => array(307, 305),
+    312 => array(307, 305),
+    313 => array(307, 305),
+    314 => array(307, 305),
+    315 => array(307, 305),
+    316 => array(308, 305),
+    317 => array(308, 305),
+    318 => array(308, 305),
+    319 => array(308, 305),
 	);
 /*
  select a.marker,c.name,cc.name from gmap_taxonomy_term as a inner join term_hierarchy as b on a.tid=b.tid inner join term_data as c on b.parent = c.tid inner join term_hierarchy as bb on bb.tid = c.tid inner join term_data as cc on cc.tid = bb.parent;
@@ -692,4 +815,74 @@ function getMarkerTaxonomy($tid)
 
 function gmap_marker_views_default_views() {
   return $views;
+}
+
+/* Line 503 contains a lookup for colors of lines
+* Would be good to make a user interface for this, but for now it's hard coded. Sorry.
+* Function by tom_o_t
+* @param $tid - the term id of the line/area (see http://www.opengreenmap.org/en/admin/content/taxonomy/5 )
+* @return #000000 hexadecimal value of color
+*/
+
+function gmap_marker_poly_color($tid){
+  // colors is an array with the key being the tid
+  $colors = gmap_marker_load_poly_colors();
+
+  $color = '#000000'; // defaults to black if they make a mistake
+  $color = $colors[$tid]; // pull the correct color from the array
+  return $color;
+}
+
+/* 
+* function to create an array containing all the colors
+* @TODO - turn this into something configurable in the UI
+*/
+
+function gmap_marker_load_poly_colors() {
+  $colors = array(
+    '312' => '#9999ff', // walking
+    '309' => '#0000cc', // cycling
+    '313' => '#0099ff', // PUblic transport
+    '318' => '#009900', // eco tour
+    '317' => '#006600', // natural corridor
+    '311' => '#ff9900', // cultural tour
+    '314' => '#cc9933', // historical feature
+    '324' => '#333399', // Mobility zone
+    '325' => '#000066', //hazards & challenges
+    '328' => '#00ff00', // green space
+    '330' => '#339966', // future redev
+    '332' => '#ff6600', // cultural zone
+    '321' => '#ff0000', // green map boundary
+  );
+  return $colors;
+}
+
+function gmap_marker_poly_opacity($tid) {
+  $widths = gmap_marker_load_poly_opacitys();
+  $width = $widths[$tid]; // pull the correct color from the array
+  return $width;
+}
+
+/* 
+* function to create an array containing all the colors
+* @TODO - turn this into something configurable in the UI
+*/
+
+function gmap_marker_load_poly_opacitys() {
+  $opacs = array(
+    '312' => '1', // walking
+    '309' => '0.5', // cycling
+    '313' => '1', // PUblic transport
+    '318' => '1', // eco tour
+    '317' => '0.8', // natural corridor
+    '311' => '1', // cultural tour
+    '314' => '1', // historical feature
+    '324' => '0.4', // Mobility zone
+    '325' => '0.5', //hazards & challenges
+    '328' => '0.5', // green space
+    '330' => '0.8', // future redev
+    '332' => '0.6', // cultural zone
+    '321' => '0.6', // green map boundary
+  );
+  return $opacs;
 }
