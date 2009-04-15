@@ -804,7 +804,7 @@ function group_map_block_0_contents() {
     '#type' => 'tabpage',
     '#title' => t('Legend'),
 	'#weight' => '-6',
-  '#content' => $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />' . t('Coming soon: lines and area') . $polykey,
+  '#content' => $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />' . $polykey,
   );
   $form['tabskey']['tab2'] = array(
     '#type' => 'tabpage',
