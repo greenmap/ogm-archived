@@ -840,19 +840,20 @@ function gmap_marker_poly_color($tid){
 
 function gmap_marker_load_poly_colors() {
   $colors = array(
-    '312' => '#9999ff', // walking
+    '312' => '#33cccc', // walking
     '309' => '#0000cc', // cycling
     '313' => '#0099ff', // PUblic transport
     '318' => '#009900', // eco tour
     '317' => '#006600', // natural corridor
     '311' => '#ff9900', // cultural tour
-    '314' => '#cc9933', // historical feature
-    '324' => '#333399', // Mobility zone
+    '314' => '#ff0099', // historical feature
+    '324' => '#9933cc', // Mobility zone
     '325' => '#000066', //hazards & challenges
     '328' => '#00ff00', // green space
-    '330' => '#339966', // future redev
+    '329' => '#339966', // protected area
+    '330' => '#99ff00', // future redev
     '332' => '#ff6600', // cultural zone
-    '321' => '#cc0000', // green map boundary
+    '321' => '#ff0000', // green map boundary
   );
   return $colors;
 }
@@ -880,6 +881,7 @@ function gmap_marker_load_poly_opacitys() {
     '324' => '0.4', // Mobility zone
     '325' => '0.5', //hazards & challenges
     '328' => '0.5', // green space
+    '329' => '0.5', // protected area
     '330' => '0.8', // future redev
     '332' => '0.6', // cultural zone
     '321' => '0.6', // green map boundary
