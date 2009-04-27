@@ -852,7 +852,7 @@ function gmap_marker_load_poly_colors() {
     '328' => '#00ff00', // green space
     '330' => '#339966', // future redev
     '332' => '#ff6600', // cultural zone
-    '321' => '#ff0000', // green map boundary
+    '321' => '#cc0000', // green map boundary
   );
   return $colors;
 }
