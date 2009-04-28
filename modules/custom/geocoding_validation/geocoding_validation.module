@@ -40,8 +40,6 @@ function geocoding_validation_nodeapi(&$node, $op,$a3 = null,$a4 = null) {
 	switch($op){
 		// only for case view
 		case 'view':
-		dsm($op);
-		dsm($node);
     // ignore if this is a shape
     if ($node->taxonomy[5]) { return; }
 		
@@ -59,6 +57,7 @@ function geocoding_validation_nodeapi(&$node, $op,$a3 = null,$a4 = null) {
 		);
 		// send message
 		drupal_set_message($message, 'error');
+		dsm($node);
 		break;
 	}
 }
