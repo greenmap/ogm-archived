@@ -36,7 +36,7 @@ function geocoding_validation_nodeapi(&$node, $op,$a3 = null,$a4 = null) {
 	if ($node->type != 'green_site') {return;}
   // only for those users who have permission to edit this site
   if (node_access('update',$node) != true) {return;}
-	
+  if ($op == 'insert') { return; }	
 	switch($op){
 		// only for case view
 		case 'view':
