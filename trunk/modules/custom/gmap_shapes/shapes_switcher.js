@@ -1,4 +1,4 @@
-﻿
+
 /*
 * tom_o_t
 * function to react to switching to adding a line/shape instead of a point
@@ -18,15 +18,15 @@ function optionType_OnClick()
 	var checked = $(this).attr('checked');
   var shapesloc = window.location;
   if(this.value == 'point'){
-    console.log("this is " + this.value);
+    //console.log("this is " + this.value);
     // $.get(Drupal_base_path + "node/add/green-site/area");
     window.location=window.location + "&poly=point";
   } else if (this.value == 'area'){
-    console.log("this is " + this.value);
+    //console.log("this is " + this.value);
     // $.get(Drupal_base_path + "node/add/green-site/area");
     window.location=window.location + "&poly=area";
   } else if (this.value == 'line'){
-    console.log("this is " + this.value);
+    //console.log("this is " + this.value);
     // $.get(Drupal_base_path + "node/add/green-site/line");
     // $('html').load(Drupal_base_path + "node/add");
     //window.location(Drupal_base_path + "node/add");
