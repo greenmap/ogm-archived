@@ -121,7 +121,7 @@ newEmptyPoly = function(map,points){
 	}else {
 		var latlngs = [];	
 	}
-	poly = new GPolygon();
+	poly = new GPolygon(latlngs, '#cc0000', 1, 1);
   poly.enableEditing();
   
 	map.addOverlay(poly);
