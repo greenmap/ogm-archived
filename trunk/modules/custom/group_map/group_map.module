@@ -661,11 +661,16 @@ function group_map_block_0_contents() {
 
 	// GH: added - build the icon key for this map
 	$key = display_key(prune_it());
+  $key_description = t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.');
   
   // TT - adding the lines/shapes key if appropriate
   $polykey = NULL;
   if (module_exists('gmap_shapes')) {
-    $polykey = gmap_shapes_key_build($node);
+    // only add if they've chosen it for the map
+    if ($node->field_use_poly[0]['value']    == 'Yes') {
+      $polykey = gmap_shapes_key_build($node);
+      $key_description = t('Click category, then toggle the Icons, Lines or Areas to personalize your view. Hover over to read the definition.'); 
+    }
   }
 
 
@@ -802,7 +807,7 @@ function group_map_block_0_contents() {
     '#type' => 'tabpage',
     '#title' => t('Legend'),
 	'#weight' => '-6',
-  '#content' => $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />' . $polykey,
+  '#content' => $key . $key_description . '<br /><br />' . $polykey,
   );
   $form['tabskey']['tab2'] = array(
     '#type' => 'tabpage',
