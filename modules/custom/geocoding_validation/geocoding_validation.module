@@ -40,6 +40,8 @@ function geocoding_validation_nodeapi(&$node, $op,$a3 = null,$a4 = null) {
 	switch($op){
 		// only for case view
 		case 'view':
+		
+		dsm($node);
     
     if ($node->field_field_poly_0[0]['gmap_shapes'] != '') { return; }
 		
