@@ -499,14 +499,35 @@ function gmap_shapes_form_alter($form_id, &$form){
         if($_GET[poly] == 'line' || $shape == 'line'){
           $js = "var poly_type = 'line';";
           drupal_add_js($js, 'inline');
+          $shape = 'line';
         } else {
           $js = "var poly_type = 'area';";
           drupal_add_js($js, 'inline');
+          $shape = 'area';
         }
         
         //  hide the wrong taxonomies, make required primaryicon not required
         $form['taxonomy']['1']['#required'] = 0;
         $form['taxonomy']['5']['#required'] = 1;
+        
+        // make the lines/shapes taxonomy a bit nicer
+        
+        if ($shape == 'line') {
+          $terms = taxonomy_get_tree(5,305);
+        } else {
+          $terms = taxonomy_get_tree(5,306);
+        }
+        
+        foreach($terms as $term) {
+          if ($term->depth == 0) {
+            // ???
+          } else {
+            $parent = taxonomy_get_term($term->parents[0]);
+            $options[$parent->name][$term->tid] = $term->name; 
+          }
+        }
+        $form['taxonomy'][5]['#options'] = $options;
+        
         // hide the default location form
         $form['locations']=NULL;
         
