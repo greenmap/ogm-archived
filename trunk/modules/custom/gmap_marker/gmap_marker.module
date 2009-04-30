@@ -846,7 +846,7 @@ function gmap_marker_load_poly_colors() {
     '318' => '#009900', // eco tour
     '317' => '#006600', // natural corridor
     '311' => '#ff3300', // cultural tour
-    '314' => '#cc3300', // historical feature
+    '314' => '#ff0099', // historical feature
     '324' => '#66ccff', // Mobility zone
     '325' => '#9966ff', //hazards & challenges
     '328' => '#00ff00', // green space
