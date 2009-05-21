@@ -1,7 +1,7 @@
 /**
- *	n icons on the map, Zoom in to view more.
+ * n icons on the map, Zoom in to view more.
  */ #page, #page-inner, #content, #content-inner, #content-area, #content-area div {
-    width: 100%;
+   /*  width: 100%; */ /* Miikka - this code was messing up the site - fix!!! (from thomas) */
 }
 
 div#iphoneFullDiv {
