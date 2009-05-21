@@ -99,7 +99,15 @@ function gmap_marker_gmap($op, $map=null) {
 
 			drupal_add_js( $path.'/ajax.js' );
 			drupal_add_js( $icons,'inline');
-			drupal_add_js( $path.'/gmap_marker.js','module','footer' );
+			
+			// detectiPhone function is located in iphone.module
+			if(detectiPhone()){
+				// if device is iPhone
+				drupal_add_js( drupal_get_path('module', 'iphone').'/gmap_marker.js','module','footer');			
+			}else {
+				drupal_add_js( $path.'/gmap_marker.js','module','footer' );	
+			}
+			
 			drupal_add_js( $path .'/gmap_groupmarker.js');
 			//GH: added
 			drupal_add_css($path.'/bubble.css');
@@ -115,7 +123,8 @@ function gmap_marker_gmap($op, $map=null) {
       break;
   }
 }
-
+/*
+*/
 // gets ggm bubble icons
 // key : icon title (gmap_taxonomy_node / gmap_taxonomy_term)
 // value = icon image

@@ -401,6 +401,7 @@ return $views;
  */
 
 function group_map_block($op = 'list', $delta = 0, $edit = array()){
+	
   // The $op parameter determines what piece of information is being requested.
   switch ($op) {
     case 'list':
@@ -487,12 +488,14 @@ function scaleTaxonomyImg($img_str, $size)
 
 function getKeyList($icons, $type='icon', $values=NULL)
 {
+
 	$keyListString = '<ul id="keys">';
     // iterate through all icons for the map
 	foreach ($icons as $genre)
 	{
 		if (count($genre->parents) == 1 && $genre->parents[0] == 0)
 		{
+
 			// display genres
 			$keyListString .= '
 			<li id="key_genre_title_'.$genre->tid.'" class="key_genre_title">
@@ -560,10 +563,12 @@ function display_key($icons)
 function group_map_block_1_contents() {
 	// build up the explore tab
 
+
 	// get the 'recent maps' list from view
 	// $explorecontent .= '<h3>' . t('Recent Maps') . '</h3>';
 	// $recent_maps_view = views_get_view('recent_maps');
 	// $explorecontent .= views_build_view('block', $recent_maps_view, null, false, '5');
+
 
 	// load js to hide search box
 	drupal_add_js(drupal_get_path('module', 'group_map'). '/group_map.js');

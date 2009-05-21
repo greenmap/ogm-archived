@@ -1,4 +1,5 @@
 <?php
+
 /*
 $_GET['isSimple'] = false;
 if ( (arg(0)=='node' && arg(2) == 'simple') || (arg(0)=='forward' && arg(2) == 'simple') || (arg(0)=='abuse' && arg(4) == 'simple') || $_GET[theme] == 'simple' ) {
@@ -14,6 +15,13 @@ if(arg(0) == 'greenmap_widget'){
 */
 if ($_GET['isSimple']) {
 	include('page-simple.tpl.php');
+	return;
+}else if($_GET['iphone'] == 'iphone'){
+	include('page-iphone.tpl.php');	
+	return;
+}
+if(detectiPhone()){
+	include('page-iphone.tpl.php');	
 	return;
 }
 ?>
