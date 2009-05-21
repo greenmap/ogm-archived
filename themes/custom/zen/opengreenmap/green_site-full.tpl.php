@@ -1,4 +1,9 @@
 <?php
+if(detectiPhone()) {
+
+	require_once("iphone/gsfull.tpl.php");
+	//exit();
+}else {
 // $comment_count isn't defined in some of the earliest sites, don't know why.
 if ($comment_count == NULL){
 	$comment_count = 0;
@@ -329,6 +334,7 @@ if($node->field_involved[0]['value'] == 'yes') {
   );
 
   print tabs_render($form);
+}
 ?>
 
 

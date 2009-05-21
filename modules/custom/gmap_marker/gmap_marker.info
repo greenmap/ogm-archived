@@ -2,5 +2,5 @@
 name = gmap_marker
 description = Extension to gmap module
 package = GreenMap
-dependencies = gmap
+dependencies = gmap iphone
 core= 5.x

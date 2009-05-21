@@ -1,4 +1,11 @@
 <?php
+if(detectiPhone()) {
+
+	require_once("iphone/ngs.tpl.php");
+
+}else {
+	
+
 
 
 /**
@@ -175,7 +182,7 @@ if ($teaser) {
 	include('green_site-full.tpl.php');
 }
 
-
+}
 ?>
 </div>
 
