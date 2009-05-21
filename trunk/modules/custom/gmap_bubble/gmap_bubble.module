@@ -45,7 +45,6 @@ function gmap_bubble_menu($may_cache){
  */
 function gmap_bubble_gmap($op, $map=null)
 {
-
 	switch ($op) {
 		case 'pre_theme_map':
 			if($_GET['device'] == 'iphone'){
