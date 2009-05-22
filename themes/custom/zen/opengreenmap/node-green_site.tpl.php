@@ -1,5 +1,5 @@
 <?php
-if(detectiPhone()) {
+if(detectiPhone() && false) {
 
 	require_once("iphone/ngs.tpl.php");
 
