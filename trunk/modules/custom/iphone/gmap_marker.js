@@ -1,6 +1,7 @@
 /**
  * @author Miikka Lammela
  */
+/*
 var GlobalMap;
 var GlobalElement;
 var GlobalObj;
@@ -10,7 +11,8 @@ var objects = new Array();
 var breakpoint = 10;
 var geocoder = new GClientGeocoder();
 
-/* jQuery */
+/ * jQuery * /
+
 $(document).ready(function() {
 	// collapse all
 
@@ -84,9 +86,6 @@ function showAddress(address) {
         alert(address + " not found");
       } else {
         map.setCenter(point, 13);
-     /*   var object = new GMarker(point);
-        map.addOverlay(object);
-        object.openInfoWindowHtml(address);*/
       }
     }
   );
@@ -218,26 +217,7 @@ function createMarker(point, opts,nid) {
 				document.getElementById('iphoneFullDiv') = fullpageDiv;
 			}
 			
-			/*
-			maxContentDiv = document.createElement('div');
-				// somewhere in here is a problem which results in two <html> tags
-				maxContentDiv.id = 'maxcontentdiv';
-				maxContentDiv.innerHTML = '<iframe frameborder="0" src="' + Drupal_base_path + 'node/' + nid + '/simple" width="670" height="360"></iframe>';
-				GlobalMap.openInfoWindowHtml(point, html.responseText,
-				{maxContent: maxContentDiv,
-				maxTitle: ''});
-
-				// java script code for the stars rating
-				// jQuery(function(){jQuery('input.fivestar-submit').hide();});
-				// jQuery(function(){jQuery('form.fivestar-widget').rating();}); // removing for now - not working in Webkit-based sites - chrome & safari - breaks other stuff too
-				jQuery(function(){
-					jQuery('.maximize').click(function() {
-						var rel = jQuery(this).attr('rel');
-						// maxContentDiv.firstChild.src = Drupal_base_path + 'node/'+nid+'/simple#tabs-tabs-' + rel; // removing for now - not working in Webkit-based sites - chrome & safari - breaks other stuff too
-						GlobalMap.getInfoWindow().maximize();
-					})
-				});
-				*/
+			
 	  	} else {
 	        	alert('Problems with the ajax: 228');
 		}
@@ -329,7 +309,7 @@ function globalViewNodeLoad() {
 
 /**
  CUSTOM HANDLER
-*/
+* /
 
 Drupal.gmap.addHandler('gmap',function(elem) {
   	var obj = this;
@@ -518,4 +498,4 @@ trim = function (str) {
 		}
 	}
 	return str;
-}
+}*/
