@@ -13,11 +13,11 @@
  
  });
  });
- */
-/* 	load, unload, resize, scroll, focus, blur, error, 
+ * /
+/ * 	load, unload, resize, scroll, focus, blur, error, 
  mouseover, mouseout, mousemove, mouseup, mousedown,
  click, dblclick, folcus, blur, change, reset, submit,
- deydown, keyup, keypress*/
+ deydown, keyup, keypress* /
 addEvent = function(el, eve, func){
     if (el == null) 
         return;
@@ -125,9 +125,9 @@ Drupal.gmap.addHandler('gmap', function(elem){
 				
 			}
 				
-/*				
+/ *				
 				cur[2] = event.targetTouches[0].clientX;
-				cur[3] = event.targetTouches[0].clientY;*/
+				cur[3] = event.targetTouches[0].clientY;* /
             }
             else {
                 cur[0] = null;
@@ -142,7 +142,7 @@ Drupal.gmap.addHandler('gmap', function(elem){
             //event.preventDefault();
             if (cur[0] == null && cur[1] == null) 
                 return;
-/*			alert(
+/ *			alert(
 			cur[0] +  " vrt " + cur[2] + "\n" + 
 			cur[1] +  " vrt " + cur[3] + "\n" +
 			start[0] +  " vrt " + start[2] + "\n"+
@@ -157,7 +157,7 @@ Drupal.gmap.addHandler('gmap', function(elem){
             var lon = testLatOrLon((obj.vars.longitude - 4 * (change * cur[0])), 'longitude');
 		//	log += "\n" + lat + " " + lon;
             map.panTo(new GLatLng(lat, lon));
-*/
+* /
 			cur = [];
 			start = [];
 
@@ -221,11 +221,11 @@ Drupal.gmap.addHandler('gmap', function(elem){
         });
         
     });
-    /*
+    / *
      // we don't use this here
      GEvent.addListener(obj.map, "zoomend", function(oldzoom, newzoom) {
      alert("zoom level: " + newzoom);
-     });*/
+     });* /
 });
 
 testLatOrLon = function(value, type){
@@ -278,5 +278,5 @@ function iPhoneLocate(lat,lon){
   	var map = GlobalObj.map;
 	var point = new GLatLng(lat,lon);
 	map.setCenter(point, 13);
-};
+};*/
 
