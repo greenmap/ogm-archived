@@ -64,7 +64,7 @@ function ogm_custom_misc_front_page() {
     <ul class="big clear-block">
       <li class="explore big">
         <h2 class="explore"><a class="bigbuttons explore" href="'. url('greenmap') .'">'. t('Explore') .'</a></h2>
-        <p><a class="bigbuttons" href="'. url('greenmap') .'">'.  variable_get('gmap_bubble_site_count', t('many')) .' green living sites! See the world from a new perspective.
+        <p><a class="bigbuttons" href="'. url('greenmap') .'">'.  variable_get('gmap_bubble_site_count', t('many')) .' green living sites! View the world from a new perspective.
 </a></p>
       </li>
       <li class="expand big">
@@ -84,15 +84,15 @@ function ogm_custom_misc_front_page() {
   // main body text of the front page
 
   $output .= '<div id="homepagetext" class="clear-block">
-    <p><strong>Discover New Directions to a Sustainable Future!</strong></p>
+    <p><strong>Transforming Local Information into Global Interaction!</strong></p>
 
-    <p>Open Green Map charts natural, cultural and green living sites in your community and around the world. Use it today to green up your life!</p>
+    <p>Open Green Map interactively charts natural, cultural and green living sites in your community and around the world.</p>
 
-    <p>Now, you are invited to '. l('add', 'faq/883') .' images, ratings and impacts for each green site.'. l('More features are in progress', 'design')  .', leading up to our '. l('June 5 launch celebration', 'about') .'.</p>
+    <p>On this platform, you can enhance every site, path and area on any map, and share your insights, impacts, images and videos. Rate, update, translate -- there is '. l('more to come', 'design')  .'.</p>
 
-    <p>With inclusive participation in sustainable development our mission since 1995, Green Map System welcomes you to the Open Green Map. '. l(t('Support'), 'donate') .' our locally-led '. l(t('global movement'), 'http://GreenMap.org') .' now in more than 50 countries.</p>
+    <p>'. l(t('Green Map System'), 'http://GreenMap.org') .' promotes inclusive participation in sustainable development since 1995, engaging communities in 55 countries. '. l(t('Support'), 'donate') .' this locally-led global movement!.</p>
 
-    <p><em class="pink">Think Global, Map Local!</em></p>
+    <p><em class="pink">Think Global, Map Local!               Think Global, Map Social!</em></p>
   </div>
   </div>';
 
