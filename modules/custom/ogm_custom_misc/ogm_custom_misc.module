@@ -86,13 +86,13 @@ function ogm_custom_misc_front_page() {
   $output .= '<div id="homepagetext" class="clear-block">
     <p><strong>Transforming Local Information into Global Interaction!</strong></p>
 
-    <p>Open Green Map interactively charts natural, cultural and green living sites in your community and around the world.</p>
+    <p>Open Green Map interactively charts natural, cultural and green living sites in your community and worldwide.</p>
 
     <p>On this platform, you can enhance every site, path and area on any map, and share your insights, impacts, images and videos. Rate, update, translate -- there is '. l('more to come', 'design')  .'.</p>
 
     <p>'. l(t('Green Map System'), 'http://GreenMap.org') .' promotes inclusive participation in sustainable development since 1995, engaging communities in 55 countries. '. l(t('Support'), 'donate') .' this locally-led global movement!.</p>
 
-    <p><em class="pink">Think Global, Map Local!               Think Global, Map Social!</em></p>
+    <p><em class="pink">Think Global, Map Local!　　　　　　　　　　　　　　　Think Global, Map Social!</em></p>
   </div>
   </div>';
 
