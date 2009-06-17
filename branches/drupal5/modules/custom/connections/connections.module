@@ -1,0 +1,398 @@
+<?php
+
+
+function connections_views_default_views()
+{
+
+    $view = new stdClass();
+    $view->name = 'list_sites_map';
+    $view->description = 'List of sites on the map';
+    $view->access = array (
+    );
+    $view->view_args_php = '';
+    $view->page = TRUE;
+    $view->page_title = 'Green Sites';
+    $view->page_header = '';
+    $view->page_header_format = '1';
+    $view->page_footer = '';
+    $view->page_footer_format = '1';
+    $view->page_empty = 'No sites found';
+    $view->page_empty_format = '1';
+    $view->page_type = 'list';
+    $view->url = 'list_sites_map';
+    $view->use_pager = TRUE;
+    $view->nodes_per_page = '5';
+    $view->sort = array (
+    );
+    $view->argument = array (
+    );
+    $view->field = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => '',
+      'handler' => 'views_handler_field_nodelink',
+      'options' => 'link',
+        ),
+    );
+    $view->filter = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'type',
+      'operator' => 'OR',
+      'options' => '',
+      'value' => array (
+                0 => 'green_site',
+            ),
+        ),
+    );
+    $view->exposed_filter = array (
+    );
+    $view->requires = array(node);
+    $views[$view->name] = $view;
+
+
+
+    $view = new stdClass();
+    $view->name = 'list_related_sites';
+    $view->description = 'List of related sites for InfoWindow bubble.';
+    $view->access = array (
+    );
+    $view->view_args_php = '';
+    $view->page = TRUE;
+    $view->page_title = '';
+    $view->page_header = '';
+    $view->page_header_format = '1';
+    $view->page_footer = '';
+    $view->page_footer_format = '1';
+    $view->page_empty = 'n/a';
+    $view->page_empty_format = '1';
+    $view->page_type = 'list';
+    $view->url = 'related';
+    $view->use_pager = TRUE;
+    $view->nodes_per_page = '5';
+    $view->sort = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'random',
+      'sortorder' => 'ASC',
+      'options' => '',
+        ),
+    );
+    $view->argument = array (
+        array (
+      'type' => 'taxid',
+      'argdefault' => '7',
+      'title' => 'Other %1 Sites',
+      'options' => '1',
+      'wildcard' => '',
+      'wildcard_substitution' => '',
+        ),
+    );
+    $view->field = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => '',
+      'handler' => 'views_handler_field_nodelink',
+      'options' => 'link',
+        ),
+    );
+    $view->filter = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'status',
+      'operator' => '=',
+      'options' => '',
+      'value' => '1',
+        ),
+        array (
+      'tablename' => 'node',
+      'field' => 'type',
+      'operator' => 'OR',
+      'options' => '',
+      'value' => array (
+                0 => 'green_site',
+            ),
+        ),
+    );
+    $view->exposed_filter = array (
+    );
+    $view->requires = array(node, location);
+    $views[$view->name] = $view;
+
+
+
+
+    // all the maps by the maker used in the key
+    $view = new stdClass();
+    $view->name = 'list_mapmaker_maps';
+    $view->description = 'list all of maps this maker has made';
+    $view->access = array (
+    );
+    $view->view_args_php = '';
+    $view->page = TRUE;
+    $view->page_title = '';
+    $view->page_header = '';
+    $view->page_header_format = '1';
+    $view->page_footer = '';
+    $view->page_footer_format = '1';
+    $view->page_empty = 'n/a';
+    $view->page_empty_format = '1';
+    $view->page_type = 'list';
+    $view->url = 'mapmaker';
+    $view->use_pager = FALSE;
+    $view->nodes_per_page = '10';
+
+    $view->sort = array (
+    );
+    $view->argument = array (
+        array (
+      'type' => 'uid',
+      'argdefault' => '1',
+      'title' => '',
+      'options' => '',
+      'wildcard' => '',
+      'wildcard_substitution' => '',
+        ),
+    );
+    $view->field = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => '',
+      'handler' => 'views_handler_field_nodelink',
+      'options' => 'link',
+        ),
+    );
+    $view->filter = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'type',
+      'operator' => 'OR',
+      'options' => '',
+      'value' => array (
+                0 => 'green_map',
+            ),
+        ),
+        array (
+      'tablename' => 'og',
+      'field' => 'private',
+      'operator' => '=',
+      'options' => '',
+      'value' => '0',
+        ),
+    );
+    $view->exposed_filter = array (
+    );
+    $view->requires = array(node, og);
+    $views[$view->name] = $view;
+
+
+    $view = new stdClass();
+    $view->name = 'list_location_table';
+    $view->description = 'List of related sites for InfoWindow bubble.';
+    $view->access = array (
+    );
+    $view->view_args_php = '';
+    $view->page = TRUE;
+    $view->page_title = '';
+    $view->page_header = '';
+    $view->page_header_format = '1';
+    $view->page_footer = '';
+    $view->page_footer_format = '1';
+    $view->page_empty = 'location';
+    $view->page_empty_format = '1';
+    $view->page_type = 'list';
+    $view->url = 'location';
+    $view->use_pager = TRUE;
+    $view->nodes_per_page = '10';
+    $view->sort = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'random',
+      'sortorder' => 'ASC',
+      'options' => '',
+        ),
+    );
+    $view->argument = array (
+        array (
+      'type' => 'country',
+      'argdefault' => '2',
+      'title' => 'Other %1 Sites',
+      'options' => '1',
+      'wildcard' => '',
+      'wildcard_substitution' => '',
+        ),
+    );
+    $view->field = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => '',
+      'handler' => 'views_handler_field_nodelink',
+      'options' => 'link',
+        ),
+        array (
+      'tablename' => 'location',
+      'field' => 'city',
+      'label' => '',
+        ),
+        array (
+      'tablename' => 'location',
+      'field' => 'country',
+      'label' => '',
+        ),
+    );
+    $view->filter = array (
+        array (
+      'tablename' => 'node',
+      'field' => 'status',
+      'operator' => '=',
+      'options' => '',
+      'value' => '1',
+        ),
+        array (
+      'tablename' => 'node',
+      'field' => 'type',
+      'operator' => 'OR',
+      'options' => '',
+      'value' => array (
+                0 => 'green_site',
+            ),
+        ),
+    );
+    $view->exposed_filter = array (
+    );
+    $view->requires = array(node, location);
+    $views[$view->name] = $view;
+
+
+    return $views;
+}
+
+
+
+
+function escape_js($str)
+{
+    $str = str_replace('\'', '&#039;', $str);
+    $str = str_replace('"', '\"', $str);
+    $str = str_replace("\n", '', $str);
+    return $str;
+}
+
+
+function output_connections($node)
+{
+
+
+    $js = '';
+    $js .= 'var c_content = [];';
+
+    // build a variable containing the embedded view of all related sites
+    $rel1 = 'Every site using the same primary Icon on Open Green Map is automatically linked here. You can compare different approaches and solutions on this map and others around the world.';
+
+
+    $list_related_sites = views_get_view('list_related_sites');
+    $list_related_sites->args[0]=$node->primary_term->tid;
+    $relsite1 = views_build_view('embed', $list_related_sites, $list_related_sites->args, true, 10);
+    $relsite1 = str_replace('<a href=', '<a target="_parent" href=', $relsite1);
+
+    $list_related_sites_loc = views_get_view('list_sites_map');
+    $relsite2 = views_build_view('embed', $list_related_sites_loc, null, true, 10);
+    $relsite2 = str_replace('<a href=', '<a target="_parent" href=', $relsite2);
+
+    $relsite = $rel1;
+    $relsite .= '<div style=""><div style=""><div style=""><b>Other Sites on Map</b></div>';
+    $relsite .= $relsite1;
+    $relsite .= '</div><div style=""><b>Other Sites in World</b></div><div style="">';
+    $relsite .= $relsite2;
+    $relsite .= '</div></div>';
+    $relsite = escape_js($relsite);
+
+
+    // build a variable containing the Getting Here
+    $getinghere = 'You may see directions the Mapmaker has included, or directions shared by the public on how to get here by bike, wheelchair, mass transit, etc. Follow these directions at your own risk '. l(t('Add'), 'node/add/transport-direction', array('title' => t('Add Directions')), '&destination=node/'.$node->nid .'&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title)) .' directions to help people get here.';
+    $getinghere .= '<p>' . content_format('field_public_transport_directio', $node->field_public_transport_directio[0]) . '</p>';
+
+    $field_result = db_query("SELECT c.field_field_transport_direction_value AS directions, c.field_field_web_url AS url, n.title AS title, n.created AS tl FROM {content_type_transport_direction} c INNER JOIN {node} n ON c.nid = n.nid WHERE c.field_field_site_2_nid = %d ORDER BY n.created DESC", $node->nid);
+    while ($result = db_fetch_object($field_result)) {
+        $getinghere .= '<p>' .'Title:' . $result->title . ' ';
+        $getinghere .=  'Directios:' . $result->directions . ' ' . $result->url .'</p>';
+    }
+    $getinghere = escape_js($getinghere);
+
+
+
+    // build a variable containing the Contacts
+    $cont = escape_js(content_format('field_phone', $node->field_phone[0]));
+    $cont .= '<br />' . escape_js(content_format('field_email', $node->field_email[0]));
+    $cont .= '<br />' . escape_js(content_format('field_web', $node->field_web[0]));
+
+    // build a variable containing the Releted Maps
+    $res = db_query("select latitude, longitude from {location} loc, {location_instance} loci where loci.nid = " . $node->nid . " and loc.lid = loci.lid");
+    $row = db_fetch_object($res);
+
+    $list_proximity = views_create_view('list_proximity_custom', 'list_proximity_custom');
+    views_view_add_page($list_proximity, t('proximity'), NULL, 'list', true, 10, '', 1, false);
+    views_view_add_field($list_proximity, 'node', 'title', '', false, 0, 'views_handler_field_nodelink');
+    views_view_add_filter($list_proximity, 'location', 'latitude',   '<',  $row->latitude + 5, '');
+    views_view_add_filter($list_proximity, 'location', 'latitude',   '>',  $row->latitude - 5, '');
+    views_view_add_filter($list_proximity, 'location', 'longitude',   '<',  $row->longitude + 5, '');
+    views_view_add_filter($list_proximity, 'location', 'longitude',   '>',  $row->longitude - 5, '');
+    views_load_cache();
+    views_sanitize_view($list_proximity);
+    $list_proximity->args[0]='';
+    $remap1 = views_build_view('embed', $list_proximity, $list_proximity->args, true, 10);
+    $remap1 = str_replace('<a href=', '<a target="_parent" href=', $remap1);
+
+
+    $list_mapmaker_maps = views_get_view('list_mapmaker_maps');
+    $list_mapmaker_maps->args[0]=$node->uid;
+    $remap2 = views_build_view('embed', $list_mapmaker_maps, $list_mapmaker_maps->args, true, 10);
+    $remap2 = str_replace('<a href=', '<a target="_parent" href=', $remap2);
+    $relmap = '<div><div style=""><div style=""><b>Other Maps by ' . $node->name . '</b></div>';
+    $relmap .= $remap2;
+    $relmap .= '<div style=""><div style=""><div style=""><b>Other Nearby Maps</b></div>';
+    $relmap .= $remap1;
+    $relmap .= '</div></div>';
+    $relmap = escape_js($relmap);
+
+    // build up the javascript containing the content for each of the connections tabs
+    $js .= 'c_content["Related Sites"] = "' . $relsite . '";'; // could add in another embedded view based on similar sites on this map. Current embedded view is sites on all maps with the same primary icon
+    $js .= 'c_content["Related Maps"] = "' . $relmap . '";';
+    $js .= 'c_content["Volunteering"] = "not available yet";';
+    $js .= 'c_content["Getting Here"] = "' . $getinghere . '";';
+    $js .= 'c_content["Contacts"] = "' . $cont . '";'; // pull in here the phone number, address, web address, email, etc. - but only fields that have a value. - something like if(!empty(content_format('field_phone_ [etc]
+    $js .= 'c_content["Sharing"] = "Coming soon! Open Green Map sharing resources, including widgets, promotional buttons, using this map on mobile phones and other wireless devices.";';
+    $js .= 'function replace_connections_content(item) {';
+    $js .= 'document.getElementById("connections_content").innerHTML = c_content[item];';
+    $js .= '}';
+    drupal_add_js($js, 'inline');
+
+    // create the div to contain all the connections stuff
+    $ret = '';
+    $ret .= '<div id="connections_container">';
+    $ret .= 'Compare related sites, explore the related maps, find out about volunteering, how to get here and more. Soon, you will find ways to share this map here, too.';
+    $ret .= '<p></p>';
+    $ret .= '<div id="connections_menu">';
+    $menu_items = array('Related Sites', 'Related Maps', 'Volunteering');
+    $menu_items[] = 'Getting Here';
+    if (!empty($node->field_phone[0]['value']) || !empty($node->email[0]['value']) || !empty($node->web[0]['value']))
+    $menu_items[] = 'Contacts';
+    $menu_items = array_merge($menu_items, array('Sharing'));
+    foreach ($menu_items as $mi) {
+        $ret .= '<p class="connections_menu_item" onclick="javascript:replace_connections_content(\''.$mi.'\');">' . $mi . '</p>';
+    }
+    $ret .= '</div>';
+    $ret .= '<div id="connections_content">';
+    $ret .= '';
+    $ret .= '</div>';
+    $ret .= '<div style="clear: left;"></div>';
+    $ret .= '</div>';
+
+
+    return $ret;
+}
+

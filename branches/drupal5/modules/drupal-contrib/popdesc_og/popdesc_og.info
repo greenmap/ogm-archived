@@ -1,0 +1,12 @@
+; $Id: popdesc_og.info,v 1.1 2007/12/17 20:09:47 amanuel Exp $
+name = "OG Auto Fill Description"
+description = "Automatically generates a short group description from a larger description field."
+dependencies = og
+package = "Organic groups"
+version = "5.x-0.1"
+project = "popdesc_og"
+; Information added by drupal.org packaging script on 2007-12-18
+version = "5.x-1.x-dev"
+project = "popdesc_og"
+datestamp = "1197936518"
+

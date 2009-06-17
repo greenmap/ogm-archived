@@ -1,0 +1,4 @@
+name = multimedia_content
+description = Custom tweaks for adding videos and photos from the Multimedia tab
+package = GreenMap
+core= 5.x

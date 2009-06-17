@@ -1,0 +1,5 @@
+; $Id$
+name = icon_description
+description = Provide a descriptive string for all Green Map icons
+package = GreenMap
+core= 5.x

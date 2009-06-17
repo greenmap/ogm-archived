@@ -1,0 +1,5 @@
+; $Id$
+name = dashboard
+description = Custom tweeks for user dashboard
+package = GreenMap
+core= 5.x

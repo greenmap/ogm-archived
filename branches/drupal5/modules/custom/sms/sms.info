@@ -1,0 +1,11 @@
+; $Id$
+
+name = sms
+
+description = returns address info for sms - not currently functioning or in use
+
+package = GreenMap
+
+dependencies = gmap location
+
+core= 5.x

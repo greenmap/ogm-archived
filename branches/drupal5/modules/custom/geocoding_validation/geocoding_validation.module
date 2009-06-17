@@ -1,0 +1,69 @@
+<?php
+// $Id$
+
+
+/**
+* Display help and module information
+* @param path whitch path of the site we're displaying help
+* @param arg array that holds the current path as vould be returned from arg() function
+* @return help text for the path
+*/
+function geocoding_validation_help($path){
+  $output = '';
+  switch($path){
+	case "admin/modules#geocoding_validation":
+    case "admin/help#geocoding_validation":
+    break;
+	case "user/help#geocoding_validation":
+	break;
+  }
+  return $output;
+}
+
+/**
+ * geocoding_validation_nodeapi
+ * @return 
+ * @param $node Object
+ * @param $op String
+ * @param $a3 Object[optional]
+ * @param $a4 Object[optional]
+ * hook_nodeapi. Sets error message if green_site does not have set a latitude and longitude.
+ */
+
+function geocoding_validation_nodeapi(&$node, $op,$a3 = null,$a4 = null) {
+	
+	// only for green_sites
+	if ($node->type != 'green_site') {return;}
+  // only for those users who have permission to edit this site
+  if (node_access('update',$node) != true) {return;}
+  if ($op == 'insert') { return; }	
+	switch($op){
+		// only for case view
+		case 'view':
+    // ignore if this is a shape
+    if (!$node->taxonomy || $node->taxonomy[5]) { return; }
+    
+		/*
+		* @TODO - get this working - TT - I could never get this message not to show
+		*  for poly shapes/lines, so disabled module.
+		*  This would be better done as an actual validation function when the form is
+		*  submitted - use hook_form_alter to insert a validation function
+		*/ 
+		
+		// only if lat and lon are not set
+		if(	(	$node->location['lat'] != '' && $node->location['lon'] != '') || 
+			(	$node->locations[0]['latitude'] != '' && $node->locations[0]['longitude'] != '' )) {break;}	
+
+		
+		// set message
+		$message = t(
+			"This site does not have a latitude and longitude so it will not show on the map. Please click !edit and set a location on the map."
+			,array(
+				'!edit' => l(t("edit"),'node/'.$node->nid."/edit")
+			)
+		);
+		// send message
+		drupal_set_message($message, 'error');
+		break;
+	}
+}

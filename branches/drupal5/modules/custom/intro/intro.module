@@ -1,0 +1,114 @@
+<?php
+// $Id: intro.module,v 0.1 2008/07/21 16:39:43 tom_o_t Exp $
+
+/*
+ * Creates a block for the intro tab on the world view, and edit link for nav
+ */ 
+
+define('INTRO_TEXT',   'Welcome to the Open Green Map');
+
+/*
+ * hook_perm()
+ * set it so only admins get a link in their navigation to edit this block
+ */ 
+
+function intro_perm() {
+  return array('edit worldview intro');
+}
+/*
+ * hook_menu()
+ * Create a link to edit the block
+ */
+
+ function intro_menu($may_cache){
+ 	$items = array();
+	if($may_cache){
+	  $items[] = array(
+	      'path' => 'admin/settings/introtab', 
+	      'title' => t('Edit Info Tab'),
+	      'callback' => 'drupal_get_form',
+	      'callback arguments' => 'intro_admin_settings',
+	      'type' => MENU_NORMAL_ITEM,
+	      'access' => (user_access('edit worldview intro')),
+      );
+	}
+	return $items;
+ }
+
+
+
+/**
+ * Intro module main configuration page form
+ */
+function intro_admin_settings() {
+  $form = array();
+
+  $form['general_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('General settings'),
+    // '#description' => t(''),
+    '#collapsible' => TRUE,
+  );
+
+  $form['general_settings']['intro_block_text'] = array(
+    '#type' => 'textarea',
+  	'#title' => t('Intro Text'),
+  	'#default_value' => variable_get('intro_block_text', INTRO_TEXT),
+	'#description' => t('The text for the Info Tab of the worldview map'),
+    '#required' => TRUE,
+  );
+
+  return system_settings_form($form);
+}
+
+
+ 
+/*
+ * hook_block()
+ * creates the block for the intro text
+ * which is called in group_map.module
+ */
+/* 
+ function intro_block($op = 'list', $delta = 0, $edit = array()){
+ // The $op parameter determines what piece of information is being requested.
+  switch ($op) {
+    case 'list':
+      // If $op is "list", we just need to return a list of block descriptions.
+      // This is used to provide a list of possible blocks to the administrator,
+      // end users will not see these descriptions.
+      $blocks[0]['info'] = t('Worldview Intro Tab');
+      return $blocks;
+    case 'configure':
+		switch ($delta){
+			case 0:
+				$form['text'] = array(
+			      '#type' => 'textarea',
+			      '#title' => t('Intro Text'),
+			      '#default_value' => variable_get('intro_block_text', INTRO_TEXT),
+				  '#description' => t('The text for the intro tab of the worldview map'),
+			    );
+			break;
+		}
+	    return $form;
+	case 'save':
+		switch ($delta){
+			case 0:
+				variable_set('intro_block_text', $edit['text']);
+			break;
+		}
+	case 'view': default:
+      // If $op is "view", then we need to generate the block for display
+      // purposes. The $delta parameter tells us which block is being requested.
+      switch ($delta) {
+        case 0:
+		  $block = array(
+		  	'subject' => t('Intro'),
+			'content' => t(variable_get('intro_block_text', INTRO_TEXT)),
+		  );
+          break;
+		    
+      }
+	  return $block;
+  }
+ }
+*/

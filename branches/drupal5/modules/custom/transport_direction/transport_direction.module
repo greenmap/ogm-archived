@@ -1,0 +1,26 @@
+<?php
+
+
+/**
+ *	hook_form_alter()
+ *
+ *	Alters the form that is being displayed after a user chooses to add a directions
+ *	in the getting here tab, so that the Site selector is not being shown.
+ *	This code was taken from impacts/imapacts.module.
+ */
+function transport_direction_form_alter($form_id, &$form)
+{
+
+    switch ($form_id) {
+        case 'transport_direction_node_form':
+            if ($site_nid = $_GET['nid']) {
+                $form['field_site_2']['nids']['#default_value'] = array($site_nid => $_GET['node_title']);
+                $form['field_site_2']['nids']['#options'] = array($site_nid => $_GET['node_title']);
+                $form['field_site_2']['nids']['#attributes'] = array('class' => 'hidden');
+                $form['field_site_2']['nids']['#title'] = '';
+            }
+            unset($form['preview']);
+            break;
+    }
+
+}

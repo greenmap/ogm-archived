@@ -1,0 +1,466 @@
+<?php
+// $Id$
+/*
+function moderate_ogm_init() {
+  // only bother when we are not serving a cached page. check for which function that only exists afterwards
+  if (function_exists('drupal_set_content')) {    
+    // we have to perform a load in order to assure that the $user->og_groups bits are present.
+    global $user;
+    if ($user->uid) {
+      $user = user_load(array('uid' => $user->uid));
+    }
+    else {
+      $user->og_groups = array();
+    }
+    
+    require dirname(__FILE__). '/moderate_ogm.inc';
+
+  }
+}
+*/
+
+
+/**
+* Display help and module information
+* @param path whitch path of the site we're displaying help
+* @param arg array that holds the current path as vould be returned from arg() function
+* @return help text for the path
+*/
+
+function moderate_ogm_help($path){
+  $output = '';
+  switch($path){
+	case "admin/modules#moderate_ogm":
+    case "admin/help#moderate_ogm":
+    break;
+	case "user/help#moderate_ogm":
+	break;
+  }
+  return $output;
+}
+
+/**
+* Valid permissions for this module
+* @return array An array of valid permissions for the moderate_ogm module
+*/
+
+function moderate_ogm_perm() {
+  return array('moderate');
+} // function moderate_ogm_perm()
+/*
+function moderate_ogm_form_alter($form_id,&$form){
+//	echo $form_id ."<br>\n";
+	if($form_id == 'mapmaker_profile_node_form'){
+		if(!user_access('moderate')){
+			echo "ei oikeuksia";
+		//	$form = null;
+		}
+	//	print_r($form);
+	}
+//	print_r($form);
+}
+*/
+function moderate_ogm_form_alter($form_id, &$form){
+
+    if($form_id == 'mapmaker_profile_node_form') {
+    	if(!user_access('moderate')){
+    		$form['#node'] = null;
+    	}
+    }
+}
+function moderate_ogm_menu($may_cache){
+	$items = array();
+	if(!$may_cache){return $items;}
+	$items[] = array(
+      'path' => 'node/moderate', 
+      'title' => t('Moderate'),
+      'callback' => 'moderate_ogm_moderate_page',
+	
+      'type' => MENU_NORMAL_ITEM,
+      'access' => (user_access('moderate')),
+    );
+	$items[] = array(
+      'path' => 'moderate/ajax', 
+      'title' => t('Ajax page'),
+      'callback' => 'moderate_ogm_ajax',
+      'type' => MENU_CALLBACK,
+      'access' => (user_access('moderate')),
+    );
+	return $items;
+	
+}
+
+
+function moderate_ogm_moderate_page() {
+	$path = drupal_get_path('module', 'moderate_ogm');
+	
+	$js = "var Drupal_base_path = '". base_path() ."';";
+  	drupal_add_js($js, 'inline');
+  	$js = "var Drupal_current_path = '". $path ."';";
+    drupal_add_js($js, 'inline');
+	drupal_add_js( $path.'/ajax.js' );
+ 	drupal_add_js( $path.'/collapse_moderate.js' );
+ // 	drupal_add_js("misc/collapse_moderate.js");
+
+
+$countries = location_get_iso3166_list();
+$content = '';
+$isGroups = false;
+$result =  db_query("SELECT b.* FROM node AS a LEFT JOIN content_field_moderated_countries AS b ON a.nid = b.nid WHERE b.nid IS NOT NULL AND a.uid = '".$GLOBALS['user']->uid."';");
+while($returnValue = db_fetch_object($result)){
+	$isGroups = true;
+	$content .= "<fieldset name='".$returnValue->field_moderated_countries_value."' class='collapsible collapsed'>".
+				"<legend> ".$countries[$returnValue->field_moderated_countries_value];
+	$content .= "</legend>";
+	// this div gets its content from ajax query. Look collapse_moderate.js, hook_menu and moderate_ogm_ajax()
+	$content .= "<div id='DIV".$returnValue->field_moderated_countries_value."'></div>";
+
+	$content .= "</fieldset>";
+}
+if(!$isGroups) {
+  $content = "You have not been assigned any countries to moderate. Please ".l(t('contact Green Map System'),'contact')." and let us know which 
+countries 
+you would like to moderate.";
+}
+	return $content;
+}
+/**
+ * @author Miikka Lammela
+ * @return null
+ */
+function moderate_ogm_ajax(){
+	
+	/* **************************************************************************** *\
+	 * For the countries they moderate, there should be:							*
+	 * - all sites																	*
+	 * - all flags (with a count of how many times the each site has been flagged)	*
+	 * - all comments																*
+	\* **************************************************************************** */
+	
+	if(!arg(2)){die();} // if argument is missing
+	
+
+	
+	$countries = location_get_iso3166_list();
+	$result =  db_query("SELECT b.* FROM node AS a LEFT JOIN content_field_moderated_countries AS b ON a.nid = b.nid WHERE b.nid IS NOT NULL AND a.uid = '".$GLOBALS['user']->uid."' AND b.field_moderated_countries_value = '".arg(2)."';");
+	$returnValue = db_fetch_object($result);
+
+						
+	
+	$content .=	"<h3>".t("Sites:")."</h3>";
+	$content .= "<div style='overflow:auto;height:150px;'>";
+				$view = views_get_view('moderate_list_of_user_sites');
+				$view->args[0]=$returnValue->field_moderated_countries_value;
+				$site_list = views_build_view('block', $view,$view->args, false, false);
+	$content .=	$site_list;
+	$content .= "</div>";
+	$content .=	"<h3>".t("Recent Comments:")."</h3>";
+				$comment_view = views_get_view('moderate_comments_recent');
+				$comment_view->args[0]=$returnValue->field_moderated_countries_value;
+				$comment_site_list = views_build_view('block', $comment_view,$comment_view->args, false, false);
+	$content .= "<div style='overflow:auto;height:150px;'>";
+	$content .= $comment_site_list;
+	$content .= "</div>";
+
+	$content .=	"<h3>".t("Flags:")."</h3>";
+				$flag_view = views_get_view('moderate_list_all_flags');
+				$flag_view->args[0]=$returnValue->field_moderated_countries_value;
+				$flag_site_list = views_build_view('block', $flag_view,$flag_view->args, false, false);
+	$content .= "<div style='overflow:auto;height:150px;'>";
+	$content .= 	$flag_site_list;
+	$content .= "</div>";
+	echo $content;
+	die();
+}
+
+function moderate_ogm_views_default_views(){
+	// comments_recent
+	  $view = new stdClass();
+  $view->name = 'moderate_comments_recent';
+  $view->description = 'Display recent comments block';
+  $view->access = array (
+);
+  $view->view_args_php = '';
+  $view->page = TRUE;
+  $view->page_title = '';
+  $view->page_header = '';
+  $view->page_header_format = '1';
+  $view->page_footer = '';
+  $view->page_footer_format = '1';
+  $view->page_empty = '';
+  $view->page_empty_format = '1';
+  $view->page_type = 'table';
+  $view->url = 'moderate/comments';
+  $view->use_pager = FALSE;
+  $view->nodes_per_page = '0';
+  $view->block = TRUE;
+  $view->block_title = 'Recent comments';
+  $view->block_header = '';
+  $view->block_header_format = '1';
+  $view->block_footer = '';
+  $view->block_footer_format = '1';
+  $view->block_empty = 'There are no comments on your sites.';
+  $view->block_empty_format = '1';
+  $view->block_type = 'table';
+  $view->nodes_per_block = '10';
+  $view->block_more = FALSE;
+  $view->block_use_page_header = FALSE;
+  $view->block_use_page_footer = FALSE;
+  $view->block_use_page_empty = FALSE;
+  $view->sort = array (
+    array (
+      'tablename' => 'comments',
+      'field' => 'timestamp',
+      'sortorder' => 'DESC',
+      'options' => 'normal',
+    ),
+  );
+  $view->argument = array (
+    array (
+      'type' => 'country',
+      'argdefault' => '7',
+      'title' => '',
+      'options' => '',
+      'wildcard' => '',
+      'wildcard_substitution' => '',
+    ),
+  );
+  $view->field = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => 'Site',
+      'handler' => 'views_handler_field_nodelink',
+      'options' => 'link',
+    ),
+    array (
+      'tablename' => 'comments',
+      'field' => 'subject',
+      'label' => 'Comment',
+      'handler' => 'views_handler_field_commentlink_with_mark',
+      'options' => 'link',
+    ),
+    array (
+      'tablename' => 'comments',
+      'field' => 'name',
+      'label' => 'From',
+    ),
+    array (
+      'tablename' => 'comments',
+      'field' => 'timestamp',
+      'label' => '',
+      'handler' => 'views_handler_field_date_small',
+    ),
+  );
+  $view->filter = array (
+    array (
+      'tablename' => 'node_comment_statistics',
+      'field' => 'comment_count',
+      'operator' => '>=',
+      'options' => '',
+      'value' => '1',
+    ),
+    array (
+      'tablename' => 'comments',
+      'field' => 'status',
+      'operator' => '=',
+      'options' => '',
+      'value' => '0',
+    ),
+  );
+  $view->exposed_filter = array (
+  );
+  $view->requires = array(comments, node, node_comment_statistics);
+  $views[$view->name] = $view;
+// list_all_flags
+  $view = new stdClass();
+  $view->name = 'moderate_list_all_flags';
+  $view->description = 'Lists all flags of current page';
+  $view->access = array (
+);
+  $view->view_args_php = '';
+  $view->page = TRUE;
+  $view->page_title = '';
+  $view->page_header = '';
+  $view->page_header_format = '1';
+  $view->page_footer = '';
+  $view->page_footer_format = '1';
+  $view->page_empty = 'Empty';
+  $view->page_empty_format = '1';
+  $view->page_type = 'table';
+  $view->url = 'moderate/flags';
+  $view->use_pager = TRUE;
+  $view->nodes_per_page = '10';
+  $view->block = TRUE;
+  $view->block_title = 'Flags';
+  $view->block_header = '';
+  $view->block_header_format = '1';
+  $view->block_footer = '';
+  $view->block_footer_format = '1';
+  $view->block_empty = 'There are no flags.';
+  $view->block_empty_format = '1';
+  $view->block_type = 'table';
+  $view->nodes_per_block = '50';
+  $view->block_more = FALSE;
+  $view->block_use_page_header = FALSE;
+  $view->block_use_page_footer = FALSE;
+  $view->block_use_page_empty = FALSE;
+  $view->sort = array (
+  );
+  $view->argument = array (
+    array (
+      'type' => 'country',
+      'argdefault' => '7',
+      'title' => '',
+      'options' => '',
+      'wildcard' => '',
+      'wildcard_substitution' => '',
+    ),
+  );
+  $view->field = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => 'Title',
+      'handler' => 'views_handler_field_nodelink',
+      'options' => 'link',
+    ),
+    array (
+      'tablename' => 'abuse',
+      'field' => 'created',
+      'label' => 'Date',
+      'handler' => 'views_handler_field_date_small',
+    ),
+    array (
+      'tablename' => 'abuse',
+      'field' => 'name',
+      'label' => 'Flagger',
+    ),
+    array (
+      'tablename' => 'abuse',
+      'field' => 'reason',
+      'label' => 'Reason',
+      'handler' => 'all_flags_views_field_reason_default',
+    ),
+    array (
+      'tablename' => 'abuse',
+      'field' => 'body',
+      'label' => 'Description',
+    ),
+    array (
+      'tablename' => 'node',
+      'field' => 'edit',
+      'label' => '',
+      'handler' => 'views_handler_node_edit_destination',
+    ),
+    array (
+      'tablename' => 'abuse',
+      'field' => 'allow',
+      'label' => '',
+      'handler' => 'all_flags_views_field_allow_default',
+    ),
+    array (
+      'tablename' => 'abuse',
+      'field' => 'count',
+      'label' => '',
+      'handler' => 'all_flags_views_field_count_default',
+    ),
+  );
+  $view->filter = array (
+    array (
+      'tablename' => 'abuse',
+      'field' => 'oid',
+      'operator' => '=',
+      'options' => '',
+      'value' => '',
+    ),
+  );
+  $view->exposed_filter = array (
+  );
+  $view->requires = array(node, abuse);
+  $views[$view->name] = $view;
+// list_of_user_sites
+  $view = new stdClass();
+  $view->name = 'moderate_list_of_user_sites';
+  $view->description = 'List of all sites added by user';
+  $view->access = array (
+);
+  $view->view_args_php = '';
+  $view->page = TRUE;
+  $view->page_title = 'My Green Sites';
+  $view->page_header = '';
+  $view->page_header_format = '1';
+  $view->page_footer = '';
+  $view->page_footer_format = '1';
+  $view->page_empty = 'You have not added any sites.';
+  $view->page_empty_format = '1';
+  $view->page_type = 'table';
+  $view->url = 'moderate/sites';
+  $view->use_pager = TRUE;
+  $view->nodes_per_page = '40';
+  $view->block = TRUE;
+  $view->block_title = 'My Green Sites';
+  $view->block_header = '';
+  $view->block_header_format = '1';
+  $view->block_footer = '';
+  $view->block_footer_format = '1';
+  $view->block_empty = 'You have not added any sites';
+  $view->block_empty_format = '1';
+  $view->block_type = 'table';
+  $view->nodes_per_block = '10';
+  $view->block_more = TRUE;
+  $view->block_use_page_header = FALSE;
+  $view->block_use_page_footer = FALSE;
+  $view->block_use_page_empty = FALSE;
+  $view->sort = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'changed',
+      'sortorder' => 'DESC',
+      'options' => 'normal',
+    ),
+  );
+  $view->argument = array (
+    array (
+      'type' => 'country',
+      'argdefault' => '7',
+      'title' => '',
+      'options' => '',
+      'wildcard' => '',
+      'wildcard_substitution' => '',
+    ),
+  );
+  $view->field = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'title',
+      'label' => '',
+      'handler' => 'views_handler_field_nodelink_with_mark',
+      'options' => 'link',
+    ),
+    array (
+      'tablename' => 'node',
+      'field' => 'edit',
+      'label' => '',
+      'handler' => 'views_handler_node_edit',
+    ),
+  );
+  $view->filter = array (
+    array (
+      'tablename' => 'node',
+      'field' => 'type',
+      'operator' => 'OR',
+      'options' => '',
+      'value' => array (
+  0 => 'green_site',
+),
+    ),
+  );
+  $view->exposed_filter = array (
+  );
+  $view->requires = array(node);
+  $views[$view->name] = $view;
+  return $views;
+
+}
+

@@ -1,0 +1,35 @@
+<?php
+// $Id: keys_api.install,v 1.2 2008/03/10 23:26:56 greenskin Exp $
+
+function keys_api_install() {
+  drupal_set_message(t('Beginning installation of Keys API module.'));
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query("CREATE TABLE {keys_manage} (
+        domain_name varchar(255) NOT NULL,
+        service varchar(60) NOT NULL,
+        api_key varchar(255) NOT NULL,
+        KEY (api_key)
+        ) /*!40100 DEFAULT CHARACTER SET utf8 */;");
+      $success = TRUE;
+      break;
+    default:
+      drupal_set_message(t('Unsupported database.'));
+  }
+  
+  if ($success) {
+    drupal_set_message(t('The module installed tables successfully.'));
+  } else {
+    drupal_set_message(t('The installation of the formalter module was unsuccessful.'), 'error');
+  }
+}
+
+function keys_api_uninstall() {
+  switch ($GLOBALS['db_type']) {
+    case 'mysql':
+    case 'mysqli':
+      db_query('DROP TABLE IF EXISTS {keys_manage}');
+      break;
+  }
+}
