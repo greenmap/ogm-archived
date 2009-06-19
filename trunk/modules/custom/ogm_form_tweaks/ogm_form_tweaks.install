@@ -1,6 +1,0 @@
-﻿<?php
-
-function ogm_form_tweaks_install() {
-  // weight module to run after taxonomy and primary_term and primary_icon
-  db_query("UPDATE {system} SET weight = 12 WHERE name = 'ogm_form_tweaks'");
-}

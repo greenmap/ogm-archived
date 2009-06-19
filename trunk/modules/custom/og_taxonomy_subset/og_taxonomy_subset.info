@@ -1,9 +1,0 @@
-; $Id: og_taxonomy_subset.info,v 0.1 2008/03/13 15:27:03 tom_o_t Exp $
-name = og taxonomy subset
-description =  Allows Group admins to select a subset from a taxonomy for use within the group
-dependencies = taxonomy primary_term
-package = GreenMap
-; Information added by drupal.org packaging script on 2007-11-01
-version = "5.x-0.1"
-project = "og_taxonomy_subset"
-

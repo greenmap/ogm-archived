@@ -1,9 +1,0 @@
-; $Id: group_map.info,v 0.1 2008/03/13 15:27:03 LeeJFG Exp $
-name = organic group map homepage
-description =  Alters maps on group homepages
-dependencies = og gmap
-package = GreenMap
-; Information added by drupal.org packaging script on 2007-11-01
-version = "5.x-0.1"
-project = "group_map"
-

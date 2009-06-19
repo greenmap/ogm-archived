@@ -1,6 +1,0 @@
-; $Id: login_link.info,v 0.1 2008/06/18 15:27:03 tom_o_t Exp $
-name = Login Link
-description =  Creates custom login logout link
-package = GreenMap
-
-

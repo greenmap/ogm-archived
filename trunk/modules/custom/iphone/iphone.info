@@ -1,5 +1,0 @@
-; $Id$
-name = iphone
-description = iPhone app stuff
-package = GreenMap
-core= 5.x

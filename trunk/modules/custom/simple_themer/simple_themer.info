@@ -1,5 +1,0 @@
-; $Id$ tom_o_t
-name = simple_themer
-description = Custom tweaks for theming certain pages as simple, mostly for info window
-package = GreenMap
-core= 5.x

@@ -1,6 +1,0 @@
-<?php
-
-function primary_icon_install() {
-  // weight module to run after taxonomy and primary_term
-  db_query("UPDATE {system} SET weight = 12 WHERE name = 'primary_icon'");
-}

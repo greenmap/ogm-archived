@@ -1,5 +1,0 @@
-; $Id$
-name = user menu
-description = Additions to the user menu
-package = GreenMap
-core= 5.x

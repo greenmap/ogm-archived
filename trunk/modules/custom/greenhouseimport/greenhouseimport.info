@@ -1,5 +1,0 @@
-; $Id$
-name = greenhouse import
-description = Import data from greenhouse
-package = GreenMap
-core= 5.x

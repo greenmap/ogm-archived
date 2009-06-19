@@ -1,4 +1,0 @@
-name = connections
-description = Custom tweaks for the connections content type in the infowindows
-package = GreenMap
-core= 5.x
