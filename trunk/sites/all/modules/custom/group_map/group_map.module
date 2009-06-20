@@ -161,8 +161,18 @@ function _group_map_form_green_site_node_form_alter(&$form, &$form_state) {
 function _group_map_form_green_map_node_form_alter(&$form, &$form_state) {
   // When a green site is submitted from the context of a particular map
   // first off, hide the preview button as it doesn't work
-  unset($form['preview']);
+  unset($form['buttons']['preview']);
   $form['field_description']['0']['format'] = ''; // hide the formatting information
+
+  $form['og_description'] = array(
+    '#type' => 'value',
+    '#value' => $form['og_description']['#default_value'] ? 
+                  $form['og_description']['#default_value'] : '',
+  );
+  $hidden_fields = array(
+    'country',
+  );
+  _group_map_form_hide_location_fields($form, $hidden_fields);
 
   // improving instructions on how to let people join the group/map
   $form['og_selective']['#title'] = t('Building Your Map Team');
@@ -689,5 +699,17 @@ function group_map_custom_search_form(&$form_state, $nid) {
 function group_map_custom_search_form_submit($form, &$form_state) {
   if (check_plain($form_state['values']['keys'])) {
     drupal_goto('searchgreenmap/'. $form_state['values']['mapnid'], 'keys='. $form_state['values']['keys']);
+  }
+}
+
+function group_map_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ( 'green_map' == $node->type ) {
+    switch ($op) {
+      case 'presave':
+          if ( !$node->og_description) {
+            $node->og_description = $node->title;
+          }
+        break;
+    }
   }
 }
