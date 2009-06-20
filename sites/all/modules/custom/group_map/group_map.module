@@ -159,6 +159,9 @@ function _group_map_form_green_site_node_form_alter(&$form, &$form_state) {
  *  Hence the leading underscore.
  */
 function _group_map_form_green_map_node_form_alter(&$form, &$form_state) {
+  $form['path']['#collapsed'] = TRUE;
+  $form['revision_information']['#collapsed'] = TRUE;
+  $form['og_language']['#description'] = t("Selecting a language will set the language for the website interface and emails. If you choose a preferred language, you will always see this language.");
   // When a green site is submitted from the context of a particular map
   // first off, hide the preview button as it doesn't work
   unset($form['buttons']['preview']);
@@ -711,5 +714,14 @@ function group_map_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           }
         break;
     }
+  }
+}
+
+function group_map_country_options_callback() {
+  if ( function_exists('location_get_iso3166_list') ) {
+    return location_get_iso3166_list();
+  }
+  else {
+    trigger_error("Location module unable to call function \'location_get_iso3166_list\'");
   }
 }
