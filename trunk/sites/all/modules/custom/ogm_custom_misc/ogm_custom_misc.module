@@ -80,14 +80,16 @@ function ogm_custom_misc_front_page() {
 //         $output .= $list;
 
       $query = db_query('SELECT DISTINCT(tmp2.nid), tmp2.title FROM
-      (SELECT n.nid AS nid, n.title FROM {node} n JOIN
-      (SELECT oga.group_nid, n.changed AS changed FROM {node} n
-      INNER JOIN og_ancestry oga ON n.nid=oga.nid
-      WHERE n.status = %d AND oga.is_public = %d)
-      tmp ON tmp.group_nid = n.nid
-      WHERE n.type = "%s"
-      ORDER BY tmp.changed DESC)
-      tmp2 LIMIT %d', 1, 1, 'green_map', 3);
+        (SELECT n.nid AS nid, n.title FROM {node} n JOIN
+          (SELECT oga.group_nid, n.changed AS changed FROM {node} n
+          INNER JOIN og_ancestry oga ON n.nid=oga.nid
+          WHERE n.status = %d AND oga.is_public = %d)
+        tmp ON tmp.group_nid = n.nid
+        INNER JOIN {og} AS og ON n.nid=og.nid
+        WHERE n.type = "%s"
+        AND og.og_private = %d
+        ORDER BY tmp.changed DESC)
+      tmp2 LIMIT %d', 1, 1, 'green_map', 0, 3);
 
       $i = 0;
       while ($result = db_fetch_object($query)) {
