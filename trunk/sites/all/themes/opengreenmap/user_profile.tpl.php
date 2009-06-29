@@ -47,11 +47,6 @@ while(list($key,$group) = each($this_user->og_groups)){
   print "<h3>".t("Recent Comments:")."</h3>";
   $comment_site_list = views_embed_view('comments', 'page_1', $key);
   print $comment_site_list;
-  if($allowed_editor){
-    print "<h3>".t("Flags:")."</h3>";
-    $flag_site_list = views_embed_view('flagged_sites', 'default', $key);
-    print $flag_site_list;
-  }
   print "</fieldset>";
 }
 
