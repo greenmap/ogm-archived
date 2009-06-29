@@ -83,7 +83,7 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
       $contents .= '<ul>';
         $contents .= '<li>' . format_plural($comment_count, '1 comment', '@count comments') . '</li>';
         $contents .= '<li>' . l(t('share this site'), 'forward/' . $node->nid . '/simple') . '</li>';
-        $contents .= '<li>' . flag_create_link('flag_site', $node->nid);
+        $contents .= '<li>' . flag_create_link('report_green_site', $node->nid);
       $contents .= '</ul>';
     $contents .= '</div>';
 
