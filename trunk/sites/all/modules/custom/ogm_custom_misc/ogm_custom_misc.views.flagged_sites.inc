@@ -20,7 +20,7 @@ function flagged_sites_views_default_views() {
     'flag_content_rel' => array(
       'label' => 'flag_site',
       'required' => 1,
-      'flag' => 'flag_site',
+      'flag' => 'report_green_site',
       'user_scope' => 'any',
       'id' => 'flag_content_rel',
       'table' => 'node',
@@ -29,33 +29,8 @@ function flagged_sites_views_default_views() {
     ),
   ));
   $handler->override_option('fields', array(
-    'type' => array(
-      'label' => 'Content Type',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'strip_tags' => 0,
-        'html' => 0,
-      ),
-      'link_to_node' => 0,
-      'exclude' => 0,
-      'id' => 'type',
-      'table' => 'node',
-      'field' => 'type',
-      'relationship' => 'none',
-    ),
     'title' => array(
-      'label' => 'Flagged Content',
+      'label' => 'Site',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -80,7 +55,7 @@ function flagged_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'name' => array(
-      'label' => 'Site Creator',
+      'label' => 'Added By',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -107,7 +82,7 @@ function flagged_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'changed' => array(
-      'label' => 'Updated date',
+      'label' => 'Last Updated',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -132,33 +107,8 @@ function flagged_sites_views_default_views() {
       'field' => 'changed',
       'relationship' => 'none',
     ),
-    'view_node' => array(
-      'label' => 'View Site',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'strip_tags' => 0,
-        'html' => 0,
-      ),
-      'text' => '',
-      'exclude' => 0,
-      'id' => 'view_node',
-      'table' => 'node',
-      'field' => 'view_node',
-      'relationship' => 'none',
-    ),
     'edit_node' => array(
-      'label' => 'Edit Site',
+      'label' => '',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -175,7 +125,7 @@ function flagged_sites_views_default_views() {
         'strip_tags' => 0,
         'html' => 0,
       ),
-      'text' => '',
+      'text' => 'Edit',
       'exclude' => 0,
       'id' => 'edit_node',
       'table' => 'node',
