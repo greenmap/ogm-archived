@@ -138,6 +138,11 @@ function dashboard_leadmapmaker($nid){
       'display' => 'page_3',
     ),
     array(
+      'view' => 'flagged_sites',
+      'title' => t('Flagged Sites') .': ',
+      'display' => 'default',
+    ),
+    array(
       'view' => 'comments',
       'title' => t('Comments') .': ',
       'display' => 'default',
