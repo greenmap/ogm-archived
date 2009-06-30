@@ -991,9 +991,7 @@ div#l10n-client.hidden {
 
 /* rating star */
 
-div.fivestar-widget-static .star span.on {
-	background-position: center -28px; /* was -32px */
-}
+
 
 /* links on large bubble */
 
