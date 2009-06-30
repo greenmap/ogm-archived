@@ -1,0 +1,126 @@
+<html>
+<head>
+<title>
+Editor's Manual
+</title>
+<style type="text/css"><!--
+body { margin: 30px; width: 800px; line-height: 1.2em;}
+h1, h2, h3, h4, h5, h6 { color: #237bbf; }
+h1 { font-size: 1.5em; }
+h2 { font-size: 1.2em; }
+h3 { font-size: 1.0em; }
+a:link    { color: #237bbf; }
+a:visited { color: #2a3963; }
+a:hover   { color: #dd0000; }
+a:active  { color: #990000; }
+--></style>
+</head>
+
+<body>
+
+<!--
+<h1>Table of Contents</h1>
+<ul>
+  <li><a href="#translate_blocks">Translating Blocks</a>
+</ul>
+-->
+
+<h2><a name="translation_overview">Page Translation Overview</a></h2>
+
+<p>
+You can see a list of pages and a summary of their translation status here: 
+<br />
+<a href="http://www.opengreenmap.org/admin/content/translation_overview_manage">http://www.opengreenmap.org/admin/content/translation_overview_manage</a>
+</p>
+
+<h2><a name="string_translation">Phrase Translation Overview</a></h2>
+
+<p>
+Some phrases may not appear in the popup translation tool (for example, the
+bubble text from the map).  In this case, please translate them here:
+<br />
+<a href="http://www.opengreenmap.org/admin/build/translate/">http://www.opengreenmap.org/admin/build/translate/</a>
+</p>
+
+<p>
+You can search for phrases here.  The "Translation Table" feature has a few
+bugs still but is usable for viewing translations.
+</p>
+
+<h2><a name="translate_blocks">Translating Blocks</a></h2>
+
+<p>
+There are three ways to do this, each with their advantages.  I'll
+describe the two simplest here.
+</p>
+
+<p>
+<strong>Case #1: You want to add a block which will appear only in one language.</strong>
+</p>
+
+<p>
+Steps: Create or edit your block at
+<a href="http://www.opengreenmap.org/admin/build/block">http://www.opengreenmap.org/admin/build/block</a>
+and under 'Multilingual Settings' choose one of English, Spanish, or Portuguese.
+</p>
+
+<p>
+<strong>
+Case #2: You want the same block to appear everywhere but with different
+text.
+</strong>
+</p>
+
+<p>
+Steps: Create or edit your block at
+<a href="http://www.opengreenmap.org/admin/build/block">http://www.opengreenmap.org/admin/build/block</a>
+and under 'Multilingual Settings' choose 'All languages' (not translatable).
+Next, under the 'Block body' text area, set the Input format to 'Full HTML'.
+Then, enter text for each language separately, marking them as follows:
+</p>
+
+<pre>
+===es===
+This will only appear when the site is set to Spanish.
+===pt-br===
+This will only appear when the site is set to Portuguese.
+===en===
+This will only appear when the site is set to English.
+===qz===
+This default text will only appear when the site is set to a language not yet
+specified above.
+</pre>
+
+<p>
+You can also use the code <tt>===qq===</tt> for text which will appear in every
+language.
+</p>
+
+<h2>Translating Multilingual Variables</h2>
+
+<p>
+The site name, footer message, and some other basic information must be
+translated here:
+<br />
+<a href="http://www.opengreenmap.org/admin/settings/site-information">http://www.opengreenmap.org/admin/settings/site-information</a>
+</p>
+
+<p>
+The text above the Contact Us form must be translated here:
+<br />
+<a href="http://www.opengreenmap.org/admin/build/contact/settings">http://www.opengreenmap.org/admin/build/contact/settings</a>
+</p>
+
+<p>
+Note that any form input labelled "This is a multilingual variable" can be set
+independently for each active language on the site.  To translate it, switch
+to the appropriate language, enter the translation, and click Save.
+</p>
+
+<h2>Translating Other Phrases</h2>
+
+<p>
+The message which appears beside the CAPTCHA test presented when anonymous
+users enter content must be translated here:
+<a href="http://www.opengreenmap.org/admin/user/captcha">http://www.opengreenmap.org/admin/user/captcha</a>
+</p>
