@@ -101,9 +101,7 @@ if ($teaser) {
 
     <div id="bubble_middle">
       <div id="bubble_small_rating">
-        <!-- TODO: remove one star, right way to to customize it -->
-        <?php // print fivestar_widget_form($node); ?>
-        <?php print fivestar_static($content_type = 'node', $content_id = $node->nid, $node_type = 'green_site'); ?>
+        <?php print fivestar_static('node', $node->nid,'vote', $node->type); ?>
       </div>
       <div id="bubble_small_comment">
 
