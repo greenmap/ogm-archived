@@ -71,7 +71,6 @@ print $site_list;
 print "<h3>".t("Recent Comments:")."</h3>";
 $comment_site_list = views_embed_view('comments_recent_dashboard_nomap', 'default', $this_user->uid);
 print $comment_site_list;
-print "<h3>".t("Flags:")."</h3>";
 
 $flag_site_list = views_embed_view('list_all_flags_nomap', 'default', $this_user->uid);
 print $flag_site_list;
