@@ -410,3 +410,12 @@ function opengreenmap_custom_login() {
   print $output;
 }
 
+function opengreenmap_filter_tips_more_info() {
+  return '<p>'. l( 
+    t('More information about formatting options'),
+    'filter/tips',
+    array(
+      'attributes' => array('target' => '_blank'),
+    )
+    ) .'</p>';
+}
