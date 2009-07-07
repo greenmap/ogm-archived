@@ -206,7 +206,8 @@ function group_invite_user_register_action(&$object, $context = array()) {
     global $user;
     $uid = $user->uid;
   }
-  $query_results =  db_query("SELECT uid,mail FROM {users} WHERE uid = %d", $uid);
+  $users_query = "SELECT uid,mail FROM {users} WHERE uid = %d";
+  $query_results =  db_query($users_query, $uid);
   if (!$query_results) {
     watchdog('error', 'Problem with db_query.', NULL);
     drupal_set_message(t('Problem with database query'));
@@ -221,7 +222,8 @@ function group_invite_user_register_action(&$object, $context = array()) {
   }
 
   // when user is loggin in first time
-  $result =  db_query("SELECT DISTINCT nid, rid FROM {group_invite} WHERE mail = '%s'", $c->mail);
+  $group_invite_query = "SELECT DISTINCT nid, rid FROM {group_invite} WHERE mail = '%s'";
+  $result =  db_query($group_invite_query, $c->mail);
   if (!$result) {
     watchdog('error', 'Problem with db_query. table: group_invite', NULL);
     drupal_set_message(t('Problem with database query'));
@@ -407,7 +409,7 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
         if ( $checked) {
           $db_results = db_query("SELECT title FROM {node} WHERE nid=%d", $gid);
           og_user_roles_role_leave($existing_user->uid, $gid);
-          og_user_roles_role_join($existing_user->uid, $rid, $gid);
+          og_user_roles_role_join($existing_user->uid, $role->rid, $gid);
           $mail_params['map'] = db_fetch_array($db_results);
           $mail_params['map']['link'] = "node/". $gid;
           $mail_success =
@@ -429,7 +431,7 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
       $registration_code = md5(date('l jS \of F Y h:i:s A') . $member['mail']);
       foreach ( $member['maps_wrapper']['maps'] as $gid => $checked ) {
         if ( $checked) {
-          $insert =  db_query("INSERT INTO {group_invite} (nid,code,rid,mail) VALUES (%d,'%s',%d,'%s');", $gid, $registration_code, $rid, $member['mail']);
+          $insert =  db_query("INSERT INTO {group_invite} (nid,code,rid,mail) VALUES (%d,'%s',%d,'%s');", $gid, $registration_code, $role->rid, $member['mail']);
         }
       }
       $mail_language = user_preferred_language($user);
