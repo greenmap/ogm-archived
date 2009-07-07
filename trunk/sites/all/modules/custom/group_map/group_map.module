@@ -735,6 +735,7 @@ function group_map_token_list($type = 'all') {
 
 function group_map_token_values($type, $object = NULL) {
   $values = array();
+  $gids = array();
   $values['og-admin-email'] = '';
   if ( is_array($object->og_groups) ) {
   $gids = array_filter($object->og_groups);
