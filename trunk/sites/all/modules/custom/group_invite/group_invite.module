@@ -273,6 +273,15 @@ function group_invite_admin_settings() {
 }
 
 function group_invite_create_group_invite_page($form_state, $node) {
+
+  // FIXME seriously!
+  // I belive there is a bug in drupal or at least in how they suggest to set
+  //   up #ahah. see: http://drupal.org/node/371339
+  // the workaround follows:
+  $correct_path = implode('/', array( 'og', 'users', $node->nid, 'invite_users'));
+  $form['#action'] = url($correct_path);
+  // end crazy workaround
+
   $form['message'] = array(
     '#type' => 'textarea',
     '#title' => t('Message'),
@@ -293,7 +302,6 @@ function group_invite_create_group_invite_page($form_state, $node) {
     $form['new_member_wrapper']['member'][$i] = group_invite_team_member_form($i, $form_state, $node);
   }
   $form['new_member_wrapper']['group_invite_more'] = array(
-    //'#type' => 'submit',
     '#type' => 'button',
     '#value' => t('Add another person'),
     '#submit' => array('group_invite_more_submit'),
