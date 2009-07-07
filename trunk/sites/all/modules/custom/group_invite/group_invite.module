@@ -395,7 +395,7 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
       continue;
     }
     if ( group_invite_email_exists($member['mail']) ) {
-      $existing_user = user_load(array('mail' => trim($new_user['email'])));
+      $existing_user = user_load(array('mail' => trim($member['mail'])));
       if ($user->uid == $existing_user->uid) {
         // Users should not be able to change their own roles.
         drupal_set_message(t('You cannot invite yourself to a group.'), 'error');
@@ -418,7 +418,7 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
             || $mail_success;
         }
       }
-      drupal_set_message(t('Added new roles to the user %user', array('%user' => $new_user->name)));
+      drupal_set_message(t('Added new roles to the user %user', array('%user' => $existing_user->name)));
       if ($mail_success) {
         drupal_set_message(t('Invitation sent to %email', array('%email' => $mail_to)));
       }
@@ -451,8 +451,7 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
       }
     }
   }
-  //XXX
-  //$form_state['redirect'] = implode('/', array("og", "users", $form_state['values']['group_nid']));
+  $form_state['redirect'] = implode('/', array("og", "users", $form_state['values']['group_nid']));
 }
 
 /**
