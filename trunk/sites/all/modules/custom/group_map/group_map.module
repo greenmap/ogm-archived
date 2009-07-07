@@ -83,8 +83,7 @@ function _group_map_form_green_site_node_form_alter(&$form, &$form_state) {
     }
     $form['og_nodeapi']['visible']['og_groups']['#title'] = t('Select Maps');
     $form['og_nodeapi']['visible']['og_groups']['#description'] =
-      t('You can include this site on any of the maps that you belong to.
-         Use the control key on a PC or the Apple/Command key on a Mac to select multiple maps.');
+      t('You can include this site on any of the maps that you belong to.');
   }
 
   $form['field_awaiting_approval'] = array(
