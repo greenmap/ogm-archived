@@ -287,9 +287,13 @@ function group_invite_create_group_invite_page($form_state, $node) {
   $form['message'] = array(
     '#type' => 'textarea',
     '#title' => t('Message'),
+    '#description' => 
+      t('Write a message to accompany the email invitation that new members
+         will receive'),
     '#weight' => -2,
   );
   $form['new_member_wrapper'] = array(
+    '#title' => t('Invitations'),
     '#tree' => FALSE,
     '#type' => 'fieldset',
     '#prefix' => '<div class="clear-block" id="group_invite-member-wrapper">',
