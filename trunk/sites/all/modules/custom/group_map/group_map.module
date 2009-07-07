@@ -735,10 +735,10 @@ function group_map_token_list($type = 'all') {
 
 function group_map_token_values($type, $object = NULL) {
   $values = array();
-      // Set some defaults.
   $values['og-admin-email'] = '';
- //      $values['og-admin-email'] = "eric@stealthisemail.com";
+  if ( is_array($object->og_groups) ) {
   $gids = array_filter($object->og_groups);
+  }
     foreach ($gids as $gid) {
          $admin_email = db_result(db_query("select mail from users join node n on n.uid=users.uid right join og_ancestry oga on n.nid=oga.group_nid where oga.group_nid=%d", $gid));
          $values['og-admin-email'] = $admin_email;
