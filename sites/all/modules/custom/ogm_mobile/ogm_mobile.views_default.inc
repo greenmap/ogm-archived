@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 function ogm_mobile_views_default_views() {
   // Proximity view for mobile ------------------------------------------------------------------------
   $view = new view;

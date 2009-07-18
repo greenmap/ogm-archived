@@ -1,4 +1,4 @@
-﻿; $Id$
+; $Id$
 name = Mobile open green map
 description = Mobile functionality for the Open Green Map
 package = GreenMap
