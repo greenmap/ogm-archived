@@ -1,0 +1,3 @@
+﻿write patch for location sort to avoid duplicate distance query
+take out all javascripts, jquery
+keep the address entered in the textfield after submit
