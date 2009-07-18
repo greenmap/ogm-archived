@@ -83,10 +83,21 @@
 <head>
   <title><?php print $head_title; ?></title>
   <?php print $head; ?>
-  <?php print $styles; ?>
-  <?php print $scripts; ?>
+  <?php // print $styles; ?>
+  <?php // print $scripts; ?>
+  <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
+  <style>
+  body {
+    -webkit-text-size-adjust: none;
+    min-height: 402px;
+  }
+  </style>
+
+  <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
+	<script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
+  
 </head>
-<body class="<?php print $body_classes; ?>">
+<body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
 
   <div id="page"><div id="page-inner">
 
