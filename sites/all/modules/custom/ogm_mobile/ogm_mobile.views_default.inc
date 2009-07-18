@@ -75,9 +75,6 @@ function ogm_mobile_views_default_views() {
       'id' => 'distance',
       'table' => 'location',
       'field' => 'distance',
-      'override' => array(
-        'button' => 'Override',
-      ),
       'relationship' => 'none',
     ),
   ));
@@ -176,6 +173,11 @@ function ogm_mobile_views_default_views() {
   $handler->override_option('title', 'Green sites near you');
   $handler->override_option('items_per_page', 20);
   $handler->override_option('use_pager', 'mini');
+  $handler->override_option('style_plugin', 'list');
+  $handler->override_option('style_options', array(
+    'grouping' => '',
+    'type' => 'ul',
+  ));
   $handler->override_option('row_options', array(
     'inline' => array(
       'title' => 'title',
@@ -183,8 +185,8 @@ function ogm_mobile_views_default_views() {
     ),
     'separator' => '',
   ));
-  $handler->override_option('exposed_block', TRUE);
   $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler->override_option('exposed_block', TRUE);
   $handler->override_option('path', 'list');
   $handler->override_option('menu', array(
     'type' => 'none',
