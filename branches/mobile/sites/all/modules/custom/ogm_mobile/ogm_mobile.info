@@ -1,0 +1,7 @@
+﻿; $Id$
+name = Mobile open green map
+description = Mobile functionality for the Open Green Map
+package = GreenMap
+dependencies[] = location
+dependencies[] = views
+core = 6.x
