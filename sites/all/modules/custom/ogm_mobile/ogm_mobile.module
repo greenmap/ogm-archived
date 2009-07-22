@@ -62,7 +62,7 @@ function ogm_mobile_geocode() {
       $lat = $coordinatesSplit[1];
       $lng = $coordinatesSplit[0];
       // Redirect to view
-      drupal_goto('mobile/list', 'distance[latitude]=' . $lat . '&distance[longitude]=' . $lng . '&distance[search_distance]=100&distance[search_units]=mile');
+      drupal_goto('mobile/list', 'distance[latitude]=' . $lat . '&distance[longitude]=' . $lng . '&distance[search_distance]=100&distance[search_units]=mile&address=' . $address);
     } else if (strcmp($status, "620") == 0) {
       // sent geocodes too fast
       $delay += 100000;
@@ -155,10 +155,12 @@ function ogm_mobile_block_0_contents() {
 }
 
 function ogm_mobile_address_form($form_state) {
+  $address = $_GET['address'];
   $form['address'] = array(
     '#type' => 'textfield',
     '#title' => 'Address',
     '#size' => '20',
+    '#value' => $address,
   );
   $form['submit'] = array(
     '#type' => 'submit',
