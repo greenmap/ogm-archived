@@ -81,7 +81,7 @@ if (theme_get_setting('STARTERKIT_fixed')) {
 /**
  * Implementation of HOOK_theme().
  */
-function mobile_theme(&$existing, $type, $theme, $path) {
+function STARTERKIT_theme(&$existing, $type, $theme, $path) {
   $hooks = zen_theme($existing, $type, $theme, $path);
   // Add your theme hooks like this:
   /*
