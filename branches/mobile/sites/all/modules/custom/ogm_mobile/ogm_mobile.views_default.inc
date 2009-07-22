@@ -187,7 +187,7 @@ function ogm_mobile_views_default_views() {
   ));
   $handler = $view->new_display('page', 'Page', 'page_1');
   $handler->override_option('exposed_block', TRUE);
-  $handler->override_option('path', 'list');
+  $handler->override_option('path', 'mobile/list');
   $handler->override_option('menu', array(
     'type' => 'none',
     'title' => '',
