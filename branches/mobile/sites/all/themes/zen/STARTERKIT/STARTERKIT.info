@@ -1,9 +1,9 @@
-; $Id: mobile.info,v 1.13.2.1 2009/02/13 06:13:18 tom_o_t Exp $
+; $Id: STARTERKIT.info,v 1.13.2.1 2009/02/13 06:13:18 johnalbin Exp $
 
 
   ; The name and description of the theme used on the admin/build/themes page.
-name        = OGM Mobile
-description = Mobile theme for the Open Green Map.
+name        = Zen Themer’s Starter Kit
+description = Read the <a href="http://drupal.org/node/226507">online docs</a> on how to create a sub-theme.
 
   ; The screenshot used on the admin/build/themes page.
 screenshot = screenshot.png
@@ -24,19 +24,19 @@ base theme = zen
   ; You can also override any of Zen's stylesheets or any module's stylesheets,
   ; an /extremely/ useful feature. See the excellent Drupal 6 Theme Guide at
   ; http://drupal.org/node/171209 for more details.
- ; stylesheets[all][]   = layout.css
-; stylesheets[all][]   = html-elements.css
+stylesheets[all][]   = layout.css
+stylesheets[all][]   = html-elements.css
 ; stylesheets[all][] = tabs.css
 ; stylesheets[all][] = messages.css
 ; stylesheets[all][] = block-editing.css
 ; stylesheets[all][] = wireframes.css
-; stylesheets[all][]   = mobile.css
-; stylesheets[print][] = print.css
+stylesheets[all][]   = STARTERKIT.css
+stylesheets[print][] = print.css
   ; To prevent stylesheets of a base theme or of a module from being included in
   ; our sub-theme, we specify it in our .info file (and we don't need to have a
   ; stylesheet in our sub-theme with that name.) For example, we prevent the
   ; zen.css file in the base theme from being included by specifying it here.
-; stylesheets[all][]   = zen.css
+stylesheets[all][]   = zen.css
 
   ; Set the conditional stylesheets that are processed by IE.
 ; conditional-stylesheets[if IE][all][] = ie.css

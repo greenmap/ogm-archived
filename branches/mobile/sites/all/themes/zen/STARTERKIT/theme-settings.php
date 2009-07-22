@@ -13,10 +13,10 @@ include_once './' . drupal_get_path('theme', 'zen') . '/theme-settings.php';
  * @return
  *   A form array.
  */
-function mobile_settings($saved_settings) {
+function STARTERKIT_settings($saved_settings) {
 
   // Get the default values from the .info file.
-  $defaults = zen_theme_get_default_settings('mobile');
+  $defaults = zen_theme_get_default_settings('STARTERKIT');
 
   // Merge the saved variables and their default values.
   $settings = array_merge($defaults, $saved_settings);
