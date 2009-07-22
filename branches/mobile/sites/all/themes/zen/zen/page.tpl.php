@@ -77,27 +77,16 @@
  * @see template_preprocess_page()
  */
 ?>
-<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd"> 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $language->language; ?>" lang="<?php print $language->language; ?>" dir="<?php print $language->dir; ?>">
 
 <head>
   <title><?php print $head_title; ?></title>
   <?php print $head; ?>
-  <?php // print $styles; ?>
-  <?php // print $scripts; ?>
-  <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
-  <style>
-  body {
-    -webkit-text-size-adjust: none;
-    min-height: 402px;
-  }
-  </style>
-
-  <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
-	<script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
-  
+  <?php print $styles; ?>
+  <?php print $scripts; ?>
 </head>
-<body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
+<body class="<?php print $body_classes; ?>">
 
   <div id="page"><div id="page-inner">
 
