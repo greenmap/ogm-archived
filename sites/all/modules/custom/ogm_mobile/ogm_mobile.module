@@ -78,11 +78,12 @@ function ogm_mobile_geocode() {
 }
 
 function ogm_mobile_home() {
+  $url = url('mobile/locate');
   $output = <<<EOM
 <script>
 if(geo_position_js.init())
 		{
-			document.write('<a href="mobile/locate">Get Current Location</a>');
+			document.write('<a href="$url">Get Current Location</a>');
 		}
 </script>
 EOM;
