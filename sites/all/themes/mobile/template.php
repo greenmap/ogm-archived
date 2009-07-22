@@ -92,6 +92,47 @@ function mobile_theme(&$existing, $type, $theme, $path) {
 }
 
 /**
+ * Override theme_form().
+ * Remove unneeded div.
+ */
+/*
+function mobile_form($element) {
+  // Anonymous div to satisfy XHTML compliance.
+  $action = $element['#action'] ? 'action="'. check_url($element['#action']) .'" ' : '';
+  return '<form '. $action .' accept-charset="UTF-8" method="'. $element['#method'] .'" id="'. $element['#id'] .'"'. drupal_attributes($element['#attributes']) .">\n". $element['#children'] ."\n</form>\n";
+}
+// */
+
+/**
+ * Override theme_form_element().
+ * Remove unneeded div.
+ */
+function mobile_form_element($element, $value) {
+  // This is also used in the installer, pre-database setup.
+  $t = get_t();
+
+  $required = !empty($element['#required']) ? '<span class="form-required" title="'. $t('This field is required.') .'">*</span>' : '';
+
+  if (!empty($element['#title'])) {
+    $title = $element['#title'];
+    if (!empty($element['#id'])) {
+      $output .= ' <label for="'. $element['#id'] .'">'. $t('!title: !required', array('!title' => filter_xss_admin($title), '!required' => $required)) ."</label>\n";
+    }
+    else {
+      $output .= ' <label>'. $t('!title: !required', array('!title' => filter_xss_admin($title), '!required' => $required)) ."</label>\n";
+    }
+  }
+
+  $output .= " $value\n";
+
+  if (!empty($element['#description'])) {
+    $output .= ' <div class="description">'. $element['#description'] ."</div>\n";
+  }
+
+  return $output;
+}
+
+/**
  * Override or insert variables into all templates.
  *
  * @param $vars
