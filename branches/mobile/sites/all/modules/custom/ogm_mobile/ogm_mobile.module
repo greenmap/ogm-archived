@@ -93,6 +93,8 @@ EOM;
 // @TODO - tidy up the way js is added
 // @todo - get home page from DOM
 function ogm_mobile_autogeocode() {
+  $home_url = url('mobile');
+  $list_url = url('mobile/list');
   $output = <<<EOM
 	<script> 
 		if(geo_position_js.init())
@@ -101,17 +103,17 @@ function ogm_mobile_autogeocode() {
 		}
 		else
 		{
-			window.location='/dev/ogm_miikka3/mobile'; 
+			window.location='$home_url'; 
 		}
  
 		function success_callback(p)
 		{
-			window.location = 'mobile/list?distance[latitude]='+p.coords.latitude+'&distance[longitude]='+p.coords.longitude+'&distance[search_distance]=100&distance[search_units]=mile';
+			window.location = '$list_url?distance[latitude]='+p.coords.latitude+'&distance[longitude]='+p.coords.longitude+'&distance[search_distance]=100&distance[search_units]=mile';
 		}
 		
 		function error_callback(p)
 		{
-			window.location='/dev/ogm_miikka3/mobile?error=callback_error'; 
+			window.location='$home_url?error=callback_error'; 
 		}		
 	</script> 
 EOM;
