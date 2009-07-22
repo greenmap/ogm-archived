@@ -57,6 +57,7 @@ regions[left]           = left sidebar
 regions[right]          = right sidebar
 regions[navbar]         = navigation bar
 regions[content_top]    = content top
+regions[pre_content]    = pre content
 regions[content_bottom] = content bottom
 regions[header]         = header
 regions[footer]         = footer

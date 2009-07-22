@@ -173,7 +173,13 @@
             <?php print $help; ?>
           </div> <!-- /#content-header -->
         <?php endif; ?>
-
+        
+        <?php if ($pre_content): ?>
+          <div id="pre-content" class="region region-pre_content">
+            <?php print $pre_content; ?>
+          </div> <!-- /#pre-content -->
+        <?php endif; ?>
+        
         <div id="content-area">
           <?php print $content; ?>
         </div>
