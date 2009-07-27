@@ -17,7 +17,7 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
         // make the primary icon field required
         $form['taxonomy']['primaryterm']['#required'] = 1;
 
-        /* 
+        /*
         Removing this code for now - it messed up when you edited a node - random wrong icons were selected
 
         // re-order the list to be alphabetical
@@ -30,7 +30,8 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
 
         // change title of secondary icons field
         $form['taxonomy'][1]['#title'] = t('Secondary Icons');
-        $form['taxonomy'][1]['#description'] = t('Choose up to seven additional icons.');
+        $form['taxonomy'][1]['#description'] = t('Choose up to seven additional icons. Let people know about the site’s other features.
+');
 
         //$form['form_info'] = array( '#value' => '<pre>'. print_r($form, TRUE) .'</pre>');
       }

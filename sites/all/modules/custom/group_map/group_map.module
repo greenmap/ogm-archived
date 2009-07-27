@@ -48,6 +48,8 @@ function _group_map_form_hide_location_fields(&$form, $hide_fields) {
 }
 
 /**
+ *  Modify the green site add/edit form.
+ *
  *  Important note:
  *  this is NOT an implementation of hook_form_FORM_ID_alter, because that
  *  happens to early in the execution cycle.
@@ -55,6 +57,10 @@ function _group_map_form_hide_location_fields(&$form, $hide_fields) {
  *  Hence the leading underscore.
  */
 function _group_map_form_green_site_node_form_alter(&$form, &$form_state) {
+  // change the help text for the taxonomy selection
+   $form['taxonomy']['primaryterm']['#description'] = t('Select a primary icon for this Green Site. The primary icon should represent the site’s main feature.');
+   $form['taxonomy']['tags'][4]['#description'] = t('You can add descriptive tags to your site to make it easier for people to find. Separate each tag with commas.');
+
   // first off, hide the preview button as it doesn't work
   unset($form['buttons']['preview']);
 
@@ -151,6 +157,8 @@ function _group_map_form_green_site_node_form_alter(&$form, &$form_state) {
 }
 
 /**
+ *  Modify the Green Map add/edit form.
+ *
  *  Important note:
  *  this is NOT an implementation of hook_form_FORM_ID_alter, because that
  *  happens to early in the execution cycle.
@@ -178,22 +186,26 @@ function _group_map_form_green_map_node_form_alter(&$form, &$form_state) {
 
   // improving instructions on how to let people join the group/map
   $form['og_selective']['#title'] = t('Building Your Map Team');
-  $form['og_selective']['#options']['0'] = t('open - anyone can join your team by clicking a link on your map (not available for private maps).');
-  $form['og_selective']['#options']['1'] = t('moderated - anyone can request to join your team, but you must approve them.');
-  $form['og_selective']['#options']['2'] = t('invite only - you must send an email from the website to invite new team members.');
+  $form['og_selective']['#options']['0'] = t('open - anyone can join your team by clicking a link on your map (not available for private maps). Public users can suggest sites to your map, too.');
+  $form['og_selective']['#options']['1'] = t('moderated - anyone can request to join your team, but you must approve them. Public users can suggest sites to your map, too.
+');
+  $form['og_selective']['#options']['2'] = t('invite only - you must send an email from the website to invite new team members. This is the only option that does NOT allow public site suggestions.');
   array_pop($form['og_selective']['#options']); // remove the last item from the list of subscription options - it's confusing
   $form['og_selective']['#description'] = t('Team members will be able to add sites to your map. At a later stage you can give each team member extra privileges.');
 
   $form['og_private']['#title'] = t('private map');
   $form['og_private']['#description'] = t('You should keep your map private while you are developing it.  When you have added some sites and are happy with how it looks you can change this.') .
                      '<br>' .
-                     t('A private map can be seen by you and your team members, but not by anyone else.');
+                     t('A private map can only be seen by you and your team members.');
 
   $form['locale'] = ''; // hiding the locale stuff for now - multilingual settings
 
   $form['locations']['#description'] = t('Choose the center of your map. Zoom in as far as necessary to be accurate. You may need to switch to satellite view if Google does not have good coverage of your neighborhood.');
 }
 
+/**
+ * Implementation of hook_form_alter().
+ */
 function group_map_form_alter(&$form, &$form_state, $form_id) {
   // have to do this due to order of execution of hooks
   if ( 'green_map_node_form' == $form_id  ) {
