@@ -101,7 +101,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
   // only alter green_site forms
   if ( $form_id != 'green_site_node_form') {
     return;
-  }  
+  }
   $should_suggest = FALSE;
   // determine what kind of user we are, which will determine what the form looks like:
   $suggest_nid = NULL;
@@ -116,7 +116,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     $map = node_load($suggest_nid);
     if ($map->og_private > 0) {
       drupal_set_message(
-        t('Sorry, this map is private and not accepting suggestions yet.'), 
+        t('Sorry, this map is private and not accepting suggestions yet.'),
         'error');
       drupal_access_denied();
     }
@@ -132,7 +132,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     // we got here by error
     else {
       drupal_set_message(
-        t('You must <a href="@link">choose a map</a> to suggest your site to.', 
+        t('You must <a href="@link">choose a map</a> to suggest your site to.',
           array( '@link' => url('greenmap/recent'))),
         'error');
       drupal_access_denied();
@@ -184,14 +184,14 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'checkbox',
       '#title' => t('Public'),
       '#default_value' => $node->nid ? $node->og_public : 1,
-      '#description' => t('Show this site to everyone. If not checked, only members of the maps selected above can see it. Sites on private maps will only be shown to members of the map. Sites without any maps are always public on the World View Map.'),
+      '#description' => t('Show this site to everyone. If not checked, this map will be private and only team members of the maps selected above can see it. Sites that do not have any maps selected above are always public on the World View Map.'),
       '#weight' => 2,
     );
   }
   // Change "Audience" to "Select Additional Maps"
   $form["og_nodeapi"]['visible']['og_groups']['#title'] = t('Select Additional Maps');
-  $form["og_nodeapi"]['visible']['og_groups']['#description'] = 
-    t('If you are a member of any other maps you can add this site to them too. Use the control key on a PC or the Apple/Command key on a Mac to select multiple maps.');
+  $form["og_nodeapi"]['visible']['og_groups']['#description'] =
+    t('If you are a member of any other maps you can add this site to these maps too. Use the Control key on a PC or the Apple/Command key on a Mac to select multiple maps.');
 }
 
 function suggest_is_public($node) {
