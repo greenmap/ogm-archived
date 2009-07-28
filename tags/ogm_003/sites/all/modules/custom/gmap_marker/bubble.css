@@ -1,0 +1,159 @@
+#bubble_small {
+	/* small InfoWindow bubble */
+	padding: 5px;
+  max-width: 400px;
+}
+
+#bubble_small_more {
+	/* more info >> */
+	font-family: Verdana, Arial, Helvetica, sans-serif;	/* GH: use different font? */
+	font-size: 0.8em;
+	margin-right: 25px;
+	text-align: right;
+}
+#bubble_small_edit {
+	/* edit */
+	font-family: Verdana, Arial, Helvetica, sans-serif;	/* GH: use different font? */
+	font-size: 0.8em;
+	margin-right: 2px;
+	margin-top: 2px;
+	text-align: right;
+}
+
+#bubble_small_more a {
+	color: #6c6f70;
+}
+
+#bubble_icons {
+	margin-top: 6px;
+}
+
+#bubble_icons img {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+#bubble_icon_primary {
+	/* the primary icon */
+	display: inline;
+}
+
+.bubble_small_title {
+	border-bottom-width: 2px;
+	border-color: #666666;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-style: dotted;
+	border-top-width: 0px;
+	font-size: 18px;			/* em values seem to break Google Maps calculation of the div height */
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	line-height: 1.1em;
+	max-width: 370px;
+	padding-bottom: 8px;
+	padding-left: 4px;
+	padding-top: 10px;
+}
+
+.bubble_small_title a {
+	color: #666666;
+}
+
+.bubble_small_title a:hover {
+	text-decoration: none;
+}
+
+.sustainable_living {
+	border-color: #2e68b2;
+}
+
+.culture__society {
+	border-color: #f89938;
+}
+
+.nature {
+	border-color: #099848;
+}
+
+#bubble_left {
+	float: left;
+	margin-bottom: 10px;
+	margin-left: 5px;
+	margin-right: 7px;
+}
+
+#bubble_media {
+	font-size: 10px;
+	height: 60px;
+	margin-top: 18px;
+	width: 80px;
+  overflow: hidden;
+}
+
+#bubble_media a {
+	color: #6c6f70;
+}
+
+#bubble_media_missing {
+	border-color: #cccccc;
+	border-style: solid;
+	border-width: 1px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	height: 47px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 13px;
+	text-align: center;
+	width: 70px;
+}
+
+#bubble_middle {
+	float: left;
+	margin-bottom: 10px;
+	margin-left: 7px;
+	margin-right: 7px;
+}
+
+#bubble_small_rating {
+	margin-top: 20px;
+}
+
+#bubble_small_comment {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	margin-top: 5px;
+}
+
+#bubble_small_comment a {
+	color: #6c6f70;
+}
+
+#bubble_right {
+	float: left;
+	margin-bottom: 10px;
+	margin-left: 7px;
+}
+
+#bubble_small_address {
+	color: #666666;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	margin-top: 18px;
+	max-width: 150px;
+  margin-left: 50px;
+}
+
+#bubble_small_address p {
+	margin-bottom: 1px;
+	margin-top: 0px;
+	line-height: 1.2em;
+}
+
+#bubble_small_flagged {
+	/* Flagged Site. Please view with caution! */
+	clear: left;
+	color: #b7205d;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	text-align: center;
+	width: 100%;
+}
