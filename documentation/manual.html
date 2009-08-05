@@ -25,6 +25,8 @@ a:active  { color: #990000; }
 </ul>
 -->
 
+<h1>Translating Text</h1>
+
 <h2><a name="translation_overview">Page Translation Overview</a></h2>
 
 <p>
@@ -43,8 +45,8 @@ bubble text from the map).  In this case, please translate them here:
 </p>
 
 <p>
-You can search for phrases here.  The "Translation Table" feature has a few
-bugs still but is usable for viewing translations.
+You can search for phrases here.  The "Translation Table" tab is useful for
+reviewing and adding translations.
 </p>
 
 <h2><a name="translate_blocks">Translating Blocks</a></h2>
@@ -124,3 +126,74 @@ The message which appears beside the CAPTCHA test presented when anonymous
 users enter content must be translated here:
 <a href="http://www.opengreenmap.org/admin/user/captcha">http://www.opengreenmap.org/admin/user/captcha</a>
 </p>
+
+<h1>Managing Languages</h1>
+
+<h2>Adding a new language option for green sites (NOT a new translation of
+entire site)</h2>
+
+<p>
+To do this, simply add the new language at
+<a href="http://www.opengreenmap.org/admin/settings/language">http://www.opengreenmap.org/admin/settings/language</a>
+but do not mark it as enabled.
+</p>
+
+<h2>Adding a new translation of entire site</h2>
+
+<ol>
+<li>
+Add the new language at
+<a href="http://www.opengreenmap.org/admin/settings/language">http://www.opengreenmap.org/admin/settings/language</a>
+but do not set it as enabled yet.
+<li>
+Download translations for Drupal core from
+<a href="http://drupal.org/project/translations">http://drupal.org/project/translations</a>
+and import them at
+<a href="http://www.opengreenmap.org/admin/build/translate/import">http://www.opengreenmap.org/admin/build/translate/import</a>
+<li>
+Export a list of translation templates from
+<a href="http://www.opengreenmap.org/admin/build/translate/export">http://www.opengreenmap.org/admin/build/translate/export</a>
+for content types, menus, profiles, and taxonomy terms, fill these in, and
+send them to Matt Corks (<a href="mailto:matt@openflows.com">matt@openflows.com</a>)
+to check the syntax and upload to the site.
+<li>
+To load translations for third-party modules, go to the page
+<a href="http://www.opengreenmap.org/admin/build/translate/import">http://www.opengreenmap.org/admin/build/translate/import</a>,
+click 'reimport packages', select the new language, <strong>make sure that all
+options under 'clean up textgroups in database before import' are disabled
+(<em>including</em> 'built-in interface')</strong>, then click 'reimport
+packages'.
+<li>
+Create a translation of the home page by going to the home page, clicking the
+'translate' tab, clicking 'add translation' beside the new language, setting
+the Title field to the translation of 'Open Green Map' in the new language and
+the URL path setting to the translation of 'home' or 'homepage' in the new
+language.  (Please note that for now all page aliases have to be distinct,
+even between languages, so you can't use a path alias already used for another
+language.  For more information, see
+<a href="https://bugs.openflows.com/view.php?id=1407">bug #1407</a>. You
+should also only use Latin characters, without accents, so that the site will
+be compatible with all web browsers and operating systems.)
+<li>
+Edit <tt>sites/all/themes/opengreenmap/style.css</tt> to include the 
+id of the div which contains the new translation of the homepage in the list
+of pages for which the world map background image is displayed.
+For example, the English homepage div id is <tt>div#node-1540</tt>, so search
+for that string and add the new node id to the list.
+<li>
+Translate any other pages on the site which are considered essential for the
+launch of the new site, such as
+<a href="http://www.opengreenmap.org/about">http://www.opengreenmap.org/about</a>
+<li>
+Send Matt Corks a copy of
+the 'donate' button
+(<a href="http://www.opengreenmap.org/sites/all/themes/opengreenmap/images/donate_button.gif">http://www.opengreenmap.org/sites/all/themes/opengreenmap/images/donate_button.gif</a>)
+translated into the new language (because for now putting this in place
+requires some minor programming in sites/all/themes/opengreenmap/page.tpl.php).
+<li>
+Set the new language to be enabled at
+<a href="http://www.opengreenmap.org/admin/settings/language">http://www.opengreenmap.org/admin/settings/language</a>
+<li>
+Use the translation tools described above to translate the remaining text in
+the site.
+</ol>

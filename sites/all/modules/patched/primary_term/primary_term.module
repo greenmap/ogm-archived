@@ -122,7 +122,6 @@ function primary_term_form_alter(&$form, $form_state, $form_id) {
       }
       break;
   
-  
   case 'node_type_form':
     $node_type = $form['old_type']['#value'];
     $vocabs = taxonomy_get_vocabularies($type);
