@@ -22,6 +22,8 @@ function ogm_form_tweaks_form_alter(&$form, &$form_state, $form_id) {
       $form['field_icons_subset']['#description'] = t('Choose which Green Map Icons can be used on this map. These are the only icons that will appear on your map and its legend. You can always edit your map and change these. If you select none, then all icons will be available.');
       $form['language']['#description'] = t('You can choose the language for this map. If your language is not on this list, leave this blank.');
       $form['locations']['0']['#description'] = t('Click the map to set the location. If you click the wrong location on the map, just click the pin again to relocate it, or drag the pin to the correct location. This will set the latitude-longitude more accurately than entering the address.');
+      // TODO -- re-enable this field when lines & areas are actually available
+      unset($form['field_use_poly']);
     case 'green_site_node_form':
       // tweak the help text on the language selection fields for sites & maps
       $form['language']['#title'] = t('Language Settings');
