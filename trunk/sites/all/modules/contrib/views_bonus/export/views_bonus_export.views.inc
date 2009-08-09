@@ -67,6 +67,18 @@ function views_bonus_export_views_plugins() {
         'uses options' => TRUE,
         'type' => 'feed',
       ),
+        'views_kml' => array(
+        'title' => t('KML file'),
+        'help' => t('Display the view as a kml file.'),
+        'path' => $path,
+        'handler' => 'views_bonus_plugin_style_export_kml',
+        'parent' => 'views_bonus_export',
+        'theme' => 'views_bonus_export_kml',
+        'uses row plugin' => FALSE,
+        'uses fields' => TRUE,
+        'uses options' => TRUE,
+        'type' => 'feed',
+      ),
     ),
   );
 }

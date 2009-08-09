@@ -71,6 +71,15 @@ function template_preprocess_views_bonus_export_xml(&$vars) {
 }
 
 /**
+ * Preprocess kml output template.
+ */
+function template_preprocess_views_bonus_export_kml(&$vars) {
+  drupal_set_header('Content-Type: text/xml');
+  _views_bonus_export_shared_preprocess($vars);
+}
+
+
+/**
  * Shared helper function for export preprocess functions.
  */
 function _views_bonus_export_shared_preprocess(&$vars) {
