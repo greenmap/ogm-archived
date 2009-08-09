@@ -19,7 +19,7 @@ class location_views_handler_field_latitude extends views_handler_field {
     $form['style'] = array(
       '#title' => t('Display style'),
       '#type' => 'select',
-      '#options' => array('dd' => t('Decimal degrees'), 'dms' => t('Degrees, minutes, seconds')),
+      '#options' => array('dd' => t('Decimal degrees'), 'dms' => t('Degrees, minutes, seconds'), 'kml' => t('Decimal degrees reverse order for kml')),
       '#default_value' => $this->options['style'],
     );
   }
