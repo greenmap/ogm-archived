@@ -12,6 +12,7 @@ if(arg(0) == 'greenmap_widget'){
 	return;
 }
 */
+global $language;
 if ($_GET['isSimple']) {
 	include('page-simple.tpl.php');
 	return;
@@ -27,6 +28,7 @@ if ($_GET['isSimple']) {
   <?php print $styles; ?>
   <script type="text/javascript">
     var Drupal_base_path = '<?php print base_path()?>';
+    var Drupal_language = '<?php print $language->language ?>';
   </script>
 
   <!--[if IE]>
@@ -202,7 +204,6 @@ if ($_GET['isSimple']) {
   <?php if ($closure_region  || $search_box): ?>
     <div id="closure-region" class="clear-block">
       <?php
-      global $language;
       $theme_path = base_path().path_to_theme().'/images/';
       $donate_image = 'donate_button.gif';
       $donate_link = url('donate');

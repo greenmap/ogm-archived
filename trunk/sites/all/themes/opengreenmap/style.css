@@ -606,6 +606,10 @@ div#block-locale-0 ul, div#block-locale-0 li {
 	text-align: center;
 }
 
+div.view-impacts div.views-row {
+	padding: 0.5em 1em;
+}
+
 /* Multimedia */
 
 #multimedia_main {
@@ -643,6 +647,7 @@ div#comment .resizable-textarea textarea {
 	overflow: hidden;
 	position: absolute;
 	width: 160px;
+	padding-left: 10px;
 }
 
 
@@ -681,9 +686,9 @@ div#comment .resizable-textarea textarea {
 	border-color: #cccccc;
 	border-style: solid;
 	border-width: 1px;
-	height: 217px;
+	height: 212px;
 	left: 545px;
-	margin-top: 37px;
+	margin-top: 42px;
 	overflow-x: hidden;
 	overflow-y: scroll;
 	position: absolute;

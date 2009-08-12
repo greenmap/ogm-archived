@@ -1,9 +1,5 @@
 <!--green_site-full.tpl.php-->
 <?php
-// $comment_count isn't defined in some of the earliest sites, don't know why.
-if ($comment_count == NULL){
-  $comment_count = 0;
-}
 
 if ($page == 0): ?>
   <h2><a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a></h2>
@@ -370,10 +366,13 @@ if($node->field_involved[0]['value'] == 'yes') {
   '#weight' => '-6',
     '#content' => $contents,
   );
+  $comments_tab_title = $comment_count ?
+    t('Comments (@comment-count)', array('@comment-count' => $comment_count))
+    : t('Comments');
   // theme('comment_wrapper') pulls in comments formatted in template.php, though it doesn't work. comment_render($node) does work but it shows up twice.
   $form['tabs']['tab2'] = array(
     '#type' => 'tabpage',
-    '#title' => t('Comments') . ' (' . $comment_count . ')' ,
+    '#title' => $comments_tab_title,
   '#weight' => '-4',
     '#content' => '<div class="mycomments">'  . $comments . '</div>',
   );
