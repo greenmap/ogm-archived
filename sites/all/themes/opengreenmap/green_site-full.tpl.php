@@ -192,6 +192,7 @@ if($node->field_involved[0]['value'] == 'yes') {
   $media = array();
   // add site video
   if (!empty($node->field_video[0]['view'])) {
+    // TODO check if these have been deleted from the provider
     $node->field_video[0]['type'] = 'video';
     $node->field_video[0]['title'] = $node->field_video_caption[0]['view'];
     $node->field_video[0]['author'] = $name;
@@ -200,6 +201,7 @@ if($node->field_involved[0]['value'] == 'yes') {
   // add contributed videos
   $result = db_query('SELECT a.nid FROM {content_type_video} AS a, {node} AS b WHERE field_site_0_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
   while ($line = db_fetch_object($result)) {
+    // TODO check if these have been deleted from the provider
     $medianode = node_load(array('nid' => $line->nid));
     $medianode->field_video_0[0]['type'] = 'video';
     $medianode->field_video_0[0]['title'] = $medianode->title;
@@ -213,15 +215,30 @@ if($node->field_involved[0]['value'] == 'yes') {
   }
   // add site images
   if (!empty($node->field_image[0]['view'])) {
-    $node->field_image[0]['type'] = 'image';
-    $node->field_image[0]['title'] = $node->field_image_caption[0]['view'];
-    $node->field_image[0]['author'] = $name;
-    $media = array_merge($media, $node->field_image);
+    // don't add deleted flickr or picasa images
+    if (! ( ($node->field_image[0]['provider'] == 'flickr' 
+            && !$node->field_image[0]['data']['owner']) ||
+            ($node->field_image[0]['provider'] == 'picasa'
+             && !$node->field_image[0]['data']['original']))) {
+      $node->field_image[0]['type'] = 'image';
+      $node->field_image[0]['title'] = $node->field_image_caption[0]['view'];
+      $node->field_image[0]['author'] = $name;
+      $media = array_merge($media, $node->field_image);
+    }
   }
   // add contributed photos
   $result = db_query('SELECT a.nid FROM {content_type_photo} AS a, {node} AS b WHERE field_site_1_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
   while ($line = db_fetch_object($result)) {
     $medianode = node_load(array('nid' => $line->nid));
+    // don't add deleted flickr or picasa images
+    if ($medianode->field_photo[0]['provider'] == 'flickr'
+        && !$medianode->field_photo[0]['data']['owner']) {
+      continue;
+    }
+    if ($medianode->field_photo[0]['provider'] == 'picasa'
+        && !$medianode->field_photo[0]['data']['original']) {
+      continue;
+    }
     $medianode->field_photo[0]['type'] = 'image';
     $medianode->field_photo[0]['title'] = $medianode->title;
     $medianode->field_photo[0]['description'] = $medianode->body;
@@ -236,6 +253,7 @@ if($node->field_involved[0]['value'] == 'yes') {
   // add contributed documents
   $result = db_query('SELECT a.nid FROM {content_type_document} AS a, {node} AS b WHERE field_site_2_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
   while ($line = db_fetch_object($result)) {
+    // TODO check if these have been deleted from slideshare
     $medianode = node_load(array('nid' => $line->nid));
     $medianode->field_document[0]['type'] = 'document';
     $medianode->field_document[0]['title'] = $medianode->title;
