@@ -133,11 +133,8 @@ if ($_GET['isSimple']) {
                 $node = node_load(arg(1));
               }
               if ($node->type == 'green_map') {
-                $tabs = str_replace('<span class="tab">Ver</span>',
-                    '<span class="tab">'.t('View Map').'</span>', $tabs);
-                $tabs = str_replace('<span class="tab">View</span>',
-                    '<span class="tab">'.t('View Map').'</span>', $tabs);
-                $tabs = str_replace('<span class="tab">Anzeigen</span>',
+                $view_string = t('View');
+                $tabs = str_replace('<span class="tab">'. $view_string .'</span>',
                     '<span class="tab">'.t('View Map').'</span>', $tabs);
               }
               ?>
