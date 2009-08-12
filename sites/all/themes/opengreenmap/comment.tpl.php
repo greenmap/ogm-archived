@@ -1,5 +1,5 @@
 <!--comment.tpl.php-->
-<div class="comment <?php print $comment_classes; ?>"><div class="comment-inner">
+<div class="comment <?php print $comment_classes ." ". $zebra; ?>"><div class="comment-inner">
 	
   <?php if ($unpublished) : ?>
     <div class="unpublished"><?php print t('Unpublished'); ?></div>

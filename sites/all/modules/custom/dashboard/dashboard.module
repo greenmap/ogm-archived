@@ -47,17 +47,18 @@ function dashboard_help($path, $arg){
  */
 function dashboard_menu(){
   $items = array();
-  $items['greenmap/add_to_map'] = array(
-    'title' => 'Add to this map',
-    'access arguments' => array('create green_site content'),
-    'page callback' => 'dashboard_how_to_add',
+  $items['greenmap/suggest'] = array(
+    'title' => 'Suggest a site',
+    'access arguments' => array('access content'),
+    'page callback' => 'dashboard_suggest_site_world_map',
     'type' => MENU_LOCAL_TASK,
     'weight' => 8
   );
   $items['greenmap/view'] = array(
     'title' => 'World View',
     'access arguments' => array('access content'),
-    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'page callback' => 'dashboard_view_world_map',
+    'type' => MENU_LOCAL_TASK,
     'weight' => -10,
   );
   $items['node/%dashboard_map/dashboard'] = array(
@@ -73,7 +74,7 @@ function dashboard_menu(){
     'title' => 'Map Team',
     'access callback' => 'dashboard_access_admin_callback',
     'access arguments' => array(1),
-    'page callback' => 'dashboard_members_redirect',
+    'page callback' => 'dashboard_members',
     'page arguments'=> array(1),
     'type' => MENU_LOCAL_TASK,
     'weight' => 10,
@@ -107,13 +108,21 @@ function dashboard_map_load($nid) {
  * hook_menu -calls these functions
  */
 
-function dashboard_how_to_add(){
-  drupal_goto('how_to_add');
+function dashboard_suggest_site_world_map() {
+  $output = '<p>'. t("Thank you! This World View map is the only Open Green Map which does not yet accept public site suggestions.") .'</p>'.
+    '<p>'. t("Your suggestions are welcome on any other map. Please click Maps on the top menu bar and select the map of your city or region. Then, click Suggest a Site.") .'</p>'.
+    '<p>'. t("Another way to get to the map you want: On the World View map, select a green site in your area. Each is linked to its map. Click the blue title by the map symbol near the bottom of the info window.") .'</p>';
+  return $output;
+}
+
+function dashboard_view_world_map(){
+  drupal_goto('greenmap');
 }
 
 function dashboard_add($nid){
   drupal_goto('node/add/green_site', 'gids[]=' . $nid);
 }
+
 function dashboard_leadmapmaker($nid){
   $node = node_load($nid);
   drupal_add_js("misc/collapse.js");
@@ -178,8 +187,8 @@ function dashboard_leadmapmaker($nid){
 /*
  * Redirect admins to the member admin page
  */
-function dashboard_members_redirect($gid){
-  drupal_goto('og/users/' . $gid);
+function dashboard_members($gid){
+  return views_embed_view('og_members', 'page', $gid);
 }
 
 /*

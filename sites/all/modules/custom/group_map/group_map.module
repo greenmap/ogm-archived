@@ -369,14 +369,32 @@ function group_map_block_1_form() {
     $explorecontent .= '</form>';
 
     // add the themes filter
-
-    $legend = display_key(taxonomy_get_tree(1));
+    $vocab_terms = taxonomy_get_tree(1);
+    $translated_terms = array();
+    foreach($vocab_terms as $term) {
+      $term->name = tt("taxonomy:term:$term->tid:name", $term->name);
+      $term->description = tt("taxonomy:term:$term->tid:description", $term->description);
+      $translated_terms[] = $term;
+    }
+    $legend = display_key($translated_terms);
     $legend .= "<p><strong>".t("Explore our World View!")."</strong></p>".
           "<p>".t("This map view starts with 2 sites from every Open Green Map. Zoom in to see more (or click Maps above to explore each map separately).")."</p>".
           "<p>".t("At Legend, click categories, then toggle different icons to filter your view. Use the Search Tab to jump to different world locations. Each map's introduction will appear on the Info Tab.")."</p>".
           "<p>".t("Find out more by clicking About, and take part in this social mapping platform!")."</p>";
 
-    $info = $legend;
+    global $language;
+    $info = "<p><strong>". t("About this Map") ."</strong></p>".
+          "<p>". t("This World View Map combines all of the Open Green Maps! Zoom in to see thousands of green sites charted by local Green Mapmakers.") ."</p>".
+          "<p>". t("Click any green site icon, then expand its info-window by clicking 'plus'. Add your comments, multimedia or impact assessments at the tabs.") ."</p>".
+          "<p>". t("Want to suggest a site or join a map team? Every map except this World View has a Suggest a Site link. Click Maps from the top menu to choose one from a list, or click the map title in any green site's info-window.") ."</p>";
+    global $user;
+    if (!$user->uid) {
+      $info .= "<p>".
+          t("Want to create your town's Green Map? Want your name on each site you suggest? ".
+          'Click <a href="@register-url">here</a> to register, or <a href="@login-url">login</a> now!',
+                   array('@register-url' => url('user/register'),
+                     '@login-url' => url('user'))) . "</p>";
+    }
 
   // this sets up the tabs for the key
   $form = array();
@@ -450,14 +468,12 @@ function group_map_block_0_contents() {
 
   $description = content_format('field_description',$node->field_description[0], 'default', $node);
 
-
-  // GH: added
   $prune_it = og_taxonomy_subset_prune_it();
   $key = display_key($prune_it);
-//   $key = display_key(prune_it());
-  // set up the content for the 'info' tab
-  // get images
 
+  // set up the content for the 'info' tab
+
+  // get images
   if($node->field_map_photo[0]['fid']) {
     // resize using imagecache - 80px wide
     $images .= theme('imagecache', 'mapkey', $node->field_map_photo[0]['filepath'], $node->field_map_photo[0]['alt'] );
@@ -503,6 +519,10 @@ function group_map_block_0_contents() {
   }
   $infocontent .= '<div class="rightalign">' . t('<span class="label">Begun</span>&nbsp;@date', array('@date' => $start_date)).'</div>';
   $updated = db_result(db_query("SELECT n.changed FROM {node} n INNER JOIN {og_ancestry} oga ON n.nid=oga.nid WHERE n.status = 1 AND oga.group_nid = %d ORDER BY n.changed DESC LIMIT 1", $node->nid));
+  // handle case of map with no published sites
+  if (!$updated) {
+    $updated = $node->changed;
+  }
   $infocontent .= '<div class="rightalign">' . t('<span class="label">Updated:</span>&nbsp;@date_ago&nbsp;ago', array('@date_ago' => format_interval(mktime() - $updated, 1))).'</div>';
 
   // need to add in most recent site here?

@@ -108,10 +108,10 @@ if ($teaser) {
         <img src="<?php print base_path().path_to_theme().'/images/comments_bubble.gif' ?>" alt="(comments)" />
         <!-- TODO: add link -->
         <a href="#" rel='2' class='maximize'>
-          <?php if ($node->comment_count == 0) { ?>
+          <?php if ($comment_count == 0) { ?>
             <?php print t('Add first comment'); ?>
           <?php } else { ?>
-            <?php print format_plural($node->comment_count, '1 comment', '@count comments'); ?>
+            <?php print format_plural($comment_count, '1 comment', '@count comments'); ?>
           <?php } ?>
         </a>
       </div>
