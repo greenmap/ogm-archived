@@ -48,7 +48,7 @@ function dashboard_help($path, $arg){
 function dashboard_menu(){
   $items = array();
   $items['greenmap/suggest'] = array(
-    'title' => 'Suggest a site',
+    'title' => 'Suggest a Site',
     'access arguments' => array('access content'),
     'page callback' => 'dashboard_suggest_site_world_map',
     'type' => MENU_LOCAL_TASK,
@@ -109,9 +109,9 @@ function dashboard_map_load($nid) {
  */
 
 function dashboard_suggest_site_world_map() {
-  $output = '<p>'. t("Thank you! This World View map is the only Open Green Map which does not yet accept public site suggestions.") .'</p>'.
-    '<p>'. t("Your suggestions are welcome on any other map. Please click Maps on the top menu bar and select the map of your city or region. Then, click Suggest a Site.") .'</p>'.
-    '<p>'. t("Another way to get to the map you want: On the World View map, select a green site in your area. Each is linked to its map. Click the blue title by the map symbol near the bottom of the info window.") .'</p>';
+  $output = '<p>'. t("Thank you! This World View map is the only Open Green Map which <strong>does not yet accept public site suggestions</strong>.") .'</p>'.
+    '<p>'. t('Your suggestions are welcome on any other map. Please click <a href="@maps-link">Maps</a> on the top menu bar and select the map of your city or region. Then, click Suggest a Site.', array('@maps-link' => url('maps'))) .'</p>'.
+    '<p>'. t("Another way to get to the map you want: <br> On the World View map, select a green site in your area. Each is linked to its map. Click the blue title by the map symbol near the bottom of the info window.") .'</p>';
   return $output;
 }
 
