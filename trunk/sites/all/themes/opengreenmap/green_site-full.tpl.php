@@ -191,8 +191,9 @@ if($node->field_involved[0]['value'] == 'yes') {
   drupal_add_js(drupal_get_path('theme', 'opengreenmap').'/multimedia.js', 'theme', 'footer');
   $media = array();
   // add site video
-  if (!empty($node->field_video[0]['view'])) {
-    // TODO check if these have been deleted from the provider
+  if (!empty($node->field_video[0]['view']) && !empty($node->field_video[0]['provider'])) {
+    // unfortunately, it's impossible to check if these have been deleted from
+    // the provider
     $node->field_video[0]['type'] = 'video';
     $node->field_video[0]['title'] = $node->field_video_caption[0]['view'];
     $node->field_video[0]['author'] = $name;
@@ -201,8 +202,13 @@ if($node->field_involved[0]['value'] == 'yes') {
   // add contributed videos
   $result = db_query('SELECT a.nid FROM {content_type_video} AS a, {node} AS b WHERE field_site_0_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
   while ($line = db_fetch_object($result)) {
-    // TODO check if these have been deleted from the provider
     $medianode = node_load(array('nid' => $line->nid));
+    // make sure this is a valid image
+    if (!$medianode->field_video_0[0]['provider']) {
+      continue;
+    }
+    // unfortunately, it's impossible to check if these have been deleted from
+    // the provider
     $medianode->field_video_0[0]['type'] = 'video';
     $medianode->field_video_0[0]['title'] = $medianode->title;
     $medianode->field_video_0[0]['description'] = $medianode->body;
@@ -214,7 +220,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $media = array_merge($media, $medianode->field_video_0);
   }
   // add site images
-  if (!empty($node->field_image[0]['view'])) {
+  if (!empty($node->field_image[0]['view']) && !empty($node->field_image[0]['provider'])) {
     // don't add deleted flickr or picasa images
     if (! ( ($node->field_image[0]['provider'] == 'flickr' 
             && !$node->field_image[0]['data']['owner']) ||
@@ -230,6 +236,10 @@ if($node->field_involved[0]['value'] == 'yes') {
   $result = db_query('SELECT a.nid FROM {content_type_photo} AS a, {node} AS b WHERE field_site_1_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
   while ($line = db_fetch_object($result)) {
     $medianode = node_load(array('nid' => $line->nid));
+    // make sure this is a valid image
+    if (!$medianode->field_photo[0]['provider']) {
+      continue;
+    }
     // don't add deleted flickr or picasa images
     if ($medianode->field_photo[0]['provider'] == 'flickr'
         && !$medianode->field_photo[0]['data']['owner']) {
@@ -263,6 +273,9 @@ if($node->field_involved[0]['value'] == 'yes') {
     $medianode->field_document[0]['author'] = theme_username($usr);
     // HACKHACK
     $embed_code = $medianode->field_document[0]['data']['EMBED'][0];
+    if (!$embed_code) {
+      continue;
+    }
 
     /*
     the slideshare api doesn't provide much control, in particular the
