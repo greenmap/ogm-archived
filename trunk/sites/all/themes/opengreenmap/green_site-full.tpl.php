@@ -197,6 +197,11 @@ if($node->field_involved[0]['value'] == 'yes') {
     $node->field_video[0]['type'] = 'video';
     $node->field_video[0]['title'] = $node->field_video_caption[0]['view'];
     $node->field_video[0]['author'] = $name;
+    if (user_access('edit any green_site content')) {
+      $node->field_video[0]['description'] .= 
+        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
+            $node->nid, $node->nid);
+    }
     $media = array_merge($media, $node->field_video);
   }
   // add contributed videos
@@ -212,6 +217,11 @@ if($node->field_involved[0]['value'] == 'yes') {
     $medianode->field_video_0[0]['type'] = 'video';
     $medianode->field_video_0[0]['title'] = $medianode->title;
     $medianode->field_video_0[0]['description'] = $medianode->body;
+    if (user_access('edit any video content')) {
+      $medianode->field_video_0[0]['description'] .= 
+        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
+            $medianode->nid, $node->nid);
+    }
     $medianode->field_video_0[0]['nid'] = $medianode->nid;
     $usr = user_load(array('uid' => $medianode->uid));
     $medianode->field_video_0[0]['author'] = theme_username($usr);
@@ -229,6 +239,11 @@ if($node->field_involved[0]['value'] == 'yes') {
       $node->field_image[0]['type'] = 'image';
       $node->field_image[0]['title'] = $node->field_image_caption[0]['view'];
       $node->field_image[0]['author'] = $name;
+      if (user_access('edit any green_site content')) {
+        $node->field_image[0]['description'] .= 
+          sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
+              $node->nid, $node->nid);
+      }
       $media = array_merge($media, $node->field_image);
     }
   }
@@ -252,6 +267,11 @@ if($node->field_involved[0]['value'] == 'yes') {
     $medianode->field_photo[0]['type'] = 'image';
     $medianode->field_photo[0]['title'] = $medianode->title;
     $medianode->field_photo[0]['description'] = $medianode->body;
+    if (user_access('edit any photo content')) {
+      $medianode->field_photo[0]['description'] .= 
+        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
+            $medianode->nid, $node->nid);
+    }
     $medianode->field_photo[0]['nid'] = $medianode->nid;
     $usr = user_load(array('uid' => $medianode->uid));
     $medianode->field_photo[0]['author'] = theme_username($usr);
@@ -268,6 +288,11 @@ if($node->field_involved[0]['value'] == 'yes') {
     $medianode->field_document[0]['type'] = 'document';
     $medianode->field_document[0]['title'] = $medianode->title;
     $medianode->field_document[0]['description'] = $medianode->body;
+    if (user_access('edit any document content')) {
+      $medianode->field_photo[0]['description'] .= 
+        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
+            $medianode->nid, $node->nid);
+    }
     $medianode->field_document[0]['nid'] = $medianode->nid;
     $usr = user_load(array('uid' => $medianode->uid));
     $medianode->field_document[0]['author'] = theme_username($usr);
