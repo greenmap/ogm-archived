@@ -88,7 +88,7 @@ if ($teaser) {
         <a href="#" rel='4' class='maximize'>
           <?php if (!empty($node->field_image[0]['view'])) { ?>
             <?php $img = strip_tags($node->field_image[0]['view'], '<img>'); ?>
-            <?php print $img; ?>
+            <?php print $img; // TODO better resizing ?>
           <?php } elseif (!empty($node->field_video[0]['view'])) { ?>
             <?php $video = strip_tags($node->field_video[0]['view'], '<img>'); ?>
             <?php print $video; ?>
