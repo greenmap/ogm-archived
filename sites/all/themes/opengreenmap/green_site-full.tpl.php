@@ -276,7 +276,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $usr = user_load(array('uid' => $medianode->uid));
     $medianode->field_photo[0]['author'] = theme_username($usr);
     // HACKHACK
-    $medianode->field_photo[0]['view'] = theme('emimage_image_full', array_merge($medianode->field_photo, array('widget' => array('full_width' => 320, 'full_height' => 240))), $medianode->field_photo[0], 'image_full', $medianode);
+    $medianode->field_photo[0]['view'] = theme('emimage_image_full', array_merge($medianode->field_photo, array('widget' => array('full_width' => 320, 'full_height' => 0))), $medianode->field_photo[0], 'image_full', $medianode);
     $medianode->field_photo[0]['view'] = str_replace('<a href=', '<a target="_blank" href=', $medianode->field_photo[0]['view']);
     $media = array_merge($media, $medianode->field_photo);
   }
@@ -333,7 +333,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $embed_code = str_replace('<a href=', '<a target="_blank" href=', $embed_code);
     $embed_code = preg_replace('@width:\d+px@', 'width:320px', $embed_code);
     $embed_code = preg_replace('@width="\d+"@', 'width="320"', $embed_code);
-    $embed_code = preg_replace('@height="\d+"@', 'height="240"', $embed_code);
+    $embed_code = preg_replace('@height="\d+"@', 'height="342"', $embed_code);
     $embed_code = preg_replace('@<div[^>]*>View more.*?</div>@', '', $embed_code);
     $medianode->field_document[0]['view'] = $embed_code;
     $medianode->field_document[0]['thumb'] = $medianode->field_document[0]['data']['THUMBNAILSMALLURL'][0];
