@@ -1,0 +1,211 @@
+<?php
+
+// $Id: primary_term.module,v 1.8 2008/09/15 14:14:57 mikeryan Exp $
+
+/**
+ * @TODO
+ * - add a validate function to the form_alter
+ */
+
+function primary_term_nodeapi(&$node, $op, $teaser, $page) {
+  // This module sets $node->primary_term on node load but
+  // $node->primaryterm via the node form.  I don't know if a previous
+  // author meant that or if it was a mistake.  For now, the module
+  // preserves that behavior.
+
+  switch ($op){
+    case 'presave':
+      // Make sure the PT is assigned to the node as a normal term.
+      //
+      // taxonomy_node_save() allows $node->taxonomy to contain tids,
+      // term objects, or arrays of tids (keyed by vocabulary).  So,
+      // we can add the PT tid to the end of the array.
+      //
+      // However, taxonomy_node_save() assumes that a given tid only
+      // occurs once anywhere in node->taxonomy(), so we have to make
+      // sure the PT tid is not already assigned via the form to this
+      // node before adding it.
+      //
+      // In the end, this is more work than doing it "wrong" during
+      // insert/update.
+      if (!empty($node->primaryterm)) {
+        $tid = $node->primaryterm;
+      } else if (!empty($node->primary_term)) {
+        $tid = $node->primary_term->tid;
+      }
+      if (!empty($tid)) {
+        foreach ($node->taxonomy as $k => $v) {
+          if (is_array($v) && !empty($v[$tid])) {
+            return;
+          } else if (is_numeric($v) && $v == $tid) {
+            return;
+          }
+        }
+        $node->taxonomy[] = $tid;
+        // Load the term so it's available to token/pathauto
+        $node->primary_term = taxonomy_get_term($tid);
+      }
+      break;
+    
+    case 'insert':
+    case 'update':
+      db_query('DELETE FROM {primary_term} WHERE vid = %d', $node->vid); // only one term per node revision
+      // When node form is submitted, the new PT tid comes in as
+      // $node->primaryterm (because it is set as
+      // $form['taxonomy']['primaryterm'] but with #tree => false.  If
+      // it is comes directly from node_load(), the PT term object is
+      // in $node->primary_term.
+      if (!empty($node->primaryterm)) {
+        $primaryterm = $node->primaryterm;
+      } else if (!empty($node->primary_term)) {
+        $primaryterm = $node->primary_term->tid;
+      }
+      if (empty($primaryterm)) {
+        break;
+      }
+
+      db_query('INSERT INTO {primary_term} (vid, tid) VALUES (%d, %d)', $node->vid, $primaryterm);
+      break;
+
+    case 'load':
+      $tid = db_result(db_query('SELECT tid FROM {primary_term} WHERE vid = %d', $node->vid));
+      $term = taxonomy_get_term($tid);
+      $node->primaryterm = $tid;
+      $node->primary_term = $term;
+      break;
+  }
+}
+
+function primary_term_form_alter(&$form, $form_state, $form_id) {
+  $type = $form['type']['#value'];
+  $node = $form['#node'];
+
+  switch ($form_id) {
+    case $type .'_node_form':
+  
+      if ($vids = variable_get('pt_vocabs_'. $form['type']['#value'], array())) {
+        
+        // go through all taxonomy terms for this type:
+        $terms = array();
+        if(is_array($form['taxonomy'])){
+          foreach($form['taxonomy'] as $vid => $vocab){
+            if(in_array($vid, $vids)){
+              if(is_array($vocab['#options'])){
+                if(strlen(trim($vocab['#options']))){
+                  // not sure why we have the line below. from old days.
+                  // unset($vocab['#options'][0]);
+                }
+                $terms = $terms + $vocab['#options'];
+              }
+            }
+          }
+        }
+        
+        $types = node_get_types('names');
+        $type = $types[$node->type];
+        
+        // create a new field
+        $form['taxonomy']['primaryterm'] = array(
+          '#type' => 'select',
+          '#multiple' => 0,
+          '#title' => t('Primary Term'),
+          '#default_value' => $form['#node']->primaryterm ?
+            $form['#node']->primaryterm :
+            array(primary_term_get_term($form['#node']->vid)),
+          '#options' => $terms,
+          '#description' => t('Select a primary term for this %type.', array('%type' => $type)),
+          '#theme' => 'taxonomy_term_select',
+          '#required' => FALSE,
+          '#weight' => -4,
+          '#tree' => FALSE, // keep value out of $node->taxonomy
+          );
+      }
+      break;
+  
+  case 'node_type_form':
+    $node_type = $form['old_type']['#value'];
+    $vocabs = taxonomy_get_vocabularies($type);
+    foreach($vocabs as $vocab){
+      $vocabularies[$vocab->vid] = $vocab->name;
+    }
+    
+    $form['workflow']['pt_vocabs'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Vocabularies for Primary Term'),
+      '#options' => $vocabularies,
+      '#default_value' => variable_get('pt_vocabs_'. $node_type, array()),
+      '#description' => t('Select which vocabularies should contribute terms to the Primary Term selector. Select none and the selector will not appear.'),
+    );
+
+  }  
+}
+
+/**
+ * Get primary term for a given node version id (vid)
+ *
+ * @param integer $vid
+ */
+function primary_term_get_term($vid){
+  return db_result(db_query('SELECT tid FROM {primary_term} WHERE vid = %d', $vid));
+}
+
+/**********************************************************************
+ * token.module support
+ **********************************************************************/
+
+function primary_term_token_list($type = 'all') {
+  if ($type == 'node' || $type == 'all') {
+    $tokens['node']['primary-term'] = t('Name of primary term');
+    $tokens['node']['primary-term-id'] = t('ID of primary term');
+    return $tokens;
+  }
+}
+
+function primary_term_token_values($type, $object = NULL) {
+  switch ($type) {
+    case 'node':
+      $node = $object;
+      if (isset($node->primaryterm)) {
+        $term = taxonomy_get_term($node->primaryterm);
+        $values['primary-term'] = check_plain($term->name);
+        $values['primary-term-id'] = $term->tid;
+      }
+      break;
+  }
+  return $values;
+}
+
+/**********************************************************************
+ * Views support
+ **********************************************************************/
+
+function primary_term_views_data() {
+  $tables['primary_term'] = array(
+    'table' => array(
+      'group' => t('Node'),
+      'join' => array(
+        'node' => array(
+          'left_field' => 'vid',
+          'field' => 'vid',
+        ),
+      ),
+    ),
+    'tid' => array(
+      'title' => t('Primary Term'),
+      'help' => t('The Primary Term of the node.'),
+      'field' => array(
+        'handler' => 'views_handler_field_term_node_tid',
+      ),
+      'argument' => array(
+        'handler' => 'views_handler_argument_term_node_tid',
+      ),
+      'filter' => array(
+        'handler' => 'views_handler_filter_term_node_tid',
+      ),
+      'sort' => array(
+        'handler' => 'views_handler_sort',
+      ),
+    ),
+  );
+  return $tables;
+}
