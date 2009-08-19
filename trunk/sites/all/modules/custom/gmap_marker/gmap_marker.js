@@ -183,7 +183,7 @@ function clearExtras(obj) {
       if (http_requestZoom.readyState != 4) {return;}
       if (http_requestZoom.status == 200) {// success
       } else {// failed
-        alert('Problems with the ajax' );
+        alert('Problems with the ajax (code 201)' );
       }
     };
 
@@ -231,7 +231,7 @@ function createMarker(point, opts,nid) {
           })
         });
       } else {
-        alert('Problems with the ajax: 228');
+        alert('Problems with the ajax (code 228)');
       }
     };
   });
@@ -266,7 +266,7 @@ function mapNodeLoad(object) {
       if (http_requestZoom.status == 200) {// success
         onMapChange(http_requestZoom);
       } else {// failed
-        alert('Problems with the ajax');
+        alert('Problems with the ajax (code 202)');
       }
     };
 }
@@ -281,7 +281,7 @@ function globalViewNodeLoad() {
       if (http_request.status == 200) {// success
         onMapChange(http_request);
       } else {// failed
-        alert('Problems with the ajax');
+        alert('Problems with the ajax (code 203)');
       }
     };
 
@@ -300,7 +300,7 @@ function globalViewNodeLoad() {
       if (http_requestZoom.status == 200) {// success
         onMapChange(http_requestZoom);
       } else {// failed
-        alert('Problems with the ajax');
+        alert('Problems with the ajax (code 204)');
       }
     };
 
@@ -363,7 +363,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
               if (http_requestZoom.readyState != 4) {return;}
               if (http_requestZoom.status == 200) {// success
               } else {// failed
-                alert('Problems with the ajax');
+                alert('Problems with the ajax (code 205)');
               }
             };
           }
@@ -396,7 +396,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
                 clearExtras(obj);
               }
               else {// failed
-                alert('Problems with the ajax');
+                alert('Problems with the ajax (code 206)');
               }
             };
           }
@@ -463,7 +463,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
                 onMapChange(http_requestZoom);
                 clearExtras(obj);
               } else {// failed
-                alert('Problems with the ajax');
+                alert('Problems with the ajax (code 207)');
               }
             };
           }
