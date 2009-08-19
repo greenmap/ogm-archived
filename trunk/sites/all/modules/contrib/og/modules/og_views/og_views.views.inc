@@ -48,6 +48,9 @@ function og_views_views_handlers() {
       'og_views_handler_field_og_group_nids' => array(
         'parent' => 'views_handler_field_prerender_list',
       ),
+      'og_views_handler_field_og_group_nids_nids' => array(
+        'parent' => 'views_handler_field_prerender_list',
+      ),
       'og_views_handler_field_og_managelink' => array(
         'parent' => 'views_handler_field',
       ),
@@ -296,6 +299,36 @@ function og_views_data_og_ancestry() {
       'help' => t('<strong>Posts</strong> are filtered for specified organic groups. The page context (if Display is a page) will be set to the first listed group. That means that blocks and breadcrumbs (and theme and locale, if applicable) will be based upon the first specified node id.'),
     ),
   );
+
+  $data['og_ancestry']['group_nids'] = array(
+    'title' => t('Group Nids'),
+    'help' => t('The group nids for a post.'),
+    'field' => array(
+      'handler' => 'og_views_handler_field_og_group_nids_nids',
+    ),
+    'relationship' => array(
+      'title' => t('Group node (post)'),
+      'help' => t("Bring in information about the group node based on a post's groups."),
+      'base' => 'node',
+      'field' => 'group_nid',
+      'handler' => 'views_handler_relationship',
+      'label' => t('Group node (post)'),
+    ),
+    'filter' => array(
+      'handler' => 'og_views_handler_filter_og_group_nid',
+      'numeric' => TRUE,
+      'allow empty' => TRUE, // To select posts with no groups. Requires http://drupal.org/node/340824
+      'help' => t('<strong>Posts</strong> are filtered for specific organic groups.'),
+    ),
+    'argument' => array(
+      'name' => t('Post: in specified group (by number)'),
+      'name field' => 'title', // the field to display in the summary.
+      'validate type' => 'nid',
+      'handler' => 'og_views_handler_argument_og_group_nid',
+      'help' => t('<strong>Posts</strong> are filtered for specified organic groups. The page context (if Display is a page) will be set to the first listed group. That means that blocks and breadcrumbs (and theme and locale, if applicable) will be based upon the first specified node id.'),
+    ),
+  );
+
   $data['og_ancestry']['nid'] = array(
     'title' => t('Post: Nid'),
     'help' => t('The node ID of the node.'),
