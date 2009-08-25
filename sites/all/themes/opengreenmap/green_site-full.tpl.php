@@ -7,7 +7,7 @@ if ($page == 0): ?>
 
 <?php
 if(node_access('update',$node) == true && $_GET['isSimple']){
-  echo "<div id='bubble_full_edit'>". l(t("edit"),'node/'.$node->nid."/edit",array('target' => '_top') )."</div>";
+  echo "<div id='bubble_full_edit'>". l(t("edit"),'node/'.$node->nid."/edit",array('target' => '_blank') )."</div>";
 }
 ?>
 
@@ -48,6 +48,7 @@ if($node->field_image[0]['value'] > '') {
 } elseif($node->field_video[0]['value'] > '') {
   $media_thumb = theme('emvideo_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
 }
+$media_thumb = str_replace('<a href="', '<a target="_blank" href="', $media_thumb);
 
 // RM $siteicons code moved up along with icons display code ////////////
 if($node->field_accessible_by_public_tran[0]['value'] == 1) {
@@ -135,7 +136,7 @@ if($node->field_involved[0]['value'] == 'yes') {
       $contents .= '<div class="fieldemail">'. content_format('field_email', $field_email[0]) .'</div>';
     }
     if ($field_web[0] > '') {
-      $link = str_replace('<a href=', '<a target="_parent" href=', content_format('field_web', $field_web[0]));
+      $link = str_replace('<a href=', '<a target="_blank" href=', content_format('field_web', $field_web[0]));
       $contents .= '<div class="fieldweb">'. $link .'</div>';
     }
 
@@ -148,18 +149,18 @@ if($node->field_involved[0]['value'] == 'yes') {
   if(count($node->og_groups_both) > 0) {
     list($group_nid) = array_keys($node->og_groups_both);
     $group_title = $node->og_groups_both[$group_nid];
-    $contents .= l($group_title, 'node/'.$group_nid, array('target' =>'_top', 'title' => t('View this Open Green Map')));
+    $contents .= l($group_title, 'node/'.$group_nid, array('target' =>'_blank', 'title' => t('View this Open Green Map')));
   }
   if($node->uid){
-    $contents .= '<br />'. t('added @date by <a href="@profile_link" title="View Profile">@name</a>',
-    array('@date' => date('m/Y', $node->created), '@profile_link' => url('user/'. $node->uid), '@name' => $node->name));
+    $contents .= '<br />'. t('added @date by <a href="@profile_link" target="_blank" title="View Profile">@name</a>',
+      array('@date' => date('m/Y', $node->created),
+        '@profile_link' => url('user/'. $node->uid),
+        '@name' => $node->name));
   }
   $contents .= '</div>';
   $img_alt = t('This site was added by an official Mapmaker');
   $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="'  . $img_alt . '" title="'  . $img_alt . '"/>';
 
-  // debug
-  //print_r($node);
   $contents .= '</div><!-- /meta-->';
 
 // ncm: insert a small map on the site pages when viewed as a node
@@ -202,7 +203,9 @@ if($node->field_involved[0]['value'] == 'yes') {
         sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
             $node->nid, $node->nid);
     }
-    $media = array_merge($media, $node->field_video);
+    $tmp = $node->field_video;
+    $tmp[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $tmp[0]['view']);
+    $media = array_merge($media, $tmp);
   }
   // add contributed videos
   $result = db_query('SELECT a.nid FROM {content_type_video} AS a, {node} AS b WHERE field_site_0_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
@@ -227,6 +230,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $medianode->field_video_0[0]['author'] = theme_username($usr);
     // HACKHACK
     $medianode->field_video_0[0]['view'] = theme('emvideo_video_video', array_merge($medianode->field_video_0, array('widget' => array('video_width' => 320, 'video_height' => 240))), $medianode->field_video_0[0], 'video_video', $medianode);
+    $medianode->field_video_0[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $medianode->field_video_0[0]['view']);
     $media = array_merge($media, $medianode->field_video_0);
   }
   // add site images
@@ -244,7 +248,9 @@ if($node->field_involved[0]['value'] == 'yes') {
           sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
               $node->nid, $node->nid);
       }
-      $media = array_merge($media, $node->field_image);
+      $tmp = $node->field_image;
+      $tmp[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $tmp[0]['view']);
+      $media = array_merge($media, $tmp);
     }
   }
   // add contributed photos
@@ -336,6 +342,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $embed_code = preg_replace('@height="\d+"@', 'height="342"', $embed_code);
     $embed_code = preg_replace('@<div[^>]*>View more.*?</div>@', '', $embed_code);
     $medianode->field_document[0]['view'] = $embed_code;
+    $medianode->field_document[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $medianode->field_document[0]['view']);
     $medianode->field_document[0]['thumb'] = $medianode->field_document[0]['data']['THUMBNAILSMALLURL'][0];
     $media = array_merge($media, $medianode->field_document);
   }
