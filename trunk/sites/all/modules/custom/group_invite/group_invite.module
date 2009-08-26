@@ -81,14 +81,14 @@ function group_invite_perm() {
  */
 function group_invite_menu() {
   $items = array();
-  $items['og/users/%node/invite_users'] = array(
+  $items['node/%group_invite_map/invite_users'] = array(
     'title' => 'Invite new members',
     'page callback'     => 'drupal_get_form',
-    'page arguments' => array('group_invite_create_group_invite_page', 2),
+    'page arguments' => array('group_invite_create_group_invite_page', 1),
     'type' => MENU_LOCAL_TASK,
     'access callback' => 'og_is_group_admin',
-    'access arguments' => array(2),
-    'weight' => 5,
+    'access arguments' => array(1),
+    'weight' => 12,
     );
   $items['group_invite/%node/js'] = array(
     'title' => 'Invite new members',
@@ -108,6 +108,19 @@ function group_invite_menu() {
 //    'access arguments' => array(1),
 //    );
   return $items;
+}
+
+function group_invite_map_load($nid) {
+  $map_type = 'green_map';
+  if ( is_numeric($nid) &&
+       ($node = node_load($nid)) &&
+       $node->type == $map_type )
+  {
+    return $node;
+  }
+  else  {
+    return FALSE;
+  }
 }
 
 /**
@@ -280,7 +293,7 @@ function group_invite_create_group_invite_page($form_state, $node) {
   // I belive there is a bug in drupal or at least in how they suggest to set
   //   up #ahah. see: http://drupal.org/node/371339
   // the workaround follows:
-  $correct_path = implode('/', array( 'og', 'users', $node->nid, 'invite_users'));
+  $correct_path = implode('/', array( 'node', $node->nid, 'invite_users'));
   $form['#action'] = url($correct_path);
   // end crazy workaround
 
@@ -455,7 +468,7 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
       }
     }
   }
-  $form_state['redirect'] = implode('/', array("og", "users", $form_state['values']['group_nid']));
+  $form_state['redirect'] = implode('/', array("node", $form_state['values']['group_nid'], 'members'));
 }
 
 /**
