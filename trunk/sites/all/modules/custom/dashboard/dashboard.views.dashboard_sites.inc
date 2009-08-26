@@ -896,13 +896,14 @@ function dashboard_sites_views_default_views() {
       ),
       'relationship' => 'none',
     ),
-    'address' => array(
-      'label' => 'Address',
+    'street' => array(
+      'label' => 'Street Address',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
         'make_link' => 0,
         'path' => '',
+        'link_class' => '',
         'alt' => '',
         'prefix' => '',
         'suffix' => '',
@@ -914,26 +915,96 @@ function dashboard_sites_views_default_views() {
         'strip_tags' => 0,
         'html' => 0,
       ),
-      'hide' => array(
-        'name' => 'name',
-        'additional' => 'additional',
-        'country' => 'country',
-        'locpick' => 'locpick',
-        'fax' => 'fax',
-        'phone' => 'phone',
-        'province_name' => 'province_name',
-        'country_name' => 'country_name',
-        'map_link' => 'map_link',
-        'street' => 0,
-        'city' => 0,
-        'province' => 0,
-        'postal_code' => 0,
-        'coords' => 0,
+      'style' => 'street',
+      'exclude' => 0,
+      'id' => 'street',
+      'table' => 'location',
+      'field' => 'street',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+    'street_1' => array(
+      'label' => 'Additional Street Address',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
+      ),
+      'style' => 'additional',
+      'exclude' => 0,
+      'id' => 'street_1',
+      'table' => 'location',
+      'field' => 'street',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+    'city' => array(
+      'label' => 'City',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
       ),
       'exclude' => 0,
-      'id' => 'address',
+      'id' => 'city',
       'table' => 'location',
-      'field' => 'address',
+      'field' => 'city',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+    'postal_code' => array(
+      'label' => 'Postal Code',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
+      ),
+      'exclude' => 0,
+      'id' => 'postal_code',
+      'table' => 'location',
+      'field' => 'postal_code',
       'override' => array(
         'button' => 'Use default',
       ),
@@ -960,6 +1031,34 @@ function dashboard_sites_views_default_views() {
       'style' => 'dms',
       'exclude' => 0,
       'id' => 'coordinates',
+      'table' => 'location',
+      'field' => 'coordinates',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+    'coordinates_1' => array(
+      'label' => 'Coordinates (decimal degrees)',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
+      ),
+      'style' => 'dd',
+      'exclude' => 0,
+      'id' => 'coordinates_1',
       'table' => 'location',
       'field' => 'coordinates',
       'override' => array(
@@ -1018,34 +1117,6 @@ function dashboard_sites_views_default_views() {
       'id' => 'longitude',
       'table' => 'location',
       'field' => 'longitude',
-      'override' => array(
-        'button' => 'Use default',
-      ),
-      'relationship' => 'none',
-    ),
-    'coordinates_1' => array(
-      'label' => 'Coordinates (decimal degrees)',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'strip_tags' => 0,
-        'html' => 0,
-      ),
-      'style' => 'dd',
-      'exclude' => 0,
-      'id' => 'coordinates_1',
-      'table' => 'location',
-      'field' => 'coordinates',
       'override' => array(
         'button' => 'Use default',
       ),
@@ -1408,6 +1479,14 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
   ));
+  $handler->override_option('access', array(
+    'type' => 'role',
+    'role' => array(
+      '3' => 3,
+      '9' => 9,
+      '4' => 4,
+    ),
+  ));
   $handler->override_option('header', '');
   $handler->override_option('items_per_page', 0);
   $handler->override_option('style_plugin', 'views_csv');
@@ -1591,6 +1670,14 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
   ));
+  $handler->override_option('access', array(
+    'type' => 'role',
+    'role' => array(
+      '3' => 3,
+      '9' => 9,
+      '4' => 4,
+    ),
+  ));
   $handler->override_option('items_per_page', 0);
   $handler->override_option('style_plugin', 'views_kml');
   $handler->override_option('style_options', array(
@@ -1616,5 +1703,6 @@ function dashboard_sites_views_default_views() {
   $handler->override_option('displays', array());
   $handler->override_option('sitename_title', FALSE);
   $views[$view->name] = $view;
+
   return $views;
 }
