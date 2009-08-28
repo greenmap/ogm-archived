@@ -759,6 +759,6 @@ div#connections_content div.view-id-sites div.item-list div.views-field-city {
   display: inline;
 }
 
-div.node-form ul.tips li {
+form ul.tips li {
   margin-left: 25px;
 }

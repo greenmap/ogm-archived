@@ -136,9 +136,9 @@ function dashboard_import_export($nid) {
   $content .= "<p><strong>". t("Data Export") ."</strong></p>";
   $content .= "<p>". t("From this page, Mapmakers and Team Coordinators can export all Green Sites on this map as a CSV file, for use with spreadsheet and database software, or as a KML file, for use with mapping applications.  The CSV file contains the complete data from each site, and the KML file contains each site's name, location, a brief description, and a link to this website for users who would like to read the site's full description.  User-contributed information such as photos, videos, comments, and impact statements are not exported.") ."</p>";
   $content .= "<ul><li>".
-    t('<a href="@csv_export_link">Export Map Data as <abbr title="Comma Separated Variable">CSV</abbr> file</a> (for use with spreadsheet software such as OpenOffice Calc or Microsoft Excel)', array('@csv_export_link' => url('dashboard/sites/'. $node->nid .'/map_export.csv')))
+    t('<a href="@csv_export_link">Export Map Data as <abbr title="Comma Separated Variable">CSV</abbr> file</a> (for use with spreadsheet software such as OpenOffice Calc or Microsoft Excel)', array('@csv_export_link' => url('dashboard/sites/'. $nid .'/map_export.csv')))
     ."</li><li>".
-    t('<a href="@kml_export_link">Export Map Data as <abbr title="Keyhole Markup Language">KML</abbr> file</a> (for use with mapping software such as Google Earth)', array('@kml_export_link' => url('dashboard/sites/'. $node->nid .'/map_export.kml')))
+    t('<a href="@kml_export_link">Export Map Data as <abbr title="Keyhole Markup Language">KML</abbr> file</a> (for use with mapping software such as Google Earth)', array('@kml_export_link' => url('dashboard/sites/'. $nid .'/map_export.kml')))
     ."</li></ul>";
   $content .= "<p><strong>". t("Data Import") ."</strong></p>";
   $content .= "<p>". t("CSV files with the same format produced by the export feature above can be imported in bulk into this map.  If the Site ID field is blank, the record will be imported as a new Green Site.  If the Side ID field is present and corresponds to a Green Site on this map, that site will be updated with the data from the CSV file.") ."</p>";
