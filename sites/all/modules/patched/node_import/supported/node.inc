@@ -56,14 +56,21 @@ function node_import_create_node($type, &$values, $preview) {
       'values' => $values,
     );
 
-    $node = (object)array(
-      'type' => $node_type,
-      'name' => isset($values['name']) ? $values['name'] : '',
-    );
+    if (isset($values['nid'])) {
+      $node = node_load($values['nid']);
+    } else {
+      $node = (object)array(
+        'type' => $node_type,
+        'name' => isset($values['name']) ? $values['name'] : '',
+      );
+    }
     node_import_drupal_execute($form_id, $form_state, $node);
 
     if ($preview) {
       $output = isset($form_state['node_preview']) ? $form_state['node_preview'] : '';
+      if ($values['nid']) {
+        $output .= t("Existing node found (ID @nid)", array("@nid" => $values['nid']));
+      }
     }
     else {
       $output = $values['nid'] = $form_state['nid'];
@@ -140,7 +147,16 @@ function node_node_import_fields($type) {
       'output_format' => DATE_UNIX,
     );
 
-    //TODO: language
+    if (module_exists('locale')) {
+      $fields['language'] = array(
+        'title' => t('Language'),
+        'module' => 'node',
+        'weight' => 2,
+        'input_format' => 'language',
+        'has_multiple' => FALSE,
+        'has_hierarchy' => FALSE,
+      );
+    }
 
     $fields['log'] = array(
       'title' => t('Log message'),
@@ -175,9 +191,49 @@ function node_node_import_fields($type) {
         'default_value' => in_array($key, $node_options) ? '1' : '0',
       );
     }
+
+    $fields['nid'] = array(
+      'title' => t('Site ID'),
+      'module' => 'node',
+      'weight' => -1,
+      'group' => t('Publishing options'),
+      'is_mappable' => $administer_nodes,
+    );
   }
 
   return $fields;
+}
+
+/**
+ * Implementation of hook_node_import_fields_alter().
+ */
+function node_node_import_fields_alter(&$fields, $type) {
+  foreach ($fields as $fieldname => $fieldinfo) {
+    if ($fieldinfo['input_format'] == 'language') {
+      $fields[$fieldname]['preprocess'][] = 'node_import_check_language';
+    }
+  }
+}
+
+function node_import_check_language(&$value, $field, $options, $preview, $op = 'lookup') {
+  if (!module_exists('locale')) {
+    return TRUE;
+  }
+  foreach(language_list() as $code => $data) {
+    // allow use of language code
+    if ($value == $code) {
+      return TRUE;
+    }
+    // allow use of english or native language name
+    if ($value == $data->name || $value == $data->native) {
+      return TRUE;
+    }
+    // allow use of language name translated into current language
+    if ($value == t($data->name)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
 }
 
 /**
@@ -190,6 +246,26 @@ function node_node_import_defaults($type, $defaults, $fields, $map) {
     global $user;
 
     $type_info = node_get_types('type', $node_type);
+
+    $form['nid'] = array(
+      '#title' => t('Site ID'),
+      '#type' => 'textfield',
+      '#maxlength' => '10',
+    );
+
+    if (module_exists('locale')) {
+      $languages = array('' => t('- None -'));
+      foreach(language_list() as $lang => $data) {
+        $languages[$lang] = t($data->name);
+      }
+      $form['language'] = array(
+        '#title' => t('Language'),
+        '#type' => 'select',
+        '#default_value' => '',
+        '#options' => $languages,
+        '#description' => t('Choose a language'),
+      );
+    }
 
     if ($type_info->has_body) {
       $form['format'] = array(
@@ -275,6 +351,31 @@ function node_node_import_values_alter(&$values, $type, $defaults, $options, $fi
     if (isset($values['created']) && drupal_strlen($values['created']) > 0) {
       $values['date'] = format_date($values['created'], 'custom', 'Y-m-d H:i:s O');
     }
+ 
+    if (isset($values['nid'])) {
+      $nid = $values['nid'];
+      $nid_value = $values[$nid];
+      if (isset($nid_value)) {
+        $row = db_fetch_array(db_query('SELECT nid, vid FROM {node} WHERE nid = "%d" LIMIT 1', $key_value));
+        if (!empty($row)) {
+          $values['nid'] = $row['nid'];
+          $values['vid'] = $row['vid'];
+        }
+      }
+    }
+
+    if (module_exists('locale') && isset($values['language'])) {
+      $language = $values['language'];
+      foreach(language_list() as $code => $data) {
+        if ($language == $data->name || $language == $data->native) {
+          $values['language'] = $code;
+          break;
+        }
+        elseif ($value == t($data->name)) {
+          $values['language'] = $code;
+          break;
+        }
+      }
+    }
   }
 }
-

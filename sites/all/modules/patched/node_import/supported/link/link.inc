@@ -27,7 +27,9 @@ function link_node_import_fields($type) {
 
         case 'url':
           $fields[$cck_fieldname] = node_import_cck_field_defaults($fieldinfo);
-          $fields[$cck_fieldname]['title'] = $fieldinfo['widget']['label'] .' - '. t('URL');
+          // hack -- drop the " - URL" part of the field label to match the CSV field name and make life easier for users -- mvc
+          //$fields[$cck_fieldname]['title'] = $fieldinfo['widget']['label'] .' - '. t('URL');
+          $fields[$cck_fieldname]['title'] = $fieldinfo['widget']['label'];
           $fields[$cck_fieldname]['map_required'] = ($fieldinfo['url'] === 'optional' ? $fieldinfo['required'] : FALSE); //TODO
           break;
 

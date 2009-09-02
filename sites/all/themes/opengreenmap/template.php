@@ -156,7 +156,6 @@ function STARTERKIT_preprocess_block(&$vars, $hook) {
 }
 // */
 
-drupal_add_js(path_to_theme() .'/jquery.hoverIntent.minified.js');
 drupal_add_js(path_to_theme() .'/superfish.js');
 drupal_add_js(path_to_theme() .'/custom_user_menu.js');
 

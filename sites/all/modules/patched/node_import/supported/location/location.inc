@@ -29,6 +29,9 @@ function location_node_import_fields($type) {
       );
 
       foreach (location_field_names() as $fieldname => $fieldtitle) {
+        if ($fieldname == 'country' || $fieldname == 'locpick') {
+          continue;
+        }
         if ($settings['form']['fields'][$fieldname]['collect']) {
           $fields['location:'. $fieldname] = array(
             'title' => $fieldtitle,
@@ -71,6 +74,9 @@ function location_node_import_defaults($type, $defaults, $fields, $map) {
 
     if (isset($settings['multiple']['max']) && $settings['multiple']['max'] > 0) {
       foreach (location_field_names() as $fieldname => $fieldtitle) {
+        if ($fieldname == 'country' || $fieldname == 'locpick') {
+          continue;
+        }
         if ($settings['form']['fields'][$fieldname]['collect']) {
           $defaults['location:'. $fieldname] = isset($defaults['location:'. $fieldname]) ? $defaults['location:'. $fieldname] : '';
           $form['location:'. $fieldname] = location_invoke_locationapi($defaults['location:'. $fieldname], 'field_expand', $fieldname, $settings['form']['fields'][$fieldname]['collect'], array());
