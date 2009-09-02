@@ -22,6 +22,11 @@ function text_node_import_fields($type) {
         case 'value':
           $fields[$cck_fieldname]['title'] = $fieldinfo['widget']['label'];
           $fields[$cck_fieldname]['map_required'] = $fieldinfo['required'];
+
+          // hack to avoid making user select this field mapping manually -- mvc
+          if ($fields[$cck_fieldname]['title'] == 'Are You Directly Involved in the Site?') {
+            $fields[$cck_fieldname]['title'] = 'Contributor Directly Involved In Site';
+          }
           break;
 
         case 'format':

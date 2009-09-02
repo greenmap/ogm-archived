@@ -13,7 +13,8 @@ function optionwidgets_node_import_values_alter(&$values, $type, $defaults, $opt
   //TODO: is this all that is needed? Is the column always called 'value'? NEEDS MORE TESTING.
   foreach ($fields as $fieldname => $fieldinfo) {
     if (isset($fieldinfo['cck:fieldname'])) {
-      if ($fieldinfo['cck:fieldinfo']['widget']['type'] == 'optionwidgets_buttons') {
+      $option_type = array('optionwidgets_select', 'optionwidgets_onoff', 'optionwidgets_buttons');
+      if (in_array($fieldinfo['cck:fieldinfo']['widget']['type'],$option_type)) {
         // Instead of
         //
         //   fieldname => array(

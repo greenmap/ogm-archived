@@ -311,7 +311,9 @@ function taxonomy_node_import_fields($type) {
         'vocabulary' => $vocabulary,
         'has_multiple' => $vocabulary->multiple || $vocabulary->tags,
         'has_hierarchy' => $vocabulary->hierarchy > 0,
-        'multiple_separator' => $vocabulary->tags ? ',' : '||',
+        // always use , as default separator -- mvc
+        //'multiple_separator' => $vocabulary->tags ? ',' : '||',
+        'multiple_separator' => ',',
       );
     }
   }

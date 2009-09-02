@@ -87,14 +87,21 @@ function og_node_import_fields($type) {
       }
     }
 
+    $groups = _node_import_og_groups();
     if (og_is_group_post_type($node_type)) {
       $fields['og_groups'] = array(
-        'title' => t('Audience'),
+        'title' => t('Map IDs'),
         'group' => t('Organic group'),
         'input_format' => 'nodereference',
         'has_multiple' => TRUE,
-        'is_checkboxes' => TRUE,
-        'allowed_values' => _node_import_og_groups(),
+        'is_checkboxes' => count($groups, COUNT_RECURSIVE) > 20 ? FALSE : TRUE,
+        'allowed_values' => $groups,
+        'multiple_separator' => ',',
+      );
+      $fields['og_public'] = array(
+        'title' => t('Public Site'),
+        'group' => t('Organic group'),
+        'input_format' => 'boolean',
       );
     }
   }
@@ -203,12 +210,19 @@ function og_node_import_defaults($type, $defaults, $fields, $map) {
     if (og_is_group_post_type($node_type)) {
       $groups = _node_import_og_groups();
       if (!empty($groups)) {
+        $groups[''] = t('- None -');
         $form['og_groups'] = array(
-          '#title' => t('Audience'),
+          '#title' => t('Map IDs'),
           '#type' => count($groups, COUNT_RECURSIVE) > 20 ? 'select' : 'checkboxes',
           '#options' => $groups,
-          '#multiple' => TRUE,
-          '#default_value' => isset($defaults['og_groups']) ? $defaults['og_groups'] : array(),
+          '#multiple' => FALSE,
+          '#default_value' => isset($defaults['og_groups']) ? $defaults['og_groups'] : '',
+        );
+        $form['og_public'] = array(
+          '#type' => 'radios',
+          '#title' => t('Public Site'),
+          '#options' => array(0 => t('No'), 1 => t('Yes')),
+          '#default_value' => isset($defaults['og_public']) ? $defaults['og_public'] : TRUE,
         );
       }
     }
@@ -217,3 +231,30 @@ function og_node_import_defaults($type, $defaults, $fields, $map) {
   return $form;
 }
 
+/**
+ * Implementation of hook_node_import_values_alter().
+ */
+function og_node_import_values_alter(&$values, $type, $defaults, $options, $fields, $preview) {
+  if (($node_type = node_import_type_is_node($type)) !== FALSE) {
+    foreach ($fields as $fieldname => $fieldinfo) {
+      if (strpos($fieldname, 'og_groups') === 0) {
+        if (count(_node_import_og_groups(), COUNT_RECURSIVE) > 20) {
+          // the user has more than 20 groups to choose from, and was shown a
+          // dropdown select input
+          $new_values = array();
+          foreach ($values[$fieldname] as $index => $value) {
+            $new_values[$value] = $value;
+          }
+          $values[$fieldname] = $new_values;
+        }
+        else {
+          // the user has fewer than 20 groups to choose from, and was shown a
+          // list of checkboxes
+          foreach ($values[$fieldname] as $og_group => $value) {
+            $values[$fieldname][$og_group] = $og_group;
+          }
+        }
+      }
+    }
+  }
+}
