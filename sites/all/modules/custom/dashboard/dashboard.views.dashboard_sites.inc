@@ -463,7 +463,7 @@ function dashboard_sites_views_default_views() {
       ),
     ),
     'name' => array(
-      'label' => 'Added By',
+      'label' => 'Authored By',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -579,7 +579,7 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'tid' => array(
-      'label' => 'Primary Icon',
+      'label' => 'Primary Term',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -620,7 +620,7 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'tid_1' => array(
-      'label' => 'All Icons',
+      'label' => 'Icon',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -661,7 +661,7 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'tid_2' => array(
-      'label' => 'All Tags',
+      'label' => 'Tags',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -931,7 +931,7 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'street' => array(
-      'label' => 'Street Address',
+      'label' => 'Street location',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -960,7 +960,7 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'street_1' => array(
-      'label' => 'Additional Street Address',
+      'label' => 'Additional',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -1188,7 +1188,7 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'group_nids' => array(
-      'label' => 'Map Ids',
+      'label' => 'Map IDs',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -1286,7 +1286,7 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'field_name_involved_value' => array(
-      'label' => 'Contributor Name (if involved in site)',
+      'label' => 'Contributor Name',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -1323,7 +1323,7 @@ function dashboard_sites_views_default_views() {
       'relationship' => 'none',
     ),
     'field_email_involved_email' => array(
-      'label' => 'Contributor Email (if involved in site)',
+      'label' => 'Contributor Email',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
@@ -1537,6 +1537,18 @@ function dashboard_sites_views_default_views() {
       'id' => 'status',
       'table' => 'node',
       'field' => 'status',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+  ));
+  $handler->override_option('sorts', array(
+    'nid' => array(
+      'order' => 'ASC',
+      'id' => 'nid',
+      'table' => 'node',
+      'field' => 'nid',
       'override' => array(
         'button' => 'Use default',
       ),
