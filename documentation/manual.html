@@ -167,12 +167,13 @@ Create a translation of the home page by going to the home page, clicking the
 'translate' tab, clicking 'add translation' beside the new language, setting
 the Title field to the translation of 'Open Green Map' in the new language and
 the URL path setting to the translation of 'home' or 'homepage' in the new
-language.  (Please note that for now all page aliases have to be distinct,
-even between languages, so you can't use a path alias already used for another
-language.  For more information, see
-<a href="https://bugs.openflows.com/view.php?id=1407">bug #1407</a>. You
+language.  (The bug which required all page aliases have to be distinct, even
+between languages, has been fixed.  For more information, see
+<a href="https://bugs.openflows.com/view.php?id=1407">issue #1407</a>. You
 should also only use Latin characters, without accents, so that the site will
-be compatible with all web browsers and operating systems.)
+be compatible with older web browsers and operating systems.)  You will need
+to set this path to be the default homepage for the site for the new language
+after the language is enabled (see below).
 <li>
 Edit <tt>sites/all/themes/opengreenmap/style.css</tt> to include the 
 id of the div which contains the new translation of the homepage in the list
@@ -192,6 +193,12 @@ requires some minor programming in sites/all/themes/opengreenmap/page.tpl.php).
 <li>
 Set the new language to be enabled at
 <a href="http://www.opengreenmap.org/admin/settings/language">http://www.opengreenmap.org/admin/settings/language</a>
+<li>
+Update the site name, footer message, anonymous user name, and default front
+page by going to
+<a href="http://www.opengreenmap.org/admin/settings/site-information">http://www.opengreenmap.org/admin/settings/site-information</a> and switching to the new language.
+Update the site contact form description by going to
+<a href="http://www.opengreenmap.org/admin/build/contact/settings">http://www.opengreenmap.org/admin/build/contact/settings</a> and switching to the new language.
 <li>
 Use the translation tools described above to translate the remaining text in
 the site.
