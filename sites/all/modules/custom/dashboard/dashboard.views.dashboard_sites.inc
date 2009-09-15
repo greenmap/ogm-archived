@@ -196,6 +196,24 @@ function dashboard_sites_views_default_views() {
       'field' => 'status_extra',
       'relationship' => 'none',
     ),
+    'field_awaiting_approval_value' => array(
+      'operator' => 'empty',
+      'value' => array(
+        'value' => '',
+        'min' => '',
+        'max' => '',
+      ),
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'field_awaiting_approval_value',
+      'table' => 'node_data_field_awaiting_approval',
+      'field' => 'field_awaiting_approval_value',
+      'relationship' => 'none',
+    ),
   ));
   $handler->override_option('access', array(
     'type' => 'none',
@@ -267,48 +285,57 @@ function dashboard_sites_views_default_views() {
   $handler->override_option('block_description', 'Dashboard: published sites');
   $handler->override_option('block_caching', -1);
   $handler = $view->new_display('page', 'Suggested (page)', 'page_2');
-  $handler->override_option('fields', array(
-    'title' => array(
-      'label' => 'Site',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'strip_tags' => 0,
-        'html' => 0,
+  $handler->override_option('filters', array(
+    'type' => array(
+      'operator' => 'in',
+      'value' => array(
+        'green_site' => 'green_site',
       ),
-      'link_to_node' => 1,
-      'exclude' => 0,
-      'id' => 'title',
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'type',
       'table' => 'node',
-      'field' => 'title',
+      'field' => 'type',
       'relationship' => 'none',
     ),
-    'name' => array(
-      'label' => 'Added By',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'utton' => 'Use default',
+    'status_extra' => array(
+      'operator' => '=',
+      'value' => '',
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
       ),
+      'id' => 'status_extra',
+      'table' => 'node',
+      'field' => 'status_extra',
       'relationship' => 'none',
+    ),
+    'field_awaiting_approval_value' => array(
+      'operator' => '=',
+      'value' => array(
+        'value' => '1',
+        'min' => '',
+        'max' => '',
+      ),
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'field_awaiting_approval_value',
+      'table' => 'node_data_field_awaiting_approval',
+      'field' => 'field_awaiting_approval_value',
+      'relationship' => 'none',
+      'override' => array(
+        'button' => 'Use default',
+      ),
     ),
   ));
   $handler->override_option('title', 'Suggested Green Sites');
@@ -362,6 +389,23 @@ function dashboard_sites_views_default_views() {
       'override' => array(
         'button' => 'Use default',
       ),
+    ),
+    'status_extra' => array(
+      'operator' => '=',
+      'value' => '',
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'status_extra',
+      'table' => 'node',
+      'field' => 'status_extra',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
     ),
     'field_awaiting_approval_value' => array(
       'operator' => 'empty',
