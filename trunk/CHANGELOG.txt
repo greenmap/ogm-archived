@@ -1,5 +1,7 @@
 LOCAL CHANGES
 -------------
+- Patched to incorporate security changes in 6.14 release, see SA-CORE-2009-008 -- mvc
+- Patched to incorporate security changes in 6.13 release, see SA-CORE-2009-007 -- mvc
 - Patched path.module as per http://drupal.org/node/269877 comment #85 to fix
   issue #1407 -- mvc
 - Patched to incorporate security changes in 6.12 release, see SA-CORE-2009-006 -- mvc
