@@ -11,6 +11,18 @@
 	margin-right: 25px;
 	text-align: right;
 }
+div#bubble_small .maximize-link {
+  border: 0px none;
+  margin: 0px;
+  padding: 0px;
+  position: absolute;
+  right: 30px;
+  top: -8px;
+  font-family: Verdana, Arial, Helvetica, sans-serif; /* GH: use different font? */
+  font-size: 0.8em;
+  text-align: right;
+}
+
 #bubble_small_edit {
 	/* edit */
 	font-family: Verdana, Arial, Helvetica, sans-serif;	/* GH: use different font? */

@@ -51,7 +51,9 @@ foreach ($node->taxonomy as $tid => $tax) {
 if ($teaser) {
 ?>
   <div id="bubble_small">
-
+    <div class="maximize-link">
+      <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()"><?php print t('more info'); ?></a>
+    </div>
     <!--
     <div id="bubble_small_more">
       <a href="#" onclick="javascript:gotoTab(1);">
@@ -78,7 +80,8 @@ if ($teaser) {
     </div>
 
     <div class="bubble_small_title <?php print $genre_name_lc; ?>">
-      <a href="#" rel='1' class='maximize'>
+<!--       <a href="#" rel='1' class='maximize'> -->
+      <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()">
         <?php print $title; ?>
       </a>
     </div>
