@@ -43,6 +43,15 @@ function dashboard_help($path, $arg){
 } // function dashboard
 
 /**
+* hook_perm
+*/
+function dashboard_perm() {
+  return array(
+    'import and export sites'
+  );
+}
+
+/**
  *  implementation of hook_menu
  */
 function dashboard_menu(){
@@ -90,7 +99,7 @@ function dashboard_menu(){
   );
   $items['node/%dashboard_map/export'] = array(
     'title' => 'Import/Export',
-    'access callback' => 'dashboard_access_admin_callback',
+    'access callback' => 'dashboard_access_admin_callback_export',
     'access arguments' => array(1),
     'page callback' => 'dashboard_import_export',
     'page arguments'=> array(1),
@@ -169,6 +178,8 @@ function dashboard_import_export($nid) {
   $content .= "<ul><li>".
     t('<a href="@csv_import_link">Import Map Data from <abbr title="Comma Separated Variable">CSV</abbr> file</a>', array('@csv_import_link' => url('admin/content/node_import')))
     ."</li></ul>";
+  $content .= "<p><strong>". t("Character Encoding Notes") ."</strong></p>";
+  $content .= "<p>". t('Text in these files is encoding using the Unicode character set UTF-8.  In particular, you may need to set your spreadsheet or GIS software to open the <abbr title="Comma Separated Variable">CSV</abbr> file using UTF-8.  Please make sure the CSV file you upload for import also uses the character set UTF-8.') ."</p>";
 
   return $content;
 }
@@ -243,7 +254,14 @@ function dashboard_members($gid){
 /*
  * TODO: check these for correctness
  */
-function dashboard_access_admin_callback($group_nid = 0) {
+function dashboard_access_admin_callback_export($group_nid = 0) {
+  return dashboard_access_admin_callback($group_nid, TRUE);
+}
+
+/*
+ * TODO: check these for correctness
+ */
+function dashboard_access_admin_callback($group_nid = 0, $import_export = FALSE) {
   global $user;
   if ( !$user->uid ) {
     return FALSE;
@@ -252,6 +270,9 @@ function dashboard_access_admin_callback($group_nid = 0) {
     return FALSE;
   }
   else {
+    if ($import_export && !user_access('import and export sites')) {
+      return FALSE;
+    }
     $node = node_load($group_nid);
     return og_is_group_admin($node);
   }
