@@ -59,7 +59,7 @@ if ($_GET['isSimple']) {
         <div id="logo-title">
         <?php opengreenmap_custom_login();?>
           <?php if ($logo): ?>
-            <div id="logo"><a href="<?php print url('<front>'); ?>" title="<?php print t('Home'); ?>" rel="home"><img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" id="logo-image" /></a></div>
+            <div id="logo"><a href="/home" title="<?php print t('Home'); ?>" rel="home"><img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" id="logo-image" /></a></div>
           <?php endif; ?>
 
           <?php if ($site_name): ?>

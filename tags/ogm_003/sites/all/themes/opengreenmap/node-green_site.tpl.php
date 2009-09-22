@@ -51,7 +51,9 @@ foreach ($node->taxonomy as $tid => $tax) {
 if ($teaser) {
 ?>
   <div id="bubble_small">
-
+    <div class="maximize-link">
+      <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()">more info</a>
+    </div>
     <!--
     <div id="bubble_small_more">
       <a href="#" onclick="javascript:gotoTab(1);">
@@ -62,10 +64,9 @@ if ($teaser) {
 
     <?php
     if(node_access('update',$node) == true){
-      echo '<div id="bubble_small_edit"><a href="'. url('node/'.$node->nid."/edit") .'" target="_parent">'.t('edit').'</a></div>';
+      print '<div id="bubble_small_edit"><a href="'. url('node/'.$node->nid."/edit") .'" target="_parent">'.t('edit').'</a></div>';
     }
     ?>
-
     <div id="bubble_icons">
       <?php if ($primary_icon) : ?>
         <div id="bubble_icon_primary">
@@ -78,7 +79,8 @@ if ($teaser) {
     </div>
 
     <div class="bubble_small_title <?php print $genre_name_lc; ?>">
-      <a href="#" rel='1' class='maximize'>
+<!--       <a href="#" rel='1' class='maximize'> -->
+      <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()">
         <?php print $title; ?>
       </a>
     </div>
