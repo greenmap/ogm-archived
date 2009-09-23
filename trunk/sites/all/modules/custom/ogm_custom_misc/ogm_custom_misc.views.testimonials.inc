@@ -16,6 +16,13 @@ function testimonials_views_default_views() {
   $view->api_version = 2;
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
   $handler = $view->new_display('default', 'Defaults', 'default');
+  $handler->override_option('fields', array(
+    'title' => array(
+      'id' => 'title',
+      'table' => 'node',
+      'field' => 'title',
+    ),
+  ));
   $handler->override_option('sorts', array(
     'random' => array(
       'order' => 'ASC',
@@ -60,9 +67,12 @@ function testimonials_views_default_views() {
   $handler->override_option('access', array(
     'type' => 'none',
   ));
+  $handler->override_option('cache', array(
+    'type' => 'none',
+  ));
   $handler->override_option('title', 'Testimonials');
   $handler->override_option('header', 'Articles about <strong>Green Map System</strong> are linked <a href="http://www.greenmap.org/greenhouse/en/news/articles">here</a>, find some quotes below. <br>
-  You can download the original postings <a href="http://greenmap.org/greenhouse/files/Testimonials.doc">here</a>.');
+    You can download the original postings <a href="http://greenmap.org/greenhouse/files/Testimonials.doc">here</a>.');
   $handler->override_option('header_format', '1');
   $handler->override_option('header_empty', 0);
   $handler->override_option('empty', 'There are currently no testimonials');
@@ -92,9 +102,69 @@ function testimonials_views_default_views() {
     'weight' => 0,
   ));
   $handler = $view->new_display('block', 'Block', 'block_1');
+  $handler->override_option('fields', array(
+    'teaser' => array(
+      'label' => '',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
+      ),
+      'exclude' => 0,
+      'id' => 'teaser',
+      'table' => 'node_revisions',
+      'field' => 'teaser',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+    'title' => array(
+      'label' => '',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
+      ),
+      'link_to_node' => 0,
+      'exclude' => 0,
+      'id' => 'title',
+      'table' => 'node',
+      'field' => 'title',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+  ));
   $handler->override_option('header', '');
   $handler->override_option('items_per_page', 1);
+  $handler->override_option('use_pager', '0');
   $handler->override_option('use_more', 1);
+  $handler->override_option('row_plugin', 'fields');
+  $handler->override_option('row_options', array());
   $handler->override_option('block_description', 'Testimonials');
   $handler->override_option('block_caching', -1);
   $views[$view->name] = $view;
