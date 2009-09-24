@@ -39,6 +39,7 @@ foreach ($themed_rows as $count => $row) {
     <Icon>
       <href>'.$url.'</href>
     </Icon>
+    <hotSpot x="3" y="1" xunits="pixels" yunits="pixels" />
   </IconStyle>
 </Style>
 ';
