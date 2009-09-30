@@ -214,7 +214,7 @@ if ($_GET['isSimple']) {
       ?>
       <div id="donte-button"><a href="<?php print $donate_link ?>"><img src="<?php print $donate_image; ?>" alt="<?php print t('Donate to GreenMaps') ?>"></a></div>
       <div id="closure-blocks"><?php print $closure_region; ?></div>
-      <?php if ($search_box): ?>
+      <?php if ( FALSE ): // was if ( $search_box ), but search box needs to be disabled due to redundancy ?>
         <div id="search-box">
           <?php print $search_box; ?>
         </div> <!-- /#search-box -->
