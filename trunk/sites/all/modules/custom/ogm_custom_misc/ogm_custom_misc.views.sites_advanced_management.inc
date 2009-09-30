@@ -377,6 +377,9 @@ function sites_advanced_management_views_default_views() {
       '5' => 5,
     ),
   ));
+  $handler->override_option('cache', array(
+    'type' => 'none',
+  ));
   $handler->override_option('title', 'Advanced Mangagement');
   $handler->override_option('empty', 'No sites returned by the filters you\'ve chosen');
   $handler->override_option('empty_format', '1');
@@ -398,18 +401,18 @@ function sites_advanced_management_views_default_views() {
     ),
     'info' => array(
       'title' => array(
-        'sortable' => 0,
+        'sortable' => 1,
         'separator' => '',
       ),
       'tid' => array(
         'separator' => '',
       ),
       'created' => array(
-        'sortable' => 0,
+        'sortable' => 1,
         'separator' => '',
       ),
       'changed' => array(
-        'sortable' => 0,
+        'sortable' => 1,
         'separator' => '',
       ),
       'view_node' => array(
