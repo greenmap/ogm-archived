@@ -70,7 +70,14 @@ function gmap_marker_gmap($op, $map=null) {
         drupal_add_js($path . '/key.js');
         // break;
       }
-      if((arg(0) == 'node' && is_numeric(arg(1))) || (arg(0) == 'greenmap') || (arg(0) == 'greenmap_widget') ) {
+      if (
+           ((arg(0) == 'node' && is_numeric(arg(1))) ||
+            (arg(0) == 'greenmap') ||
+            (arg(0) == 'greenmap_widget'))
+          // don't show icons if we're editing a node
+           && ('edit' != arg(2))
+         )
+      {
         $icons = '';
         $icons .= "function getIcon(img){\n";
         $icons .= "  var ico = new GIcon();\n";
