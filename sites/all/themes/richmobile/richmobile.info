@@ -2,36 +2,38 @@
 
 
   ; The name and description of the theme used on the admin/build/themes page.
-name        = OGM Mobile
-description = Mobile theme for the Open Green Map.
+name        = OGM Rich Mobile
+description = Mobile theme for iPhone, Android, Pre, and other smart phones for the Open Green Map.
 
   ; The screenshot used on the admin/build/themes page.
 screenshot = screenshot.png
 
   ; "core" specifies the version of Drupal that this theme is compatible with.
-  ; "base theme" specifies that this is a theme that uses the "zen" theme as its
+  ; "base theme" specifies that this is a theme that uses the "mobile" theme as its
   ; base theme. Its unlikely you will ever need to change these, but they are
   ; required fields for a Zen sub-theme. The "engine" field is not used in a
   ; sub-theme since the engine is inherited from its base theme.
 core       = 6.x
-base theme = zen
-
+base theme = mobile
   ; This section adds CSS files to your theme. The media type is specified in
   ; the brackets. Typical CSS media types include "all", "screen", "print", and
   ; "handheld". See http://www.w3.org/TR/CSS21/media.html#media-types for a full
   ; list of stylesheet media types in CSS 2.1.
   ;
-  ; You can also override any of Zen's stylesheets or any module's stylesheets,
+  ; You can also override any base theme stylesheets or any module's stylesheets,
   ; an /extremely/ useful feature. See the excellent Drupal 6 Theme Guide at
   ; http://drupal.org/node/171209 for more details.
- ; stylesheets[all][]   = layout.css
-; stylesheets[all][]   = html-elements.css
-; stylesheets[all][] = tabs.css
-; stylesheets[all][] = messages.css
-; stylesheets[all][] = block-editing.css
-; stylesheets[all][] = wireframes.css
-; stylesheets[all][]   = mobile.css
-; stylesheets[print][] = print.css
+; attempt to wipe out all other css
+stylesheets[all] = 
+; add our mobile css
+stylesheets[all][]   = richmobile.css
+  ; stylesheets[all][]   = html-elements.css
+  ; stylesheets[all][] = tabs.css
+  ; stylesheets[all][] = messages.css
+  ; stylesheets[all][] = block-editing.css
+  ; stylesheets[all][] = wireframes.css
+; attempt to destroy (unnecessary) default print css
+stylesheets[print] = 
   ; To prevent stylesheets of a base theme or of a module from being included in
   ; our sub-theme, we specify it in our .info file (and we don't need to have a
   ; stylesheet in our sub-theme with that name.) For example, we prevent the
@@ -77,20 +79,3 @@ features[] = search
 features[] = favicon
 features[] = primary_links
 features[] = secondary_links
-
-  ; Set the default settings to be used in theme-settings.php
-settings[zen_block_editing]        = 1
-settings[zen_breadcrumb]           = yes
-settings[zen_breadcrumb_separator] = ' › '
-settings[zen_breadcrumb_home]      = 1
-settings[zen_breadcrumb_trailing]  = 1
-settings[zen_breadcrumb_title]     = 0
-settings[zen_rebuild_registry]     = 1
-settings[zen_wireframes]           = 0
-
-; Information added by drupal.org packaging script on 2009-02-13
-version = "6.x-1.0"
-core = "6.x"
-project = "zen"
-datestamp = "1234555897"
-
