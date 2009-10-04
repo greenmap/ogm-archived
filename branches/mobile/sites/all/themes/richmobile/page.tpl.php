@@ -75,6 +75,7 @@
  *
  * @see template_preprocess()
  * @see template_preprocess_page()
+ * Use the above functions in template.php to add make additional variables available to this theme
  */
 ?>
 <!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd"> 
@@ -83,18 +84,13 @@
 <head>
   <title><?php print $head_title; ?></title>
   <?php print $head; ?>
-  <?php // print $styles; // suppressing Drupal's default styles because this is the minimal version of the mobile theme with no css ?>
-  <?php // print $scripts; // suppressing Drupal's default js because this is the minimal version of the mobile theme ?>
+  <?php print $styles; // add new styles in richmobile.info ?>
+  <?php print $scripts; // add new scripts in richmobile.info ?>
   <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
-  <style>
-  body {
-    -webkit-text-size-adjust: none;
-    min-height: 402px;
-  }
-  </style>
+
 
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
-	<script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
+	<script src="<?php print $base_path ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
   
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
