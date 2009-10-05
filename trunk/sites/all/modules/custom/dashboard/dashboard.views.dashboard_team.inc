@@ -9,7 +9,7 @@ function dashboard_views_team_default_views() {
   $view = new view;
   $view->name = 'dashboard_team';
   $view->description = 'Member listing';
-  $view->tag = 'og';
+  $view->tag = 'dashboard';
   $view->view_php = '';
   $view->base_table = 'users';
   $view->is_cacheable = FALSE;
@@ -171,9 +171,6 @@ function dashboard_views_team_default_views() {
   ));
   $handler->override_option('arguments', array(
     'nid' => array(
-      'id' => 'nid',
-      'table' => 'og_uid',
-      'field' => 'nid',
       'default_action' => 'not found',
       'style_plugin' => 'default_summary',
       'style_options' => array(
@@ -183,24 +180,39 @@ function dashboard_views_team_default_views() {
       ),
       'wildcard' => 'all',
       'wildcard_substitution' => 'All',
-      'title' => 'Members of %1',
+      'title' => '%1 Team',
+      'breadcrumb' => '',
       'default_argument_type' => 'fixed',
       'default_argument' => '',
       'validate_type' => 'og_group_types',
       'validate_fail' => 'not found',
       'break_phrase' => 0,
+      'not' => 0,
+      'id' => 'nid',
+      'table' => 'og_uid',
+      'field' => 'nid',
       'add_table' => 0,
       'relationship' => 'none',
       'default_argument_fixed' => '',
       'default_argument_php' => '',
       'validate_argument_node_type' => array(
-        'blog' => 0,
         'poll' => 0,
-        'book' => 0,
-        'group1' => 0,
-        'group2' => 0,
+        'faq' => 0,
+        'admin_message' => 0,
+        'document' => 0,
+        'green_map' => 0,
+        'green_site' => 0,
+        'impact' => 0,
+        'mapmaker_profile' => 0,
+        'mass_contact' => 0,
         'page' => 0,
+        'photo' => 0,
+        'poly' => 0,
         'story' => 0,
+        'support_forum_issue' => 0,
+        'testimonial' => 0,
+        'transport_direction' => 0,
+        'video' => 0,
       ),
       'validate_argument_php' => '',
       'require_value' => 0,
@@ -209,14 +221,35 @@ function dashboard_views_team_default_views() {
       'validate_argument_node_access' => 0,
       'validate_argument_nid_type' => 'nid',
       'validate_argument_vocabulary' => array(
-        '1' => 0,
         '2' => 0,
         '3' => 0,
+        '1' => 0,
+        '5' => 0,
+        '6' => 0,
         '4' => 0,
       ),
       'validate_argument_type' => 'tid',
-      'not' => 0,
       'validate_argument_is_member' => 1,
+      'validate_user_argument_type' => 'uid',
+      'validate_user_roles' => array(
+        '2' => 0,
+        '3' => 0,
+        '6' => 0,
+        '9' => 0,
+        '4' => 0,
+        '5' => 0,
+        '7' => 0,
+        '8' => 0,
+      ),
+      'default_options_div_prefix' => '',
+      'validate_argument_transform' => 0,
+      'validate_user_restrict_roles' => 0,
+      'validate_argument_node_flag_name' => '*relationship*',
+      'validate_argument_node_flag_test' => 'flaggable',
+      'validate_argument_node_flag_id_type' => 'id',
+      'validate_argument_user_flag_name' => '*relationship*',
+      'validate_argument_user_flag_test' => 'flaggable',
+      'validate_argument_user_flag_id_type' => 'id',
     ),
   ));
   $handler->override_option('filters', array(
@@ -290,10 +323,10 @@ function dashboard_views_team_default_views() {
   $handler = $view->new_display('page', 'Page', 'page');
   $handler->override_option('path', 'node/%/team_members');
   $handler->override_option('menu', array(
-    'type' => 'default tab',
-    'title' => 'List',
+    'type' => 'none',
+    'title' => 'Map Team',
     'description' => '',
-    'weight' => '0',
+    'weight' => '10',
     'name' => 'navigation',
   ));
   $handler->override_option('tab_options', array(
