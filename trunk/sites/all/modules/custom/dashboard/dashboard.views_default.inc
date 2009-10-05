@@ -13,6 +13,8 @@ function dashboard_views_default_views() {
         'dashboard_multimedia_views_default_views',
       'dashboard.views.dashboard_photos.inc' =>
         'dashboard_photos_views_default_views',
+      'dashboard.views.dashboard_team.inc' =>
+        'dashboard_views_team_default_views',
       );
 
   $views = array();

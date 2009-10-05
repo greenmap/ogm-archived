@@ -248,7 +248,7 @@ function dashboard_leadmapmaker($nid){
  * Redirect admins to the member admin page
  */
 function dashboard_members($gid){
-  return views_embed_view('og_members', 'page', $gid);
+  return views_embed_view('dashboard_team', 'page', $gid);
 }
 
 /*
