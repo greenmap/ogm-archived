@@ -22,7 +22,7 @@ function ogm_mobile_menu() {
     'page callback' => 'ogm_mobile_geocode',
   );
   $items['mobile'] = array(
-    'title' => 'Mobile',
+    'title' => "What's Green Nearby?",
     'description' => 'Open Green Map for mobile',
     'access arguments' => array('access content'),
     'page callback' => 'ogm_mobile_home',
