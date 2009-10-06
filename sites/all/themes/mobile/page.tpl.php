@@ -94,41 +94,70 @@
     margin: 0;
   }
   .masthead{
-    color:white;
-  	background-color: #8cc63f;
+  	background-color: #99cc33;
   	padding: 2px;
   }
+  
+  .view-proximity{
+    color: #666;
+  }
+  .view-proximity a{
+    text-decoration: none;
+  }
+  
+  .view-proximity li{
+  list-style-type: none;
+  }
+
+  .pager{
+  width:75px; 
+  }
+  
+  #logo-image{
+  padding-top: 6px;
+  }
+  
   #content-area{
   	padding:2px;
   }
+  
   h1{
-  	margin-top:5px;
-  	margin-bottom:5px;
+  	font-size: 22px;
+  	color:  #666;
+  	margin-top: 5px;
+  	margin-bottom: 5px;
   }
+  
+  #footer{
+  	padding-top:120px;
+  }
+
   
   </style>
 
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
-	<script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
+  <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
   
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
 
- 	<div class="masthead"><strong><?php print $site_name; ?></strong></div>     
-     <?php print $breadcrumb; ?>        
+ <?php if ($logo): ?>
+            <div class="masthead"><center><img src="<?php print $logo; ?>" alt="<?php print t('Open Green Map'); ?>" id="logo-image" /></center></div>
+          <?php endif; ?>
+    
+    <?php print $breadcrumb; ?>        
      <div id="content-area">
-              <h1 class="title"><?php print $title; ?></h1>
+            <h1 class="title"><?php print $title; ?></h1>
 		    <?php print $messages; ?>      
     		<?php print $pre_content; ?>        
             <?php print $content; ?>
-          
+           
         <div id="footer"><small><?php if ($footer_message): ?>
-          <?php print $footer_message; ?></small></div>
+          &copy; Green Map&reg; System, 2009 </small></div>
         <?php endif; ?>
-
-        <?php print $footer; ?>          
         </div>
-     </div>
-  <?php print $closure; ?>
+    </div>
+   <?php print $closure; ?>
+   
 </body>
 </html>
