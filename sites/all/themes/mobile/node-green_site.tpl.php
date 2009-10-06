@@ -90,33 +90,17 @@ if ($node->field_details[0]['value']) {
   $description_short = truncate_utf8($description_full, 200, TRUE);
   $description = $description_short . ' ' . t('read more'); // @todo - link all this to another page with full details and other misc data including accessibility icons
 }
-
-// comment - Take either the most recent comment, or the most recent impact
-// @todo - this is horrible - embed a view instead
-$comment = '';
-$comment = comment_render($node->nid);
-if ($comment) {
-  $comment = truncate_utf8($comment, 200) . ' ' . t('read more');  // @todo link this to another page with all comments
-} else {
-  $comment = t('Be the first to comment'); // @todo link
-}
-
-// multimedia - Take the most recent photo, or video
-$multimedia = '';
-if ($node->field_image[0]['view']) {
-  $multimedia = theme('emimage_image', 'field_image', $node->field_image[0], 'image_thumbnail', $node, $node->field_image[0]['value'], '', '', $title = '', $link = NULL);
-}
-//if (!$multimedia) { $multimedia = $node->field_video[0]['view']; }
 ?>
-<div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?>"><div class="node-inner">
+
 
   <div class="title-icons">
+    <h1 class="title">
+      <?php print $title; ?>
+    </h1>  
     <div class="icons">
       <?php print $primary_icon . $secondary_icons; ?>
     </div>
-    <h2 class="title">
-      <?php print $title; ?>
-    </h2>
+
   </div>
   
   <div class="details">
@@ -129,23 +113,10 @@ if ($node->field_image[0]['view']) {
       </span>
     </div>
     <div class="description">
-      <?php print $description; ?>
+      <?php print $description_full; ?>
     </div>
   </div>
   
-  <div class="openviews">
-    <h3><?php print t('Open Views'); ?></h3>
-    <div>
-      <div class="rating-comment">
-        <?php print fivestar_static('node', $node->nid,'vote', $node->type); // @todo - add back the necessary css ?>
-        <?php print $comment; ?>
-      </div>
-      <div class="multimedia">
-        <?php print $multimedia; ?>
-      </div>
-    </div>
-  </div>
 
   <?php print $links; ?>
 
-</div></div> <!-- /node-inner, /node -->
