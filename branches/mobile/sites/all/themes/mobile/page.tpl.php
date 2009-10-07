@@ -108,6 +108,14 @@
   .view-proximity li{
   list-style-type: none;
   }
+  
+  .forward_links {
+  display: none;
+  }
+  
+  .box-inner {
+  display: none;
+  }
 
   .pager{
   width:75px; 
@@ -122,14 +130,22 @@
   }
   
   h1{
-  	font-size: 22px;
+  	font-size: 1.5em;
+  	color:  #666;
+  	margin-top: 5px;
+  	margin-bottom: 5px;
+  }
+  
+    h2{
+  	font-size: 1.5em;
   	color:  #666;
   	margin-top: 5px;
   	margin-bottom: 5px;
   }
   
   #footer{
-  	padding-top:120px;
+  	padding-top:70px;
+  	font-size: .75em;
   }
 
   
@@ -152,8 +168,8 @@
     		<?php print $pre_content; ?>        
             <?php print $content; ?>
            
-        <div id="footer"><small><?php if ($footer_message): ?>
-          &copy; Green Map&reg; System, 2009 </small></div>
+        <div id="footer"><?php if ($footer_message): ?>
+          &copy; Green Map&reg; System, 2009</div>
         <?php endif; ?>
         </div>
     </div>
