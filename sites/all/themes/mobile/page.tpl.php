@@ -95,7 +95,7 @@
   }
   .masthead{
   	background-color: #99cc33;
-  	padding: 2px;
+  	padding: 1px;
   }
   
   .view-proximity{
