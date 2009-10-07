@@ -277,6 +277,30 @@ function dashboard_views_team_default_views() {
   $handler->override_option('cache', array(
     'type' => 'none',
   ));
+  $handler->override_option('header', 'In the Open Green Map platform, Registered Mapmakers are called Team Leaders. Mapmakers can:
+  <ul>
+  <li>Create new maps and manage multiple projects such as theme, district or school Open Green Maps that involve different people.
+  <li>Invite Coordinator(s) or Team Members to help create and manage each OGM map.
+  <li>Opt to take public suggestions to enhance the map(s). If this option is active in the map, the Team is responsible for reviewing and approving (or not) the public suggestions before it appears on the map.
+  </ul>
+  NOTE: Green Mapmakers have full access to all our Green Mapmaking resources and tools for all kinds of Green Map projects at <a href="http://greenmap.org/">GreenMap.org</a>, including this Map platform.
+
+  The Coordinator has additional permissions so they can help manage the project. Coordinators can:
+  <ul>
+  <li>Add new sites that will appear instantly with their username on the bottom of each site.
+  <li>Edit any of the sites on the map.
+  <li>Review and approve (or not) the public suggestions before it appears on the map.
+  <li>Invite Team Members.
+  <li>Make widgets.
+  </ul>
+
+  The Team Members can:
+  <ul>
+  <li>Add new sites that will appear instantly with their username on the bottom of each site.
+  <li>Edit any of their own sites.
+  </ul>');
+  $handler->override_option('header_format', '3');
+  $handler->override_option('header_empty', 1);
   $handler->override_option('empty_format', '1');
   $handler->override_option('items_per_page', 90);
   $handler->override_option('use_pager', '1');
