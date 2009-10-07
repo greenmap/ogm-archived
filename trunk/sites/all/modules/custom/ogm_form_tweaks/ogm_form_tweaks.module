@@ -1,7 +1,6 @@
 <?php
 // $Id$
 
-
 /**
  * Alters various forms on the Open Green Map
  *
@@ -11,11 +10,15 @@ function ogm_form_tweaks_form_alter(&$form, &$form_state, $form_id) {
   // print $form_id . ' '; // this prints form_id's of all forms on every page - development feature
 
   // this one is useful for debugging - replace form_id_here with name of form
-  /* if($form_id == 'form_id_here') {
-       $form['form_info'] = array(
-       '#value' => '<pre>'. print_r($form, TRUE) .'</pre>'
-       );
-  } */
+  /*
+  if($form_id == 'form_id_here') {
+    dsm($form);
+    $form['form_info'] = array(
+      '#value' => '<pre>'. print_r($form, TRUE) .'</pre>'
+    );
+  }
+  */
+
   switch ($form_id) {
     // There are several fields that appear on both the Green Site and the Green Map forms. This if statement deals with both.
     case 'green_map_node_form':
@@ -24,6 +27,8 @@ function ogm_form_tweaks_form_alter(&$form, &$form_state, $form_id) {
       $form['locations']['0']['#description'] = t('Click the map to set the location. If you click the wrong location on the map, just click the pin again to relocate it, or drag the pin to the correct location. This will set the latitude-longitude more accurately than entering the address.');
       // TODO -- re-enable this field when lines & areas are actually available
       unset($form['field_use_poly']);
+      // deliberate no break & fallthrough
+
     case 'green_site_node_form':
       // tweak the help text on the language selection fields for sites & maps
       $form['language']['#title'] = t('Language Settings');
@@ -34,6 +39,10 @@ function ogm_form_tweaks_form_alter(&$form, &$form_state, $form_id) {
       if (isset($form['field_icons_to_use'])) {
         ogm_form_tweaks_insertIconRecursive($form['field_icons_to_use']);
       }
+      break;
+
+    case 'user_profile_form':
+      $form['account']['roles']['#description'] = 'To learn more about the different roles, please click <a href="/faq/how-open-green-map-works/what-are-different-roles-inside-green-mapmaking-team">here</a>.';
       break;
   }
 }
