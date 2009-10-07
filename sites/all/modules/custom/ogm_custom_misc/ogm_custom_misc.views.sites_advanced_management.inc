@@ -49,6 +49,7 @@ function sites_advanced_management_views_default_views() {
         'text' => '',
         'make_link' => 0,
         'path' => '',
+        'link_class' => '',
         'alt' => '',
         'prefix' => '',
         'suffix' => '',
@@ -63,13 +64,14 @@ function sites_advanced_management_views_default_views() {
       'type' => 'separator',
       'separator' => ', ',
       'empty' => '',
-      'link_to_taxonomy' => 1,
+      'link_to_taxonomy' => 0,
       'limit' => 1,
       'vids' => array(
         '1' => 1,
         '2' => 0,
         '3' => 0,
         '5' => 0,
+        '6' => 0,
         '4' => 0,
       ),
       'exclude' => 0,
@@ -442,4 +444,3 @@ function sites_advanced_management_views_default_views() {
   $views[$view->name] = $view;
   return $views;
 }
-
