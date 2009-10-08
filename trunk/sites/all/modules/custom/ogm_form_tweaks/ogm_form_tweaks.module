@@ -42,7 +42,7 @@ function ogm_form_tweaks_form_alter(&$form, &$form_state, $form_id) {
       break;
 
     case 'user_profile_form':
-      $form['account']['roles']['#description'] = 'To learn more about the different roles, please click <a href="/faq/how-open-green-map-works/what-are-different-roles-inside-green-mapmaking-team">here</a>.';
+      $form['account']['roles']['#description'] = t('To learn more about the different roles, please click <a href="/faq/how-open-green-map-works/what-are-different-roles-inside-green-mapmaking-team">here</a>.');
       break;
   }
 }
