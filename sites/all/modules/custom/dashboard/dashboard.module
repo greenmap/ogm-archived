@@ -149,37 +149,41 @@ function dashboard_import_export($nid) {
     ."</li><li>".
     t('<a href="@kml_export_link">Export Map Data as <abbr title="Keyhole Markup Language">KML</abbr> file</a> (for use with mapping software such as Google Earth)', array('@kml_export_link' => url('dashboard/sites/'. $nid .'/map_export.kml')))
     ."</li></ul>";
-  $content .= "<p><strong>". t("Data Import") ."</strong></p>";
-  $content .= "<p>". t("<abbr title='Comma Separated Variable'>CSV</abbr> files having the same format as those produced by the site export feature can be imported in bulk into this map.  If the <strong>Site ID</strong> field is blank, the record will be imported as a new Green Site.  If the <strong>Site ID</strong> field is present and corresponds to a Green Site on this map, that site will be updated with the data from the <abbr title='Comma Separated Variable'>CSV</abbr> file.  Fields left blank in the <abbr title='Comma Separated Variable'>CSV</abbr> file will not be updated.  When importing site data, specify the site location in decimal notation in the fields labelled <strong>Latitude</strong> and <strong>Longitude</strong>. The coordinates are also exported using degrees, minutes, and seconds for your convenience, but these fields are ignored during the import process.") ."</p>";
-  $content .= "<p>". t("To import new Green Sites or update existing ones, you should start by exporting your sites using the link above so that you have a file to use as an example.  Prepare your <abbr title='Comma Separated Variable'>CSV</abbr> file using a spreadsheet program, follow the link below, then follow these steps:") ."</p>";
-  $content .= "<ol><li>".
-    t("Click <em>New Import</em>")
-    ."</li><li>".
-    t("Click <em>Next</em>")
-    ."</li><li>".
-    t("Step 1: Select <strong>Green Site</strong> and click <em>Next</em>")
-    ."</li><li>".
-    t("Step 2: Upload a <abbr title='Comma Separated Variable'>CSV</abbr> file or select one you have already uploaded, and click <em>Next</em>")
-    ."</li><li>".
-    t("Step 3: Enter the appropriate file format options (if unsure, use the defaults) and click <em>Next</em>")
-    ."</li><li>".
-    t("Step 4: Select the mapping from <abbr title='Comma Separated Variable'>CSV</abbr> fields to Green Site fields (if unsure, use the defaults) and click <em>Next</em>")
-    ."</li><li>".
-    t("Step 5: Click <em>Next</em>")
-    ."</li><li>".
-    t("Step 6: Select field default values (if unsure, make no changes) and click <em>Next</em>")
-    ."</li><li>".
-    t("Step 7: Click <em>Next</em>")
-    ."</li><li>".
-    t("Step 8: Click <em>Start Import</em>")
-    ."</li></ol>";
-  $content .= "<p>". t("When this process finishes, your data import is complete!");
-  $content .= "<p>". t("If you see errors at any point, there may be a problem with your <abbr title='Comma Separated Variable'>CSV</abbr> file.  Please stop the import, take a screenshot of the error message, and send it to us with a copy the file you were attempting to import.") ."</p>";
-  $content .= "<ul><li>".
-    t('<a href="@csv_import_link">Import Map Data from <abbr title="Comma Separated Variable">CSV</abbr> file</a>', array('@csv_import_link' => url('admin/content/node_import')))
-    ."</li></ul>";
-  $content .= "<p><strong>". t("Character Encoding Notes") ."</strong></p>";
-  $content .= "<p>". t('Text in these files is encoding using the Unicode character set UTF-8.  In particular, you may need to set your spreadsheet or GIS software to open the <abbr title="Comma Separated Variable">CSV</abbr> file using UTF-8.  Please make sure the CSV file you upload for import also uses the character set UTF-8.') ."</p>";
+
+  global $user;
+  if (in_array('admin', $user->roles)) {
+    $content .= "<p><strong>". t("Data Import") ."</strong></p>";
+    $content .= "<p>". t("<abbr title='Comma Separated Variable'>CSV</abbr> files having the same format as those produced by the site export feature can be imported in bulk into this map.  If the <strong>Site ID</strong> field is blank, the record will be imported as a new Green Site.  If the <strong>Site ID</strong> field is present and corresponds to a Green Site on this map, that site will be updated with the data from the <abbr title='Comma Separated Variable'>CSV</abbr> file.  Fields left blank in the <abbr title='Comma Separated Variable'>CSV</abbr> file will not be updated.  When importing site data, specify the site location in decimal notation in the fields labelled <strong>Latitude</strong> and <strong>Longitude</strong>. The coordinates are also exported using degrees, minutes, and seconds for your convenience, but these fields are ignored during the import process.") ."</p>";
+    $content .= "<p>". t("To import new Green Sites or update existing ones, you should start by exporting your sites using the link above so that you have a file to use as an example.  Prepare your <abbr title='Comma Separated Variable'>CSV</abbr> file using a spreadsheet program, follow the link below, then follow these steps:") ."</p>";
+    $content .= "<ol><li>".
+      t("Click <em>New Import</em>")
+      ."</li><li>".
+      t("Click <em>Next</em>")
+      ."</li><li>".
+      t("Step 1: Select <strong>Green Site</strong> and click <em>Next</em>")
+      ."</li><li>".
+      t("Step 2: Upload a <abbr title='Comma Separated Variable'>CSV</abbr> file or select one you have already uploaded, and click <em>Next</em>")
+      ."</li><li>".
+      t("Step 3: Enter the appropriate file format options (if unsure, use the defaults) and click <em>Next</em>")
+      ."</li><li>".
+      t("Step 4: Select the mapping from <abbr title='Comma Separated Variable'>CSV</abbr> fields to Green Site fields (if unsure, use the defaults) and click <em>Next</em>")
+      ."</li><li>".
+      t("Step 5: Click <em>Next</em>")
+      ."</li><li>".
+      t("Step 6: Select field default values (if unsure, make no changes) and click <em>Next</em>")
+      ."</li><li>".
+      t("Step 7: Click <em>Next</em>")
+      ."</li><li>".
+      t("Step 8: Click <em>Start Import</em>")
+      ."</li></ol>";
+    $content .= "<p>". t("When this process finishes, your data import is complete!");
+    $content .= "<p>". t("If you see errors at any point, there may be a problem with your <abbr title='Comma Separated Variable'>CSV</abbr> file.  Please stop the import, take a screenshot of the error message, and send it to us with a copy the file you were attempting to import.") ."</p>";
+    $content .= "<ul><li>".
+      t('<a href="@csv_import_link">Import Map Data from <abbr title="Comma Separated Variable">CSV</abbr> file</a>', array('@csv_import_link' => url('admin/content/node_import')))
+      ."</li></ul>";
+    $content .= "<p><strong>". t("Character Encoding Notes") ."</strong></p>";
+    $content .= "<p>". t('Text in these files is encoding using the Unicode character set UTF-8.  In particular, you may need to set your spreadsheet or GIS software to open the <abbr title="Comma Separated Variable">CSV</abbr> file using UTF-8.  Please make sure the CSV file you upload for import also uses the character set UTF-8.') ."</p>";
+  }
 
   return $content;
 }
