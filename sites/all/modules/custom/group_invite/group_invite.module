@@ -55,6 +55,7 @@ function group_invite_mail($key, &$message, $params) {
       $link_text = "You can join ". $link ." to see the map.";
       $message['subject'] = t('Invitation to !site', $variables, $language->language);
       $message['body'][] = "<p>". $params['body'] ."</p>";
+      $message['body'][] = group_invite_instructions();
       $message['body'][] = "<p>". $link_text ."</p>";
       break;
     case 'existing_user':
@@ -82,7 +83,7 @@ function group_invite_perm() {
 function group_invite_menu() {
   $items = array();
   $items['node/%group_invite_map/invite_users'] = array(
-    'title' => 'Invite new members',
+    'title' => t('Invite new members'),
     'page callback'     => 'drupal_get_form',
     'page arguments' => array('group_invite_create_group_invite_page', 1),
     'type' => MENU_LOCAL_TASK,
@@ -97,17 +98,11 @@ function group_invite_menu() {
     'access callback' => 'group_invite_js_access_wrapper',
     'access arguments' => array(1),
     );
-// TODO:
-//  use this as ahah path for role selection
-//  $items['group_invite/%node/js_map/%'] = array(
-//    'title' => 'Invite new members Redux',
-//    'page callback'     => 'group_invite_js_map',
-//    'page arguments'     => array(3),
-//    'type' => MENU_CALLBACK,
-//    'access callback' => 'group_invite_js_access_wrapper',
-//    'access arguments' => array(1),
-//    );
   return $items;
+}
+
+function return_true() {
+  return TRUE;
 }
 
 function group_invite_map_load($nid) {
@@ -657,3 +652,34 @@ function group_invite_js() {
 //
 //  drupal_json(array('status' => TRUE, 'data' => $output));
 //}
+
+function group_invite_instructions() {
+  $ret = <<<EOF
+<p>
+You have been invited to be part of the Open Green Map. If you were invited to
+take part in a specific map, you need to be a registered contributor. If you
+haven't done it, we suggest you take a moment to register by clicking Create
+New Account on the upper right of OpenGreenMap.org/home.
+</p>
+
+<p>
+As a registered Contributor, you will not need to add your name, email and
+spell out the "captcha" code each time you add text or an image. Login when you
+return and save steps each time you contribute new content. Your username will
+appear by each image or text you contribute.
+</p>
+
+<p>
+If you were invited by a Registered Mapmaker, he/she can give you extra
+permissions so you can be a Team Member or a Coordinator to add sites directly
+to the map and help in the management of the project.
+</p>
+
+<p>
+- Thank you on behalf of the Green Map movement.
+</p>
+EOF;
+
+  return $ret;
+}
+
