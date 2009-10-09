@@ -1,0 +1,67 @@
+<?php
+// $Id$
+
+/**
+ * Alters various forms on the Open Green Map
+ *
+ * By tom_o_t
+ */
+function ogm_form_tweaks_form_alter(&$form, &$form_state, $form_id) {
+  // print $form_id . ' '; // this prints form_id's of all forms on every page - development feature
+
+  // this one is useful for debugging - replace form_id_here with name of form
+  /*
+  if($form_id == 'form_id_here') {
+    dsm($form);
+    $form['form_info'] = array(
+      '#value' => '<pre>'. print_r($form, TRUE) .'</pre>'
+    );
+  }
+  */
+
+  switch ($form_id) {
+    // There are several fields that appear on both the Green Site and the Green Map forms. This if statement deals with both.
+    case 'green_map_node_form':
+      $form['field_icons_subset']['#description'] = t('Choose which Green Map Icons can be used on this map. These are the only icons that will appear on your map and its legend. You can always edit your map and change these. If you select none, then all icons will be available.');
+      $form['language']['#description'] = t('You can choose the language for this map. If your language is not on this list, leave this blank.');
+      $form['locations']['0']['#description'] = t('Click the map to set the location. If you click the wrong location on the map, just click the pin again to relocate it, or drag the pin to the correct location. This will set the latitude-longitude more accurately than entering the address.');
+      // TODO -- re-enable this field when lines & areas are actually available
+      unset($form['field_use_poly']);
+      // deliberate no break & fallthrough
+
+    case 'green_site_node_form':
+      // tweak the help text on the language selection fields for sites & maps
+      $form['language']['#title'] = t('Language Settings');
+      $form['language']['#description'] = t('You can choose the language for this site. If your language is not on this list, leave this blank.');
+      $form['language']['#options'][''] = t('- None -');
+      // Add some guidance about clicking on maps for both sites & maps
+      $form['locations']['0']['#description'] = t('Click the map to set the location. If you click the wrong location on the map, just click the pin again to relocate it, or drag the pin to the correct location. This will set the latitude-longitude more accurately than entering the address.');
+      if (isset($form['field_icons_to_use'])) {
+        ogm_form_tweaks_insertIconRecursive($form['field_icons_to_use']);
+      }
+      break;
+
+    case 'user_profile_form':
+      $form['account']['roles']['#description'] = t('To learn more about the different roles, please click <a href="/faq/how-open-green-map-works/what-are-different-roles-inside-green-mapmaking-team">here</a>.');
+      break;
+  }
+}
+
+function ogm_form_tweaks_insertIconRecursive(&$array) {
+  foreach ($array as $key => &$item) {
+    if (is_array($item)) {
+      if (isset($item['#type']) && $item['#type'] == 'checkbox') {
+        $item['#title'] = taxonomy_image_display($item['#return_value'], NULL, NULL, array('resize' => '3', 'width' => '21', 'height' => '18', 'imagecache_preset' => 'ORIGINAL')) ."   ". $item['#title'];
+      }
+      else {
+        ogm_form_tweaks_insertIconRecursive($item);
+      }
+    }
+  }
+}
+
+function ogm_form_tweaks_form_contact_mail_page_alter(&$form, $form_state) {
+  foreach ($form['cid']['#options'] as $cid => $description) {
+    $form['cid']['#options'][$cid] = t($description);
+  }
+}

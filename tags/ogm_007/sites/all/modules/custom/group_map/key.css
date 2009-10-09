@@ -1,0 +1,86 @@
+#keys {
+	margin-left: -22px;
+}
+
+
+.key_genre {
+	margin-bottom: 2px;
+	margin-top: 4px;
+	padding-bottom: 1px;
+	padding-left: 3px;
+	padding-top: 1px;
+}
+
+
+.key_genre_title {
+	list-style-image: url(images/menu-collapsed-green.png);
+	list-style-type: none;
+	list-style-position:inside;
+}
+
+
+.key_genre_content {
+	display: none;	/* to hide the icons while loading */
+}
+
+
+.key_category {
+	margin-bottom: 2px;
+	margin-left: 10px;
+	margin-top: 2px;
+	padding-bottom: 1px;
+	padding-left: 3px;
+	padding-top: 1px;
+}
+
+
+.key_category_title {
+	list-style-image: url(images/menu-collapsed-green.png);
+	list-style-type: none;
+}
+
+
+.key_title {
+	cursor: pointer;
+	display: inline;
+	padding-right: 20px;
+	margin-left:-30px;
+	padding-left:30px;
+}
+
+
+.key_checkbox {
+	display: inline;
+	position: absolute;
+	right: 20px;
+}
+
+
+.key_category_content {
+	margin-bottom: 2px;
+	margin-right: 20px;
+	margin-top: 9px;
+}
+
+
+.key_icon_global_hack {
+	display: inline;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+
+.key_icon {
+	display: inline;
+	cursor: pointer;
+	margin: 0 2px;
+}
+
+
+.key_icon_disabled {
+}
+
+
+.key_expanded {
+	list-style-image: url(images/menu-expanded-green.png);
+}

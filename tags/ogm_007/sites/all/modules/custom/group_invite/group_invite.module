@@ -1,0 +1,685 @@
+<?php
+// $Id$
+/**
+ * @file
+ *  Enables map adminstrators to invite new members to maps.
+ *
+ * This module enables map administrators to invite new team members
+ * to a map. It allows the administrator to add a user to multiple
+ * maps in different roles, and to invite multiple users on a single
+ * screen. The og_user_roles modules only allows the admin to add a
+ * user to one role on one map at a time.
+ *
+ * Allowing a user/role the permission to use this module is
+ * potentially dangerous.
+ *
+ * :TODO: This module was orginally coded under the assumption that
+ * there is only one invitation per email address. However, this might
+ * not be the case. The module needs to be rewritten to intelligently
+ * handle an arbitrary number of invitations.
+ * :TODO: Figure out where it makes sense to use the inviter's
+ * language, where the organic group's language, and where the
+ * invitee's language for display, emails, etc.
+ */
+
+/*
+ *  Contents:
+ *    Hooks
+ *    Hooks helpers
+ *    Menu callbacks and form functions
+ *    Database query functions
+ *    Javascript callbacks for AHAH
+ */
+
+/**
+ * HOOKS SECTION
+ */
+
+/**
+ *  hook_mail
+ */
+function group_invite_mail($key, &$message, $params) {
+  global $user;
+
+  $language = $message['language'];
+  $variables = user_mail_tokens($params, $language);
+  // Invitations have links in them, so make them HTML emails.
+  $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed';
+  $link_params = array(
+    'absolute' => TRUE,
+  );
+  switch ($key) {
+    case 'new_user':
+      $link_params['query'] = "code=". $params['registration_code'];
+      $link = l(t("Open Green Map"), "user/register", $link_params);
+      $link_text = "You can join ". $link ." to see the map.";
+      $message['subject'] = t('Invitation to !site', $variables, $language->language);
+      $message['body'][] = "<p>". $params['body'] ."</p>";
+      $message['body'][] = group_invite_instructions();
+      $message['body'][] = "<p>". $link_text ."</p>";
+      break;
+    case 'existing_user':
+      $map_link = l(t($params['map']['title'], $variables, $language->language), $params['map']['link'] , $link_params);
+      $ogm_link = l(t('!site', $variables, $language->language), '<front>', $link_params);
+      // Munge reply-to header. Is this a good (or RFC compliant) idea?
+      $message['headers']['Reply-To'] = $user->mail;
+      $message['subject'] = t('You have been added to a new map at !site', $variables, $language->language);
+      $message['body'][] = "<p>". $user->name ." has added you to the ". $map_link ." at ". $ogm_link ."</p>";
+      $message['body'][] = "<p>If you have any questions or comments, please email ". $user->mail ."</p>";
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function group_invite_perm() {
+  return array('invite using group_invite', 'administer group_invite');
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function group_invite_menu() {
+  $items = array();
+  $items['node/%group_invite_map/invite_users'] = array(
+    'title' => t('Invite new members'),
+    'page callback'     => 'drupal_get_form',
+    'page arguments' => array('group_invite_create_group_invite_page', 1),
+    'type' => MENU_LOCAL_TASK,
+    'access callback' => 'og_is_group_admin',
+    'access arguments' => array(1),
+    'weight' => 12,
+    );
+  $items['group_invite/%node/js'] = array(
+    'title' => 'Invite new members',
+    'page callback'     => 'group_invite_js',
+    'type' => MENU_CALLBACK,
+    'access callback' => 'group_invite_js_access_wrapper',
+    'access arguments' => array(1),
+    );
+  return $items;
+}
+
+function return_true() {
+  return TRUE;
+}
+
+function group_invite_map_load($nid) {
+  $map_type = 'green_map';
+  if ( is_numeric($nid) &&
+       ($node = node_load($nid)) &&
+       $node->type == $map_type )
+  {
+    return $node;
+  }
+  else  {
+    return FALSE;
+  }
+}
+
+/**
+ *  hook_cron
+ */
+function group_invite_cron() {
+  $group_invite_timestamp = variable_get('group_invite_timestamp', '');
+  // 2592000 = 30 days
+  if ((time() - $group_invite_timestamp) >= 2592000) {
+    db_query('DELETE FROM {group_invite} WHERE created < SUBDATE(NOW(),interval 30 day)');
+    variable_set('group_invite_timestamp', time());
+  }
+}
+
+/**
+ *  hook_form_alter
+ */
+function group_invite_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'user_register':
+    // Users should not be able to add themselves to maps when they
+    // register. Remove the og_register elements.
+    unset($form['og_register']);
+    // if code is set and code meet code of DB, hide mail and set default value
+    if (isset($_GET['code']) && count($form['#post']) == 0) {
+      // check_plain doesn't escape SQL special characters, so this still
+      // needs to be passed as a parameter to db_query()
+      $get_code = check_plain(trim($_GET['code']));
+      $query_results =  db_query("SELECT nid,mail FROM {group_invite} WHERE code = '%s'", $get_code);
+      /*
+       * :TODO: This module was orginally coded under the assumption
+       * that there would only ever be one invitation per email address.
+       * Thus, we should check to see if there is more than one result
+       * and throw an error if there is.
+       */
+      $group_invitee = db_fetch_object($query_results);
+      if (!$query_results || !$group_invitee->nid) {
+        return;
+      }
+      // Is adding the email address of someone an appropriate way to
+      // communicate the invitation back to the server? It seems like
+      // we should verify the email address and code in this part,
+      // pass the code to the next step via hidden variable, then
+      // verify the email-code pair before actually assigning the roles.
+      $form['mail']['#type'] = 'hidden';
+      $form['mail']['#default_value'] = $group_invitee->mail;
+    }
+    break;
+    case 'green_map_node_form':
+      unset($form['og_user_roles_logo']);
+      unset($form['og_user_roles_links_gid']);
+      unset($form['og_user_roles_nopublic_gid']);
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_action_info().
+ *
+ * This action must be selected for "User Registration" under
+ * "Triggers->Users"
+ */
+function group_invite_action_info() {
+  return array(
+    'group_invite_user_register_action' => array(
+      'description' => t('Assign permissions at account creation for new users invited to existing maps by existing users'),
+      'type' => 'user',
+      'configurable' => FALSE,
+      'hooks' => array(
+        'user' => array('insert'),
+      ),
+    ),
+  );
+}
+
+/**
+ *  END HOOKS
+ */
+
+/**
+ *  Helpers for hooks
+ */
+
+/**
+ * Implementation of Drupal action. This should be triggered on
+ * user registration.
+ */
+function group_invite_user_register_action(&$object, $context = array()) {
+  if (isset($object->uid)) {
+    $uid = $object->uid;
+  }
+  elseif (isset($context['uid'])) {
+    $uid = $context['uid'];
+  }
+  else {
+    global $user;
+    $uid = $user->uid;
+  }
+  $users_query = "SELECT uid,mail FROM {users} WHERE uid = %d";
+  $query_results =  db_query($users_query, $uid);
+  if (!$query_results) {
+    watchdog('error', 'Problem with db_query.', NULL);
+    drupal_set_message(t('Problem with database query'));
+    return;
+  }
+  $c = db_fetch_object($query_results);
+  // if no matches, this is not first login or username don't match with DB.
+  if (!$c) {
+    watchdog('error', 'Problem with db_query, no matches found.', NULL);
+    drupal_set_message(t('Problem with database query: no matches found'));
+    return;
+  }
+
+  // when user is loggin in first time
+  $group_invite_query = "SELECT DISTINCT nid, rid FROM {group_invite} WHERE mail = '%s'";
+  $result =  db_query($group_invite_query, $c->mail);
+  if (!$result) {
+    watchdog('error', 'Problem with db_query. table: group_invite', NULL);
+    drupal_set_message(t('Problem with database query'));
+    return;
+  }
+
+  $ul = user_load(array('uid' => $c->uid));
+  $arr = array();
+  $arr['roles']= $ul->roles;
+
+  while ($ids = db_fetch_object($result)) {
+    og_save_subscription($ids->nid, $c->uid, array('is_active' => TRUE));
+    og_user_roles_role_leave($c->uid, $ids->nid);
+    // then insert new roles to the group
+    og_user_roles_role_join($c->uid, $ids->rid, $ids->nid);
+    $arr['roles'][$ids->rid]= $ids->rid;
+    db_query("DELETE FROM {group_invite} WHERE mail = '%s' AND nid = %d AND rid = %d", $c->mail, $ids->nid, $ids->rid);
+  }
+  user_save($ul, $arr);
+  //roles will be modified only if user is invited (requilar registeration doesn't modify anything)
+}
+
+function group_invite_js_access_wrapper($node) {
+  return og_is_group_admin($node);
+}
+
+/**
+ *  Menu page callbacks
+ */
+
+function group_invite_admin_settings() {
+  $form = array();
+  $form['role_settings'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Role settings'),
+    '#description' => t('What roles can map admins assign to map members.'),
+    '#collapsible' => TRUE,
+    );
+  $result =  db_query("SELECT rid,name FROM {role}");
+  while ($role = db_fetch_object($result)) {
+  $form['role_settings']['group_invite_role_'. $role->rid] = array(
+    '#type' => 'checkbox',
+    '#title' => $role->name,
+    '#return_value' => 1,
+    '#default_value' => variable_get('group_invite_role_'. $role->rid, 0),
+    );
+  }
+  return system_settings_form($form);
+}
+
+function group_invite_create_group_invite_page($form_state, $node) {
+
+  // FIXME seriously!
+  // I belive there is a bug in drupal or at least in how they suggest to set
+  //   up #ahah. see: http://drupal.org/node/371339
+  // the workaround follows:
+  $correct_path = implode('/', array( 'node', $node->nid, 'invite_users'));
+  $form['#action'] = url($correct_path);
+  // end crazy workaround
+
+  $form['message'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Message'),
+    '#description' => 
+      t('Write a message to accompany the email invitation that new members
+         will receive'),
+    '#weight' => -2,
+  );
+  $form['new_member_wrapper'] = array(
+    '#title' => t('Invitations'),
+    '#tree' => FALSE,
+    '#type' => 'fieldset',
+    '#prefix' => '<div class="clear-block" id="group_invite-member-wrapper">',
+    '#suffix' => '</div>',
+  );
+  $form['new_member_wrapper']['member'] = array(
+    '#prefix' => '<div id="group_invite-member">',
+    '#suffix' => '</div>',
+  );
+  $member_count = max(2, $form_state['new_member_textfields_count']);
+  for ( $i = 0 ; $i < $member_count ; $i++ ) {
+    $form['new_member_wrapper']['member'][$i] = group_invite_team_member_form($i, $form_state, $node);
+  }
+  $form['new_member_wrapper']['group_invite_more'] = array(
+    '#type' => 'button',
+    '#value' => t('Add another person'),
+    '#submit' => array('group_invite_more_submit'),
+    '#validate' => array('group_invite_more_validate'),
+    '#ahah' => array(
+      'path' => implode('/', array('group_invite', $node->nid, 'js')),
+      'wrapper' => 'group_invite-member',
+      'method' => 'replace',
+    ),
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Invite'),
+  );
+  $form['group_nid'] = array('#type' => 'value', '#value' => $node->nid);
+  return $form;
+}
+
+/**
+ *  validate function for main form
+ */
+function group_invite_create_group_invite_page_validate($form, &$form_state) {
+  _group_invite_create_group_invite_page_validate($form, $form_state);
+  if ( $form_state['clicked_button']['#value'] == t('Add another person') ) {
+    return;
+  }
+  foreach ( $form_state['values']['member'] as $i => $memberdata ) {
+    if ( !$memberdata['mail'] ) {
+      continue;
+    }
+    $map_selected = FALSE;
+    foreach ( $memberdata['maps_wrapper']['maps'] as $i => $map ) {
+      if ( $map ) {
+        $map_selected = TRUE;
+        break;
+      }
+    }
+    if ( !$map_selected ) {
+      $err_id = 'member]['. $i . '][maps_wrapper';
+      form_set_error($err_id, 'You must select at least one map per user.');
+    }
+  }
+}
+
+/**
+ *  helper for validation
+ */
+function _group_invite_create_group_invite_page_validate($form, &$form_state) {
+  foreach ( $form_state['values']['member'] as $i => $memberdata ) {
+    if ( ! empty($memberdata['mail']) &&
+         ! valid_email_address($memberdata['mail']) )
+    {
+      form_set_error('member]['. $i . '][mail', 'invalid email address');
+    }
+  }
+}
+
+/**
+ *  submit for main form
+ */
+function group_invite_create_group_invite_page_submit($form, &$form_state) {
+  global $user;
+  $members = $form_state['values']['member'];
+
+  // this submit callback is called by the "add another person" ahah button
+  //   so we want to prevent this from causing the invitation to get sent out
+  //   prematurely.
+  // if somehow the language changes after the user adds another field to the
+  //   form, this will probably break horribly
+  // TODO There may be a better way than this.
+  if ( $form_state['clicked_button']['#value'] == t('Add another person') ) {
+    return;
+  }
+
+  //FIXME: add back in the ability to use roles, and to choose multiple
+  // hardcoding this role to just be 'team member'. this is very temporary.
+  $sql = "SELECT * FROM {role} WHERE name = '%s'";
+  $role_res = db_query($sql, 'team member');
+  $role = db_fetch_object($role_res);
+  if ( !$role->rid ) {
+    trigger_error('Hardcoded role "team member" missing.');
+    drupal_set_message('Unable to invite new members. Please try again later.',
+      'error');
+    return;
+  }
+
+  foreach ( $members as $member ) {
+    if ( !$member['mail'] ) {
+      continue;
+    }
+    if ( group_invite_email_exists($member['mail']) ) {
+      $existing_user = user_load(array('mail' => trim($member['mail'])));
+      if ($user->uid == $existing_user->uid) {
+        // Users should not be able to change their own roles.
+        drupal_set_message(t('You cannot invite yourself to a group.'), 'error');
+        continue;
+      }
+      $mail_language = user_preferred_language($existing_user);
+      $mail_from = variable_get('site_mail', ini_get('sendmail_from'));
+      $mail_to = $existing_user->mail;
+      $mail_success = FALSE;
+      foreach ( $member['maps_wrapper']['maps'] as $gid => $checked ) {
+        if ( $checked) {
+          $db_results = db_query("SELECT title FROM {node} WHERE nid=%d", $gid);
+          og_user_roles_role_leave($existing_user->uid, $gid);
+          og_user_roles_role_join($existing_user->uid, $role->rid, $gid);
+          $mail_params['map'] = db_fetch_array($db_results);
+          $mail_params['map']['link'] = "node/". $gid;
+          $mail_success =
+            drupal_mail('group_invite', 'existing_user', $mail_to,
+              $mail_language, $mail_params, $mail_from)
+            || $mail_success;
+        }
+      }
+      drupal_set_message(t('Added new roles to the user %user', array('%user' => $existing_user->name)));
+      if ($mail_success) {
+        drupal_set_message(t('Invitation sent to %email', array('%email' => $mail_to)));
+      }
+      else {
+        drupal_set_message(t('Unable to send invitation to %email', array('%email' => $mail_to)));
+      }
+    }
+    // else member is not in drupal yet
+    else {
+      $registration_code = md5(date('l jS \of F Y h:i:s A') . $member['mail']);
+      foreach ( $member['maps_wrapper']['maps'] as $gid => $checked ) {
+        if ( $checked) {
+          $insert =  db_query("INSERT INTO {group_invite} (nid,code,rid,mail) VALUES (%d,'%s',%d,'%s');", $gid, $registration_code, $role->rid, $member['mail']);
+        }
+      }
+      $mail_language = user_preferred_language($user);
+      $mail_from = variable_get('site_mail', ini_get('sendmail_from'));
+      $mail_to = $member['mail'];
+      $mail_params['body'] = $form_state['values']['message'];
+      $mail_params['registration_code'] = $registration_code;
+      $mail_success = drupal_mail('group_invite', 'new_user', $mail_to, $mail_language, $mail_params, $mail_from);
+
+      if ($mail_success) {
+        watchdog('user', 'Invitation mailed to @email by @user.', array('@email' => $mail_to, '@user' => $user->name));
+        drupal_set_message(t('Invitation sent to %email', array('%email' => $mail_to)));
+      }
+      // watchdog call not needed as drupal_mail will issue one automatically.
+      else {
+        drupal_set_message(t('Unable to send invitation to %email.', array('%email' => $mail_to)));
+      }
+    }
+  }
+  $form_state['redirect'] = implode('/', array("node", $form_state['values']['group_nid'], 'members'));
+}
+
+/**
+ *  validate for "add another member" button
+ */
+function group_invite_more_validate($form, &$form_state) {
+  $form_state['new_member_textfields_count'] = count($form_state['values']['member']) + 1;
+  _group_invite_create_group_invite_page_validate($form, $form_state);
+}
+
+/**
+ *  submit for "add another member" button
+ */
+function group_invite_more_submit($form, &$form_state) {
+  unset($form_state['submit_handlers']);
+  form_execute_handlers('submit', $form, $form_state);
+  //form_execute_handlers('validate', $form, $form_state);
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ *  individual member email and maps form. used by AHAH to dynamically add more
+ *  form fields
+ */
+function group_invite_team_member_form($i, &$form_state, $node) {
+  $default_mail = $form_state['values']['member'][$i]['mail'];
+
+  $default_maps =
+    $form_state['values']['member'][$i]['maps_wrapper']['maps'] ?
+      $form_state['values']['member'][$i]['maps_wrapper']['maps']
+      :
+      array($node->nid);
+
+  $form = array('#tree' => TRUE);
+  $form['mail'] = array(
+    '#type' => 'textfield',
+    '#size' => '30',
+    '#default_value' => $default_mail ? $default_mail : '',
+    '#title' => t('Email Address'),
+    '#parents' => array('member', $i, 'mail'),
+  );
+  $form['maps_wrapper'] = array(
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => TRUE,
+    '#prefix' => '<div class="maps-wraper-'. $i .'">',
+    '#suffix' => '</div>',
+    '#title' => t('Select which map(s) to add the new user to'),
+    '#type' => 'fieldset',
+    '#parents' => array('member', $i, 'maps_wrapper'),
+  );
+  $form['maps_wrapper']['maps'] = array(
+    '#type' => 'checkboxes',
+    '#options' => group_invite_get_group_options(),
+    '#default_value' => $default_maps ? $default_maps : array(),
+    '#parents' => array('member', $i, 'maps_wrapper', 'maps'),
+// TODO:
+//  add in some ahah code here to add a role selection
+//    '#ahah' => array(
+//      'path' => implode('/', array('group_invite', $nid, 'js_map', $i)),
+//      'wrapper' => 'maps-wrapper-'. $i,
+//      'method' => 'replace',
+//      'event' => 'change',
+//    ),
+  );
+  return $form;
+}
+
+/*****************
+ * database queries
+ *****************/
+
+/**
+ *  check whether a user in drupal has the given email address
+ */
+function group_invite_email_exists($mail) {
+  $sql =  "SELECT uid FROM {users} WHERE mail = '%s'";
+  $res = db_query($sql, $mail);
+  if ( ! db_result($res) ) {
+    return FALSE;
+  }
+  else {
+    return TRUE;
+  }
+}
+
+
+function group_invite_get_group_options() {
+  global $user;
+  $options = array();
+  $sql = "SELECT
+            n.title
+            , o.nid
+          FROM {node} AS n
+            LEFT JOIN {og_uid} AS o
+              ON n.nid = o.nid
+          WHERE n.type = 'green_map'
+            AND o.uid = %d
+            AND o.is_admin = '1'
+         ";
+  $res = db_query($sql, $user->uid);
+  while ( $map = db_fetch_object($res) ) {
+    $options[$map->nid] = $map->title;
+  }
+  return $options;
+}
+
+function group_invite_get_roles($uid) {
+  global $user;
+  $sql =
+    "SELECT DISTINCT
+       (our.gid)
+       , our.rid
+     FROM {og_users_roles} AS our
+       INNER JOIN {og_uid} AS ou
+     WHERE ou.uid = %d
+       AND our.uid= %d
+       AND ou.is_admin = '1'
+    ";
+  $result = db_query($sql, $user->uid, $uid);
+  $ret = array();
+  while ( $role = db_fetch_object($result) ) {
+    $ret[$role->gid] = $role->rid;
+  }
+}
+
+/**********************
+ * Javascript Callbacks
+ *********************/
+
+/**
+ *  following the standard drupal AHAH template, mostly copied from poll.module
+ */
+function group_invite_js() {
+  $form_state = array('storage' => NULL, 'submitted' => FALSE);
+  $form_build_id = $_POST['form_build_id'];
+  // Get the form from the cache.
+  $form = form_get_cache($form_build_id, $form_state);
+  $args = $form['#parameters'];
+  $form_id = array_shift($args);
+  // We will run some of the submit handlers so we need to disable redirecting.
+
+  $form['#redirect'] = FALSE;
+
+  // We need to process the form, prepare for that by setting a few internals
+  // variables.
+  $form['#post'] = $_POST;
+  $form['#programmed'] = FALSE;
+  $form_state['post'] = $_POST;
+  // Build, validate and if possible, submit the form.
+  drupal_process_form($form_id, $form, $form_state);
+  // This call recreates the form relying solely on the form_state that the
+  // drupal_process_form set up.
+  $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
+  // Render the new output.
+  $member_form = $form['new_member_wrapper']['member'];
+  unset($member_form['#prefix'], $member_form['#suffix']); // Prevent duplicate wrappers.
+  $output = theme('status_messages') . drupal_render($member_form);
+  drupal_json(array('status' => TRUE, 'data' => $output));
+}
+
+//TODO: use this to build the dynamic role selection
+//function group_invite_js_map($i) {
+//  $form_state = array('storage' => NULL, 'submitted' => FALSE);
+//  $form_build_id = $_POST['form_build_id'];
+//  // Get the form from the cache.
+//  $form = form_get_cache($form_build_id, $form_state);
+//  $args = $form['#parameters'];
+//  $form_id = array_shift($args);
+//  // We will run some of the submit handlers so we need to disable redirecting.
+//  $form['#redirect'] = FALSE;
+//  // We need to process the form, prepare for that by setting a few internals
+//  // variables.
+//  $form['#post'] = $_POST;
+//  $form['#programmed'] = FALSE;
+//  $form_state['post'] = $_POST;
+//  // Build, validate and if possible, submit the form.
+//  drupal_process_form($form_id, $form, $form_state);
+//  // This call recreates the form relying solely on the form_state that the
+//  // drupal_process_form set up.
+//  $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
+//  // Render the new output.
+//  $maps_form = $form['maps-wrapper-'.$i]['member'];
+//  unset($maps_form['#prefix'], $maps_form['#suffix']); // Prevent duplicate wrappers.
+//  $output = theme('status_messages') . drupal_render($maps_form);
+//
+//  drupal_json(array('status' => TRUE, 'data' => $output));
+//}
+
+function group_invite_instructions() {
+  $ret = <<<EOF
+<p>
+You have been invited to be part of the Open Green Map. If you were invited to
+take part in a specific map, you need to be a registered contributor. If you
+haven't done it, we suggest you take a moment to register by clicking Create
+New Account on the upper right of OpenGreenMap.org/home.
+</p>
+
+<p>
+As a registered Contributor, you will not need to add your name, email and
+spell out the "captcha" code each time you add text or an image. Login when you
+return and save steps each time you contribute new content. Your username will
+appear by each image or text you contribute.
+</p>
+
+<p>
+If you were invited by a Registered Mapmaker, he/she can give you extra
+permissions so you can be a Team Member or a Coordinator to add sites directly
+to the map and help in the management of the project.
+</p>
+
+<p>
+- Thank you on behalf of the Green Map movement.
+</p>
+EOF;
+
+  return $ret;
+}
+
