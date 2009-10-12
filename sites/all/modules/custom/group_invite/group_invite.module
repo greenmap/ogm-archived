@@ -366,11 +366,15 @@ function group_invite_create_group_invite_page_validate($form, &$form_state) {
  *  helper for validation
  */
 function _group_invite_create_group_invite_page_validate($form, &$form_state) {
+  global $user;
   foreach ( $form_state['values']['member'] as $i => $memberdata ) {
     if ( ! empty($memberdata['mail']) &&
          ! valid_email_address($memberdata['mail']) )
     {
       form_set_error('member]['. $i . '][mail', 'invalid email address');
+    }
+    if ( $user->mail == $memberdata['mail'] ) {
+      form_set_error('member]['. $i . '][mail', t('You cannot invite yourself to a group.'));
     }
   }
 }
@@ -410,11 +414,6 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
     }
     if ( group_invite_email_exists($member['mail']) ) {
       $existing_user = user_load(array('mail' => trim($member['mail'])));
-      if ($user->uid == $existing_user->uid) {
-        // Users should not be able to change their own roles.
-        drupal_set_message(t('You cannot invite yourself to a group.'), 'error');
-        continue;
-      }
       $mail_language = user_preferred_language($existing_user);
       $mail_from = variable_get('site_mail', ini_get('sendmail_from'));
       $mail_to = $existing_user->mail;
