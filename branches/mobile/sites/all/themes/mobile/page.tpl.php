@@ -121,6 +121,10 @@
   width:75px; 
   }
   
+  .icons img {
+  margin-right:8px;
+  }
+  
   #logo-image{
   padding-top: 6px;
   }
@@ -135,16 +139,9 @@
   	margin-top: 5px;
   	margin-bottom: 5px;
   }
-  
-    h2{
-  	font-size: 1.5em;
-  	color:  #666;
-  	margin-top: 5px;
-  	margin-bottom: 5px;
-  }
-  
+    
   #footer{
-  	padding-top:70px;
+  	margin-top:70px;
   	font-size: .75em;
   }
 
