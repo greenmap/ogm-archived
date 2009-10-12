@@ -66,6 +66,8 @@ function group_invite_mail($key, &$message, $params) {
       $message['subject'] = t('You have been added to a new map at !site', $variables, $language->language);
       $message['body'][] = "<p>". $user->name ." has added you to the ". $map_link ." at ". $ogm_link ."</p>";
       $message['body'][] = "<p>If you have any questions or comments, please email ". $user->mail ."</p>";
+      $message['body'][] = "<p>". $params['body'] ."</p>";
+      $message['body'][] = group_invite_instructions();
       break;
   }
 }
@@ -416,6 +418,7 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
       $mail_language = user_preferred_language($existing_user);
       $mail_from = variable_get('site_mail', ini_get('sendmail_from'));
       $mail_to = $existing_user->mail;
+      $mail_params['body'] = $form_state['values']['message'];
       $mail_success = FALSE;
       foreach ( $member['maps_wrapper']['maps'] as $gid => $checked ) {
         if ( $checked) {
