@@ -35,6 +35,10 @@ foreach ($themed_rows as $count => $row) {
         $url = $hostname."sites/default/files/kml_icons/".$primary_term->tid.".png";
         print '
 <Style id="icon'.$primary_term->tid.'">
+  <LabelStyle>
+    <color>7fffffff</color>
+    <colorMode>normal</colorMode>
+  </LabelStyle>
   <IconStyle>
     <Icon>
       <href>'.$url.'</href>
