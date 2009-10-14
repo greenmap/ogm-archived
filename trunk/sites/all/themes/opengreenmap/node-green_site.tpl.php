@@ -88,7 +88,7 @@ if ($teaser) {
 
     <div id="bubble_left">
       <div id="bubble_media<?php if (empty($node->field_image[0]['view']) && empty($node->field_video[0]['view'])) print ' bubble_media_missing';?>">
-        <a href="#" rel='4' class='maximize'>
+        <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()" class="maximize" rel="4">
           <?php if (!empty($node->field_image[0]['view'])) { ?>
             <?php $img = strip_tags($node->field_image[0]['view'], '<img>'); ?>
             <?php print $img; // TODO better resizing ?>
@@ -110,7 +110,7 @@ if ($teaser) {
 
         <img src="<?php print base_path().path_to_theme().'/images/comments_bubble.gif' ?>" alt="(comments)" />
         <!-- TODO: add link -->
-        <a href="#" rel='2' class='maximize'>
+        <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()" class="maximize" rel="2">
           <?php if ($comment_count == 0) { ?>
             <?php print t('Add first comment'); ?>
           <?php } else { ?>

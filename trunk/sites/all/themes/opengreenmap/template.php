@@ -382,6 +382,35 @@ function phptemplate_views_view_list_list_of_impacts_for_site($view, $nodes, $ty
 // }
 
 /**
+ * Return rendered tabset.
+ *
+ * @themable
+ */
+function phptemplate_tabset($element) {
+  $output = '<div id="tabs-'. $element['#tabset_name'] .'"'. drupal_attributes($element['#attributes']) .'>';
+  $output .= '<ul class="tabs clear-block">';
+  foreach (element_children($element) as $key) {
+    if (isset($element[$key]['#type']) && $element[$key]['#type'] == 'tabpage') {
+      // Ensure the tab has content before rendering it.
+      if (
+        (isset($element[$key]['#ajax_url']) && !empty($element[$key]['#ajax_url'])) ||
+        (isset($element[$key]['#content']) && !empty($element[$key]['#content'])) ||
+        (isset($element[$key]['#children']) && !empty($element[$key]['#children']))
+      ) {
+        $output .= '<li'. drupal_attributes($element[$key]['#attributes']) .'><a href="' . $element[$key]['#url'] . '">'. $element[$key]['#title'] .'</a></li>';
+      }
+    }
+  }
+  $output .= '</ul>';
+  if (isset($element['#children'])) {
+    $output .= $element['#children'];
+  }
+  $output .= '</div>';
+  return $output;
+}
+
+
+/**
  * Custom user login block
  */
 
