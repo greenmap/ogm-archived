@@ -369,64 +369,63 @@ div.taximage img {
 
 /* zen copied tabs for bubbles */
 
+div.drupal-tabs ul.primary li
+{
+  display: block;
+  height: 24px;
+  margin: 0;
+  padding: 0 0 0 5px; /* width of tab-left.png */
+  border-width: 0;
+  font-weight: bold;
+  text-decoration: none;
+  color: #777;
+  background-color: transparent;
+  background: url(images/tab-left.png) no-repeat left -38px;
+}
 
-  div.drupal-tabs ul.primary li
-  {
-    display: block;
-    height: 24px;
-    margin: 0;
-    padding: 0 0 0 5px; /* width of tab-left.png */
-    border-width: 0;
-    font-weight: bold;
-    text-decoration: none;
-    color: #777;
-    background-color: transparent;
-    background: url(images/tab-left.png) no-repeat left -38px;
-  }
-
-  div#tabs-tabs ul.tabs {
+div#tabs-tabset ul.tabs {
 	height: 2em;
-  }
+}
 
-  div.drupal-tabs ul.primary li a
-  {
-    display: block;
-    height: 20px; /* 24px (parent) - 4px (padding) */
-    margin: -1px;
-    padding: 4px 13px 0 6px;
-    border-width: 0;
-    line-height: 20px;
-    background: url(images/tab-right.png) no-repeat right -38px;
-	position: relative;
-	top: 1px;
-  }
+div.drupal-tabs ul.primary li a
+{
+  display: block;
+  height: 20px; /* 24px (parent) - 4px (padding) */
+  margin: -1px;
+  padding: 4px 13px 0 6px;
+  border-width: 0;
+  line-height: 20px;
+  background: url(images/tab-right.png) no-repeat right -38px;
+  position: relative;
+  top: 1px;
+}
 
-  div.drupal-tabs ul.primary a:hover
-  {
-    border-width: 0;
-    background-color: transparent;
-    background: url(images/tab-left.png) no-repeat left -76px;
-  }
+div.drupal-tabs ul.primary a:hover
+{
+  border-width: 0;
+  background-color: transparent;
+  background: url(images/tab-left.png) no-repeat left -76px;
+}
 
-  div.drupal-tabs ul.primary li a:hover
-  {
-    background: url(images/tab-right.png) no-repeat right -76px;
-  }
+div.drupal-tabs ul.primary li a:hover
+{
+  background: url(images/tab-right.png) no-repeat right -76px;
+}
 
-  div.drupal-tabs ul.primary li.active ,
-  div.drupal-tabs ul.primary li.active
-  {
-    border-width: 0;
-    color: #000;
-    background-color: transparent;
-    background: url(images/tab-left.png) no-repeat left 0;
-  }
+div.drupal-tabs ul.primary li.active ,
+div.drupal-tabs ul.primary li.active
+{
+  border-width: 0;
+  color: #000;
+  background-color: transparent;
+  background: url(images/tab-left.png) no-repeat left 0;
+}
 
-  div.drupal-tabs ul.primary li.active a ,
-  div.drupal-tabs ul.primary li.active a:hover
-  {
-    background: url(images/tab-right.png) no-repeat right 0;
-  }
+div.drupal-tabs ul.primary li.active a ,
+div.drupal-tabs ul.primary li.active a:hover
+{
+  background: url(images/tab-right.png) no-repeat right 0;
+}
 /* end of tabs */
 
 div.fivestar {
@@ -529,14 +528,14 @@ h2#comments-title {
 
 /* disable comments everywhere except where explicitly allowed */
 
-div#green_site_full div.mycomments h2#comments-title,
-div#comments
+body.node-type-green-site h2#comments-title,
+div#comments-inner
 {
   display: none;
 }
 
-body.node-type-support-forum-issue div#comments,
-div#green_site_full div.mycomments div#comments
+body.node-type-support-forum-issue div#comments div#comments-inner,
+div#green_site_full div#comments div.mycomments div#comments-inner
 {
 	display: block;
 }
@@ -585,7 +584,7 @@ div#block-locale-0 ul, div#block-locale-0 li {
 	margin-right: 5px;
 }
 
-#tabs-tabs #impacts_chart {
+#tabs-tabset #impacts_chart {
 	float: left;
 	margin-top: 25px;
 }

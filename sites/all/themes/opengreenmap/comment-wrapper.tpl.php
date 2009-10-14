@@ -34,8 +34,12 @@
 ?>
 <?php if ($content) { ?>
   <div id="comments">
-    <h2 id="comments-title"><?php print t('Comments'); ?></h2>
-    <?php print $content; ?>
+    <?php if ($node->type != 'green_site') { ?>
+      <h2 id="comments-title"><?php print t('Comments'); ?></h2>
+    <?php } ?>
+    <div id="comments-inner">
+      <?php print $content; ?>
+    </div>
   </div>
 <?php } // if($content) ?>
 <!--/comment-wrapper.tpl.php-->

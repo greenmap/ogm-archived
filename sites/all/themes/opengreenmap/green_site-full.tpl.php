@@ -46,7 +46,7 @@ if($node->field_image[0]['value'] > '') {
 } elseif($node->field_video[0]['value'] > '') {
   $media_thumb = theme('emvideo_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
 }
-$media_thumb = str_replace('<a href="', '<a target="_blank" href="', $media_thumb);
+$media_thumb = preg_replace('/<a href="[^"]+"/', '<a href="#multimedia"', $media_thumb);
 
 // RM $siteicons code moved up along with icons display code ////////////
 if($node->field_accessible_by_public_tran[0]['value'] == 1) {
