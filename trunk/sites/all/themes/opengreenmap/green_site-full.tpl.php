@@ -1,9 +1,7 @@
 <!--green_site-full.tpl.php-->
-<?php
-
-if ($page == 0): ?>
+<?php if ($page == 0) { ?>
   <h2><a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a></h2>
-<?php endif; ?>
+<?php } ?>
 
 <?php
 if(node_access('update',$node) == true && $_GET['isSimple']){

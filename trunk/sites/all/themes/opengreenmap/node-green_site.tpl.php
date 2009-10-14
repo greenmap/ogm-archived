@@ -163,8 +163,10 @@ if ($teaser) {
   </div>
 <?php
 } else {
+  print '<div id="green_site_full">';
   // fetch the maximized bubble from an external file (for now)
   include('green_site-full.tpl.php');
+  print '</div>';
 }
 ?>
 </div>

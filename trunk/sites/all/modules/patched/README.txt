@@ -20,6 +20,7 @@ location module:
 views_bonus module:
   - KML output option as views feed display
     http://drupal.org/node/558206
+  - many changes to KML output to incorporate custom icon styles
 
 og module:
   - add views field to output group nid(s), not just group name(s)

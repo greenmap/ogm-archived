@@ -32,12 +32,10 @@
  * @see theme_comment_wrapper()
  */
 ?>
-<?php if ($content): ?>
+<?php if ($content) { ?>
   <div id="comments">
-    <?php if ($node->type != 'forum'): ?>
-      <h2 id="comments-title"><?php print t('Comments'); ?></h2>
-    <?php endif; ?>
+    <h2 id="comments-title"><?php print t('Comments'); ?></h2>
     <?php print $content; ?>
   </div>
-<?php endif; ?>
+<?php } // if($content) ?>
 <!--/comment-wrapper.tpl.php-->
