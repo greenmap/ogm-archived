@@ -527,12 +527,17 @@ h2#comments-title {
   font-size: 1.5em;
 }
 
-body.node-type-green-site div#comments,
-body.node-type-green-site h2#comments-title {
-	display: none;
+/* disable comments everywhere except where explicitly allowed */
+
+div#green_site_full div.mycomments h2#comments-title,
+div#comments
+{
+  display: none;
 }
 
-div.mycomments div#comments {
+body.node-type-support-forum-issue div#comments,
+div#green_site_full div.mycomments div#comments
+{
 	display: block;
 }
 
