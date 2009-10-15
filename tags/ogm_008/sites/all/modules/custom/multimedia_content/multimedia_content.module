@@ -1,0 +1,82 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *  Code for the Multimedia tab in a site's InfoWindow
+ */
+
+/**
+ *  Alters the form that is being displayed after a user chooses to add
+ *  a video or an image in the Multimedia tab, so that the Site
+ *  selector is not being shown.
+ *
+ *  This code was taken from impacts/impacts.module.
+ */
+function multimedia_content_form_alter(&$form, &$form_state, $form_id) {
+  // set default values for nodereference_select input
+  switch ($form_id) {
+    case 'video_node_form':
+      if ($get_nid = (int) $_GET['nid']) {
+        $form['field_site_0']['#default_value'][0]['nid'] = $get_nid;
+        drupal_add_css(drupal_get_path('module', 'multimedia_content') .'/multimedia_content.css');
+        unset($form['preview']);
+      }
+      break;
+    case 'photo_node_form':
+      if ($get_nid = (int) $_GET['nid']) {
+        $form['field_site_1']['#default_value'][0]['nid'] = $get_nid;
+        drupal_add_css(drupal_get_path('module', 'multimedia_content') .'/multimedia_content.css');
+        unset($form['preview']);
+      }
+      break;
+    case 'document_node_form':
+      if ($get_nid = (int) $_GET['nid']) {
+        $form['field_site_2']['#default_value'][0]['nid'] = $get_nid;
+        drupal_add_css(drupal_get_path('module', 'multimedia_content') .'/multimedia_content.css');
+        unset($form['preview']);
+      }
+      break;
+  }
+}
+
+/**
+ *  Return the description <div> of a media item.
+ * 
+ *  This has been renamed from outputMediaDescription.
+ *
+ *  @param $m
+ *    media item (array), see Multimedia tab code
+ *  @param $name
+ *    username
+ *  @return
+ *    HTML code
+ */
+function multimedia_content_media_description($m, $name) {
+  $ret = '';
+  if (!empty($m['title'])) {
+    $ret .= '<p class="multimedia_description_title">'. $m['title'] .'</p>';
+  }
+  $ret .= '<p class="multimedia_description_author">';
+  if ($m['type'] == 'video') {
+    $ret .= '<img src="'. base_path() . path_to_theme() .'/images/video.png" alt="video" title="video">';
+  }
+  elseif ($m['type'] == 'document') {
+    $ret .= '<img src="'. base_path() . path_to_theme() .'/images/pdf.png" alt="document" title="document">';
+  }
+  elseif ($m['type'] == 'image') {
+    $ret .= '<img src="'. base_path() . path_to_theme() .'/images/camera.png" alt="image" title="image">';
+  }
+  $m['author'] = str_replace('<a href=', '<a target="_blank" href=', $m['author']);
+  $ret .= ' '.t('added by !name', array('!name' => $m['author']));
+  $ret .= '</p>';
+  if (!empty($m['nid'])) {
+    $ret .= '<p class="multimedia_description_flag">';
+    $ret .= '<img src="'. base_path() . path_to_theme() .'/images/flag.png" alt="flag" title="Flag this content as inappropriate">';
+    $ret .= flag_create_link('flag_content', $m['nid']);
+  }
+  if (!empty($m['description'])) {
+    $ret .= '<p class="multimedia_description_description">'. $m['description'] .'</p>';
+  }
+  return $ret;
+}
