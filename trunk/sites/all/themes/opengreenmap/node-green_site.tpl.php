@@ -135,7 +135,7 @@ if ($teaser) {
           <p><?php print $location['city']; ?></p>
         <?php } ?>
         <?php if ($field_phone[0]['value'] != '') { ?>
-          <p><?php print $field_phone[0]['value']; ?></p>
+          <p><?php print check_plain($field_phone[0]['value']); ?></p>
         <?php } ?>
       </div>
     </div>
