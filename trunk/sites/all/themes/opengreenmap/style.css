@@ -479,7 +479,7 @@ a.downloadmap {
 	padding-left: 20px;
 }
 
-div#tabs-tabskey-1, div#tabs-tabskey-2, div#tabs-tabskey-3 {
+div#tabs-tabset-1, div#tabs-tabset-2, div#tabs-tabset-3 {
 	padding: 10px;
 	background: url(images/grey.png) repeat-y right;
 }
