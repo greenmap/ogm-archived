@@ -528,6 +528,7 @@ h2#comments-title {
 
 /* disable comments everywhere except where explicitly allowed */
 
+
 body.node-type-green-site h2#comments-title,
 div#comments-inner
 {
@@ -535,7 +536,7 @@ div#comments-inner
 }
 
 body.node-type-support-forum-issue div#comments div#comments-inner,
-div#green_site_full div#comments div.mycomments div#comments-inner
+div#green_site_full div.mycomments div#comments div#comments-inner
 {
 	display: block;
 }
