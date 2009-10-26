@@ -283,7 +283,7 @@
   #footer-message /* Wrapper for the footer message from Drupal's "Site information"
                      and for any blocks placed in the footer region */
   {
-    margin-left: 10px;
+    margin-left: 24px;
   }
 
 /** closure **/
@@ -292,6 +292,7 @@
   position: absolute;
   width: 100%;
   font-size: 0.75em;
+  padding-left: 40px;
 }
 
   #closure-blocks /* Wrapper for any blocks placed in the closure region */
