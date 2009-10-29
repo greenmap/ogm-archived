@@ -1,0 +1,882 @@
+<?php
+/**
+ * Implementation of hook_perm().
+ */
+function gmap_marker_perm() {
+  return array('administer gmap_marker');
+}
+
+function gmap_marker_menu(){
+  $items = array();
+  $items['node/gmap_marker/onmapchange'] = array(
+      'title' => 'OnMapChange',
+      'page callback' => 'gmap_marker_onMapChange',
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),
+    );
+  $items['node/gmap_marker/getshapes'] = array(
+      'title' => false,
+      'page callback' => 'gmap_marker_getShapes',
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),
+    );
+  $items['node/gmap_marker/clearnids'] = array(
+      'title' => 'Clear nid from the session',
+      'page callback' => 'gmap_marker_clearnids',
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access content'),
+    );
+  $items['node/gmap_marker/getMiniBubble'] = array(
+    'title' => 'GetMiniBubble',
+    'page callback' => 'gmap_marker_getMiniBubble',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+  $items['node/gmap_marker/getMaxBubble'] = array(
+    'title' => 'GetMaxBubble',
+    'page callback' => 'gmap_marker_getMaxBubble',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_gmap().
+ */
+function gmap_marker_gmap($op, $map=null) {
+  switch ($op) {
+    case 'pre_theme_map':
+
+      $path = drupal_get_path('module', 'gmap_marker');
+
+      if(  ( arg(0) == 'node' || arg(0) == 'greenmap_widget' ) && is_numeric(arg(1))) {
+        $nid = arg(1);
+        $type = db_result(db_query('SELECT type FROM {node} WHERE nid = %d', $nid));
+        $nidJS = "var mapNid = '".$nid."';\n";
+        drupal_add_js( $nidJS,'inline');
+      }
+      elseif(arg(0) == 'greenmap') {
+        $nidJS = "var mapNid;\n";
+        drupal_add_js( $nidJS,'inline');
+      }
+
+      if(arg(0) == 'greenmap_widget') {
+        // drupal_add_js( $path.'/ajax.js' );
+        // drupal_add_js( $icons,'inline');
+        drupal_add_js( $path.'/gmap_marker.js','module','header' );
+        // drupal_add_js( $path .'/gmap_groupmarker.js');
+//         drupal_add_js(drupal_get_path('module', 'group_map').'/key.js');
+        drupal_add_js($path . '/key.js');
+        // break;
+      }
+      if (
+           ((arg(0) == 'node' && is_numeric(arg(1))) ||
+            (arg(0) == 'greenmap') ||
+            (arg(0) == 'greenmap_widget'))
+          // don't show icons if we're editing a node
+           && ('edit' != arg(2))
+         )
+      {
+        $icons = '';
+        $icons .= "function getIcon(img){\n";
+        $icons .= "  var ico = new GIcon();\n";
+        $icons .= "  if(!img){return ico;}\n";
+        $icons .= "  ico.image = 'http://". $_SERVER["HTTP_HOST"] . base_path() ."'+img;\n";
+        $icons .= "  ico.iconSize = new GSize(24, 40);\n";
+        $icons .= "  ico.shadow = '';\n";
+        $icons .= "  ico.shadowSize = new GSize(0, 0);\n";
+        $icons .= "  ico.iconAnchor = new GPoint(1 ,40);\n";
+        $icons .= "  return ico;\n";
+        $icons .= "}\n\n";
+
+        drupal_add_js( $path.'/ajax.js' );
+        drupal_add_js( $icons,'inline');
+        drupal_add_js( $path.'/gmap_marker.js','module','footer' );
+        drupal_add_js( $path .'/gmap_groupmarker.js');
+        //GH: added
+        drupal_add_css($path.'/bubble.css');
+        // drupal_add_js(drupal_get_path('module', 'fivestar') . '/js/fivestar.js'); // perhaps redundant
+        drupal_add_css(drupal_get_path('module', 'fivestar') . '/css/fivestar.css');
+    }
+    if (($map['markers'] || $map['lines']) && $type != 'green_site') {
+      drupal_add_js($path .'/markerloader_greenmap.js');
+
+    }
+      break;
+  }
+}
+
+// gets ggm bubble icons
+// key : icon title (gmap_taxonomy_node / gmap_taxonomy_term)
+// value = icon image
+function gmap_marker_map_ggm_bubbleIcons(){
+  $icons = gmap_get_icondata();
+  $r = array();
+  while(list($k,$v) = each($icons['/ggm/']['i'][0][0][2])) {
+    $r[$icons['/ggm/']['i'][0][0][0][$k]]= drupal_get_path('module', 'gmap') ."/markers/ggm/" . $icons['/ggm/']['f'][$icons['/ggm/']['i'][0][0][2][$k][0]];
+  }
+  return $r;
+}
+
+function gmap_marker_zoomlevel($zoom){
+  switch($zoom){
+    case 0:  case 1:  case 2:  case 3:  case 4: $r = 11;break;
+    case 5:  case 6:  case 7:  case 8:  case 9: $r = 9;break;
+    case 10: case 11: case 12: case 13: case 14:$r = 7;break;
+    case 15: case 16: case 17:           $r = 5;break;
+
+  }
+  return $r;
+}
+
+function gmap_marker_clearnids(){
+  $nids = $_POST['nids'];
+  $data =($_SESSION['gmap_marker'])?$_SESSION['gmap_marker']:array();
+  if(count($data) == 0){return;} // if there is no cache why bother to run whole code and waste cpu?
+  if(!is_array($nids) || count($nids) == 0){return;} // if nids is empty or its not an array, runing the rest of the code will be just weste of time
+  while(list($k,$v) = each($nids)){
+    if($key = array_search($v,$data)){
+      unset($data[$key]);
+    }
+  }
+
+  $_SESSION['gmap_marker'] = $data;
+}
+
+function gmap_marker_onMapChange() {
+  //$nid  = (is_numeric(arg(3)) && arg(3) > 0) ? arg(3): null; //mapID
+
+  $args = array();
+  if(arg(3)) {
+    $case = arg(3);
+  }
+  else {
+    $case = 0;
+  }
+
+  if ($case == 'nearby' || $case == 'nearbybounds') {
+    $args['dist']  = (is_numeric(arg(4))) ? arg(4): null;
+    $args['unit'] = (check_plain(arg(5))) ? arg(5): null;
+    $args['lat']  = (is_numeric(arg(6))) ? arg(6): null;
+    $args['lon']  = (is_numeric(arg(7))) ? arg(7): null;
+    $args['inc'] = (is_numeric(arg(8))) ? arg(8): null;
+    $args['nid'] = (is_numeric(arg(9))) ? arg(9): null;
+    $args['keys'] = (check_plain(arg(10))) ? arg(10): null;
+  }
+  else {
+    $args['lat']  = (is_numeric(arg(4))) ? arg(4): null;
+    $args['lon']  = (is_numeric(arg(5))) ? arg(5): null;
+    $args['nid']  = (is_numeric(arg(6)) && arg(6) > 0) ? arg(6): null; //mapID
+  }
+
+  // mpc (Markers per country)
+  // The number of countries in the World is 194 (06/05/2008)
+  $r = '';
+  if(function_exists("onMapChange_case".$case)){
+    $r .= call_user_func("onMapChange_case".$case, $args);
+  }
+
+  //$_SESSION['gmap_marker'] = $data;
+  echo $r;
+
+  die();
+}
+
+
+function onMapChange_case0($args = array()) {
+  $mpc = 2; // This was sites per country,  but now is sites per GROUP (ie sites per map) - a much better way of getting a good spread of sites from around the world
+  $maxZoom = 0;
+  $data = array();
+
+  $q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude , m.marker, m.tid, og.nid AS og_nid
+     FROM {node} AS n
+     INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
+     INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
+     LEFT JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid
+     LEFT JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
+     LEFT JOIN {og}   AS og  ON  n2.nid = og.nid
+
+     WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND ( (oa.is_public = '1' ) AND n2.status = '1' AND og.og_private = '0')
+     ORDER BY og_nid DESC";
+
+  $prevousNid = null;
+  $mapcid = 'gmap_marker:homepage';
+  $r  = $maxZoom. "%%";
+  $r .= onMapChange_query($q,array('mpc' => $mpc,'limit'=>false),$data, $mapcid);
+  $_SESSION['gmap_marker'] = $data;
+  return $r;
+}
+
+function onMapChange_casezoom($args = array()) {
+  global $user;
+  $lat = $_POST['lat'];
+  $lon = $_POST['lon'];
+  $dx = $_POST['dx'];
+  $dy = $_POST['dy'];
+  $zoom = $_POST['zoom'];
+  $nid = $_POST['nid'];
+  $limit = $_POST['limit'];
+  if (!$lat || !$lon || !$dx || !$dy || !$zoom){
+    return;
+  }
+  // we use left join because of sites which are not in the map. In these cases oa.is_public will be null.
+  $og1 =  " LEFT JOIN {og_ancestry} AS oa ON n.nid = oa.nid LEFT JOIN {node} AS n2  ON  oa.group_nid = n2.nid LEFT JOIN {og} AS og ON n2.nid = og.nid ";
+  $og2 = " AND n.status = '1' AND ( (oa.is_public = '1') AND n2.status = '1' AND og.og_private = '0') ";
+
+  if(is_numeric($nid) && $nid > 0) {
+    // this inner join takes care of that all markers haveto be made for this map
+    $nid_q2 = " AND oa.group_nid = '".$nid."'";
+    // $mapcid = 'gmap_marker:' . $nid; // not setting mapcid yet, because it breaks all zooming.
+
+    if (array_key_exists($nid, $user->og_groups) || user_access('edit green_map content')) { // if user is part of a group, all private sites are shown
+      // $og1 = ''; // if we are part of a group we do need to see all sites
+      $og2 = ''; // if we are part of a group we do need to see all sites
+      // $mapcid = ''; // unset map cache id - we dont' want to cache view for mapmakers or they won't see their updates
+
+    }
+  }
+
+
+  $data =($_SESSION['gmap_marker'])?$_SESSION['gmap_marker']:array();
+  $data = array(); // we don't care sessions
+  $mpc = false;
+  $limit = ($limit)?$limit:($zoom * 10); // this is made for maps (not the global view).
+  /* Because we are giving zoomlevel 1 as a parameter, normal zoom times 10 is too few markers on the screen.
+   That's why we are giving another parameter called limit which overrides this calculation.
+   Look gmap_marker.js: function mapNodeLoad
+   */
+  //echo $limit;
+  $maxZoom = $zoom;
+
+
+  $q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude  , m.marker, m.tid
+     FROM {node} AS n
+     INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
+     INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
+     ".$og1."
+     ".$nid_q1."
+     WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' ".$og2." ".$nid_q2."
+     AND (".$lat."< l.latitude AND  l.latitude < ".($lat + $dy)." AND ".($lon)." < l.longitude AND l.longitude < ".($lon + $dx).")
+     LIMIT ".($limit * 4);
+
+  //print_r($data);
+  $prevousNid = null;
+  $r  = $maxZoom. "%%";
+  $r .= onMapChange_query($q,array('mpc' => $mpc,'limit'=>$limit),$data, $mapcid);
+  $_SESSION['gmap_marker'] = $data;
+  if ($_SESSION['gmap_marker_prox'] == 0) {
+    return $r;
+  }
+  elseif ($_SESSION['gmap_marker_prox'] == 1){
+     $_SESSION['gmap_marker_prox'] = 0;
+     return;
+  }
+}
+function onMapChange_caseborder($args = array()) {
+  if(!$args['lat'] || !$args['lon']){
+  return;
+  }
+  $data = array(); // we don't care sessions
+  $mpc = false;
+  $maxZoom = 10;
+  $add_zoomSQL = "AND (l.latitude > ".($args['lat'] - 0.35)." AND  l.latitude < ".($args['lat'] + 0.35)." AND l.longitude > ".($args['lon'] - 0.75)." AND l.longitude < ".($args['lon'] + 0.75).")";
+
+
+  $q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude ,tn.tid , m.marker, m.tid
+     FROM {node} AS n
+     INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
+
+     INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
+     INNER JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid
+     INNER JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
+     INNER JOIN {og}   AS og  ON  n2.nid = og.nid
+
+     WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND oa.is_public = '1' AND n2.status = '1' AND og.og_private = '0' ".
+     $add_zoomSQL
+    ."ORDER BY l.country, RAND()";
+
+  $prevousNid = null;
+  $r  = $maxZoom. "%%";
+  $r .= onMapChange_query($q,array('mpc' => $mpc),$data);
+  $_SESSION['gmap_marker'] = $data;
+  return $r;
+}
+function onMapChange_casemove($args = array()) {
+  if(!$args['lat'] || !$args['lon']){
+  return;
+  }
+
+  $data =($_SESSION['gmap_marker'])?$_SESSION['gmap_marker']:array();
+  $mpc = false;
+  $maxZoom = 10;
+  $add_zoomSQL = "AND (l.latitude > ".($args['lat'] - 0.35)." AND  l.latitude < ".($args['lat'] + 0.35)." AND l.longitude > ".($args['lon'] - 0.75)." AND l.longitude < ".($args['lon'] + 0.75).")";
+
+  $q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude ,tn.tid , m.marker, m.tid
+     FROM {node} AS n
+     INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
+     INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
+     INNER JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
+     INNER JOIN {og}   AS og  ON  n2.nid = og.nid
+
+     WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND oa.is_public = '1' AND n2.status = '1' AND og.og_private = '0' ".
+     $add_zoomSQL
+    ."ORDER BY l.country, RAND()";
+
+  $prevousNid = null;
+  $r  = $maxZoom. "%%";
+  $r .= onMapChange_query($q,array('mpc' => $mpc),$data);
+  $_SESSION['gmap_marker'] = $data;
+  return $r;
+
+}
+/*
+ * muista luoda testi mitä käyttäjä näkee! jos ryhmän jäsen -> näkee myös privaatit, muuten PIILOON!
+ */
+function onMapChange_casenid($args = array()) {
+  $data =($_SESSION['gmap_marker'])?$_SESSION['gmap_marker']:array();
+  $data = array();
+  if(!is_numeric($args['nid']) || $args['nid'] <= 0) {
+    return;
+  }
+
+  $mpc = false;
+  $maxZoom = 0;
+  $add_zoomSQL = '';
+
+  $q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude ,tn.tid , m.marker, m.tid
+     FROM {node} AS n
+     INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
+     INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
+
+     INNER JOIN nodefamily AS nf ON n.nid = nf.child_nid
+
+     WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1'
+     AND nf.parent_nid = '".$args['nid']."'
+     ORDER BY l.country, RAND()";
+
+/*
+     INNER JOIN {term_node}  AS tn ON  n.nid = tn.nid
+     INNER JOIN {term_image}  AS ti ON  tn.tid = ti.tid
+*/
+  $r .= onMapChange_query($q,array('mpc' => $mpc),$data);
+  $_SESSION['gmap_marker'] = $data;
+  return $r;
+}
+
+function onMapChange_casenearby($args = array()) {
+  $distance_num = $args['dist'];
+  $distance_unit = $args['unit'];
+
+  $lon = $args['lon'];
+  $lat = $args['lat'];
+
+  $inc = $args['inc'];
+  $nid = $args['nid'];
+
+  $keywords = split(' ', $args['keys']);
+  $kewyword_count = count($keywords);
+  $keyi = 0;
+  foreach ($keywords as $key => $word) {
+    if ($keyi == 0) {
+      $words = "search_index.word = '". $word ."'";
+    }
+    else {
+      $words .= " OR search_index.word = '". $word ."'";
+    }
+  }
+
+  $key_query = "SELECT node.nid AS nid,
+    SUM(search_index.score * search_total.count) AS score,
+    node.title AS node_title,
+    node.changed AS node_changed
+  FROM node node
+  LEFT JOIN search_index search_index ON node.nid = search_index.sid
+  LEFT JOIN search_total search_total ON search_index.word = search_total.word
+  WHERE (node.status <> 0) AND (node.type in ('green_site')) AND (". $words .") AND (search_index.type = 'node')
+  GROUP BY search_index.sid, node_title, node_changed, nid
+  HAVING COUNT(*) >= 1
+  ORDER BY node_title ASC, node_changed DESC";
+  $nids = array();
+
+  $key_result = db_query($key_query);
+  while($obj = db_fetch_object($key_result)) {
+    $nids[] = $obj->nid;
+  }
+  if (count($nids) > 0) {
+    $keys = TRUE;
+  }
+  else {
+    $keys = FALSE;
+  }
+  $distance_meters = _location_convert_distance_to_meters($distance_num, $distance_unit);
+  $lat_bounds = earth_latitude_range($lon, $lat, $distance_meters);
+  $lon_bounds = earth_longitude_range($lon, $lat, $distance_meters);
+
+  //break the bounds into sub arrays to get wider geographic spreads.
+  $lat_mid_dist = ($lat_bounds[1] - $lat_bounds[0])/2;
+  $lon_mid_dist = ($lon_bounds[1] - $lon_bounds[0])/2;
+
+  $latmid = $lat_bounds[0] + $lat_mid_dist;
+  $lonmid = $lon_bounds[0] + $lon_mid_dist;
+
+  $lonqt0 = $lon_bounds[0] + ($lon_mid_dist/2);
+  $lonqt1 = $lonmid + ($lon_mid_dist/2);
+
+  $ranges = array();
+  $ranges['nw'] = array(
+    'lats' => array($latmid, $lat_bounds[1]),
+    'lons' => array($lon_bounds[0], $lonqt0)
+    );
+  $ranges['nnwm'] = array(
+    'lats' => array($latmid, $lat_bounds[1]),
+    'lons' => array($lonqt0, $lonmid)
+    );
+  $ranges['nnem'] = array(
+    'lats' => array($latmid, $lat_bounds[1]),
+    'lons' => array($lonmid, $lonqt1)
+    );
+  $ranges['ne'] = array(
+    'lats' => array($latmid, $lat_bounds[1]),
+    'lons' => array($lonqt1, $lon_bounds[1]),
+    );
+  $ranges['se'] = array(
+    'lats' => array($lat_bounds[0], $latmid),
+    'lons' => array($lonqt1, $lon_bounds[1]),
+    );
+  $ranges['sem'] = array(
+    'lats' => array($lat_bounds[0], $latmid),
+    'lons' => array($lonmid, $lonqt1),
+    );
+  $ranges['swm'] = array(
+    'lats' => array($lat_bounds[0], $latmid),
+    'lons' => array($lonqt0, $lonmid),
+    );
+  $ranges['sw'] = array(
+    'lats' => array($lat_bounds[0], $latmid),
+    'lons' => array($lon_bounds[0], $lonqt0),
+    );
+
+  $mpc = TRUE;
+  $maxZoom = 0;
+  $r  = $maxZoom. "%%";
+
+  // run the query for each quandrant.
+  foreach ($ranges as $key => $range) {
+    $latrange = $range['lats'];
+    $lonrange = $range['lons'];
+
+
+    $data = array();
+
+    $q = "SELECT DISTINCT(node.nid) AS nid,
+    node.vid AS node_vid,
+    node.title AS title,
+    location.latitude AS latitude,
+    location.longitude AS longitude,
+    primary_term.tid AS tid,
+    gmap_taxonomy_node.marker AS marker
+  FROM node node
+  INNER JOIN primary_term primary_term ON primary_term.vid = node.vid
+  LEFT JOIN location_instance location_instance ON node.vid = location_instance.vid
+  LEFT JOIN location location ON location_instance.lid = location.lid
+  Left JOIN gmap_taxonomy_node gmap_taxonomy_node ON gmap_taxonomy_node.tid = primary_term.tid";
+
+    // exclude
+    if ($inc == 0 && $nid > 0) {
+      $q .= ' LEFT JOIN og_ancestry og_ancestry ON node.nid = og_ancestry.nid ';
+    }
+    $q .= " WHERE (node.status <> 0) AND (node.type in ('green_site')) AND (location.latitude > ". $latrange[0] ." AND location.latitude < ". $latrange[1] ." AND location.longitude > ". $lonrange[0] ." AND location.longitude < ". $lonrange[1] .") ";
+
+    if ($inc == 0 && $nid > 0) {
+      $q .= ' AND og_ancestry.group_nid !='. $nid .' ';
+    }
+    $q .= " ORDER BY RAND()";
+    if (!$keys) {
+      $q .= " LIMIT 15";
+    }
+    $result = db_query($q);
+    if($result) {
+      $c = 0;
+      $cCountry = '';
+      $icoImgs = gmap_marker_map_ggm_bubbleIcons();
+      while ($row = db_fetch_object($result)) {
+        if ((count($nids) > 0 && in_array($row->nid, $nids)) || !$keys) {
+          if($mpc && $cCountry != $nid) {
+            $cCountry = $row->og_nid;
+            $c = 0;
+          }
+          if($mpc && $c >= $mpc) {
+            continue;
+          }
+          array_push($data,$row->nid);
+          $parents = getMarkerTaxonomy($row->tid);
+          $g = $row->tid.':'.$parents[0].':'.$parents[1];
+          $r .= $row->nid ."*". $row->latitude ."*". $row->longitude ."*opt.icon=getIcon('" .$icoImgs[$row->marker] ."'); opt.title= \"". str_replace("\"", "\\\"", $row->title) ."\";";
+          $r .= "*~*".$g;
+          $r .= "\n";
+        }
+      }
+    }
+  }
+  $_SESSION['gmap_marker'] = $data;
+  $_SESSION['gmap_marker_prox'] = 1;
+  return $r;
+}
+
+// return the bounds, but not markers of prox request
+function onMapChange_casenearbybounds($args = array()) {
+  $distance_num = $args['dist'];
+  $distance_unit = $args['unit'];
+
+  $lon = $args['lon'];
+  $lat = $args['lat'];
+
+  $distance_meters = _location_convert_distance_to_meters($distance_num, $distance_unit);
+  $lat_range = earth_latitude_range($lon, $lat, $distance_meters);
+  $lon_range = earth_longitude_range($lon, $lat, $distance_meters);
+
+$r ='<?xml version="1.0"?>
+  <bounds>
+  <bound name="sw" lat="'. $lat_range[0] .'" lng="'. $lon_range[0] .'"/>
+  <bound name="nw" lat="'. $lat_range[1] .'" lng="'. $lon_range[0] .'"/>
+  <bound name="ne" lat="'. $lat_range[1] .'" lng="'. $lon_range[1] .'"/>
+  <bound name="se" lat="'. $lat_range[0] .'" lng="'. $lon_range[1] .'"/>
+</bounds>';
+
+
+//   $r = 'GLatLng('. $latrange[0] .','. $latrange[1] .'),GLatLng('. $lonrange[0] .','. $lonrange[1] .')';
+
+  return $r;
+}
+
+function onMapChange_query($q,$args,&$data,$mapcid=NULL){
+  // If a cid (cache ID) has been passed, see if there's anything in cache for this
+  if($mapcid){
+    if($r = cache_get($mapcid, 'cache_gmap_marker')){
+      return $r->data;
+    }
+  }
+  // if there is something in cache, return it
+
+  // else do the query and store in cache for that cid
+  $result = db_query($q);
+  $r = '';
+  $mpc = $args['mpc']; // this is set to false unless we're on the worldview
+  $limit = $args['limit'];
+  if($result) {
+    $i = 0;
+    $c = 0;
+    $cCountry = ''; // this used to represent countries, but now actually represents group nid, og_nid
+    $icoImgs = gmap_marker_map_ggm_bubbleIcons();
+    while ($row = db_fetch_object($result)) {
+      if($limit && $i >= $limit) { // if limit is set and limit is full we can break the loop
+        break;
+      }
+      if($row->nid == $prevousNid) {
+        continue;
+      }
+      else {
+        $prevousNid = $row->nid;
+      }
+      if($mpc && $cCountry != $row->og_nid) {
+       $cCountry = $row->og_nid;
+       $c = 0;
+      }
+      if($mpc && $c >= $mpc) {
+        continue;
+      }
+      if(in_array($row->nid,$data)) {
+        continue;
+      }
+      array_push($data,$row->nid);
+      $c++;
+      $i++;
+      $parents = getMarkerTaxonomy($row->tid);
+      $g = $row->tid.':'.$parents[0].':'.$parents[1];
+      $r .= $row->nid ."*". $row->latitude ."*". $row->longitude ."*opt.icon=getIcon('" .$icoImgs[$row->marker] ."'); opt.title= \"". str_replace("\"", "\\\"", $row->title) ."\";";
+      $r .= "*~*".$g;
+      $r .= "\n";
+    }
+  }
+  if($mapcid){
+    //cache_set($mapcid, 'cache', CACHE_TEMPORARY, $r);
+    cache_set($mapcid, $r, 'cache_gmap_marker', CACHE_TEMPORARY);
+  }
+  return $r;
+}
+
+function gmap_marker_getShapes() {
+
+  $args = array();
+  if(arg(3)){
+    $case = arg(3);
+  }else {
+    $case = 0;
+  }
+
+  $r = '';
+  if(function_exists("getShapes_case".$case)){
+    $r .= call_user_func("getShapes_case".$case, $args);
+  }
+  echo $r;
+  die();
+}
+
+function getShapes_casezoom($args = array()) {
+  global $user;
+  $lat = $_POST['lat'];
+  $lon = $_POST['lon'];
+  $dx = $_POST['dx'];
+  $dy = $_POST['dy'];
+  $zoom = $_POST['zoom'];
+  $nid = $_POST['nid'];
+  $limit = $_POST['limit'];
+
+  if(!$lat || !$lon || !$dx || !$dy || !$zoom){return;}
+  // we use left join because of sites which are not in the map. In these cases oa.is_public will be null.
+  $og1 =  " LEFT JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid ".
+       "LEFT JOIN {node}   AS n2  ON  oa.group_nid = n2.nid ".
+       "LEFT JOIN {og}   AS og  ON  n2.nid = og.nid ";
+  $og2 = " AND n.status = '1' AND ((oa.is_public = '1' AND n2.status = '1' AND og.og_private = '0') OR (oa.is_public IS NULL))";
+
+
+  if(is_numeric($nid) && $nid > 0) {
+    $nid_q2 = " AND oa.group_nid = '".$nid."'";
+    if (array_key_exists($nid, $user->og_groups) || user_access('edit green_map content')) { // if user is part of a group, all private sites are shown
+      $og2 = ''; // if we are part of a group we do need to see all sites
+    }
+  }
+
+
+  $data =($_SESSION['gmap_marker'])?$_SESSION['gmap_marker']:array();
+  $data = array(); // we don't care sessions
+  $mpc = false;
+  $limit = ($limit)?$limit:($zoom * 10); // this is made for maps (not the global view).
+  /* Because we are giving zoomlevel 1 as a parameter, normal zoom times 10 is too few markers on the screen.
+   That's why we are giving another parameter called limit which overrides this calculation.
+   Look gmap_marker.js: function mapNodeLoad
+   */
+  $maxZoom = $zoom;
+
+
+  $q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude  , m.marker, m.tid
+     FROM {node} AS n
+     INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
+     ".$og1."
+     ".$nid_q1."
+     WHERE n.type ='green_site' ".$og2." ".$nid_q2."
+     LIMIT ".($limit * 4);
+
+  $prevousNid = null;
+  $r  = $maxZoom. "%%";
+  $r .= onMapChange_query($q,array('mpc' => $mpc,'limit'=>$limit),$data);
+  $_SESSION['gmap_marker'] = $data;
+  return $r;
+}
+
+
+function gmap_marker_getMiniBubble() {
+  $nid =(is_numeric(arg(3))) ? arg(3) : 0;
+  $node = node_load($nid);
+  echo node_view($node, true);
+  die();
+}
+
+
+function gmap_marker_getMaxBubble() {
+  $nid =(is_numeric(arg(3))) ? arg(3) : 0;
+  $node = node_load($nid);
+  echo node_view($node, false);
+  die();
+}
+
+/**
+ *  returns genre / category of a given marker term id
+ */
+function getMarkerTaxonomy($tid)
+{
+  $markers_taxonomy = array(
+    2 => array(43, 1),
+    3 => array(43, 1),
+    5 => array(43, 4),
+    7 => array(42, 6),
+    9 => array(42, 8),
+    11 => array(42, 10),
+    12 => array(42, 10),
+    14 => array(44, 13),
+    15 => array(43, 4),
+    17 => array(42, 16),
+    18 => array(44, 13),
+    20 => array(43, 28),
+    21 => array(42, 16),
+    24 => array(44, 47),
+    25 => array(42, 10),
+    26 => array(42, 10),
+    27 => array(42, 10),
+    29 => array(43, 28),
+    30 => array(42, 10),
+    31 => array(44, 46),
+    32 => array(42, 6),
+    33 => array(44, 13),
+    34 => array(43, 4),
+    35 => array(42, 16),
+    36 => array(44, 13),
+    37 => array(42, 6),
+    38 => array(43, 48),
+    39 => array(43, 28),
+    40 => array(42, 6),
+    41 => array(44, 23),
+    45 => array(42, 10),
+    49 => array(43, 48),
+    50 => array(43, 1),
+    51 => array(44, 13),
+    52 => array(44, 13),
+    53 => array(44, 13),
+    54 => array(44, 13),
+    55 => array(44, 13),
+    56 => array(44, 13),
+    57 => array(44, 13),
+    58 => array(44, 13),
+    59 => array(44, 13),
+    60 => array(44, 13),
+    61 => array(44, 13),
+    62 => array(44, 13),
+    63 => array(44, 13),
+    64 => array(44, 46),
+    65 => array(44, 46),
+    66 => array(44, 46),
+    67 => array(44, 46),
+    68 => array(44, 46),
+    69 => array(44, 46),
+    70 => array(44, 46),
+    71 => array(44, 46),
+    72 => array(44, 46),
+    73 => array(44, 46),
+    74 => array(44, 46),
+    75 => array(44, 23),
+    76 => array(44, 23),
+    77 => array(44, 23),
+    78 => array(44, 23),
+    79 => array(44, 23),
+    80 => array(44, 23),
+    81 => array(44, 23),
+    82 => array(44, 23),
+    83 => array(44, 23),
+    84 => array(44, 23),
+    85 => array(44, 23),
+    86 => array(44, 23),
+    87 => array(44, 23),
+    88 => array(44, 47),
+    89 => array(44, 47),
+    90 => array(44, 47),
+    91 => array(44, 47),
+    92 => array(44, 47),
+    93 => array(44, 47),
+    94 => array(44, 47),
+    95 => array(44, 47),
+    96 => array(44, 47),
+    97 => array(44, 47),
+    98 => array(44, 47),
+    99 => array(44, 47),
+    100 => array(44, 47),
+    101 => array(44, 47),
+    102 => array(44, 47),
+    103 => array(43, 4),
+    104 => array(43, 4),
+    105 => array(43, 4),
+    106 => array(43, 4),
+    107 => array(43, 4),
+    108 => array(43, 4),
+    109 => array(43, 4),
+    110 => array(43, 4),
+    111 => array(43, 4),
+    112 => array(43, 1),
+    113 => array(43, 1),
+    114 => array(43, 1),
+    115 => array(43, 1),
+    116 => array(43, 1),
+    117 => array(43, 1),
+    118 => array(43, 28),
+    119 => array(43, 28),
+    120 => array(43, 28),
+    121 => array(43, 28),
+    122 => array(43, 28),
+    123 => array(43, 28),
+    124 => array(43, 28),
+    125 => array(43, 28),
+    126 => array(43, 48),
+    127 => array(43, 48),
+    128 => array(43, 48),
+    129 => array(43, 48),
+    130 => array(43, 48),
+    131 => array(43, 48),
+    132 => array(43, 48),
+    133 => array(43, 48),
+    134 => array(43, 48),
+    135 => array(43, 48),
+    136 => array(43, 48),
+    137 => array(43, 48),
+    138 => array(42, 10),
+    139 => array(42, 10),
+    140 => array(42, 10),
+    141 => array(42, 10),
+    142 => array(42, 10),
+    143 => array(42, 10),
+    144 => array(42, 10),
+    145 => array(42, 10),
+    146 => array(42, 10),
+    147 => array(42, 10),
+    148 => array(42, 8),
+    149 => array(42, 8),
+    150 => array(42, 8),
+    151 => array(42, 8),
+    152 => array(42, 8),
+    153 => array(42, 8),
+    154 => array(42, 8),
+    155 => array(42, 8),
+    156 => array(42, 8),
+    157 => array(42, 8),
+    158 => array(42, 8),
+    159 => array(42, 8),
+    160 => array(42, 8),
+    161 => array(42, 8),
+    162 => array(42, 8),
+    163 => array(42, 8),
+    164 => array(42, 8),
+    165 => array(42, 6),
+    167 => array(42, 6),
+    168 => array(42, 6),
+    169 => array(42, 6),
+    170 => array(42, 6),
+    171 => array(42, 6),
+    172 => array(42, 6),
+    173 => array(42, 6),
+    174 => array(42, 16),
+    175 => array(42, 16),
+    176 => array(42, 16),
+    177 => array(42, 16),
+    178 => array(42, 16),
+    179 => array(42, 16),
+    180 => array(42, 16),
+    181 => array(42, 16),
+    182 => array(42, 16),
+    183 => array(42, 16),
+    184 => array(42, 16),
+    185 => array(42, 16),
+    191 => array(44, 13),
+    192 => array(42, 6)
+  );
+/*
+ select a.marker,c.name,cc.name from gmap_taxonomy_term as a inner join term_hierarchy as b on a.tid=b.tid inner join term_data as c on b.parent = c.tid inner join term_hierarchy as bb on bb.tid = c.tid inner join term_data as cc on cc.tid = bb.parent;
+ */
+  if (!array_key_exists($tid, $markers_taxonomy)) {
+    return FALSE;
+  } else {
+    return ($markers_taxonomy[$tid]);
+  }
+}
+
+function gmap_marker_views_default_views() {
+  return $views;
+}

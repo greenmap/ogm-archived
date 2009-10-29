@@ -1,0 +1,205 @@
+<html>
+<head>
+<title>
+Editor's Manual
+</title>
+<style type="text/css"><!--
+body { margin: 30px; width: 800px; line-height: 1.2em;}
+h1, h2, h3, h4, h5, h6 { color: #237bbf; }
+h1 { font-size: 1.5em; }
+h2 { font-size: 1.2em; }
+h3 { font-size: 1.0em; }
+a:link    { color: #237bbf; }
+a:visited { color: #2a3963; }
+a:hover   { color: #dd0000; }
+a:active  { color: #990000; }
+--></style>
+</head>
+
+<body>
+
+<h1>Table of Contents</h1>
+<ul>
+  <li><a href="#translate_text">Translating Text</a></li>
+  <li><a href="#manage_languages">Managing Languages</a></li>
+</ul>
+
+<h2><a name="translate_text">Translating Text</a></h2>
+
+<h3><a name="translation_overview">Page Translation Overview</a></h3>
+
+<p>
+You can see a list of pages and a summary of their translation status here: 
+<br />
+<a href="http://www.opengreenmap.org/admin/content/translation_overview_manage">http://www.opengreenmap.org/admin/content/translation_overview_manage</a>
+</p>
+
+<h3><a name="string_translation">Phrase Translation Overview</a></h3>
+
+<p>
+Some phrases may not appear in the popup translation tool (for example, the
+bubble text from the map).  In this case, please translate them here:
+<br />
+<a href="http://www.opengreenmap.org/admin/build/translate/">http://www.opengreenmap.org/admin/build/translate/</a>
+</p>
+
+<p>
+You can search for phrases here.  The "Translation Table" tab is useful for
+reviewing and adding translations.
+</p>
+
+<h3><a name="translate_blocks">Translating Blocks</a></h3>
+
+<p>
+There are three ways to do this, each with their advantages.  I'll
+describe the two simplest here.
+</p>
+
+<p>
+<strong>Case #1: You want to add a block which will appear only in one language.</strong>
+</p>
+
+<p>
+Steps: Create or edit your block at
+<a href="http://www.opengreenmap.org/admin/build/block">http://www.opengreenmap.org/admin/build/block</a>
+and under 'Multilingual Settings' choose one of English, Spanish, or Portuguese.
+</p>
+
+<p>
+<strong>
+Case #2: You want the same block to appear everywhere but with different
+text.
+</strong>
+</p>
+
+<p>
+Steps: Create or edit your block at
+<a href="http://www.opengreenmap.org/admin/build/block">http://www.opengreenmap.org/admin/build/block</a>
+and under 'Multilingual Settings' choose 'All languages' (not translatable).
+Next, under the 'Block body' text area, set the Input format to 'Full HTML'.
+Then, enter text for each language separately, marking them as follows:
+</p>
+
+<pre>
+===es===
+This will only appear when the site is set to Spanish.
+===pt-br===
+This will only appear when the site is set to Portuguese.
+===en===
+This will only appear when the site is set to English.
+===qz===
+This default text will only appear when the site is set to a language not yet
+specified above.
+</pre>
+
+<p>
+You can also use the code <tt>===qq===</tt> for text which will appear in every
+language.
+</p>
+
+<h3>Translating Multilingual Variables</h3>
+
+<p>
+The site name, footer message, and some other basic information must be
+translated here:
+<br />
+<a href="http://www.opengreenmap.org/admin/settings/site-information">http://www.opengreenmap.org/admin/settings/site-information</a>
+</p>
+
+<p>
+The text above the Contact Us form must be translated here:
+<br />
+<a href="http://www.opengreenmap.org/admin/build/contact/settings">http://www.opengreenmap.org/admin/build/contact/settings</a>
+</p>
+
+<p>
+Note that any form input labelled "This is a multilingual variable" can be set
+independently for each active language on the site.  To translate it, switch
+to the appropriate language, enter the translation, and click Save.
+</p>
+
+<h3>Translating Other Phrases</h3>
+
+<p>
+The message which appears beside the CAPTCHA test presented when anonymous
+users enter content must be translated here:
+<a href="http://www.opengreenmap.org/admin/user/captcha">http://www.opengreenmap.org/admin/user/captcha</a>
+</p>
+
+<h2><a name="manage_languages">Managing Languages</a></h2>
+
+<h3>Adding a new language option for green sites (NOT a new translation of
+entire site)</h3>
+
+<p>
+To do this, simply add the new language at
+<a href="http://www.opengreenmap.org/admin/settings/language">http://www.opengreenmap.org/admin/settings/language</a>
+but do not mark it as enabled.
+</p>
+
+<h3>Adding a new translation of entire site</h3>
+
+<ol>
+<li>
+Add the new language at
+<a href="http://www.opengreenmap.org/admin/settings/language">http://www.opengreenmap.org/admin/settings/language</a>
+but do not set it as enabled yet.
+<li>
+Download translations for Drupal core from
+<a href="http://drupal.org/project/translations">http://drupal.org/project/translations</a>
+and import them at
+<a href="http://www.opengreenmap.org/admin/build/translate/import">http://www.opengreenmap.org/admin/build/translate/import</a>
+<li>
+Export a list of translation templates from
+<a href="http://www.opengreenmap.org/admin/build/translate/export">http://www.opengreenmap.org/admin/build/translate/export</a>
+for content types, menus, profiles, and taxonomy terms, fill these in, and
+send them to Matt Corks (<a href="mailto:matt@openflows.com">matt@openflows.com</a>)
+to check the syntax and upload to the site.
+<li>
+To load translations for third-party modules, go to the page
+<a href="http://www.opengreenmap.org/admin/build/translate/import">http://www.opengreenmap.org/admin/build/translate/import</a>,
+click 'reimport packages', select the new language, <strong>make sure that all
+options under 'clean up textgroups in database before import' are disabled
+(<em>including</em> 'built-in interface')</strong>, then click 'reimport
+packages'.
+<li>
+Create a translation of the home page by going to the home page, clicking the
+'translate' tab, clicking 'add translation' beside the new language, setting
+the Title field to the translation of 'Open Green Map' in the new language and
+the URL path setting to the translation of 'home' or 'homepage' in the new
+language.  (The bug which required all page aliases have to be distinct, even
+between languages, has been fixed.  For more information, see
+<a href="https://bugs.openflows.com/view.php?id=1407">issue #1407</a>. You
+should also only use Latin characters, without accents, so that the site will
+be compatible with older web browsers and operating systems.)  You will need
+to set this path to be the default homepage for the site for the new language
+after the language is enabled (see below).
+<li>
+Edit <tt>sites/all/themes/opengreenmap/style.css</tt> to include the 
+id of the div which contains the new translation of the homepage in the list
+of pages for which the world map background image is displayed.
+For example, the English homepage div id is <tt>div#node-1540</tt>, so search
+for that string and add the new node id to the list.
+<li>
+Translate any other pages on the site which are considered essential for the
+launch of the new site, such as
+<a href="http://www.opengreenmap.org/about">http://www.opengreenmap.org/about</a>
+<li>
+Send Matt Corks a copy of
+the 'donate' button
+(<a href="http://www.opengreenmap.org/sites/all/themes/opengreenmap/images/donate_button.gif">http://www.opengreenmap.org/sites/all/themes/opengreenmap/images/donate_button.gif</a>)
+translated into the new language (because for now putting this in place
+requires some minor programming in sites/all/themes/opengreenmap/page.tpl.php).
+<li>
+Set the new language to be enabled at
+<a href="http://www.opengreenmap.org/admin/settings/language">http://www.opengreenmap.org/admin/settings/language</a>
+<li>
+Update the site name, footer message, anonymous user name, and default front
+page by going to
+<a href="http://www.opengreenmap.org/admin/settings/site-information">http://www.opengreenmap.org/admin/settings/site-information</a> and switching to the new language.
+Update the site contact form description by going to
+<a href="http://www.opengreenmap.org/admin/build/contact/settings">http://www.opengreenmap.org/admin/build/contact/settings</a> and switching to the new language.
+<li>
+Use the translation tools described above to translate the remaining text in
+the site.
+</ol>

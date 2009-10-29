@@ -1,0 +1,11 @@
+; $Id: mobile_tools.info,v 1.1.2.1 2009/07/15 12:57:05 tdrycker Exp $
+
+name = Mobile Tools
+
+description = "This module gives a set of functionality to make your site mobile"
+
+core = 6.x
+
+package = Mobile
+
+dependencies[] = token
