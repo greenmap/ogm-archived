@@ -18,7 +18,7 @@ class views_bonus_plugin_style_export_kml extends views_bonus_plugin_style_expor
    */
   function init(&$view, &$display, $options = NULL) {
     parent::init($view, $display, $options = NULL);
-    $this->feed_image = drupal_get_path('module', 'views_bonus_export') . '/images/xml.png';
+    $this->feed_image = drupal_get_path('module', 'views_bonus_export') . '/images/kml.png';
   }
 
   /**
@@ -32,6 +32,11 @@ class views_bonus_plugin_style_export_kml extends views_bonus_plugin_style_expor
 
     $options['filename'] = array(
       'default' => 'view-%view.kml',
+      'translatable' => FALSE,
+    );
+
+    $options['labels'] = array(
+      'default' => TRUE,
       'translatable' => FALSE,
     );
 
@@ -54,6 +59,14 @@ class views_bonus_plugin_style_export_kml extends views_bonus_plugin_style_expor
       '#title' => t('KML filename'),
       '#default_value' => $this->options['filename'],
       '#description' => t('The filename that will be suggested to the browser for downloading purposes. %view will be replaced with the view name.'),
+      '#process' => array('views_process_dependency'),
+      '#dependency' => array('edit-style-options-override' => array(FALSE)),
+    );
+    $form['labels'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show Labels'),
+      '#default_value' => $this->options['labels'],
+      '#description' => t('Include icon labels in KML file.'),
       '#process' => array('views_process_dependency'),
       '#dependency' => array('edit-style-options-override' => array(FALSE)),
     );

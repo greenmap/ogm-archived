@@ -20,6 +20,8 @@ print '<kml xmlns="http://www.opengis.net/kml/2.2">'."\n";
 
 print "<Document>\n";
 
+$show_labels = $options['labels'] ? 'ffffffff' : '00ffffff';
+
 foreach ($themed_rows as $count => $row) {
   foreach ($row as $field => $content) {
     $label = $header[$field] ? $header[$field] : $field;
@@ -36,7 +38,7 @@ foreach ($themed_rows as $count => $row) {
         print '
 <Style id="icon'.$primary_term->tid.'">
   <LabelStyle>
-    <color>7fffffff</color>
+    <color>'.$show_labels.'</color>
     <colorMode>normal</colorMode>
   </LabelStyle>
   <IconStyle>

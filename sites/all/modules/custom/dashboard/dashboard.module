@@ -151,7 +151,7 @@ function dashboard_import_export($nid) {
     $content .= "<ul><li>".
       t('<a href="@csv_export_link">Export Map Data as <abbr title="Comma Separated Variable">CSV</abbr> file</a> (for use with spreadsheet software such as OpenOffice Calc or Microsoft Excel)', array('@csv_export_link' => url('dashboard/sites/'. $nid .'/map_export.csv')))
       ."</li><li>".
-      t('<a href="@kml_export_link">Export Map Data as <abbr title="Keyhole Markup Language">KML</abbr> file</a> (for use with mapping software such as Google Earth)', array('@kml_export_link' => url('dashboard/sites/'. $nid .'/map_export.kml')))
+      t('<a href="@kml_export_link">Export Map Data as <abbr title="Keyhole Markup Language">KML</abbr> file</a> or <a href="@kml_export_label_link"><abbr title="Keyhole Markup Language">KML</abbr> file with icon labels</a> (for use with mapping software such as Google Earth)', array('@kml_export_link' => url('dashboard/sites/'. $nid .'/map_export.kml'), '@kml_export_label_link' => url('dashboard/sites/'. $nid .'/map_export_labels.kml')))
       ."</li></ul>";
   }
 
