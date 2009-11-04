@@ -95,7 +95,7 @@
   }
   .masthead{
   	background-color: #99cc33;
-  	padding: 2px;
+  	padding: 1px;
   }
   
   .view-proximity{
@@ -108,9 +108,21 @@
   .view-proximity li{
   list-style-type: none;
   }
+  
+  .forward_links {
+  display: none;
+  }
+  
+  .box-inner {
+  display: none;
+  }
 
   .pager{
   width:75px; 
+  }
+  
+  .icons img {
+  margin-right:8px;
   }
   
   #logo-image{
@@ -122,14 +134,15 @@
   }
   
   h1{
-  	font-size: 22px;
+  	font-size: 1.5em;
   	color:  #666;
   	margin-top: 5px;
   	margin-bottom: 5px;
   }
-  
+    
   #footer{
-  	padding-top:120px;
+  	margin-top:70px;
+  	font-size: .75em;
   }
 
   
@@ -152,8 +165,8 @@
     		<?php print $pre_content; ?>        
             <?php print $content; ?>
            
-        <div id="footer"><small><?php if ($footer_message): ?>
-          &copy; Green Map&reg; System, 2009 </small></div>
+        <div id="footer"><?php if ($footer_message): ?>
+          &copy; Green Map&reg; System, 2009</div>
         <?php endif; ?>
         </div>
     </div>
