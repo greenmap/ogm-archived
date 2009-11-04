@@ -2,3 +2,118 @@
     -webkit-text-size-adjust: none;
     min-height: 402px;
 }
+
+  
+/*Same as Simple Mobile Theme CSS*/
+
+  body {
+    -webkit-text-size-adjust: none;
+    background-color: #99cc00;
+    min-height: 402px;
+    padding:0;
+    margin: 0;
+  }
+  .masthead{
+  	background-color: #99cc00;
+  	padding: 1px;
+  }
+  
+  .view-proximity{
+    color: #666;
+  }
+  
+  .view-proximity a{
+    text-decoration: none;
+  }
+  
+  .view-proximity li{
+  list-style-type: none;
+  }
+  
+  .forward_links {
+  display: none;
+  }
+  
+  .box-inner {
+  display: none;
+  }
+
+  .pager{
+  width:75px; 
+  }
+  
+  .icons img {
+  margin-right:8px;
+  }
+  
+  #logo-image{
+  padding-top: 6px;
+  }
+  
+  #content-area{
+  	padding:2px;
+  }
+  
+  h1{
+  	font-size: 1.5em;
+  	color:  #666;
+  	margin-top: 5px;
+  	margin-bottom: 5px;
+  }
+    
+  #footer{
+  	margin-top:70px;
+  	font-size: .75em;
+  }
+  
+  
+/*Navigation Pop-up*/
+
+    #navwin {
+    	position: absolute; top: 0;  bottom: 0; left: 0; right: 0; z-index: 2; display: none;
+    }
+    
+    #dropsheet {
+    	position: absolute; top: 0;  bottom: 0; left: 0; right: 0; background: #000; opacity: .3; height: 600px; width: 100%; padding-bottom: -10px;
+    }
+    #nav-head {
+    	padding: 20px; color: #fff; font: bold 19px helvetica,arial,sans-serif;
+        text-transform: uppercase; letter-spacing: -1px; text-align: center;
+    }
+    #close-nav {
+    	position: absolute; right: 10px; top: 7px; width: 23px; height: 23px; cursor: pointer; padding-top: 40px; padding-left: 3px; padding-right: 3px;
+    }
+    #navwin > div.wrapper {
+        position: relative; width: 285px; height: 253px; margin: 20px  auto auto auto;
+        -webkit-border-radius: 10px; background: url(...img/nav.png) no-repeat; 
+    }
+    .landscape #navwin > div.wrapper {
+            margin-top: 10px;
+    }
+    #navwin > div.wrapper > a {
+    	position: absolute;
+    	width: 89px;
+    	height: 37px;
+    	padding-top: 65px;
+    	margin-top: 40px;
+    	color: #fff;
+    	text-decoration: none;
+    	text-align: center;
+    	border: none;
+    }
+    #navwin > div.wrapper > a.row1 { top: 39px; }
+    #navwin > div.wrapper > a.row2 { top: 142px; }
+    #navwin > div.wrapper > a.col1 { left: 8px; }
+    #navwin > div.wrapper > a.col2 { left: 99px; }
+    #navwin > div.wrapper > a.col3 { left: 190px; }
+    #navwin > div.wrapper > a.selected {
+    	background: #999; opacity: .5;
+    }
+    
+    div#nav {
+        position: absolute; top: 8px; right: 2px; width: 40px; height: 23px; padding-top: 2px; padding-bottom: 0px; padding-left: 2px; padding-right: 2px;
+        background: transparent repeat-x;
+        -webkit-border-radius: 4px; border: 1px solid #fff;
+        font: bold 14px helvetica, arial,sans-serif; text-align: center; color: #fff;
+        cursor: default;
+    }
