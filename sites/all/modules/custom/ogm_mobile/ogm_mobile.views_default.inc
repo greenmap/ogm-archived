@@ -22,6 +22,34 @@ function ogm_mobile_views_default_views() {
     ),
   ));
   $handler->override_option('fields', array(
+    'vid' => array(
+      'label' => '',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
+      ),
+      'exclude' => 0,
+      'id' => 'vid',
+      'table' => 'node_revisions',
+      'field' => 'vid',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
+    ),
     'title' => array(
       'label' => '',
       'alter' => array(
@@ -180,6 +208,7 @@ function ogm_mobile_views_default_views() {
   ));
   $handler->override_option('row_options', array(
     'inline' => array(
+      'vid' => 'vid',
       'title' => 'title',
       'distance' => 'distance',
     ),
