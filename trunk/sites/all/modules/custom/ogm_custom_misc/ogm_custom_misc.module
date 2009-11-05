@@ -65,7 +65,7 @@ function ogm_custom_misc_front_page() {
       <li class="explore big">
         <h2 class="explore"><a class="bigbuttons explore" href="'. url('greenmap') .'">'. t('Explore') .'</a></h2>
         <p><a class="bigbuttons" href="'. url('greenmap') .'">'.
-        t('@count green living sites! See the world from a new perspective.', array('@count' => variable_get('gmap_bubble_site_count', t('many')))).
+        t('@count green living sites!<br />See the world from a new perspective', array('@count' => variable_get('gmap_bubble_site_count', t('many')))).
         '</a></p>
       </li>
       <li class="expand big">
