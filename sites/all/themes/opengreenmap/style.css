@@ -773,3 +773,8 @@ div#connections_content div.view-id-sites div.item-list div.views-field-city {
 form ul.tips li {
   margin-left: 25px;
 }
+
+body.node-type-green-map ul.links {
+  float: right;
+  margin-top: 5px;
+}
