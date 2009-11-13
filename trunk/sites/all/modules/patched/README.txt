@@ -45,3 +45,6 @@ node_import module:
     supported/cck/text.inc & supported/link/link.inc to make sure all fields
     mapped automatically; made the default term separator a comma in
     supported/taxonomy.inc
+
+i18n module:
+  - translate taxonomy terms in views http://drupal.org/node/346028#comment-1784958
