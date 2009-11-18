@@ -258,6 +258,7 @@ function onMapChange_casezoom($args = array()) {
      ".$nid_q1."
      WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' ".$og2." ".$nid_q2."
      AND (".$lat."< l.latitude AND  l.latitude < ".($lat + $dy)." AND ".($lon)." < l.longitude AND l.longitude < ".($lon + $dx).")
+     ORDER BY RAND()
      LIMIT ".($limit * 4);
 
   //print_r($data);

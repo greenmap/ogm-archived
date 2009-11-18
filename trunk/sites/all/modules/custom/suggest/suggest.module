@@ -184,7 +184,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'checkbox',
       '#title' => t('Public'),
       '#default_value' => $node->nid ? $node->og_public : 1,
-      '#description' => t('Show this site to everyone. If not checked, this map will be private and only team members of the maps selected above can see it. Sites that do not have any maps selected above are always public on the World View Map.'),
+      '#description' => t('Show this site to everyone. If not checked, this site will be private and only team members of the maps selected above can see it. Sites that do not have any maps selected above are always public on the World View Map.'),
       '#weight' => 2,
     );
   }
