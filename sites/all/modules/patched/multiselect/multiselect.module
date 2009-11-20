@@ -263,7 +263,7 @@ function theme_multiselect_select($element) {
   foreach ($options as $option) {
     if (preg_match('@^<option value="(\d+)"( selected="selected")*>(.*)@', $option, $matches)) {
       // include #delta to allow multiple multiselects within a form
-      // (TODO test this)
+      // (TODO test this more thoroughly)
       $option = sprintf('<option value="%d" id="ms_%03d_%d"%s>%s',
          $matches[1],
          $element['#delta'],
