@@ -48,3 +48,6 @@ node_import module:
 
 i18n module:
   - translate taxonomy terms in views http://drupal.org/node/346028#comment-1784958
+
+multiselect module:
+  - hacked to preserve order of options http://drupal.org/node/638748
