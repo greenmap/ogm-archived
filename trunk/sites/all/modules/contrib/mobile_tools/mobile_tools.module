@@ -1,5 +1,5 @@
 <?php
-// $Id: mobile_tools.module,v 1.15.2.18 2009/07/02 20:22:22 tdrycker Exp $
+// $Id: mobile_tools.module,v 1.15.2.32 2009/10/30 21:24:18 tdrycker Exp $
 /**
  * @file
  * Mobile Tools provides a range of functionality assisting in creating a mobile drupal site . this functionality contains:
@@ -10,21 +10,25 @@
  *  
  * For more documentation and examples please go to http://drupal.org/node/459686
  */ 
+ 
  /* The default messages being displayed to the users . these can be overwritten in 
   * the configuration panel
   */    
- define('MOBILE_NOTIFICATION', 'Check out our mobile site at [mobile-url].');
- define('DESKTOP_NOTIFICATION', 'Check out our desktop site at [desktop-url]');
+ define('MOBILE_NOTIFICATION', '<a href="">Mobile View</a>');
+ define('DESKTOP_NOTIFICATION', '<a href="">Regular View</a>');
+ include(dirname(__FILE__) . '/mobile_tools_roles.inc');
  
+ /*****************                                   
+  * Drupal hooks  *
+  *****************/     
  /**
  * Implementation of hook_help($section).
  */ 
 function mobile_tools_help($path, $arg) {
-switch ($path) {
-    case 'admin/help#mobile_tools':
-      $output .= '<p>'. t('The mobile tools module assembles a range of functionality helping out in making your Drupal site mobile. Visit the !documentation for more information') .'<p>';
-
-  }
+  switch ($path) {
+      case 'admin/help#mobile_tools':
+        $output .= '<p>'. t('The mobile tools module assembles a range of functionality helping out in making your Drupal site mobile. Visit the !documentation for more information') .'<p>';
+    }
   return $output;
 }
 /**
@@ -40,9 +44,9 @@ function mobile_tools_menu() {
   $items['admin/settings/mobile-tools'] = array(
     'title' => 'Mobile Tools',
     'description' => t('Configure the detection of the mobile client and the appropriate actions.'),
-     'access arguments' => array('configure Mobile Tools'),
+    'access arguments' => array('configure Mobile Tools'),
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('mobile_tools_detection_configuration_form'),
+    'page arguments' => array('mobile_tools_configuration_form'),
     'type' => MENU_NORMAL_ITEM,
   );  
   $items['admin/settings/mobile-tools/device-detection'] = array(
@@ -53,7 +57,7 @@ function mobile_tools_menu() {
     'weight' => -4,
   );  
   $items['admin/settings/mobile-tools/themes'] = array(
-    'title' => 'Mobile theme',
+    'title' => 'Theme Switching',
     'page arguments' => array('mobile_tools_themes_configuration_form'),
     'page callback' => 'drupal_get_form',
     'access arguments' => array('configure Mobile Tools'),
@@ -68,242 +72,128 @@ function mobile_tools_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 0,
   );
-  /*$items['admin/settings/mobile-tools/ready'] = array(
-    'title' => 'ready.mobi',
-   // 'page arguments' => array('mobile_tools_roles_configuration_form'),
-    'page callback' => 'mobile_tools_ready_mobi',
+  $items['admin/settings/mobile-tools/ext'] = array(
+    'title' => 'External modules',
+    'page arguments' => array('mobile_tools_external_modules_configuration_form'),
+    'page callback' => 'drupal_get_form',
      'access arguments' => array('configure Mobile Tools'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 0,
-  );*/
+    'weight' => 10,
+  );
+  $items['gomobile'] = array(
+    'title' => 'Mobile',
+    'description' => t('Redirect to the mobile site.'),
+    'access callback' => TRUE,
+    'page callback' => 'mobile_tools_redirect',
+    'type' => MENU_CALLBACK_ITEM,
+  ); 
   return $items;
 } 
-
+/**
+ * Implementation of hook_exit();
+ */ 
 function mobile_tools_exit() {
-  //drupal_set_message($_SERVER['REQUEST_URI']);
+  // FIX ME: check what cases don't need this. Bad for performance
   cache_clear_all(NULL, 'cache_page', TRUE);
 }
 /**
  *  Implementation of hook_boot().
  */ 
 function mobile_tools_boot() {
-  cache_clear_all(NULL, 'cache_page', TRUE);
+  global $conf, $user, $base_url;
+  $_SESSION['mobile-tools-mobile-device'] = mobile_tools_is_mobile_device();
+  $_SESSION['mobile-tools-site-type'] = mobile_tools_is_mobile_site();
+  // First redirect if needed
+  mobile_tools_redirection_boot();  
+  // Secondly do the theme switch
+  $theme_switched = mobile_tools_themes_boot(); 
   
-  global $conf;
-  global $user;
-  global $base_url;
-  // Invoke the hook_is_mobile_device() and hook_is_mobile_site()
-  $device_detection = variable_get('mobile-tools-device-detection', 'mobile_tools');
-  if ($device_detection != 'mobile_tools') {
-  drupal_load('module', $device_detection);
-  }
-  $site_detection = variable_get('mobile-tools-site-type-detection', 'mobile_tools');
-  if ($site_detection != 'mobile_tools') {
-  drupal_load('module', $site_detection);
-  }
-  $_SESSION['mobile-tools-mobile-device'] = module_invoke($device_detection, 'is_mobile_device');
-  $_SESSION['mobile-tools-site-type'] = module_invoke($site_detection, 'is_mobile_site');
-
-  if (variable_get('mobile_tools_enable_redirect', 0) == 1 && variable_get('mobile_tools_mobile_url', mobile_tools_create_mobile_url($base_url)) != variable_get('mobile_tools_desktop_url', $base_url)) {
-    mobile_tools_detection_boot(); // do the device detection, redirect or generate a notification
-  }
-  if (variable_get('mobile_tools_enable_theme', 0)) {
-    mobile_tools_themes_init(); // changes the theme
-  }
   if (variable_get('mobile_tools_enable_roles', 0) ) {
-    mobile_tools_roles_init();  // assigns the user the mobile role
+    mobile_tools_roles_boot();  // assigns the user the mobile role
   }
-
-  if ($_SESSION['mobile-tools-site-type'] == 'mobile' || (variable_get('mobile_tools_handling', ''  ) == 'theme-switch' && $_SESSION['mobile-tools-mobile-device']['type']  == 'mobile')) {
-   
+  if ($_SESSION['mobile-tools-site-type'] == 'mobile' || $theme_switched) {  
     variable_set('default_main_nodes', variable_get('default_nodes_main_mobile', 5));
   } 
   else {
     variable_set('default_main_nodes', variable_get('default_nodes_main_original', 10));
   }
-
-}
-/**
- * Being called in the hook_init() implementation
- * This function is in charge of device detection, redirection or displaying a notification 
- */ 
-function mobile_tools_detection_boot() {
-  global $base_url;
-  $handling = variable_get('mobile_tools_handling', 0); 
-  if ($_SESSION['mobile-tools-mobile-device']['type'] != $_SESSION['mobile-tools-site-type']) {
-
-    switch ($handling) {
-      case 'redirect': //redirect
-        $destination = ($_SESSION['mobile-tools-mobile-device']['type'] == 'mobile') ? variable_get('mobile_tools_mobile_url', mobile_tools_create_mobile_url($base_url)) : variable_get('mobile_tools_desktop_url', $base_url);
-       mobile_tools_goto($destination);
-      break;
-    }
-  }
 }
 
-function mobile_tools_init(){
-
-
-}
-
-/**
- *  Helper function returning the configurable message for the notification
- */ 
-function _mobile_tools_message() {
-  if ($_SESSION['mobile-tools-mobile-device']['type']  == 'mobile' ) {
-   return token_replace(variable_get('mobile_notification', MOBILE_NOTIFICATION), 'mobile_tools');
-  } 
-  else {
-    return token_replace(variable_get('desktop_notification', DESKTOP_NOTIFICATION), 'mobile_tools');
-  }
-}
-/**
- * Being called in the hook_init() implementation
- * This function is in charge of changing to the mobile theme 
- */ 
-function mobile_tools_themes_init() {
-  global $conf;
-  if ( ($_SESSION['mobile-tools-site-type'] == 'mobile' &&  variable_get('mobile_tools_handling', ''  ) != 'theme-switch') || (variable_get('mobile_tools_handling', ''  ) == 'theme-switch' && $_SESSION['mobile-tools-mobile-device']['type']  == 'mobile') ) {
-    global $conf;
-    $group = $_SESSION['mobile-tools-mobile-device']['group'];
-    $type = $_SESSION['mobile-tools-mobile-device']['type'];
-    $mobile_detection_module = variable_get('mobile-tools-device-detection', 'mobile_tools');
-    if (variable_get($mobile_detection_module . '_' . $group . '_enable', '') == 1) {
-      $conf['theme_default'] = variable_get($mobile_detection_module . '_' . $group . '_theme', $conf['theme_default']);
-      
-    } else {
-      $conf['theme_default'] = variable_get('mobile_tools_theme_name', $conf['theme_default']);
-    }
-  }
-}
-
-/**
- * Being called in the hook_init() implementation
- * This function is in charge of changing the user role 
- */ 
-function mobile_tools_roles_init() {
-  global $user;
-  $roles = $user->roles;
-  
-  //count the number of mobile roles... must be bigger then 1
-  $item = db_fetch_object(db_query("SELECT COUNT(*) as count FROM {mobile_tools_roles_relations}"));
-  if ($item->count > 0) {
-    foreach ($roles as $key => $value) {
-      $role = mobile_tools_roles_info(array('id' => $key));
-      if ($role->type == 'desktop' && $role->has_sibling == 1 && $_SESSION['mobile-tools-site-type'] == 'mobile' || ($_SESSION['mobile-tools-mobile-device']['type'] == 'mobile' && variable_get('mobile_tools_handling', FALSE) == 'theme-switch')) {
-        unset($user->roles[$key]);
-        $user->roles[$role->sibling['id']] = $role->sibling['name'];  
-      }
-    }
-  }
-}
-/**
- * Implementation of hook_block()
- * Provides the blocks that can be used to show a message to the user to go to the
- * mobile or desktop version.  
- */ 
-function mobile_tools_block($op = 'list',  $delta = 0, $edit = array()) {
-   switch ($op) {
-    case 'list':
-       if (variable_get('mobile_tools_handling', 'notification') == 'notification' && variable_get('mobile_tools_enable_redirect', 0) == 1) {
-        $blocks[0]['info'] = t('Mobile Tools block notification');
-        $blocks[0]['cache'] = BLOCK_NO_CACHE;
-        return $blocks;
-       }
-    break;
-    case 'view':
-      if (variable_get('mobile_tools_handling', 'notification') == 'notification' && ($_SESSION['mobile-tools-mobile-device']['type']  !=  $_SESSION['mobile-tools-site-type']) && variable_get('mobile_tools_enable_redirect', 0) == 1 ) {
-        $block['title'] = '';
-        $block['content'] = _mobile_tools_message();
-        return $block;
-      }
-    break;
-   }
-} 
-    
-/**
+/******************************
+ * General configuration form *
+ ******************************/
+ /**
  * Configuration form for the mobile device detection, redirection and notification
  * 
  * @return
  *   The configuration form   
  */ 
-function mobile_tools_detection_configuration_form() {
+function mobile_tools_configuration_form() {
   global $base_url;
   $form['mobile_tools_configuration'] = array(
     '#type' => 'fieldset',
-    '#title' => 'Configuration',
+    '#title' => 'Genearl configuration',
+    '#description' => 'Enter the mobile and desktop url for your site. If both urls are equal there will be no redirection, but only theme switching. Go to "theme switching" to configure the theme',
     '#collapsible' => TRUE,
-    '#description' => t('Configure the way Drupal detects the end user and how Mobile users are being redirected to your mobile site, or notified on the existence of a mobile site?'),
-  );
-  
-  $form['mobile_tools_configuration']['mobile_tools_enable_redirect'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Enable device detection and further processing (redirection / notification / theme switching)'),
-    '#description' => t('Enable or disable the notification and redirection functionality!'),
-    '#default_value' => variable_get('mobile_tools_enable_redirect', 0),
-  );
-  $form['mobile_tools_configuration']['mobile_tools_handling'] = array(
-    '#type' => 'radios',
-    '#title' => t('Select the appropriate method'),
-    '#default_value' => variable_get('mobile_tools_handling', 'notification'),
-    '#options' =>   mobile_tools_detection_configuration_options('device handling'),
-    '#description' => 'Choose one of these methodes!',
   );
   
   $form['mobile_tools_configuration']['mobile_tools_mobile_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Mobile URL'),
+    '#required' => TRUE,
     '#description' => t('Give the name of your mobile site. It is recommended to use the convention of m.domain .com or www.domain.mobi'),
     '#default_value' => variable_get('mobile_tools_mobile_url', mobile_tools_create_mobile_url($base_url)),
   );
-  
   $form['mobile_tools_configuration']['mobile_tools_desktop_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Desktop URL'),
+    '#required' => TRUE,
     '#description' => t('Give the name of your regular website.'),
     '#collapsible' => TRUE,
     '#default_value' => variable_get('mobile_tools_desktop_url', $base_url)
   );
   
-  $form['mobile_tools_notification'] = array(
+ $form['mobile_tools_redirection'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Notification options'),
-    '#collapsible' => TRUE,
-    '#description' => t('Choose a text to be displayed to the visitors of your site and how many times the user gets the message . this will be used if you checked the "Display a notification" checkbox in the above configuration.'),
+    '#title' => t('Redirection options'),
+    '#collapsible' => TRUE,  
   );
   
+  $form['mobile_tools_redirection']['mobile_tools_redirect'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable automatic redirection of the mobile user'),
+    '#default_value' => variable_get('mobile_tools_redirect', FALSE),
+    '#description' => 'Mobile visitors will be redirected to the mobile site. The module support 
+    mobile users that want to see the desktop site. In order to return mobile users to the desktop site, use the ?nomobil=true argument. The module
+    will set a cookie that remembers that the user does not want to be redirected. To undo, send the user to /gomobile. The module will redirect 
+    the user to the mobile site and reset the cookie!',
+  );
+  
+  $form['mobile_tools_notification'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Mobile Tools block message options'),
+    '#collapsed' => TRUE,
+    '#collapsible' => TRUE,
+    '#description' => t('You can create a block with a different message on the mobile site then the desktop site. This can be for example used to create a link back to the deskop or mobile site (e.g. view Mobile | Desktop)'),
+  );
 
-  $form['mobile_tools_notification']['mobile_tools_times'] = array(
-    '#type' => 'textfield',
-    '#title' => t('number of impressions'),
-    '#cols' => '2',
-    '#default_value' => variable_get('mobile_tools_times', 0),
-    '#description' => t('How many times do you want to show a notification (0 means always).'),
-  );
-  $form['mobile_tools_notification']['mobile_tools_notification_option'] = array(
-    '#type' => 'radios',
-    '#title' => t('When to display the notifications'), 
-    '#options' => array(t('Always'), t('Only when a mobile user looks at the desktop site, or a desktop users looks at the mobile site')),
-    '#default_value' => 0,
-  );
   $form['mobile_tools_notification']['mobile_notification'] = array(
     '#type' => 'textarea',
     '#rows' => 2,
-    '#title' => t('On the desktop site'),
+    '#title' => t('On the Mobile site'),
     '#default_value' => variable_get('mobile_notification', MOBILE_NOTIFICATION),
   );
   $form['mobile_tools_notification']['desktop_notification'] = array(
     '#type' => 'textarea',
-    '#title' => t('On the mobile site'),
+    '#title' => t('On the desktops site'),
     '#rows' => 2,
     '#default_value' => variable_get('desktop_notification', DESKTOP_NOTIFICATION),
-    '#suffix' => mobile_tools_notification_help(),
   ); 
   
   $form['frontpage'] = array(
     '#type' => 'fieldset',
     '#title' => 'extra',
-    '#collapsible' => true,
+    '#collapsible' => TRUE,
   );
   
   $form['frontpage']['default_nodes_main_mobile'] = array(
@@ -328,6 +218,14 @@ function mobile_tools_detection_configuration_form() {
           ),
       '#description' => t('The default maximum number of posts to display per page on overview pages such as the main page (on Mobile).'),
   );
+  return system_settings_form($form);
+}
+
+/**
+ * Configuration of external modules
+ *  
+ */
+function mobile_tools_external_modules_configuration_form() {
   $form['mobile_tools_detection'] = array(
     '#type' => 'fieldset',
     '#title' => t('External detection modules'),
@@ -349,134 +247,22 @@ function mobile_tools_detection_configuration_form() {
     '#description' => 'This option is only used when your Drupal site is used for both the mobile as desktop version of the site.'
   );
   
+  $device_capability =  _mobile_tools_external('device-capability');
+  $mess = '';
+  if (count($device_capability) == 0) {
+    $mess = 'No device capability modules installed';
+  }
   $form['mobile_tools_detection']['mobile-tools-device-capabilities'] = array(
     '#type' => 'radios',
     '#title' => 'Device capability detection',
     '#default_value' => variable_get('mobile-tools-device-capabilities', 'wurfl'),
-    '#options' => _mobile_tools_external('device-capability'),
+    '#options' => $device_capability,
+    '#prefix' => $mess,
     '#description' => t('The mobile tools module gives an abstract api in order to get capabilities of the mobile devices. These capability can be fetched by calling mobile_tools_devicecapability($capability). Capability can be for example "is_wireless_device". A full range of parameters can be found on !wurfl you need at least one capability module (like !wurfl2) to use this functionality', array('!wurfl' => l('http://wurfl.sourceforge.net/help_doc.php', 'http://wurfl.sourceforge.net/help_doc.php'), '!wurfl2' => l('http://drupal.org/project/wurfl', 'http://drupal.org/project/wurfl')))
   );
   return system_settings_form($form);
-}
+} 
 
-
-function mobile_tools_notification_help() {
-  $output .= '<div class="description">';
-  $output .= 'Define your message that you want to display on your website to mobile users that are on your desktop site, or destkop users that are on your mobile site. Some tokens are available:';
-  $output .= '<ul>';
-  $output .= '<li>[mobile]: Displays the word Mobile. When the mobile user is on the mobile site, no hyperlink is attached to it. When the mobile user is on the desktop site, the word is clickable and brings the user to the mobbile site.';
-  $output .= '<li>[desktop]: The desktop counterpart of [mobile]' ;
-  $output .= '<li>[mobile-site-link]: Dislays the word "mobile" and contains always the link to the mobile site.';
-  $output .= '<li>[desktop-site-link]: Displays the word "desktop" and contains always the link to the desktop site.';
-  $output .= '<li>[mobile-url]: Displays the mobile url ';
-  $output .= '<li>[desktop-url]: Displays the desktop url';
-  $output .= '</ul>';
-  $output .= 'A recommended message is: "Change site: [mobile] | [desktop]"';
-  $output .= '</div>';
-  return $output;
-}
-
-/**
- * Helper function to return the configuration options
- */ 
-function mobile_tools_detection_configuration_options($configuration) {
-  switch ($configuration) {
-    case 'device handling':
-      $options = array(
-        'nothing' => t('Do nothing, just provide the $_SESSION[\'mobile_device\'] variable'), 
-        'redirect' => t('Automatic redirection to mobile or desktop site (requires a seperate mobile and desktop url!)'), 
-        'notification' => t('Display a block notification with link to mobile site (requires a seperate mobile and destkop url!)'),
-        'theme-switch' => t('Switch the theme when a mobile user visits the site (only 1 url for both mobile and desktop url). Enable and configure the mobile theme !here', array('!here' => l('here', 'admin/settings/mobile-tools/themes'))),
-      );
-    break;
-    case 'site type':
-      $options =  array(
-        'mobile' => t('Only the mobile site'),  
-        'desktop' => t('only the deskop site'), 
-        'mobile-desktop' => t('for both mobile and desktop site'),
-      );
-    break;
-  }  
-  return $options;
-}
-/**
- * Configuration form for configuring the mobile context in the permission system
- */  
-function mobile_tools_roles_configuration_form() {
-  global $base_url;
-  $form['mobile_tools_settings'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Mobile Tools settings'),
-    '#collapsible' => TRUE,
-    '#description' => t('The Mobile Tools module allows the creation of a mobile version of each role . these mobile versions of each role will be assigned to the mobile user. In the !url configuration panel, you can assign permissions to the mobile user.', array('!url' => l('permissions', $base_url .'/admin/user/permissions'))),
-  );
-  $form['mobile_tools_settings']['mobile_tools_enable_roles'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Activate mobile user roles' ),
-    '#description' => t('When activated, mobile users will get the mobile versions of their normal roles when the site is being mobilized.'),
-    '#default_value' => variable_get('mobile_tools_enable_roles', 0),
-  );
-
-  $form['mobile_tools_roles'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Mobile roles'),
-    '#collapsible' => TRUE,
-    '#description' => t('Enable or disable the mobile version of each user role. When no mobile role is created, the user will
-    keep it\'s normal role . the settings can also be configured in the !roles configuration section', array('!roles' => l('roles', 'admin/user/roles'))),
-    '#suffix' => mobile_tools_roles_overview()
-  );
-  
-  $result = db_query("SELECT * FROM {role}");
-  while ($item = db_fetch_object($result)) {
-    $role = mobile_tools_roles_info(array('id' => $item->rid));
-    if ($role->type == 'desktop') {
-      $form['mobile_tools_roles']['mobile_tools_role_'. $item->rid] = array(
-        '#type' => 'checkbox',
-        '#title' => $item->name,
-        '#default_value' => ($role->has_sibling) ? TRUE : FALSE,
-        '#description' => t('Enabling will create the %role role . the name can be changed aferwards in the !roles settings page', array('%role' => $role->name .' (Mobile)', '!role' =>  l('roles', 'admin/user/roles'))),
-      );
-    }
-  }
-  $form['#submit'][] = 'mobile_tools_roles_settings_submit';
-   return system_settings_form($form);
-}
-
-function mobile_tools_roles_overview() {
-  $query = "SELECT * FROM {mobile_tools_roles_relations}";
-  $result = db_query($query);
-  $rows = array();
-  while ($item = db_fetch_object($result)) {
-    $query = "SELECT * FROM {role} WHERE rid = %d";
-    $result1 = db_query($query, $item->rid);
-    $result2 = db_query($query, $item->mrid);
-    $rows[] = array(db_fetch_object($result1)->name, db_fetch_object($result2)->name);
-  }
-  $headers = array("original role", "mobile role");
-  if (count($rows) == 0) {
-    $output .= '<div class="message">No Mobile roles where assigned</div>';
-  } 
-  else {
-    $output .= theme('table', $headers, $rows);
-    $output .= '<br>'. t('Configure the !permissions', array('!permissions' => l('permissions', 'admin/user/permissions'))) .'<br />';
-  }
-  return $output;
-}
-/**
- * Helper function to return the user roles
- */ 
-function mobile_tools_user_roles() {
-  //$roles = array('none');
-  $roles = user_roles();
-  $desktop_roles = array();
-  foreach ($roles as $key => $value) {
-    $role = mobile_tools_roles_info(array('id' => $key));
-    if ($role->type == 'desktop') {
-      $desktop_roles[$key] = $value;
-    }
-  }
-  return $desktop_roles;
-}
 /**
  * Configuration form for configuring the mobile context in the theming system
  */ 
@@ -485,9 +271,8 @@ function mobile_tools_themes_configuration_form() {
   $prefix = '';
   if (count($themes) == 0) {
     $warning = '<div class="message error">You must enable themes in order to use theme switching</div>';
-  } 
-  
-  
+  }   
+
   $form['mobile_tools_theme_configuration'] = array(
     '#type' => 'fieldset',
     '#title' => 'Theming configuration',
@@ -498,20 +283,20 @@ function mobile_tools_themes_configuration_form() {
     '#suffix' => t('If enabled, !configure the settings of your mobile theme and manage the !blocks layout', array('!configure' => l('configure', 'admin/build/themes'), '!blocks' => l('blocks', 'admin/build/block'))) .'<br>',
     '#prefix' => $warning,
    );
+    $form['mobile_tools_theme_configuration']['mobile-tools-theme-switch'] = array(
+    '#type' => 'radios',
+    '#title' => t('When do you want to switch themes'),
+    '#default_value' => variable_get('mobile-tools-theme-switch', 'mobile-tools-no-switch'),
+    '#options' =>   array('mobile-tools-no-switch' => 'No theme switch', 'mobile-tools-mobile-device' => 'Switch theme for a mobile device', 'mobile-tools-mobile-url' => 'Switch theme based on the URL'),
+    '#description' => 'Choose one of these methodes!',
+  );
   if (count($themes) > 0 ) {
-   $form['mobile_tools_theme_configuration']['mobile_tools_enable_theme'] = array(
-    '#type' => 'checkbox',
-    '#title' => 'Enable the mobile theme',
-    '#default_value' => variable_get('mobile_tools_enable_theme', 0),
-    '#description' => t('This option will only work if you have manually created a second *.info file in your theme directory.'),
-   );
-   
    $form['mobile_tools_theme_configuration']['mobile_tools_theme_name'] = array(
      '#type' => 'select',
      '#title' => 'Mobile theme',
      '#default_value' => variable_get("mobile_tools_theme_name", FALSE),
      '#options' => $themes,
-     '#description' => t('Select your mobile theme.'),
+     '#description' => t('Select your default mobile theme. You can specify a different theme for different devices.'),
  //    '#prefix' => t('!configure your mobile theme', array('!configure' => l('Configure', 'admin/build/block/' . variable_get("mobile_tools_theme_name", FALSE)))),
   );
 
@@ -527,7 +312,7 @@ function mobile_tools_themes_configuration_form() {
         '#collapsible' => TRUE,
         
       );
-      $form['mobile_tools_theme_configuration'][$mobile_detection_module . '_' . $group][$mobile_detection_module . '_' . $group . '_enable'] = array (
+      $form['mobile_tools_theme_configuration'][$mobile_detection_module . '_' . $group][$mobile_detection_module . '_' . $group . '_enable'] = array(
         '#type' => 'checkbox',
         '#title' => t('Enable filter for this device group'),
         '#default_value' => variable_get($mobile_detection_module . '_' . $group . '_enable', ''),
@@ -544,25 +329,30 @@ function mobile_tools_themes_configuration_form() {
    }
    return system_settings_form($form);
 }
-
 /**
- * Function returning the available themes
+ * Helper function to return the configuration options
  */ 
-function mobile_tools_list_theme_names() {
-  global $conf;
-  $themes = list_themes();
-  $list = array();
-  foreach ($themes as $key => $value ) {
-    if ($value->status == 1 ) {
-      $list[] = $key;
-    }    
-  }
-  if (count($list) == 0) {
-    return array();
-  } else {
-    return array_combine($list, $list);
-  }
+function mobile_tools_configuration_options($configuration) {
+  switch ($configuration) {
+    case 'device handling':
+      $options = array(
+        'nothing' => t('Do nothing, just provide the $_SESSION[\'mobile_device\'] variable'), 
+        'redirect' => t('Automatic redirection to mobile or desktop site'), 
+      //  'notification' => t('Display a block notification with link to mobile site'),
+      //  'theme-switch' => t('Switch the theme when a mobile user visits the site (only 1 url for both mobile and desktop url). Enable and configure the mobile theme !here', array('!here' => l('here', 'admin/settings/mobile-tools/themes'))),
+      );
+    break;
+    case 'site type':
+      $options =  array(
+        'mobile' => t('Only the mobile site'),  
+        'desktop' => t('only the deskop site'), 
+        'mobile-desktop' => t('for both mobile and desktop site'),
+      );
+    break;
+  }  
+  return $options;
 }
+
 /**
  *  Helper function to return the options for definition of the Drupal usage
  */ 
@@ -570,79 +360,98 @@ function mobile_tools_site_type_options() {
   $options = array('mobile' => t('Only the mobile site'),  'desktop' => t('only the deskop site'), 'mobile-desktop' => t('for both mobile and desktop site'));  
   return $options;
 } 
- 
-/**
- *  Help function that retrieves the modules that implement the 
- *  hook_is_mobile_device() or hook_is_mobile_site() hooks. 
- */  
-function _mobile_tools_external($type) {
-  switch ($type) {
-    case 'device-detection':
-      $modules = mobile_tools_get_module_names(module_implements('is_mobile_device'));
-      mobile_tools_get_module_names($modules);
-    break;
-    case 'site-type-detection':
-      $modules = mobile_tools_get_module_names(module_implements('is_mobile_site'));
-    break;
-    case 'device-capability':
-      $modules = mobile_tools_get_module_names(module_implements('devicecapability'));
-    break;
-  }  
-  return $modules;
-} 
 
-function mobile_tools_get_module_names($array) {
-  $output = array();
-  foreach ($array as $module) {
-    $query = "SELECT * FROM {system} WHERE type = '%s' AND name = '%s'";
-    $result = db_query($query, 'module', $module);
-    $item = db_fetch_object($result);
-    $info = unserialize($item->info);
-    $output[$module] = $info['name']; 
-  }
-  return $output;
-}
+/*****************************************
+ * Helper functions for device detection *
+ *****************************************/ 
 /**
- *  Implementation of the user_load function to assure that the right role is being assigned to the user.
- *  This is the same actions as in the hook_init() method 
+ * Being called in the hook_boot() implementation
+ * This function is in charge of device detection, redirection or displaying a notification 
  */ 
-function mobile_tools_user($op, &$edit, &$account, $category = NULL) {
-  switch ($op) {
-    case 'load':
-      $user = $account;
-      $roles = $user->roles;
-  foreach ($roles as $key => $value) {
-    $role = mobile_tools_roles_info(array('id' => $key));
-    if ($role->type == 'desktop' && $role->has_sibling == 1 && $_SESSION['mobile-tools-site-type'] == 'mobile') {
-      unset($user->roles[$key]);
-      $user->roles[$role->sibling['id']] = $role->sibling['name'];  
+function mobile_tools_redirection_boot() {
+ global $base_url;
+ //only consider redirectoin if the mobile url and the destkop url are different
+ if (variable_get('mobile_tools_mobile_url', '') != variable_get('mobile_tools_desktop_url', '')) {
+   // Checking the possible arguments
+   if (isset($_GET['nomobile'])) {
+     if (strtolower($_GET['nomobile']) == 'true') {
+        $redirect = 'FALSE';
+        setCookie('mt_redirect', 'false', time()+3600*24*30, '/'); 
+      } 
+      elseif (strtolower($_GET['nomobile']) == 'false') {
+        $redirect = 'TRUE';
+        setCookie('mt_redirect', 'true', time()+3600*24*30, '/');
+      }
+   } 
+   else {
+      // keep cookie if set, else set to true (default)
+      if (!isset($_COOKIE['mt_redirect'])) {
+        $redirect = TRUE;
+        setCookie('mt_redirect', 'true', time()+3600*24*30, '/' );
+      } 
+      else {
+        $redirect = $_COOKIE['mt_redirect'];
+      }
+    }
+    // Redirections 
+    if (variable_get('mobile_tools_redirect', FALSE) && $redirect == 'true') {
+      // The case where a mobile user is accessing the desktop site
+      if ($_SESSION['mobile-tools-mobile-device']['type'] == 'mobile' && $_SESSION['mobile-tools-site-type'] == 'desktop') {
+          $destination = variable_get('mobile_tools_mobile_url', '');
+          mobile_tools_goto($destination);
+      // The case where a desktop user is accessing the mobile site 
+      } 
+      elseif ($_SESSION['mobile-tools-mobile-device']['type'] == 'desktop' && $_SESSION['mobile-tools-site-type'] == 'mobile') {
+         $destination =  variable_get('mobile_tools_desktop_url', $base_url);
+         mobile_tools_goto($destination);
+      }
     }
   }
-    break;
-  }
 }
+
+/**
+ *
+ */
+function mobile_tools_load_modules() {
+  $device_detection = variable_get('mobile-tools-device-detection', 'mobile_tools');
+  if ($device_detection != 'mobile_tools') {
+    drupal_load('module', $device_detection); 
+  } 
+} 
+
+/**
+ *
+ */
+function mobile_tools_is_mobile_device() {
+  $device_detection = variable_get('mobile-tools-device-detection', 'mobile_tools');
+  if ($device_detection != 'mobile_tools') {
+    return module_invoke($device_detection, 'is_mobile_device');
+  } 
+  else {
+    return _mobile_tools_is_mobile_device();
+  }
+} 
 /**
  *  Implementation of hook_is_mobile_device()
  */ 
-function mobile_tools_is_mobile_device() {
+function _mobile_tools_is_mobile_device() {
   $mobile_browser   = array('type' => 'desktop', 'group' => ''); // set mobile browser as FALSE till we can prove otherwise
-  $user_agent       = $_SERVER['HTTP_USER_AGENT']; // get the user agent value - this should be cleaned to ensure no nefarious input gets executed
+ $user_agent       = empty($_SERVER['HTTP_USER_AGENT'])?'none':$_SERVER['HTTP_USER_AGENT']; // get the user agent value - this should be cleaned to ensure no nefarious input gets executed
   $accept           = $_SERVER['HTTP_ACCEPT']; // get the content accept value - this should be cleaned to ensure no nefarious input gets executed
-  
    switch (TRUE) { 
-    case (eregi('ipod', $user_agent)); // we find the words iphone or ipod in the user agent
+    case (FALSE !== stripos($user_agent, 'ipod')); // we find the words iphone or ipod in the user agent
       $mobile_browser = array('type' => 'mobile', 'group' => 'ipod'); // mobile browser is either TRUE or FALSE depending on the setting of iphone when calling the function
     break; // break out and skip the rest if we've had a match on the iphone or ipod
-    case (eregi('iphone', $user_agent)); // we find the words iphone or ipod in the user agent
+    case (FALSE !== stripos($user_agent, 'iphone')); // we find the words iphone or ipod in the user agent
       $mobile_browser = array('type' => 'mobile', 'group' => 'iphone');
     break;
-    case (eregi('android',$user_agent));  // we find android in the user agent
+    case (FALSE !== stripos($user_agent, 'android'));  // we find android in the user agent
       $mobile_browser = array('type' => 'mobile', 'group' => 'android');; // mobile browser is either TRUE or FALSE depending on the setting of android when calling the function
     break; // break out and skip the rest if we've had a match on android
-    case (eregi('opera mini',$user_agent)); // we find opera mini in the user agent
+    case (FALSE !== stripos($user_agent, 'opera mini')); // we find opera mini in the user agent
       $mobile_browser = array('type' => 'mobile', 'group' => 'opera mini'); // mobile browser is either TRUE or FALSE depending on the setting of opera when calling the function
     break; // break out and skip the rest if we've had a match on opera
-    case (eregi('blackberry',$user_agent)); // we find blackberry in the user agent
+    case (FALSE !== stripos($user_agent, 'blackberry')); // we find blackberry in the user agent
       $mobile_browser = array('type' => 'mobile', 'group' => 'blackberry'); // mobile browser is either TRUE or FALSE depending on the setting of blackberry when calling the function
     break; // break out and skip the rest if we've had a match on blackberry
     case (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|vodafone|o2|pocket|kindle|mobile|pda|psp|treo)/i',$user_agent)); // check if any of the values listed create a match on the user agent - these are some of the most common terms used in agents to identify them as being mobile devices - the i at the end makes it case insensitive
@@ -662,22 +471,187 @@ function mobile_tools_is_mobile_device() {
    $result = $mobile_browser;
    return $result;
 }
+
+/**
+ * Implementation of hook_devicecapability()
+ * This default implementation invokes the responsible module
+ */
+function mobile_tools_devicecapability($capability) {
+   return module_invoke(variable_get('mobile-tools-device-capability', 'wurfl'), 'devicecapability', $capability);
+}  
+
+/**
+ * Calling the device groups, check first if third party module registered
+ * for doing the device detection 
+ */
+function mobile_tools_device_groups() {
+  $device_detection = variable_get('mobile-tools-device-detection', 'mobile_tools');
+  if ($device_detection != 'mobile_tools') {
+    return module_invoke($device_detection, 'device_groups');
+  } 
+  else {
+    return _mobile_tools_device_groups();
+  }
+}  
+/**
+ *  implementation of the hook_device_groups()
+ *  This function returns the different device groups where this module can make a distinction for. This can be used
+ *  to select different themes for different device groups.   
+ */
+function _mobile_tools_device_groups() {
+  return array('iphone', 'ipod', 'android', 'opera mini', 'blackberry');
+} 
+
+/*****************************************
+ * Helper function for user notification *
+ *****************************************/
+/**
+ * Implementation of hook_block()
+ * Provides the blocks that can be used to show a message to the user to go to the
+ * mobile or desktop version.  
+ */ 
+function mobile_tools_block($op = 'list',  $delta = 0, $edit = array()) {
+   switch ($op) {
+    case 'list':
+        $blocks[0]['info'] = t('Mobile Tools message block');
+        $blocks[0]['cache'] = BLOCK_NO_CACHE;
+        return $blocks;
+      break;
+    case 'view':
+        $block['content'] = _mobile_tools_message();
+        return $block;        
+      break;
+   }
+} 
+
+/**
+ *  Helper function returning the configurable message for the notification
+ */ 
+function _mobile_tools_message() {
+  if (variable_get('mobile_tools_mobile_url', '') != variable_get('mobile_tools_desktop_url', '')) {
+    if ($_SESSION['mobile-tools-site-type']  == 'mobile' ) {
+      return variable_get('mobile_notification', MOBILE_NOTIFICATION);
+    } 
+    else {
+      return variable_get('desktop_notification', DESKTOP_NOTIFICATION);
+    }
+  } 
+  else {
+   if ($_SESSION['mobile-tools-mobile-device']['type']  == 'mobile' ) {
+      return variable_get('mobile_notification', MOBILE_NOTIFICATION);
+    } 
+    else {
+      return variable_get('desktop_notification', DESKTOP_NOTIFICATION);
+    } 
+  }
+}
+/****************************************
+ * Helper functions for theme switching *
+/****************************************/
+/**
+ * Being called in the hook_init() implementation
+ * This function is in charge of changing to the mobile theme 
+ */ 
+function mobile_tools_themes_boot() {
+  global $conf;
+  cache_clear_all(NULL, 'cache_page', TRUE); 
+  if ( ($_SESSION['mobile-tools-site-type'] == 'mobile' &&  variable_get('mobile-tools-theme-switch', ''  ) == 'mobile-tools-mobile-url') || (variable_get('mobile-tools-theme-switch', ''  ) == 'mobile-tools-mobile-device' && $_SESSION['mobile-tools-mobile-device']['type']  == 'mobile') ) {
+    global $conf;
+    $group = $_SESSION['mobile-tools-mobile-device']['group'];
+    $type = $_SESSION['mobile-tools-mobile-device']['type'];
+    $mobile_detection_module = variable_get('mobile-tools-device-detection', 'mobile_tools');
+    if (variable_get($mobile_detection_module . '_' . $group . '_enable', '') == 1) {
+      $conf['theme_default'] = variable_get($mobile_detection_module . '_' . $group . '_theme', $conf['theme_default']);
+      return TRUE;
+    } 
+    else {
+      $conf['theme_default'] = variable_get('mobile_tools_theme_name', $conf['theme_default']);
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Function returning the available themes
+ */ 
+function mobile_tools_list_theme_names() {
+  global $conf;
+  $themes = list_themes();
+  $list = array();
+  foreach ($themes as $key => $value ) {
+    if ($value->status == 1 ) {
+      $list[] = $key;
+    }    
+  }
+  if (count($list) == 0) {
+    return array();
+  } 
+  else {
+    return array_combine($list, $list);
+  }
+}
+
+/**********************************************************
+ * Helper function to integrate with third party modules  *
+ **********************************************************/ 
+/**
+ *  Help function that retrieves the modules that implement the 
+ *  hook_is_mobile_device() or hook_is_mobile_site() hooks. 
+ */  
+function _mobile_tools_external($type) {
+  switch ($type) {
+    case 'device-detection':
+      $modules = mobile_tools_get_module_names(module_implements('is_mobile_device'));
+      mobile_tools_get_module_names($modules);
+    break;
+    case 'site-type-detection':
+      $modules = mobile_tools_get_module_names(module_implements('is_mobile_site'));
+    break;
+    case 'device-capability':
+      $modules = mobile_tools_get_module_names(module_implements('devicecapability'));
+      unset($modules['mobile_tools']);
+    break;
+  }  
+  return $modules;
+} 
+/**
+ * return the human readable name of the modules
+ */ 
+function mobile_tools_get_module_names($array) {
+  $output = array();
+  foreach ($array as $module) {
+    $query = "SELECT * FROM {system} WHERE type = '%s' AND name = '%s'";
+    $result = db_query($query, 'module', $module);
+    $item = db_fetch_object($result);
+    $info = unserialize($item->info);
+    $output[$module] = $info['name']; 
+  }
+  return $output;
+}
+
+
+/*****************************************************************************
+ * Helper function to detect if site is being served as mobile or as destkop *
+ ***************************************************************************** 
 /**
  *  Detection of the site type . the values comes out the configuration form.
  */ 
 function mobile_tools_is_mobile_site() {
-   if (variable_get('mobile-tools-site-type-detection', 'mobile_tools') == 'mobile_tools') {
-      $site = _mobile_tools_site_detection();
-      return $site;
-   } else {
-    return module_invoke(variable_get('mobile-tools-site-type-detection', 'mobile_tools'), 'is_mobile_site'); 
+  $site_detection = variable_get('mobile-tools-site-type-detection', 'mobile_tools');
+   if ($site_detection == 'mobile_tools') {
+      return _mobile_tools_site_detection();;
+   } 
+   else {
+      return module_invoke($site_detection, 'is_mobile_site'); 
    }
 }
 
 function _mobile_tools_site_detection() {
   global $base_url;    
-    // first check if the url is a m.* or .mobi url!!
-  $server_domain_elements = explode('.', $_SERVER['SERVER_NAME']);
+   $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_SERVER['SERVER_NAME'];
+    // first check if the url is a m.* or .mobi url. This is robuts
+  $server_domain_elements = explode('.', $host);
   if (count($server_domain_elements) > 0 ) {
     if ($server_domain_elements[0] == 'm') { // check for m.* domain
       return 'mobile';
@@ -686,13 +660,12 @@ function _mobile_tools_site_detection() {
      return 'mobile';
     }
   }
-  
   // If this doesn't return an answer, we will have to do a comparison of the mobile and desktop url!
-  
-  $mobile_url  = parse_url(variable_get('mobile_tools_mobile_url', mobile_tools_create_mobile_url($base_url)));
+  $mobile = variable_get('mobile_tools_mobile_url', mobile_tools_create_mobile_url($base_url));
+  $mobile_url  = parse_url($mobile);
   $mobile_url['host'] = mobile_tools_prepare_url($mobile_url['host']);
-
-  $desktop_url = parse_url(variable_get('mobile_tools_desktop_url', $base_url));
+  $desktop = variable_get('mobile_tools_desktop_url', $base_url);
+  $desktop_url = parse_url($desktop);
   $desktop_url['host'] = mobile_tools_prepare_url($desktop_url['host']);
   
   if (!array_key_exists('path', $desktop_url)) {
@@ -704,28 +677,26 @@ function _mobile_tools_site_detection() {
    
   $server_name = mobile_tools_prepare_url($_SERVER['SERVER_NAME']);
   // Check domain first
-  if ($mobile_url['host'] == $server_name && $desktop_url['host'] != $server_name) { 
-      
+  if ($mobile_url['host'] == $server_name && $desktop_url['host'] != $server_name) {      
     return 'mobile';
   } 
-  else if ($mobile_url['host'] != $server_name && $desktop_url['host'] == $server_name) {
+  elseif ($mobile_url['host'] != $server_name && $desktop_url['host'] == $server_name) {
     return 'desktop';
-  } else if ($mobile_url['host'] == $server_name && $desktop_url['host'] == $server_name) {
-    $significant = (strlen($mobile_url['path']) > strlen($desktop_url['path'])) ? 'mobile' : 'desktop'; //we check the most significatn url (with the longest path)
-    if (preg_match("|" . $desktop_url['path'] . "|", request_uri())) {
-      if (preg_match("|" . $mobile_url['path'] . "|", request_uri())) {
-        return $significant; // if both patterns match, return the significant
-      }
-      return 'desktop';
-    } 
-    else {
-
-      return 'mobile';
-    }
+  } 
+  
+  // find longest url
+  $longest_url = strlen($mobile) > strlen($desktop) ? $mobile : $desktop ;
+  $protocol = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
+  $uri = $protocol . $_SERVER['HTTP_HOST'] .    request_uri();
+  $pos = strpos($uri, preg_replace('{/$}', '', $longest_url));
+  if ($pos === FALSE) {
+    return $longest_url == $mobile ? 'desktop' : 'mobile';
   } 
   else {
-    return 'desktop'; 
+    return $longest_url == $mobile ? 'mobile' : 'desktop';
   }
+  
+ 
 }
 /**
  *  This function does some kind of normalisation of the urls when there is no subdomain available in the url
@@ -742,42 +713,7 @@ function mobile_tools_prepare_url($url) {
     return $url;
   }
 }
-/**
- * Helper function retrieving the device
- */
-function mobile_tools_get_device() {
-  $device = array();
-  if ($_SESSION['mobile'] == 1) {
-    $device['type'] = 'mobile';
-  } 
-  else {
-    $device['type'] = 'desktop';
-  }
-} 
-/**
- *  Implementation of the hook_token_values().
- */ 
-function mobile_tools_token_values($type, $object = NULL) {
-  global $base_url;
-  if ($type == 'mobile_tools') {
-    $mobile_url = variable_get('mobile_tools_mobile_url', mobile_tools_create_mobile_url($base_url));
-    $desktop_url = variable_get('mobile_tools_desktop_url', $base_url);
-    if ($mobile_url != FALSE || $desktop_url != FALSE) {
-      $tokens['mobile-url']  = l($mobile_url, $mobile_url);
-      $tokens['desktop-url'] = l($desktop_url, $desktop_url);
-      $tokens['mobile-site-link'] = l('mobile site', $mobile_url);
-      $tokens['desktop-site-link'] = l('desktop site', $desktop_url);
-      if (mobile_tools_is_mobile_site() == 'mobile') {
-         $tokens['mobile'] = t('Mobile');
-         $tokens['desktop'] = l('Destkop', $desktop_url); 
-      } else {
-         $tokens['mobile'] = l('Mobile', $mobile_url);
-         $tokens['desktop'] = t('Desktop');
-      }      
-      return $tokens;   
-    }
-  }
-}
+
 
 /**
  * Altering the form for theme configuration to indicate that the theme is being used
@@ -785,12 +721,7 @@ function mobile_tools_token_values($type, $object = NULL) {
  */ 
 function mobile_tools_form_alter(&$form, $form_state, $form_id) {
   switch ($form_id) {
-    case 'system_theme_settings':
-      if (variable_get('mobile_tools_theme', FALSE) && arg(4) == variable_get('mobile_tools_theme_name', '')) {
-         drupal_set_message(t('This theme will be used by Siruna when your site is being transcoded. Configure this for a mobile device'));
-      }
-      break;
-    case 'user_admin_role':
+     case 'user_admin_role':
       $query = "SELECT COUNT(*) as count FROM {mobile_tools_roles_relations} WHERE mrid = %d";
       $result = db_query($query, arg(4));
       $item= db_fetch_object($result);
@@ -849,72 +780,7 @@ function mobile_tools_form_alter(&$form, $form_state, $form_id) {
 function mobile_tools_node_configuration_submit($form) {
   variable_set('default_main_nodes_original', $form['#post']['default_main_nodes']);
 }
-/**
- * Submit function for the mobile tools / mobile roles configuration page
- *  
- */ 
-function mobile_tools_roles_settings_submit($form) {
-  $query = "SELECT * FROM {role}";
-  $result = db_query($query);
 
-  while ($item = db_fetch_object($result)) {
-    $role = mobile_tools_roles_info(array('id' => $item->rid));
-    if ($role->type == 'desktop') {
-      $choice = $form['#post']['mobile_tools_role_'. $item->rid]['#value'];
-      if ($role->has_sibling == 1 && $choice== 0) { // DELETE
-        mobile_tools_edit_mobile_role('delete', $role);
-      }
-      elseif ($role->has_sibling == 0 && $choice == 1) {
-        mobile_tools_edit_mobile_role('add', $role);
-      }
-    }
-  }
-}
-/**
- * Submit handler for the roles configuration form. It organises the mobile context for each user role.
- *  
- */ 
-function mobile_tools_roles_configuration_submit($form) {
-  $role = mobile_tools_roles_info(array('id' => $form['rid']['#value']));  
-  switch ($form['#post']['op']) {
-    case 'Save role':
-      if ($role->has_sibling == 1 && $form['#post']['mobile_tools_configure_role_'. $form['rid']['#value']] == FALSE && $role->type == 'desktop') {
-        mobile_tools_edit_mobile_role('delete', $role);
-      } 
-      elseif ($role->has_sibbling == FALSE &&  $form['#post']['mobile_tools_configure_role_'. $form['rid']['#value']] == TRUE && $role->type == 'desktop') {
-        mobile_tools_edit_mobile_role('add', $role);
-      } 
-    break;
-    case 'Delete role':
-      if ($role->type == 'mobile') {
-        $role = mobile_tools_roles_info(array('id' => $role->sibling['id']));
-      }
-      mobile_tools_edit_mobile_role('delete', $role); 
-  } 
-}
-
-/**
- * Function helping in saving and deleting the mobile roles
- * @param $op
- *  the operation that has to be performed: 'delete' will delete the mobile role, 'add' will add the mobile role.  
- * @param $role
- *  the $role object of the normal role (the already existing non-mobile role) 
- */
-function mobile_tools_edit_mobile_role($op, $role) {
-  switch ($op) {
-    case 'delete':
-      db_query('DELETE FROM {role} WHERE rid = %d', $role->sibling['id']);
-      db_query('DELETE FROM {mobile_tools_roles_relations} WHERE mrid = %d', $role->sibling['id']);
-    break;
-    case 'add':
-     
-      $result = db_query("INSERT INTO {role} (name) VALUES ('%s')", $role->name .' (Mobile)');
-      db_query("INSERT INTO {mobile_tools_roles_relations} (rid, mrid) VALUES (%d, %d)", $role->id, db_last_insert_id('role', 'rid'));
-    break;  
-  }
-
-
-}
 /**
  * Helper function to assist in making a mobile url (m.*) from a given url
  * 
@@ -933,88 +799,36 @@ function mobile_tools_create_mobile_url($url) {
   if (count($url) == 3 ) {
     $url[0] = 'm';
     return 'http://'. implode('.', $url)  . $url_parsed['path'];
-  } else if (count($url) == 2) {
+  } 
+  elseif (count($url) == 2) {
     return 'http://m.'. implode('.', $url)  . $url_parsed['path'];
   } 
   else {
     return 'http://'.  implode('.', $url)  . $url_parsed['path'] .'/mobile';
   }
-
- }  
- 
-/**
- * Function helping in getting information for each role:
- * @param $identifier
- *  array('id' => id) or array('name' => name)
- *   
- * @return
- *    a $role object with the folowing info 
- *  $role->id
- * $role->name 
- * $role->type = mobile/desktop
- * $role->sibling[id]
- * $role->sibling[name]  
- */
- function mobile_tools_roles_info($identifier) {
-  if (array_key_exists('id', $identifier)) {
-    $query = "SELECT * FROM {role} WHERE rid = %d";
-    $result = db_query($query, $identifier['id']);
-    $name = db_fetch_object($result)->name;
-    $rid = $identifier['id'];
-  } 
-  elseif (array_key_exists('name', $identifier)) {
-    $query = "SELECT * FROM {role} WHERE name = '%s'";
-    $result = db_query($query, $identifier['name']);
-    $rid = db_fetch_object($result)->rid;
-    $name = $identifier['name'];    
-  } 
-  $role->id = $rid;
-  $role->name = $name;
-  $query = "SELECT COUNT(*) as count, mrid FROM {mobile_tools_roles_relations} WHERE rid = %d GROUP BY mrid";
-  $result = db_query($query,$rid);
-  $item = db_fetch_object($result);
- 
-  if ($item->count != 0) {
-    $role->type = 'desktop';
-    $role->has_sibling = 1;
-    $result = db_query("SELECT * FROM {role} WHERE rid = %d", $item->mrid);
-    $sibling = db_fetch_object($result);
-  } 
-  else {
-    $result = db_query("SELECT COUNT(*) as count, rid FROM {mobile_tools_roles_relations} WHERE mrid = %d GROUP BY rid", $rid);
-    $item = db_fetch_object($result); 
-    if ($item->count == 0) {
-      $role->has_sibling = 0;
-      $role->type = 'desktop';
-    } 
-    else {
-      $role->type = 'mobile';
-      $role->has_sibling = 1;
-      $result = db_query("SELECT * FROM {role} WHERE rid = %d", $item->rid);
-      $sibling = db_fetch_object($result);
-    }
-  }
-  $role->sibling['id'] = $sibling->rid;
-  $role->sibling['name'] = $sibling->name ;
-  return $role;
-} 
-
-/**
- * Implementation of hook_devicecapability()
- * This default implementation invokes the responsible module
- */
-function mobile_tools_devicecapability($capability) {
-   return module_invoke(variable_get('mobile-tools-device-capability', 'wurfl'), 'devicecapability', $capability);
 }  
+ 
+
+
 
 /**
- *  implementation of the hook_device_groups()
- *  This function returns the different device groups where this module can make a distinction for. This can be used
- *  to select different themes for different device groups.   
- */
-function mobile_tools_device_groups() {
-  return array('iphone', 'ipod', 'android', 'opera mini', 'blackberry');
-} 
+ *  To be implemented: create a list of non-compatible modules
+ */ 
+function mobile_tools_compatibility() {
+  return array(
+    'themekey',
+    'domain',
+    'image_fupload',
+  );
+}
+
+/**
+ *  Redirection to the mobile site while updating the $_SESSION variable to retain the last 
+ *  chosen option 
+ */ 
+function mobile_tools_redirect() {
+  drupal_goto(variable_get('mobile_tools_mobile_url', ''), 'nomobile=true');
+}
 
 function mobile_tools_goto($path = '', $query = NULL, $fragment = NULL, $http_response_code = 302) {
 
@@ -1047,10 +861,12 @@ function mobile_tools_goto($path = '', $query = NULL, $fragment = NULL, $http_re
   exit();
 }
 
-function mobile_tools_compatibility() {
-  return array (
-    'themekey',
-    'domain',
-    'image_fupload',
-  );
+/**
+ * Implementation of hook_ctools_plugin_directory() to let the system know
+ * we implement access plugins.
+ */
+function mobile_tools_ctools_plugin_directory($module, $plugin) {
+  if ($plugin == 'access') {
+    return 'plugins/' . $plugin;
+  }
 }
