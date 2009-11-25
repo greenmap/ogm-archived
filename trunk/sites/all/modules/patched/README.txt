@@ -54,6 +54,7 @@ multiselect module:
 
 taxonomy_image.module:
   - translate img alt attribute http://drupal.org/node/642950
+  - fetch img from filesystem, not over http, to calculate img size http://drupal.org/node/438378#comment-2280398
 
 mobile_tools module
   - removed the awful cache clear that was being run on every page http://drupal.org/node/642176

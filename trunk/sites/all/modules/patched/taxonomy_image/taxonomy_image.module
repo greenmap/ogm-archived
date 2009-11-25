@@ -265,8 +265,9 @@ function taxonomy_image_get_object($tid, $recursive = NULL) {
   // Get more properties if we had an image.
   if (!empty($image[$tid]->path)) {
     $image[$tid]->tid = $tid;
-//    $img = getimagesize($image[$tid]->path);
-    $img = getimagesize($image[$tid]->url);
+    if (is_readable($fullpath . $image[$tid]->path) ) {
+      $img = getimagesize($fullpath . $image[$tid]->path);
+    }
     // Make sure it worked.
     if (!$img) {
       return NULL;
