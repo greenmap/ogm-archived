@@ -51,3 +51,6 @@ i18n module:
 
 multiselect module:
   - hacked to preserve order of options http://drupal.org/node/638748
+
+mobile_tools module
+  - removed the awful cache clear that was being run on every page http://drupal.org/node/642176
