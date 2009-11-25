@@ -94,7 +94,8 @@ function mobile_tools_menu() {
  */ 
 function mobile_tools_exit() {
   // FIX ME: check what cases don't need this. Bad for performance
-  cache_clear_all(NULL, 'cache_page', TRUE);
+  // TT - commenting out this line, doesn't seem to be necessary. See http://drupal.org/node/642176
+  // cache_clear_all(NULL, 'cache_page', TRUE);
 }
 /**
  *  Implementation of hook_boot().
