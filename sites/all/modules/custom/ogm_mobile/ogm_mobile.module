@@ -1,6 +1,20 @@
 <?php
 
 /**
+ * Implementation of hook_menu_alter().
+ */
+function ogm_mobile_menu_alter(&$items) {
+  $items['front_page']['page callback'] = 'ogm_mobile_front_page';
+}
+
+function ogm_mobile_front_page() {
+  if ($_SESSION['mobile-tools-mobile-device']['type'] == 'mobile') {
+    drupal_goto('mobile');
+  }
+  return front_page();
+}
+
+/**
  * Implementation of hook_views_api().
  */
 function ogm_mobile_views_api() {
