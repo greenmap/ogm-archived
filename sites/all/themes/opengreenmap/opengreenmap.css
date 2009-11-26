@@ -1051,33 +1051,35 @@ div#siteactions ul {
 .view-content td.view-field.view-field-og-post-count, .view-content td.view-field.view-field-og-post-count
 {
 }
+
 /* mini map style */
-.view-site-mini-map {
+.site-mini-map {
   width: 200px;
   border-top: 1px solid #cacaca;
   border-bottom: 1px solid #cacaca;
   margin: 50px 0 25px 0;
 }
-.view-site-mini-map p {
+.site-mini-map p {
   margin: 0;
   padding: 3px 0;
   font-weight: bold;
   font-size: .8em;
 }
-.view-site-mini-map ul {
+.site-mini-map ul {
   margin: 0;
   padding: 0;
 }
-.view-site-mini-map ul li{
+.site-mini-map ul li{
   list-style-type: none;
   display: block;
   margin: 0;
   padding: 0 0 3px 0;
   font-size: 1.2em;
 }
-.view-site-mini-map a {
+.site-mini-map a {
   color: #9c3;
 }
+
 /* custom block styles */
 div#block-block-8 {
   border: 2px solid #FFAC06;

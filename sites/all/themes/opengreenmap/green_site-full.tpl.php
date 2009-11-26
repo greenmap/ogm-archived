@@ -161,11 +161,21 @@ if($node->field_involved[0]['value'] == 'yes') {
 
   $contents .= '</div><!-- /meta-->';
 
-// ncm: insert a small map on the site pages when viewed as a node
-// as in search click throughs.
-//   if (arg(0) != 'greenmap') {
-  $contents .= views_embed_view('site_mini_map');
-//   }
+  // insert a small map on the site pages when viewed as a node as in search click throughs.
+  if (arg(2) != 'simple') {
+    $macro = ogm_custom_misc_site_mini_map($node->location['latitude'],
+        $node->location['longitude']);
+    $map = gmap_filter('process', NULL, NULL, $macro);
+    // this was inside the view-header div before: <ul><li><a href="/dev/ogm_lines/en/greenmap/nycs-green-apple-map">NYC's Green Apple Map</a></li></ul>
+    $contents .= '
+    <div class="site-mini-map">
+      <div class="view-header"><p>Location:</p>
+      </div>
+      <div class="content-site-mini-map">'. $map .'</div>
+      <br />
+    </div>
+    ';
+  }
 
   $contents .= '</div>';
 

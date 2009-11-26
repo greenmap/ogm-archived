@@ -9,42 +9,15 @@
 // }
 
 /**
- * Views argument handling for site page mini maps
+ * Build gmap macro for site page mini map, given the coordinates
  */
-
-
-function ogm_custom_misc_view_args_site_mini_map($args, $view) {
-  if (!$args && arg(0) == 'node' && is_numeric(arg(1)) && !arg(2)) {
-    $args[0] = arg(1);
-
-    // grab the lat and long of the site to center the map
-    $query = db_query('SELECT l.latitude, l.longitude FROM {location} l INNER JOIN {location_instance} li ON l.lid = li.lid INNER JOIN {node} n ON n.nid = li.nid AND n.vid = li.vid WHERE li.nid= %d', $args[0]);
-    $geocodes = db_fetch_array($query);
-
-
-    // build the gmap macro
-    $macro = '[gmap zoom=15 |';
-    $macro .= 'center='. $geocodes['latitude'] .','. $geocodes['longitude'] .' |';
-    $macro .= 'width=175px |height=175px |control=None |type=Map | tcontrol=off | scontrol=off|drag=no|align=center]';
-
-    // add the macro to the view
-    $view->gmap_macro = $macro;
-
-    // list the maps that this site is on
-    $groups = db_query('SELECT DISTINCT(group_nid) FROM {og_ancestry} WHERE nid = %d', $args[0]);
-
-    $links = '<ul>';
-    while ($group = db_fetch_object($groups)) {
-      $mapname = db_result(db_query('SELECT title FROM {node} WHERE nid = %d', $group->group_nid));
-      $links .= '<li>'. l($mapname, 'node/'. $group->group_nid) .'</li>';
-    }
-    $links .= '</ul>';
-    // add the links to the block footer
-    $view->block_header = '<span class="jto">'. t('Jump To:') .' </span>'. $links;
-  }
-  return $args;
+function ogm_custom_misc_site_mini_map($latitude, $longitude) {
+  // build the gmap macro
+  $macro = '[gmap zoom=15 |';
+  $macro .= "center=$latitude,$longitude |";
+  $macro .= 'width=175px |height=175px |control=None |type=Map | tcontrol=off | scontrol=off|drag=no|align=center]';
+  return $macro;
 }
-
 
 /**
  * Front page code
