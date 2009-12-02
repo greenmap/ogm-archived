@@ -1,0 +1,17 @@
+<?php 
+/*
+* hook_form_alter()
+* to add the js, which acts when a map url is entered and checks it
+*/
+
+function greenhouseimport_form_alter(&$form, &$form_state, $form_id){
+  switch ($form_id) {
+    case 'green_map_node_form':
+      //print_r($form);
+      $path = drupal_get_path('module', 'greenhouseimport');
+      drupal_add_js( $path.'/greenhouseimport.js' );
+      $path = drupal_get_path('module', 'gmap_marker');
+      drupal_add_js( $path.'/ajax.js' );
+    break;
+  }
+}
