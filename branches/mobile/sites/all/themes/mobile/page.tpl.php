@@ -139,6 +139,13 @@
   	margin-top: 5px;
   	margin-bottom: 5px;
   }
+  
+  h3{
+  	font-size: 0.9em;
+  	color:  #666;
+  	margin-top: 5px;
+  	margin-bottom: 5px;
+  }
     
   #footer{
   	margin-top:70px;
@@ -164,9 +171,17 @@
 		    <?php print $messages; ?>      
     		<?php print $pre_content; ?>        
             <?php print $content; ?>
+            <br/><br/><h3>Welcome to Open Green Map:</h3>
+            <h3>Your guide to nature,<br/> culture and green living initiatives.</h3>
+            
            
         <div id="footer"><?php if ($footer_message): ?>
-          &copy; Green Map&reg; System, 2009</div>
+          Mobile Alpha Version<br/><br/>
+          &copy; Green Map&reg; System, 2009<br/>
+          Visit GreenMap.org on your desktop
+          
+          
+        </div>
         <?php endif; ?>
         </div>
     </div>
