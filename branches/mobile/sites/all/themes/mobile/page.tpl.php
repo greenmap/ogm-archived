@@ -146,6 +146,10 @@
   	margin-top: 5px;
   	margin-bottom: 5px;
   }
+  
+  .alpha{
+  	font-size: .75em;
+  }
     
   #footer{
   	margin-top:70px;
@@ -162,7 +166,10 @@
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
 
  <?php if ($logo): ?>
-            <div class="masthead"><center><img src="<?php print $logo; ?>" alt="<?php print t('Open Green Map'); ?>" id="logo-image" /></center></div>
+            <div class="masthead">
+            <center>
+            <a href="http://www.opengreenmap.org/mobile">
+            <img src="<?php print $logo; ?>" alt="<?php print t('Open Green Map'); ?>" id="logo-image" /></a></center></div>
           <?php endif; ?>
     
     <?php print $breadcrumb; ?>        
@@ -173,10 +180,9 @@
             <?php print $content; ?>
             <br/><br/><h3>Welcome to Open Green Map:</h3>
             <h3>Your guide to nature,<br/> culture and green living initiatives.</h3>
-            
+            <span class="alpha">Mobile Alpha Version</span>
            
         <div id="footer"><?php if ($footer_message): ?>
-          Mobile Alpha Version<br/><br/>
           &copy; Green Map&reg; System, 2009<br/>
           Visit GreenMap.org on your desktop
           
