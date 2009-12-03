@@ -169,7 +169,7 @@
             <div class="masthead">
             <center>
             <a href="http://www.opengreenmap.org/mobile">
-            <img src="<?php print $logo; ?>" alt="<?php print t('Open Green Map'); ?>" id="logo-image" /></a></center></div>
+            <img src="<?php print $logo; ?>" alt="<?php print t('Open Green Map'); ?>" id="logo-image"  border="0"/></a></center></div>
           <?php endif; ?>
     
     <?php print $breadcrumb; ?>        
