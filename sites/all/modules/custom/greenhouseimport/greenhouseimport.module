@@ -7,7 +7,6 @@
 function greenhouseimport_form_alter(&$form, &$form_state, $form_id){
   switch ($form_id) {
     case 'green_map_node_form':
-      dsm($form);
       /*
       $path = drupal_get_path('module', 'greenhouseimport');
       drupal_add_js( $path.'/greenhouseimport.js' );
