@@ -1,0 +1,9 @@
+; $Id$
+name = gmap_shapes
+description = Module for shapes and lines to open greenmap
+package = GreenMap
+dependencies[] = content
+dependencies[] = group_map
+dependencies[] = gmap
+
+core = 6.x
