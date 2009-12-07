@@ -505,7 +505,7 @@ function group_map_block_0_contents() {
     // download link
     $result = db_query('SELECT filepath FROM sync_gm_green_maps WHERE gm_nid = %d', $node->field_greenhouse_map_nid[0]['value']);
     $gm_map = db_fetch_object($result);
-    if ($gm_map) {
+    if ($gm_map && $gm_map->filepath) {
       $url = check_plain('http://www.greenmap.org/greenhouse/'. $gm_map->filepath);
       $attributes = array();
       if (strtolower(substr($url, -4)) == '.pdf') {
