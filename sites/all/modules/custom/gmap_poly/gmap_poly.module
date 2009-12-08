@@ -1,2 +1,61 @@
 <?php
+/**
+ * Display help and module information
+ * @param path whitch path of the site we're displaying help
+ * @param arg array that holds the current path as vould be returned from arg() function
+ * @return help text for the path
+ */
+function gmap_poly_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case "admin/modules#gmap_poly":
+        //FIXME
+    case "admin/help#gmap_poly":
+        //FIXME
+      break;
+    case "user/help#gmap_shapes":
+        //FIXME
+      break;
+  }
+  return $output;
+}
 
+/**
+ * Implementation of hook_field_info().
+ */
+function gmap_poly_field_info() {
+  // each type must be matched in hook_field_settings, 
+  //   where $op = 'database colums'
+  return array(
+     // 'type'   =>  arrray( data about type )
+    'gmap_poly_geometric_data' => array('label' => t('Google Maps Geometric (Polygon or Line) Data')),
+  );
+}
+
+/**
+ *  implementation of hook_field_settings
+ */
+function gmap_poly_field_settings($op, $field) {
+  dsm("hook field settings op: ". $op);
+  switch ($op) {
+    case 'database columns':
+        // types declared in hook_field_info
+        $columns = array(
+          // see http://dev.mysql.com/doc/refman/5.0/en/gis-class-geometry.html
+          'gmap_poly_geometric_data' => array('type' => 'GEOMETRY'),
+        );
+        return $columns;
+      break;
+  }
+}
+
+/**
+ *  implementation of hook_widget_info
+ */
+function gmap_poly_widget_info() {
+  return array(
+    'gmap_poly_geometric_data' => array(
+      'label' => 'Textfield',
+      'field types' => array('gmap_poly_geometric_data')),
+  );
+}

@@ -1,3 +1,32 @@
 <?php
+/**
+ *  implementation of hook_install
+ */
+function gmap_poly_install() {
+  // weight module to run after taxonomy and primary_term and primary_icon
+  db_query("UPDATE {system} SET weight = 1 WHERE name = 'gmap_poly'");
+  content_notify('install', 'gmap_poly');
+}
+
+/**
+ *  implementation of hook_enable
+ */
+function gmap_poly_enable() {
+  content_notify('enable', 'gmap_poly');
+}
+
+/**
+ *  implementation of hook_disable
+ */
+function gmap_poly_disable() {
+  content_notify('disable', 'gmap_poly');
+}
+
+/**
+ *  implementation of hook_uninstall
+ */
+function gmap_poly_uninstall() {
+  content_notify('uninstall', 'gmap_poly');
+}
 
 
