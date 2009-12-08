@@ -24,7 +24,7 @@ function gmap_poly_help($path, $arg) {
  * Implementation of hook_field_info().
  */
 function gmap_poly_field_info() {
-  // each type must be matched in hook_field_settings, 
+  // each type must be matched in hook_field_settings,
   //   where $op = 'database colums'
   return array(
      // 'type'   =>  arrray( data about type )
@@ -50,12 +50,79 @@ function gmap_poly_field_settings($op, $field) {
 }
 
 /**
- *  implementation of hook_widget_info
+ *  implementation of hook_widget_info().
  */
 function gmap_poly_widget_info() {
   return array(
-    'gmap_poly_geometric_data' => array(
-      'label' => 'Textfield',
+    'gmap_poly_line_widget' => array(
+      'label' => 'Line',
+      'field types' => array('gmap_poly_geometric_data')),
+    'gmap_poly_area_widget' => array(
+      'label' => 'Area',
       'field types' => array('gmap_poly_geometric_data')),
   );
+}
+
+/**
+ * Implementation of hook_widget().
+ *
+ * Attach a single form element to the form. It will be built out and
+ * validated in the callback(s) listed in hook_elements. We build it
+ * out in the callbacks rather than here in hook_widget so it can be
+ * plugged into any module that can provide it with valid
+ * $field information.
+ *
+ * Content module will set the weight, field name and delta values
+ * for each form element. This is a change from earlier CCK versions
+ * where the widget managed its own multiple values.
+ *
+ * If there are multiple values for this field, the content module will
+ * call this function as many times as needed.
+ *
+ * @param $form
+ *   the entire form array, $form['#node'] holds node information
+ * @param $form_state
+ *   the form_state, $form_state['values'][$field['field_name']]
+ *   holds the field's form values.
+ * @param $field
+ *   the field array
+ * @param $items
+ *   array of default values for this field
+ * @param $delta
+ *   the order of this item in the array of subelements (0, 1, 2, etc)
+ *
+ * @return
+ *   the form item for a single element for this field
+ */
+function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
+/*
+<?xml version="1.0" encoding="UTF-8"?>
+<kml>
+<Document>
+<Placemark>
+<LineString>
+<coordinates>
+ -74.00176048278809,40.724884598773755  -73.99309158325195,40.72085157020638  -73.99712562561035,40.71577741296778  -74.00588035583496,40.71779411151555</coordinates>
+</LineString>
+</Placemark>
+</Document>
+</kml>
+*/
+  drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/egeoxml.js', 'module');
+drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/test.js', 'module', 'footer');
+
+  switch($field['widget']['type']) {
+    case 'gmap_poly_line_widget':
+    $element = array(
+        '#type' => 'textfield',
+        '#default_value' => 'abcdefg',
+      );
+
+      return $element;
+      break;
+
+    case 'gmap_poly_area_widget':
+  //     (code for this widget)
+      break;
+  }
 }
