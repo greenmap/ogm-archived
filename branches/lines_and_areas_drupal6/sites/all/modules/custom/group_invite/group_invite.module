@@ -91,7 +91,7 @@ function group_invite_menu() {
     'type' => MENU_LOCAL_TASK,
     'access callback' => 'og_is_group_admin',
     'access arguments' => array(1),
-    'weight' => 12,
+    'weight' => 13,
     );
   $items['group_invite/%node/js'] = array(
     'title' => 'Invite new members',
