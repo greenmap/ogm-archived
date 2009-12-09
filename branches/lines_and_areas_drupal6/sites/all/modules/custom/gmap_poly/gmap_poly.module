@@ -95,27 +95,14 @@ function gmap_poly_widget_info() {
  *   the form item for a single element for this field
  */
 function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
-/*
-<?xml version="1.0" encoding="UTF-8"?>
-<kml>
-<Document>
-<Placemark>
-<LineString>
-<coordinates>
- -74.00176048278809,40.724884598773755  -73.99309158325195,40.72085157020638  -73.99712562561035,40.71577741296778  -74.00588035583496,40.71779411151555</coordinates>
-</LineString>
-</Placemark>
-</Document>
-</kml>
-*/
   drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/egeoxml.js', 'module');
-drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/test.js', 'module', 'footer');
-
+  drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/gmap_poly.js', 'module', 'footer');
+  _gmap_doheader();
   switch($field['widget']['type']) {
     case 'gmap_poly_line_widget':
     $element = array(
-        '#type' => 'textfield',
-        '#default_value' => 'abcdefg',
+        '#type' => 'markup',
+        '#value' => '<div id="gmap_poly_map" style="width: auto; height: 450px; "></div>',
       );
 
       return $element;

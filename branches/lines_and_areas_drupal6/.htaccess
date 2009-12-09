@@ -56,7 +56,10 @@ DirectoryIndex index.php
   php_value mbstring.http_input             pass
   php_value mbstring.http_output            pass
   php_value mbstring.encoding_translation   0
-  php_value memory_limit	128M
+  php_value memory_limit	256M
+ php_value max_execution_time 0
+php_value max_input_time 0
+
 # 2009-06-02 - greg - This supposedly fixes some taxonomy_image errors.
 # May not be needed if taxonomy_image cleans up its act.
 # http://drupal.org/node/454414
