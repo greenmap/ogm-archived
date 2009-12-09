@@ -22,8 +22,8 @@
  * See http://groups.google.com/group/Google-Maps-API/web/api-version-changes
  * for details on using other version numbers.
  */
-define('GMAP_API_VERSION', '2.115');
-
+// define('GMAP_API_VERSION', '2.115');
+define('GMAP_API_VERSION', '2');
 /**
  * Get the defaults for a gmap.
  */
