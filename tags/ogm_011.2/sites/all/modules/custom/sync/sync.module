@@ -1,0 +1,173 @@
+<?php
+// $Id$
+
+/**
+* Display help and module information
+* @param path whitch path of the site we're displaying help
+* @param arg array that holds the current path as vould be returned from arg() function
+* @return help text for the path
+*/
+function sync_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case "admin/modules#sync":
+    case "admin/help#sync":
+      $output = '<p>'. t("Synchronizes users between greenmap.org and opengreenmap.org") .'</p>';
+    break;
+    case "user/help#sync":
+    break;
+  }
+  return $output;
+} // function sync
+
+function sync_open_mysql_connect($db_user, $db_pass, $db_name, $db_server = 'localhost') {
+  $link = mysql_connect($db_server, $db_user, $db_pass);
+  if (!$link) {
+    watchdog('error', t('Could not connect to database. Synchronisation with Open Green Map aborted.'));
+    return FALSE;
+  }
+  $db_selected = mysql_select_db($db_name, $link);
+    if (!$db_selected) {
+      watchdog('error', t("Can't use database. Synchronisation with Open Green Map aborted."));
+      mysql_close($link); // close connect
+    return FALSE;
+  }
+  return $link;
+}
+
+function sync_user($op, &$edit, &$account, $category = NULL) {
+  switch ($op) {
+    case 'update':
+
+      $ogm_uid = $account->uid;
+      $ogm_profile_fields_fid = 1;
+
+      $name = (trim($edit['name'])) ? trim($edit['name']) : $account->name;
+      $pass = (trim($edit['pass'])) ? md5(trim($edit['pass'])) : $account->pass;
+      $mail = (trim($edit['mail'])) ? trim($edit['mail']) : $account->mail;
+
+      // set database variables
+      require_once('sync.inc.php');
+
+      // if name, pass and email are still the same, do nothing
+      if ((trim($edit['name']) == $account->name) &&
+          (trim($edit['pass']) == '' || trim($edit['pass']) == NULL) &&
+          (trim($edit['mail']) == $account->mail)) {
+        return;
+      }
+
+      // print_r($account);
+      // print_r($edit);
+
+      if (!is_array($account->roles)) {
+        watchdog('error', "Unable to get user roles from account. Synchronisation with Open Green Map aborted for uid $ogm_uid.");
+        drupal_set_message(t('Unable to get user roles from account. Synchronisation with Open Green Map aborted.'));
+        return;
+      }
+
+      // user has to be a team leader
+      if (count(array_intersect($account->roles, array('team leader'))) == 0) {
+        watchdog('notice', "Account not synced during update: uid $ogm_uid is not a lead mapmaker.");
+        return;
+      }
+
+      // get greenhouse uid from ogm db
+      if (!$result = db_query('SELECT value FROM {profile_values} where fid= "%d" AND uid ="%d"', $ogm_profile_fields_fid, $ogm_uid)) {
+        watchdog('error', "'Unable to get user profile data from account uid $ogm_uid. Synchronisation with Open Green Map aborted.");
+        drupal_set_message(t('Unable to get user profile data from account. Synchronisation with Open Green Map aborted.'));
+        return;
+      }
+      $gm_uid = db_fetch_object($result);
+
+      // bail if gm_uid is not set
+      if ($gm_uid == NULL || !$gm_uid || $gm_uid == '' || $gm_uid->value == '') {
+        watchdog('error', t('Unable to get user profile data from account. Synchronisation with Greenhouse account aborted.'));
+        drupal_set_message(t('Unable to get user profile data from account. Synchronisation with Greenhouse account aborted.'));
+        return;
+      }
+
+      // connect to gm db
+      if (!$link = sync_open_mysql_connect($db_user, $db_pass, $db_name, $db_server)) {
+        watchdog('error', "Error U000: Database connection error. Synchronisation with Greenhouse account aborted.");
+        drupal_set_message(t('Database connection error. Synchronisation with Greenhouse account aborted.'));
+        return;
+      }
+
+      // update gm db
+      if ( $pass ) {
+        $q = "UPDATE users SET name='$name', pass='$pass', mail='$mail' WHERE uid = {$gm_uid->value}";
+      }
+      else {
+        $q = "UPDATE users SET name='$name', mail='$mail' WHERE uid = {$gm_uid->value}";
+      }
+      if (!mysql_query($q, $link)) {
+        watchdog('error', t('Error U001: Database update failure. Synchronisation with Greenhouse account aborted.'));
+        drupal_set_message(t('Database update failure. Synchronisation with Greenhouse account aborted.'));
+        mysql_close($link); // close connect
+        return;
+      }
+
+      watchdog('notice', t('Synchronisation with Greenhouse Account successfully completed.'));
+      drupal_set_message(t('Synchronisation with Greenhouse Account successfully completed.'));
+
+      mysql_close($link); // close connect
+
+    break;
+
+    case 'delete':
+      /*
+      $greenhouse_uid = $account->uid;
+      $greenhouse_profile_fields_fid = 97;
+
+      // set database variables
+      require_once('sync.inc.php');
+
+      // check the user role in greenhouse
+      if (!is_array($account->roles)) {
+        watchdog('error', t('Unable to get user roles from account. Synchronisation with Open Green Map aborted.'));
+        drupal_set_message(t('Unable to get user roles from account. Synchronisation with Open Green Map aborted.'));
+        return;
+      }
+
+      // $lapsed_roles = array('lapsed user', 'new unauthenticated user');
+      $lapsed_roles = array(5, 6);
+
+      // if 'lapsed user' or 'new unauthenticated user' roles found user is not approved
+        $approved_user = (count(array_intersect($edit['roles'], $lapsed_roles)) > 0)?FALSE:TRUE;
+
+      if ($approved_user == FALSE) {
+        return;
+      }
+
+      // get ogm uid from greenhouse db
+      if (!$result = db_query('SELECT value FROM {profile_values} where fid= "%d" AND uid ="%d"', $greenhouse_profile_fields_fid, $greenhouse_uid)) {
+        watchdog('error', t('Unable to get user profile data from account. Synchronisation with Open Green Map aborted.'));
+        drupal_set_message(t('Unable to get user profile data from account. Synchronisation with Open Green Map aborted.'));
+        return;
+      }
+
+      $gm_uid = db_fetch_object($result);
+
+      // if ogm uid alredy exist in greenhouse
+      if ($gm_uid == NULL || !$gm_uid || $gm_uid == '' || $gm_uid->value == '') {
+        watchdog('error', t('Error D001: Unable to get correct data from the database. Synchronisation with Open Green Map aborted.'));
+        drupal_set_message(t('Unable to get correct data from the database. Synchronisation with Open Green Map aborted.'));
+        mysql_close($link); // close connect
+        return;
+      }
+      if (!$link = sync_open_mysql_connect($db_user, $db_pass, $db_name, $db_server)) {return;}
+      // remove all user roles from ogm db
+      $q = "DELETE FROM users_roles WHERE uid = '".$gm_uid-value."'";
+      if (!mysql_query($q, $link)) {
+        watchdog('error', t('Error D002: Unable to delete data from the database. Synchronisation with Open Green Map aborted.'));
+        drupal_set_message(t('Unable to delete data from the database. Synchronisation with Open Green Map aborted.'));
+        mysql_close($link); // close connect
+        return;
+      }
+      watchdog('notice', t('Synchronisation with Open Green Map successfully completed.'));
+      drupal_set_message(t('Synchronisation with Open Green Map successfully completed.'));
+      mysql_close($link);
+      */
+    break;
+  }
+}
