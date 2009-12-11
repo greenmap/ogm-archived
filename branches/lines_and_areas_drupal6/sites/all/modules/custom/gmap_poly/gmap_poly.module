@@ -98,11 +98,25 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
   drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/egeoxml.js', 'module');
   drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/gmap_poly.js', 'module', 'footer');
   _gmap_doheader();
+
+  // need to get lat, lon & center for map
+  $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $node->og_groups[0];
+  $groupnode = node_load($gid);
+  // pass map center  to js
+  drupal_add_js(array(
+    'gmap_poly_group_map' => array(
+      'lat' => $groupnode->location['latitude'],
+      'lng' => $groupnode->location['longitude'],
+      'zoom' => $groupnode->field_map_zoom[0]['value'],
+      )
+    ),
+    'setting'
+  );
   switch($field['widget']['type']) {
     case 'gmap_poly_line_widget':
     $element = array(
         '#type' => 'markup',
-        '#value' => '<div id="gmap_poly_map" style="width: auto; height: 450px; "></div>',
+        '#value' => '<div id="gmap_poly_map_widget" style="width: auto; height: 450px; "></div>',
       );
 
       return $element;
