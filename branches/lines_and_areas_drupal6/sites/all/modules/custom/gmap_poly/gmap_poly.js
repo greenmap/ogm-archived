@@ -23,20 +23,20 @@ var zoom = MapSettings.zoom;
 
 // change these into usable values
 zoom = parseInt(zoom);
-var center = new GLatLng(lat,lng)
+var center = new GLatLng(parseFloat(lat),parseFloat(lng));
 
 // pass settings to the map.
 mmap.setCenter(center, zoom);
 // hard code a nyc zoom for testing.
-// mmap.setCenter(new GLatLng(40.728078,-73.997040),15);
+//mmap.setCenter(new GLatLng(parseFloat(40.728078),parseFloat(-73.997040)),15);
 
 mmap.addControl(new GLargeMapControl());
 mmap.addControl(new GMapTypeControl());
 
 var polyline = new GPolyline([
-  new GLatLng(lat, lng),
-  new GLatLng(40.72085157020638, -73.99309158325195),
-  new GLatLng(40.728078, -74)
+  new GLatLng(parseFloat(lat), parseFloat(lng)),
+  new GLatLng(parseFloat(40.72085157020638), parseFloat(-73.99309158325195)),
+  new GLatLng(parseFloat(40.728078), parseFloat(-74))
 ], "#000000", 10);
 
 
