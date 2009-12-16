@@ -36,7 +36,6 @@ function gmap_poly_field_info() {
  *  implementation of hook_field_settings
  */
 function gmap_poly_field_settings($op, $field) {
-  dsm("hook field settings op: ". $op);
   switch ($op) {
     case 'database columns':
         // types declared in hook_field_info
@@ -112,11 +111,31 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
     ),
     'setting'
   );
+
+  // pass the right settings widget div names to be used by JS
+  $mapdiv = 'gmap_poly_map_widget_'. $delta ;
+  $coordiv = 'gmap_poly_coordinates_'. $delta;
+
+  $fieldname = $field['field_name'];
+  $cssfieldname = str_replace('_', '-', $fieldname);
+  $textareadiv = 'edit-'. $cssfieldname .'-'. $delta;
+
+  drupal_add_js(array(
+    'gmap_poly_widget' => array(
+      'mapDiv' => $mapdiv,
+      'coorDiv' => $coordiv,
+      'fieldDiv' => $textareadiv,
+      )
+    ),
+    'setting'
+  );
+
   switch($field['widget']['type']) {
     case 'gmap_poly_line_widget':
     $element = array(
-        '#type' => 'markup',
-        '#value' => '<div id="gmap_poly_map_widget" style="width: auto; height: 450px; "></div>',
+        '#type' => 'textarea',
+        '#prefix' => '<div id="'. $mapdiv .'" style="width: auto; height: 450px; "></div><div id="'. $coordiv .'">',
+        '#suffix' => '</div>',
       );
 
       return $element;
