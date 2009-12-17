@@ -1,22 +1,8 @@
-var kmltest = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-        '<kml>\n' +
-        '<Document>\n' +
-        '<Placemark>' +
-        '<name>Test</name>' +
-        '<LineString>' +
-        '<coordinates>' +
-        '-74.00176048278809,40.724884598773755  -73.99309158325195,40.72085157020638  -73.99712562561035,40.71577741296778  -74.00588035583496,40.71779411151555\n' +
-        '</coordinates>' +
-        '</LineString>' +
-        '</Placemark>' +
-        '</Document>\n' +
-        '</kml>\n';
-
-
 // Declare a few div ids that will be used later
-var MapDivId = Drupal.settings.gmap_poly_widget.mapDiv;
-var MapCoordId = Drupal.settings.gmap_poly_widget.coorDiv;
-var MapFieldId = Drupal.settings.gmap_poly_widget.fieldDiv;
+// TODO: Figure out a way to loop this for fields with multiple values
+var MapDivId = Drupal.settings.gmap_poly_widget_0.mapDiv;
+var MapCoordId = Drupal.settings.gmap_poly_widget_0.coorDiv;
+var MapFieldId = Drupal.settings.gmap_poly_widget_0.fieldDiv;
 
 // create a new GMap instance
 var mmap=new GMap2(document.getElementById(MapDivId));
@@ -42,11 +28,7 @@ mmap.addControl(new GLargeMapControl());
 mmap.addControl(new GMapTypeControl());
 
 //define the line
-var polyline = new GPolyline([
-  new GLatLng(parseFloat(lat), parseFloat(lng)),
-  new GLatLng(parseFloat(40.72085157020638), parseFloat(-73.99309158325195)),
-  new GLatLng(parseFloat(40.728078), parseFloat(-74))
-], "#000000", 5);
+var polyline = new GPolyline([], "#000000", 5);
 
 // add the line to the map
 mmap.addOverlay(polyline);
@@ -84,5 +66,22 @@ polyLineUpdatedListener = GEvent.addListener(polyline,"lineupdated",function(){
   textarea.value = output;
 });
 
-// var exml = new EGeoXml("exml", mmap, null);
-// exml.parseString(kmltest);
+// Mouseover the the poly line
+polyMouseoverListener = GEvent.addListener(polyline, "mouseover", function() {
+  polymouseOver = true;
+  polyline.enableEditing(); // edit points are shown
+});
+
+// Mouse Out for the poly line
+polyMouseoutListener = GEvent.addListener(polyline, "mouseout", function() {
+ polymouseOver = false;
+ polyline.disableEditing(); // editpoints are hided
+});
+
+// single right click on the map
+GEvent.addListener(mmap, "singlerightclick",function(a,b,overlay) {
+   // limit right click actions to the line.
+   if(polymouseOver) {
+    polyline.deleteVertex(overlay.index);
+  }
+});
