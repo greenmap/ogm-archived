@@ -41,7 +41,7 @@ function gmap_poly_field_settings($op, $field) {
         // types declared in hook_field_info
         $columns = array(
           // see http://dev.mysql.com/doc/refman/5.0/en/gis-class-geometry.html
-          'gmap_poly_geometric_data' => array('type' => 'GEOMETRY'),
+          'gmap_poly_geometric_data' => array('type' => 'TEXT'),
         );
         return $columns;
       break;
@@ -97,10 +97,12 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
   drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/egeoxml.js', 'module');
   drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/gmap_poly.js', 'module', 'footer');
   _gmap_doheader();
-
   // need to get lat, lon & center for map
-  $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $node->og_groups[0];
+  $node = $form['#node'];
+  $nodegid = array_shift($node->og_groups);
+  $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $nodegid;
   $groupnode = node_load($gid);
+
   // pass map center  to js
   drupal_add_js(array(
     'gmap_poly_group_map' => array(
@@ -146,3 +148,16 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
       break;
   }
 }
+
+/**
+ * Implementation of hook_content_is_empty().
+ */
+function gmap_poly_content_is_empty($item, $field) {
+//   if (empty($item['value']) && (string)$item['value'] !== '0') {
+//     return TRUE;
+//   }
+  return FALSE;
+}
+// function gmap_poly_default_value() {
+//   return '';
+// }
