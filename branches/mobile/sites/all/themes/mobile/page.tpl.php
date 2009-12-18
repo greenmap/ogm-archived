@@ -132,7 +132,7 @@
   #content-area{
   	padding:2px;
   }
-  
+    
   h1{
   	font-size: 1.5em;
   	color:  #666;
@@ -178,9 +178,7 @@
 		    <?php print $messages; ?>      
     		<?php print $pre_content; ?>        
             <?php print $content; ?>
-            <br/><br/><h3>Welcome to Open Green Map:</h3>
-            <h3>Your guide to nature,<br/> culture and green living initiatives.</h3>
-            <span class="alpha">Mobile Alpha Version</span>
+            <?php print $mobile_bottom; ?>
            
         <div id="footer"><?php if ($footer_message): ?>
           &copy; Green Map&reg; System, 2009<br/>
