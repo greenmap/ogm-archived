@@ -508,9 +508,6 @@ function translation_table_submit_translations($form, &$form_state) {
       }
       break;
   }
-  // Redirect to current page.
-  $query = isset($_GET['page']) ? array('page' => $_GET['page']) : array();
-  $form_state['redirect'] = array($_GET['q'], $query);
 }
 
 /**

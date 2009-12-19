@@ -1,5 +1,5 @@
 <?php
-//$Id: date_api_elements.inc,v 1.49.2.1.2.53 2009/09/16 10:56:28 karens Exp $
+//$Id: date_api_elements.inc,v 1.49.2.1.2.47 2009/03/25 15:31:42 karens Exp $
 /**
  * @file
  * Date API elements themes and validation.
@@ -132,15 +132,14 @@ function date_text_process($element, $edit, $form_state, $form) {
   $date = NULL;
   $granularity = date_format_order($element['#date_format']);
   
-  // We sometimes get $edit without $edit['date'] from
-  // Views exposed filters.
-  if (!empty($edit) && is_array($edit) && !empty($edit['date'])) {
+  if (!empty($edit) && !empty($edit['date'])) {
     $datetime = date_convert_from_custom($edit['date'], $element['#date_format']);
     $date = date_make_date($datetime, $element['#date_timezone'], DATE_DATETIME, $granularity);
   }
   elseif (!empty($element['#value'])) {
     $date = date_make_date($element['#value'], $element['#date_timezone'], DATE_DATETIME, $granularity);
   }
+  
   $element['#tree'] = TRUE;
 
   $element['date']['#type'] = 'textfield';
@@ -240,7 +239,7 @@ function date_parts_element($element, $date, $format) {
   $order = array_flip($granularity);
 
   $hours_format  = strpos(strtolower($element['#date_format']), 'a') ? 'g': 'G';
-  $month_function  = strpos($element['#date_format'], 'F') !== FALSE ? 'date_month_names' : 'date_month_names_abbr';
+  $month_function  = strpos($element['#date_format'], 'F') ? 'date_month_names' : 'date_month_names_abbr';
   $count = 0;
   $increment = min(intval($element['#date_increment']), 1);
   foreach ($granularity as $field) {
@@ -306,10 +305,8 @@ function date_parts_element($element, $date, $format) {
       $sub_element[$field]['#theme'] = 'date_textfield_element';
       $sub_element[$field]['#size'] = 7;
       if ($element['#date_label_position'] == 'within') {
-        if (is_array($sub_element[$field]['#options'])) {
-          $sub_element[$field]['#options'] = array(
-            '-'. $label => '-'. $label) + $sub_element[$field]['#options'];
-        }
+        $sub_element[$field]['#options'] = array(
+          '-'. $label => '-'. $label) + $sub_element[$field]['#options'];
         if (empty($sub_element[$field]['#default_value'])) {
           $sub_element[$field]['#default_value'] = '-'. $label;
         }
@@ -329,12 +326,12 @@ function date_parts_element($element, $date, $format) {
         $sub_element[$field]['#title'] = $label;
       }
     }
+  }
  
-    // Views exposed filters are treated as submitted even if not,
-    // so force the #default value in that case.  
-    if (!empty($element[$field]['#force_value'])) {
-      $sub_element[$field]['#value'] = $sub_element[$field]['#default_value'];
-    }
+  // Views exposed filters are treated as submitted even if not,
+  // so force the #default value in that case.  
+  if (!empty($element[$field]['#force_value'])) {
+    $sub_element[$field]['#value'] = $sub_element[$field]['#default_value'];
   }
   
   if (($hours_format == 'g' || $hours_format == 'h') && date_has_time($granularity)) {
@@ -597,7 +594,6 @@ function date_convert_from_custom($date, $format) {
   $regex2 = str_replace('a', '(am|pm)', $regex2);
   preg_match('`^'. $regex2 .'$`', $date, $values);
   array_shift($values);
-  
   // if we did not find all the values for the patterns in the format, abort
   if (count($letters) != count($values)) {
     return  NULL;

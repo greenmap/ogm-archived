@@ -1,5 +1,5 @@
 <?php
-// $Id: theme.inc,v 1.1.4.36 2009/06/08 23:10:58 karens Exp $
+// $Id: theme.inc,v 1.1.4.33 2009/02/17 17:04:31 karens Exp $
 /**
  *  Preprocessor to construct back and next navigation from the date argument.
  */
@@ -52,37 +52,9 @@ function template_preprocess_date_navigation(&$vars) {
   if (!empty($prev_date) && !empty($vars['prev_url']) && date_format($prev_date, 'Y') < $view->date_info->min_allowed_year) {
     $vars['prev_url'] = '';    
   }
-
-  $vars['prev_options'] += array('attributes' => array());
-  $vars['next_options'] += array('attributes' => array());
-  $prev_title = '';
-  $next_title = '';
-
-  // Build next/prev link titles.
-  switch($view->date_info->granularity) {
-    case 'year':
-      $prev_title = t('Navigate to previous year');
-      $next_title = t('Navigate to next year');
-      break;
-    case 'month':
-      $prev_title = t('Navigate to previous month');
-      $next_title = t('Navigate to next month');
-      break;
-    case 'week':
-      $prev_title = t('Navigate to previous week');
-      $next_title = t('Navigate to next week');
-      break;      
-    case 'day':
-      $prev_title = t('Navigate to previous day');
-      $next_title = t('Navigate to next day');
-      break;
-  }
-  $vars['prev_options']['attributes'] += array('title' => $prev_title);
-  $vars['next_options']['attributes'] += array('title' => $next_title);
   
-  // Add nofollow for next/prev links.
-  $vars['prev_options']['attributes'] += array('rel' => 'nofollow');
-  $vars['next_options']['attributes'] += array('rel' => 'nofollow');
+  $vars['prev_options'] += array('attributes' => array('rel' => 'nofollow'));
+  $vars['next_options'] += array('attributes' => array('rel' => 'nofollow'));
   
   $link = FALSE;
   // Month navigation titles are used as links in the block view.
@@ -122,8 +94,7 @@ function theme_date_nav_title($granularity, $view, $link = FALSE, $format = NULL
   // TODO Update this.
   if (!empty($view->date_info->mini) || $link) {
   	// Month navigation titles are used as links in the mini view.
-   $attributes = array('title' => t('View full page month'));
-  	return l($title, $view->date_info->url, array('attributes' => $attributes));
+  	return l($title, $view->date_info->url);
   }
   else {
     return $title;
@@ -354,46 +325,4 @@ function theme_date_part_label_ampm($part_type, $element) {
 }
 function theme_date_part_label_timezone($part_type, $element) {
   return t('Timezone');
-}
-
-/**
- * Theme for a date block that looks like a mini calendar day.
- * Pass in a date object already set to the right timezone, 
- * format as a calendar page date. The calendar styling is created in css.
- */
-function theme_date_calendar_day($date) {
-  if (empty($date)) {
-    return NULL;
-  }
-  return '<div class="date-calendar-day">' .
-    '<span class="month">' . date_format_date($date, 'custom', 'M') . '</span>' .
-    '<span class="day">' . date_format_date($date, 'custom', 'j') . '</span>' .
-    '<span class="year">' . date_format_date($date, 'custom', 'Y') . '</span>' .
-  '</div>';
-}
-
-function theme_date_time_ago($start_date, $end_date, $interval = 2) {
-  // If no date is sent, then return nothing
-  if (empty($start_date) || empty($end_date)){
-    return NULL;
-  }
-
-  // Time to compare dates to
-  $now = date_format(date_now(), DATE_FORMAT_DATETIME);
-  $start = date_format($start_date, DATE_FORMAT_DATETIME);
-  $end = date_format($end_date, DATE_FORMAT_DATETIME);
-  
-  // 1) The date is entirely in the future
-  if ($now < $start) {
-    return t('!time from now', array('!time' => date_format_interval($start_date, $interval)));
-  }
-  // 2) Ongoing date
-  elseif ($now > $start && $now <= $end) {
-    //return t('Started !time ago', array('!time' => $dates['value']['interval']));
-    return t('ongoing');
-  }
-  // 3) Date is in the past (format_interval added 'ago' to the value).
-  else {
-    return date_format_interval($start_date, $interval);
-  }
 }

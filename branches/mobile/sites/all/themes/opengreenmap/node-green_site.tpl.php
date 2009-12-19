@@ -51,9 +51,7 @@ foreach ($node->taxonomy as $tid => $tax) {
 if ($teaser) {
 ?>
   <div id="bubble_small">
-    <div class="maximize-link">
-      <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()"><?php print t('more info'); ?></a>
-    </div>
+
     <!--
     <div id="bubble_small_more">
       <a href="#" onclick="javascript:gotoTab(1);">
@@ -80,18 +78,17 @@ if ($teaser) {
     </div>
 
     <div class="bubble_small_title <?php print $genre_name_lc; ?>">
-<!--       <a href="#" rel='1' class='maximize'> -->
-      <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()">
+      <a href="#" rel='1' class='maximize'>
         <?php print $title; ?>
       </a>
     </div>
 
     <div id="bubble_left">
       <div id="bubble_media<?php if (empty($node->field_image[0]['view']) && empty($node->field_video[0]['view'])) print ' bubble_media_missing';?>">
-        <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()" class="maximize" rel="4">
+        <a href="#" rel='4' class='maximize'>
           <?php if (!empty($node->field_image[0]['view'])) { ?>
             <?php $img = strip_tags($node->field_image[0]['view'], '<img>'); ?>
-            <?php print $img; // TODO better resizing ?>
+            <?php print $img; ?>
           <?php } elseif (!empty($node->field_video[0]['view'])) { ?>
             <?php $video = strip_tags($node->field_video[0]['view'], '<img>'); ?>
             <?php print $video; ?>
@@ -110,11 +107,11 @@ if ($teaser) {
 
         <img src="<?php print base_path().path_to_theme().'/images/comments_bubble.gif' ?>" alt="(comments)" />
         <!-- TODO: add link -->
-        <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()" class="maximize" rel="2">
-          <?php if ($comment_count == 0) { ?>
+        <a href="#" rel='2' class='maximize'>
+          <?php if ($node->comment_count == 0) { ?>
             <?php print t('Add first comment'); ?>
           <?php } else { ?>
-            <?php print format_plural($comment_count, '1 comment', '@count comments'); ?>
+            <?php print format_plural($node->comment_count, '1 comment', '@count comments'); ?>
           <?php } ?>
         </a>
       </div>
@@ -135,7 +132,7 @@ if ($teaser) {
           <p><?php print $location['city']; ?></p>
         <?php } ?>
         <?php if ($field_phone[0]['value'] != '') { ?>
-          <p><?php print check_plain($field_phone[0]['value']); ?></p>
+          <p><?php print $field_phone[0]['value']; ?></p>
         <?php } ?>
       </div>
     </div>
@@ -163,10 +160,8 @@ if ($teaser) {
   </div>
 <?php
 } else {
-  print '<div id="green_site_full">';
   // fetch the maximized bubble from an external file (for now)
   include('green_site-full.tpl.php');
-  print '</div>';
 }
 ?>
 </div>

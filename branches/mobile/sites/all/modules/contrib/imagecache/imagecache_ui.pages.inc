@@ -1,5 +1,5 @@
 <?php
-// $Id: imagecache_ui.pages.inc,v 1.6 2009/05/03 17:27:46 drewish Exp $
+// $Id: imagecache_ui.pages.inc,v 1.2 2009/04/14 00:01:21 drewish Exp $
 
 /**
  * Preset Admin callbacks and required functions.
@@ -39,6 +39,48 @@ function imagecache_ui_preset_overview() {
   $output = theme('table', $header, $rows);
   return $output;
 }
+
+
+function imagecache_ui_preset_add_form($form_state) {
+  $form = array();
+  $form['presetname'] = array(
+    '#type' => 'textfield',
+    '#size' => '64',
+    '#title' => t('Preset Namespace'),
+    '#default_value' => '',
+    '#description' => t('The namespace is used in URLs for images to tell imagecache how to process an image. Please only use alphanumeric characters, underscores (_), and hyphens (-) for preset names.'),
+    '#required' => TRUE,
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create New Preset'),
+  );
+  return $form;
+}
+
+function imagecache_ui_preset_add_form_validate($form, &$form_state) {
+  $values = $form_state['values'];
+  // Check for duplicates
+  foreach (imagecache_presets() as $preset) {
+    if ($values['presetname'] == $preset['presetname']) {
+      form_set_error('presetname', t('The namespace you have chosen is already in use.'));
+      break;
+    }
+  }
+
+  // Check for illegal characters in preset names
+  if (preg_match('/[^0-9a-zA-Z_\-]/', $values['presetname'])) {
+    form_set_error('presetname', t('Please only use alphanumeric characters, underscores (_), and hyphens (-) for preset names.'));
+  }
+}
+
+function  imagecache_ui_preset_add_form_submit($form, &$form_state) {
+  $preset = array('presetname' => $form_state['values']['presetname']);
+  $preset = imagecache_preset_save($preset);
+  drupal_set_message(t('Preset %name (ID: @id) was created.', array('%name' => $preset['presetname'], '@id' => $preset['presetid'])));
+  $form_state['redirect'] = 'admin/build/imagecache/'. $preset['presetid'];
+}
+
 
 function imagecache_ui_preset_delete_form($form_state, $preset = array()) {
   if (empty($preset)) {
@@ -131,15 +173,14 @@ function imagecache_ui_preset_export_form(&$form_state, $preset = array()) {
 
 
 function imagecache_ui_preset_form($form_state, $preset = array()) {
+  if (empty($preset)) {
+    drupal_set_message(t('The specified preset was not found.'), 'error');
+    drupal_goto('admin/build/imagecache');
+  }
+
   $form = array();
-
-  $form['presetid'] = array(
-    '#type' => 'value',
-    '#value' => $preset['presetid'],
-  );
-
-  // Browsers don't submit disabled form values so we've got to put two copies
-  // of the name on the form: one for the submit handler and one for the user.
+  // @TODO: for some reason, simply setting '#disabled' on the normal presetname
+  // textfield fails to pass the values successfully to the submit handler.
   if ($preset['storage'] === IMAGECACHE_STORAGE_DEFAULT) {
     $form['presetname'] = array(
       '#type' => 'value',
@@ -164,16 +205,10 @@ function imagecache_ui_preset_form($form_state, $preset = array()) {
     );
   }
 
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => $preset['storage'] === IMAGECACHE_STORAGE_DEFAULT ? t('Override Defaults') : t('Save Preset'),
-    '#weight' => 9,
+  $form['presetid'] = array(
+    '#type' => 'value',
+    '#value' => $preset['presetid'],
   );
-
-  // For new presets don't show the preview or all actions to be added.
-  if (empty($preset['presetid'])) {
-    return $form;
-  }
 
   $form['actions'] = array(
     '#type' => 'fieldset',
@@ -187,8 +222,9 @@ function imagecache_ui_preset_form($form_state, $preset = array()) {
     if (!$definition = imagecache_action_definition($action['action'])) {
       continue;
     }
+    $action_name =  t($definition['name']);
     $action_form['name'] = array(
-      '#value' => t($definition['name']),
+      '#value' => $action_name,
     );
 
     $action_form['action'] = array(
@@ -236,6 +272,8 @@ function imagecache_ui_preset_form($form_state, $preset = array()) {
     '#collapsed' => count($preset['actions']) > 0,
     '#access' => $preset['storage'] !== IMAGECACHE_STORAGE_DEFAULT,
   );
+
+
   foreach (imagecache_action_definitions() as $action => $definition) {
     $form['actions']['new'][] = array(
       '#type' => 'markup',
@@ -246,6 +284,44 @@ function imagecache_ui_preset_form($form_state, $preset = array()) {
                     ' - '. $definition['description'],
     );
   }
+
+/**
+ @todo: 404/403 image per preset.
+ @todo: global 404/403 image.
+
+  $form['files'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#title' =>  t('Error Files'),
+  );
+
+  $form['files']['403']['file'] = array(
+    '#type' => 'file',
+    '#title' => t('403 Image'),
+    '#description' => t('Image that will be used when access is denied to the source image.'),
+  );
+
+  $path403 = imagecache/'. $preset['presetname'] .'/403.png';
+  if (file_exists($path403)) {
+    $url403 =  imagecache_create_url($preset['presetname'], $path403);
+
+    $form['files']['403']['view'] = array(
+      '#value' => '<img src="'. $url403 .'">',
+    );
+  }
+
+  $form['files']['404'] = array(
+    '#type' => 'file',
+    '#title' => t('404 Image'),
+    '#description' => t('Image that will be used when the source image cannot be found.'),
+  );
+  */
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => $preset['storage'] === IMAGECACHE_STORAGE_DEFAULT ? t('Override Defaults') : t('Update Preset'),
+  );
 
   // Display a preview image for this action. Put it below the submit button so
   // users don't have to do a bunch of scrolling.
@@ -263,26 +339,9 @@ function imagecache_ui_preset_form($form_state, $preset = array()) {
     '#type' => 'item',
     '#title' => t('Preview'),
     '#value' => l($imagecache_path, $imagecache_path) .'<br />'. l("<img src='$imagecache_path' />", $imagecache_path, array('html' => TRUE)),
-    '#weight' => 10,
   );
 
   return $form;
-}
-
-function imagecache_ui_preset_form_validate($form, &$form_state) {
-  $values = $form_state['values'];
-  // Check for duplicates
-  foreach (imagecache_presets() as $preset) {
-    if ($values['presetname'] == $preset['presetname'] && $values['presetid'] != $preset['presetid']) {
-      form_set_error('presetname', t('The preset name you have chosen is already in use.'));
-      break;
-    }
-  }
-
-  // Check for illegal characters in preset names
-  if (preg_match('/[^0-9a-zA-Z_\-]/', $values['presetname'])) {
-    form_set_error('presetname', t('Please only use alphanumeric characters, underscores (_), and hyphens (-) for preset names.'));
-  }
 }
 
 function imagecache_ui_preset_form_submit($form, &$form_state) {
@@ -301,6 +360,9 @@ function imagecache_ui_preset_form_submit($form, &$form_state) {
 
   // Push back to the preset form
   $form_state['redirect'] = 'admin/build/imagecache/'. $preset['presetid'];
+
+  // Clear preset cache
+  imagecache_presets(TRUE);
 }
 
 function theme_imagecache_ui_preset_actions($form) {
@@ -340,87 +402,58 @@ function theme_imagecache_ui_preset_actions($form) {
       'class' => 'draggable',
     );
   }
-
-  $output = '';
-  if ($rows) {
-    drupal_add_tabledrag('imagecache-preset-actions', 'order', 'sibling', 'imagecache-action-order-weight');
-    $output = theme('table', $header, $rows, array('id' => 'imagecache-preset-actions'));
-  }
+  $output = theme('table', $header, $rows, array('id' => 'imagecache-preset-actions'));
+  drupal_add_tabledrag('imagecache-preset-actions', 'order', 'sibling', 'imagecache-action-order-weight');
   $output .= drupal_render($form);
   return $output;
 }
 
 
-/**
- * Page with form for adding a new action to add to a preset.
- */
-function imagecache_ui_action_add_page($preset, $actionname) {
-  // Make sure the name is valid.
-  if (!$definition = imagecache_action_definition($actionname)) {
-    drupal_set_message(t('Unknown action.'), 'error');
-    drupal_goto('admin/build/imagecache/'. $preset['presetid']);
-  }
-  $action = array(
-    'presetid' => $preset['presetid'],
-    'action' => $actionname,
-    'data' => array(),
-  );
-  return drupal_get_form('imagecache_ui_action_form', $preset, $action);
-}
-
-
 function imagecache_ui_action_form($form_state, $preset, $action) {
-  // Do some error checking.
-  if (empty($preset['presetid'])) {
-    drupal_set_message(t('Unknown preset.'), 'error');
+  $definitions = imagecache_action_definitions();
+
+  if (empty($action)) {
+    drupal_set_message(t('Unknown Action.'), 'error');
     drupal_goto('admin/build/imagecache');
   }
-  if (empty($action['action']) || !$definition = imagecache_action_definition($action['action'])) {
-    drupal_set_message(t('Unknown action.'), 'error');
-    drupal_goto('admin/build/imagecache/'. $preset['presetid']);
-  }
-  if ($action['presetid'] != $preset['presetid']) {
-    drupal_set_message(t('This %action action is not associated %preset preset.', array('%action' => $action['action'], '%preset' => $preset['presetname'])), 'error');
-    drupal_goto('admin/build/imagecache/'. $preset['presetid']);
+
+  if (empty($preset)) {
+    drupal_set_message(t('Unknown Preset.'), 'error');
+    drupal_goto('admin/build/imagecache');
   }
 
-  $form['#tree'] = TRUE;
-  $form['presetid'] = array(
-    '#type' => 'value',
-    '#value' => $action['presetid'],
+  $form = array(
+    '#tree' => TRUE,
   );
+
   $form['actionid'] = array(
     '#type' => 'value',
     '#value' => $action['actionid'],
   );
-  $form['action'] = array(
-    '#type' => 'value',
-    '#value' => $action['action'],
-  );
 
-  if (!empty($definition['file'])) {
-    require_once($definition['file']);
-  }
-  if (function_exists($action['action'] .'_form')) {
-    $form['data'] = call_user_func($action['action'] .'_form', $action['data']);
-  }
 
+  if (!empty($definitions[$action['action']]['file'])) {
+    require_once($definitions[$action['action']]['file']);
+  }
+  $form['data'] = call_user_func($action['action'] .'_form', $action['data']);
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => empty($action['actionid']) ? t('Create Action') : t('Update Action'),
+    '#value' => t('Update Action'),
   );
   return $form;
 }
 
 function imagecache_ui_action_form_submit($form, &$form_state) {
-  imagecache_action_save($form_state['values']);
-  if (empty($form_state['values']['presetid'])) {
-    drupal_set_message(t('The action was succesfully created.'));
+  if ($action = imagecache_action($form_state['values']['actionid'])) {
+    $action = array_merge($action, $form_state['values']);
+    imagecache_action_save($action);
+    drupal_set_message(t('The action was succesfully updated.'));
+    $form_state['redirect'] = 'admin/build/imagecache/'. $action['presetid'];
   }
   else {
-    drupal_set_message(t('The action was succesfully updated.'));
+    drupal_set_message(t('Unknown Action: @action_id', array('@action_id' => $form_state['values']['actionid'])));
+    $form_state['redirect'] = 'admin/build/imagecache';
   }
-  $form_state['redirect'] = 'admin/build/imagecache/'. $form_state['values']['presetid'];
 }
 
 
@@ -452,4 +485,37 @@ function imagecache_ui_action_delete_form_submit($form, &$form_state) {
   imagecache_action_delete($action);
   drupal_set_message(t('The action has been deleted.'));
   $form_state['redirect'] = 'admin/build/imagecache/'. $action['presetid'];
+}
+
+
+function imagecache_ui_action_add_form($form_state, $preset, $actionname) {
+  $definition = imagecache_action_definition($actionname);
+
+  $form = array(
+    '#tree' => TRUE,
+  );
+  $form['action'] = array(
+    '#type' => 'value',
+    '#value' => $actionname,
+  );
+  $form['presetid'] = array(
+    '#type' => 'value',
+    '#value' => $preset['presetid'],
+  );
+  $form['weight'] = array(
+    '#type' => 'weight',
+    '#title' => t('Weight'),
+  );
+
+  $form['data'] = call_user_func($actionname .'_form', array());
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Add Action'),
+  );
+  return $form;
+}
+
+function imagecache_ui_action_add_form_submit($form, &$form_state) {
+  imagecache_action_save($form_state['values']);
+  $form_state['redirect'] = 'admin/build/imagecache/'. $form_state['values']['presetid'];
 }

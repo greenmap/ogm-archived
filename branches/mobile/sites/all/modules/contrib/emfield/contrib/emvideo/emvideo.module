@@ -88,14 +88,6 @@ function emvideo_theme() {
         'arguments' => array('element' => NULL),
         'file' => 'emvideo.theme.inc'
     ),
-    'emvideo_video_link' => array(
-        'arguments' => array('element' => NULL),
-        'file' => 'emvideo.theme.inc'
-    ),
-    'emvideo_formatter_video_link' => array(
-        'arguments' => array('element' => NULL),
-        'file' => 'emvideo.theme.inc'
-    ),
     'emvideo_formatter_video_embed' => array(
         'arguments' => array('element' => NULL),
         'file' => 'emvideo.theme.inc'
@@ -200,10 +192,6 @@ function emvideo_field_formatter_info() {
     ),
     'video_preview' => array(
       'label' => t('Preview Video'),
-      'field types' => $types,
-    ),
-    'video_link' => array(
-      'label' => t('Link to Video'),
       'field types' => $types,
     ),
     'video_thumbnail' => array(

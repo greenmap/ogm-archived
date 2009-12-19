@@ -39,7 +39,7 @@ Drupal.makeRequest = function (url, params,returnFunc,returnArgs) {
 			eval(returnFunc);
 	  	} else {
 			// failed
-        	alert(Drupal.t('Problems with the ajax (code 101):') + url);
+        	alert(Drupal.t('Problems with the ajax:') + url);
 		}
     };
 

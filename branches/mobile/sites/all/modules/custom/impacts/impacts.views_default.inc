@@ -101,35 +101,6 @@ function impacts_views_default_views() {
       'field' => 'field_comments_about_the_impact_value',
       'relationship' => 'none',
     ),
-    'edit_node' => array(
-      'label' => 'Edit',
-      'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
-        'make_link' => 0,
-        'path' => '',
-        'link_class' => '',
-        'alt' => '',
-        'prefix' => '',
-        'suffix' => '',
-        'help' => '',
-        'trim' => 0,
-        'max_length' => '',
-        'word_boundary' => 1,
-        'ellipsis' => 1,
-        'strip_tags' => 0,
-        'html' => 0,
-      ),
-      'text' => '',
-      'exclude' => 1,
-      'id' => 'edit_node',
-      'table' => 'node',
-      'field' => 'edit_node',
-      'override' => array(
-        'button' => 'Override',
-      ),
-      'relationship' => 'none',
-    ),
   ));
   $handler->override_option('sorts', array(
     'changed' => array(
@@ -255,16 +226,13 @@ function impacts_views_default_views() {
   $handler->override_option('access', array(
     'type' => 'none',
   ));
-  $handler->override_option('cache', array(
-    'type' => 'none',
-  ));
   $handler->override_option('title', 'List of Impacts for Site');
   $handler->override_option('empty', 'No impacts have been left for this site yet - be the first!');
   $handler->override_option('empty_format', '1');
   $handler->override_option('use_pager', '1');
   $handler->override_option('style_plugin', 'list');
   $handler->override_option('style_options', array(
-    'grouping' => 'edit_node',
+    'grouping' => 'field_comments_about_the_impact_value',
     'type' => 'ul',
   ));
   $handler = $view->new_display('page', 'Page', 'page_1');

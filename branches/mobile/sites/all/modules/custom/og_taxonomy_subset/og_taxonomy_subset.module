@@ -38,22 +38,18 @@ function og_taxonomy_subset_form_alter(&$form, &$form_state, $form_id) {
     // alter form for adding Map
     $type = $form['type']['#value'];
     $node = $form['#node'];
-    // first check if node is being submitted to a group, or is already in a group.
-    // if not, we still fix up the primary icon dropdown. this is perhaps not
-    // the correct place to do it since it has nothing to do with organic groups
-    // but the code was already here.
-    $group = og_get_group_context();
-    // this returns the $node object for the group
-    // copied from primary_term - gets vocabs that are set to use primary_term
-    if ($vids = variable_get('pt_vocabs_'. $form['type']['#value'], array())) {
-      // go through all taxonomy terms for this type:
-      $terms = array();
-      if (is_array($form['taxonomy'])) {
-        foreach ($form['taxonomy'] as $vid => $vocab) {
-          // if the current taxonomy form is one that is set to use primary_term
-          if (in_array($vid, $vids)) {
-            if (is_array($vocab['#options'])) {
-              if ($group) {
+    // first check if node is being submitted to a group, or is already in a group
+    if ($group = og_get_group_context()) {
+      // this returns the $node object for the group
+      // copied from primary_term - gets vocabs that are set to use primary_term
+      if ($vids = variable_get('pt_vocabs_'. $form['type']['#value'], array())) {
+        // go through all taxonomy terms for this type:
+        $terms = array();
+        if (is_array($form['taxonomy'])) {
+          foreach ($form['taxonomy'] as $vid => $vocab) {
+            // if the current taxonomy form is one that is set to use primary_term
+            if (in_array($vid, $vids)) {
+              if (is_array($vocab['#options'])) {
                 // get taxonomy terms for group for this vocab - this replaces
                 // $vocab['#options']
                 // might be set via content taxonomy field
@@ -81,54 +77,51 @@ function og_taxonomy_subset_form_alter(&$form, &$form_state, $form_id) {
                 if (count($group_terms) == 0) {
                   return;
                 }
+                $options = array();
+                // turn these into options
+                $this_level = array();
+                $this_level[0] = '';
+                $this_level[1] = '';
+                foreach (taxonomy_get_tree($vid) as $term) {
+                  if ($term->depth < 2 && $this_level[$term->depth] != $term->name) {
+                    // ignore categories
+                    $this_level[$term->depth] = str_repeat('--', $term->depth).
+                      tt("taxonomy:term:$term->tid:name", $term->name);
+                    continue;
+                  }
+                  if (!in_array($term->tid, $group_terms)) {
+                    continue;
+                  }
+                  $choice = new stdClass();
+                  $choice->option = array($term->tid => tt("taxonomy:term:$term->tid:name", $term->name));
+                  if ($this_level[0] && $this_level[1]) {
+                    $options[$this_level[0]][$this_level[1]][] = $choice;
+                  }
+                  elseif ($this_level[0]) {
+                    $options[$this_level[1]][] = $choice;
+                  }
+                  else {
+                    $options[] = $choice;
+                  }
+                }
+                $terms +=  $options;
               }
-              $options = array();
-              // turn these into options
-              $this_level = array();
-              $this_level[0] = '';
-              $this_level[1] = '';
-              foreach (taxonomy_get_tree($vid) as $term) {
-                if ($term->depth < 2 && $this_level[$term->depth] != $term->name) {
-                  // ignore categories
-                  $this_level[$term->depth] = str_repeat('--', $term->depth).
-                    tt("taxonomy:term:$term->tid:name", $term->name);
-                  continue;
-                }
-                if ($group && !in_array($term->tid, $group_terms)) {
-                  continue;
-                }
-                $choice = new stdClass();
-                $choice->option = array($term->tid => tt("taxonomy:term:$term->tid:name", $term->name));
-                if ($this_level[0] && $this_level[1]) {
-                  $options[$this_level[0]][$this_level[1]][] = $choice;
-                }
-                elseif ($this_level[0]) {
-                  $options[$this_level[1]][] = $choice;
-                }
-                else {
-                  $options[] = $choice;
-                }
-              }
-              $terms +=  $options;
             }
           }
         }
-      }
-      if (count($terms) == 0) {
-        return;
-      }
-      // stick a <none> value on the front of the array
-      array_unshift($terms, t('- None -'));
-      $types = node_get_types('names');
-      $type = $types[$node->type];
+        if (count($terms) == 0) {
+          return;
+        }
+        // stick a <none> value on the front of the array
+        array_unshift($terms, t('- None -'));
+        $types = node_get_types('names');
+        $type = $types[$node->type];
 
-      $form['taxonomy']['primaryterm']['#options'] = $terms;
-      $default = primary_term_get_term($form['#node']->vid);
-      if ($group && in_array($default, $group_terms)) {
-        $form['taxonomy']['primaryterm']['#default_value'] = $default;
-      }
-      else {
-        $form['taxonomy']['primaryterm']['#default_value'] = $default;
+        $form['taxonomy']['primaryterm']['#options'] = $terms;
+        $default = primary_term_get_term($form['#node']->vid);
+        if (in_array($default, $group_terms)) {
+          $form['taxonomy']['primaryterm']['#default_value'] = $default;
+        }
       }
     }
   }

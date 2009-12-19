@@ -49,7 +49,6 @@ function sites_advanced_management_views_default_views() {
         'text' => '',
         'make_link' => 0,
         'path' => '',
-        'link_class' => '',
         'alt' => '',
         'prefix' => '',
         'suffix' => '',
@@ -64,14 +63,13 @@ function sites_advanced_management_views_default_views() {
       'type' => 'separator',
       'separator' => ', ',
       'empty' => '',
-      'link_to_taxonomy' => 0,
+      'link_to_taxonomy' => 1,
       'limit' => 1,
       'vids' => array(
         '1' => 1,
         '2' => 0,
         '3' => 0,
         '5' => 0,
-        '6' => 0,
         '4' => 0,
       ),
       'exclude' => 0,
@@ -379,9 +377,6 @@ function sites_advanced_management_views_default_views() {
       '5' => 5,
     ),
   ));
-  $handler->override_option('cache', array(
-    'type' => 'none',
-  ));
   $handler->override_option('title', 'Advanced Mangagement');
   $handler->override_option('empty', 'No sites returned by the filters you\'ve chosen');
   $handler->override_option('empty_format', '1');
@@ -403,18 +398,18 @@ function sites_advanced_management_views_default_views() {
     ),
     'info' => array(
       'title' => array(
-        'sortable' => 1,
+        'sortable' => 0,
         'separator' => '',
       ),
       'tid' => array(
         'separator' => '',
       ),
       'created' => array(
-        'sortable' => 1,
+        'sortable' => 0,
         'separator' => '',
       ),
       'changed' => array(
-        'sortable' => 1,
+        'sortable' => 0,
         'separator' => '',
       ),
       'view_node' => array(
@@ -444,3 +439,4 @@ function sites_advanced_management_views_default_views() {
   $views[$view->name] = $view;
   return $views;
 }
+

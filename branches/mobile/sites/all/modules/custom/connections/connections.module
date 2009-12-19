@@ -29,10 +29,10 @@ function connections_output_connections($node) {
   // all sites on this maps with the same primary icon
   $relsite1 = views_embed_view('sites', 'page_3', $node->primary_term->tid, $og_nid, $node->nid);
   // all sites on other maps with the same primary icon
-  $relsite1 = str_replace('<a href=', '<a target="_blank" href=', $relsite1);
+  $relsite1 = str_replace('<a href=', '<a target="_parent" href=', $relsite1);
 
   $relsite2 = views_embed_view('sites', 'page_7', $node->primary_term->tid, $og_nid);
-  $relsite2 = str_replace('<a href=', '<a target="_blank" href=', $relsite2);
+  $relsite2 = str_replace('<a href=', '<a target="_parent" href=', $relsite2);
 
   $relsite = $related_desc;
   $relsite .= '<br /><div style=""><div style=""><div style=""><b>'. t('Other Sites on Map') .'</b></div>';
@@ -73,7 +73,7 @@ function connections_output_connections($node) {
 
   // list maps by this mapmaker
   $remap1 = views_embed_view('maps', 'page_5', $node->uid, $og_nid);
-  $remap1 = str_replace('<a href=', '<a target="_blank" href=', $remap1);
+  $remap1 = str_replace('<a href=', '<a target="_parent" href=', $remap1);
 
   // list closest maps, excluding maps by this mapmaker
   $remap2 = get_location_proximity_view('maps_proximity_search',

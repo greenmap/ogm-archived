@@ -1,5 +1,5 @@
 <?php
-// $Id: date_api_filter_handler.inc,v 1.1.2.41 2009/09/16 10:47:23 karens Exp $
+// $Id: date_api_filter_handler.inc,v 1.1.2.33 2009/03/25 15:31:42 karens Exp $
 
 /**
  * A flexible, configurable date filter.
@@ -42,14 +42,6 @@ class date_api_filter_handler extends views_handler_filter_numeric {
     }
     $this->view->date_info->date_fields = array_merge($this->view->date_info->date_fields, $this->options['date_fields']);
     $this->definition['allow empty'] = TRUE;
-    
-    // If no value has been submitted on an exposed filter it is treated as
-    // a submitted value. Send a flag to the date widget processors so they 
-    // know to set '#value' instead of '#default_value' in that case.
-    $this->force_value = FALSE;
-    if (empty($this->options['exposed']) || (isset($this->options['expose']['identifier']) && !isset($_GET[$this->options['expose']['identifier']]))) {
-      $this->force_value = TRUE;
-    }
   }
 
   // Set default values for the date filter.
@@ -119,8 +111,8 @@ class date_api_filter_handler extends views_handler_filter_numeric {
       '#default_value' => $this->options['year_range'],
       '#description' => t("Set the allowable minimum and maximum year range for this argument, either a -X:+X offset from the current year, like '-3:+3' or an absolute minimum and maximum year, like '2005:2010'. When the argument is set to a date outside the range, the page will be returned as 'Page not found (404)'."),
     );
-    
-    $fields = date_api_fields($this->definition['base']);
+
+    $fields = date_api_fields($this->view->base_table);
     $options = array();
     foreach ($fields['name'] as $name => $field) {
       $options[$name] = $field['label'];
@@ -161,6 +153,14 @@ class date_api_filter_handler extends views_handler_filter_numeric {
    * Add the selectors to the value form using the date handler.
    */
   function value_form(&$form, &$form_state) {
+    
+    // If no value has been submitted on an exposed filter it is treated as
+    // a submitted value. Send a flag to the date widget processors so they 
+    // know to set '#value' instead of '#default_value' in that case.
+    $this->force_value = FALSE;
+    if (isset($this->options['expose']['identifier']) && !isset($_GET[$this->options['expose']['identifier']])) {
+      $this->force_value = TRUE;
+    }
     // We use different values than the parent form, so we must
     // construct our own form element.
     $form['value'] = array();
@@ -204,17 +204,12 @@ class date_api_filter_handler extends views_handler_filter_numeric {
       }
     }
     
-    // Add some text to make it clear when additional options are available.
-    $extra = '';
-    if (version_compare(PHP_VERSION, '5.2', '>=')) {
-      $extra = t(" You can use any values PHP's date_create() can understand, like between '12AM today' and '12AM tomorrow.");
-    }
     $form['value']['value']['#prefix'] = '<div class="form-item"><label>' . t('Absolute value') . '</label></div>';
     $form['value']['default_date'] = array(
       '#type' => 'textfield',
       '#title' => t('Date default'),
       '#default_value' => $this->options['default_date'],
-      '#prefix' => '<div class="form-item"><label>' . t('Relative value') . '</label><p>' . t("Relative values will be used if no date is set above. Use 'now' to default to the current date at runtime or add modifiers like 'now +1 day'. The To date default value is used when the operator is set to 'between' or 'not between'.") . $extra .'</p><p>' . t('If the filter is exposed, these values will be used to set the inital value of the exposed filter. Leave both date and default values blank to start with no value in the exposed filter.') .'</p></div>',
+      '#prefix' => '<div class="form-item"><label>' . t('Relative value') . '</label><p>' . t("Relative values will be used if no date is set above. Use 'now' to default to the current date at runtime or add modifiers like 'now +1 day'. The To date default value is used when the operator is set to 'between' or 'not between'.") .'</p><p>' . t('If the filter is exposed, these values will be used to set the inital value of the exposed filter. Leave both date and default values blank to start with no value in the exposed filter.') .'</p></div>',
       );
     $form['value']['default_to_date'] = array(
       '#type' => 'textfield',
@@ -307,14 +302,9 @@ class date_api_filter_handler extends views_handler_filter_numeric {
     // This is a date that needs to be constructed from options like 'now'.
     $default_option = $prefix == 'max' ? $options['default_to_date'] : $options['default_date'];
     if (!empty($default_option)) {
-      // For PHP 5.2+, take advantage of any strings that native PHP 
-      // date_create() can handle. For older versions use strtotime().
-      if (version_compare(PHP_VERSION, '5.2', '<')) {
-        $now = strtotime($default_option .' UTC');
-        $date = date_create("@$now", timezone_open('UTC'));
-      }
-      else {
-        $date = date_create($default_option, date_default_timezone());
+      $date = date_now();
+      if ($add = trim(str_replace('now', '', $default_option))) {
+        date_modify($date, $add);
       }
       $default_date = date_format($date, DATE_FORMAT_DATETIME);
     }
@@ -355,18 +345,17 @@ class date_api_filter_handler extends views_handler_filter_numeric {
     }
     $handler = $this->date_handler;
     
-    $fields = date_api_fields($this->definition['base']);
+    $fields = date_api_fields($this->view->base_table);
     if (!empty($this->options['date_fields'])) {
       $output = array();
       foreach ($this->options['date_fields'] as $field) {
-        if (array_key_exists($field, $fields['name'])) {
-          $output[] = $fields['name'][$field]['label'];
-        }
+        $output[] = $fields['name'][$field]['label'];
       }
     }
-    $field = implode(' '. $this->options['date_method'] .' ', $output);
+    $field = implode('<br />'. $this->options['date_method'] .' ', $output);
     $output = "$field ". check_plain($this->operator) . ' ';
     $parts = $handler->date_parts();
+    
     $widget_options = $this->widget_options();
     // If the filter is exposed, display the granularity.
     if ($this->options['exposed']) {
@@ -384,45 +373,27 @@ class date_api_filter_handler extends views_handler_filter_numeric {
     return $output;
   }
  
-   // Views treats the form as though it has already been submitted
-  // even when it hasn't, so we when it is really not submitted we 
-  // have to adjust the values to match what should have been the default.
-  // Overriding exposed_submit() will ensure that the $input value
-  // used by Views has been adjusted to the right value.
-  function exposed_submit(&$form, &$form_state) { 
-    if ($this->force_value) {
-      $default = array();
-      foreach (array('value', 'min', 'max') as $prefix) {
-        $default[$prefix] = $this->default_value($prefix);
-      }
-      $form_state['values'][$this->options['expose']['identifier']] = $default;
-    }
-  }
-   
   /**
    * Custom implementation of query() so we can get the
    * AND and OR methods in the right places.
    */
   function query() {
-    $this->get_query_fields();
-    $this->table = $this->query_fields[0]['field']['table_name'];
     $this->ensure_my_table();
+    $this->get_query_fields();
     if (!empty($this->query_fields)) {
       foreach ((array) $this->query_fields as $query_field) {
         $field = $query_field['field'];
-        $query_field['field']['fullname'] = $this->table_alias. '.' .$field['field_name'];
         $sql = '';
-        $sql_parts = array();
         switch ($this->operator) {
           case 'between':
-            $sql_parts[] = $this->date_filter('min', $query_field, '>=');
-            $sql_parts[] = $this->date_filter('max', $query_field, '<=');
-            $sql = implode(' AND ', array_filter($sql_parts));
+            $min = $this->date_filter('min', $query_field, '>=');
+            $max = $this->date_filter('max', $query_field, '<=');
+            $sql = !empty($min) && !empty($max) ? "($min AND $max)" : '';
             break;
           case 'not between':
-            $sql_parts[] = $this->date_filter('min', $query_field, '<');
-            $sql_parts[] = $this->date_filter('max', $query_field, '>');
-            $sql = implode(' OR ', array_filter($sql_parts));
+            $min = $this->date_filter('min', $query_field, '<');
+            $max = $this->date_filter('max', $query_field, '>');
+            $sql = !empty($min) && !empty($max) ? "($min OR $max)" : '';
             break;
           default:
             $sql = $this->date_filter('value', $query_field, $this->operator);
@@ -437,7 +408,7 @@ class date_api_filter_handler extends views_handler_filter_numeric {
       }
     }
   }
-  
+
   function date_filter($prefix, $query_field, $operator) {
     $field = $query_field['field'];
     // Handle the simple operators first.
@@ -455,9 +426,8 @@ class date_api_filter_handler extends views_handler_filter_numeric {
     // query to match what should have been the default.
     $value_parts = !is_array($this->value[$prefix]) ? array($this->value[$prefix]) : $this->value[$prefix];
     foreach ($value_parts as $part) {
-      $default = $this->default_value($prefix);
-      if (!empty($this->force_value) && !empty($default)) {
-        $this->value[$prefix] = $default;
+      if ($this->force_value) {
+        $this->value[$prefix] = $this->default_value($prefix);
       }
       else {
         if (empty($part)) {
@@ -465,7 +435,6 @@ class date_api_filter_handler extends views_handler_filter_numeric {
         }
       }
     }
-    
     $this->add_date_field($field);
     $granularity = $this->options['granularity'];
     $date_handler = $query_field['date_handler'];
@@ -537,7 +506,7 @@ class date_api_filter_handler extends views_handler_filter_numeric {
   }
   
   function get_query_fields() {
-    $fields = date_api_fields($this->definition['base']);
+    $fields = date_api_fields($this->view->base_table);
     $fields = $fields['name'];
     $this->query_fields = array();
     foreach ((array) $this->options['date_fields'] as $delta => $name) {

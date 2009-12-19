@@ -1,11 +1,17 @@
 <!--green_site-full.tpl.php-->
-<?php if ($page == 0) { ?>
+<?php
+// $comment_count isn't defined in some of the earliest sites, don't know why.
+if ($comment_count == NULL){
+  $comment_count = 0;
+}
+
+if ($page == 0): ?>
   <h2><a href="<?php print $node_url ?>" title="<?php print $title ?>"><?php print $title ?></a></h2>
-<?php } ?>
+<?php endif; ?>
 
 <?php
 if(node_access('update',$node) == true && $_GET['isSimple']){
-  echo "<div id='bubble_full_edit'>". l(t("edit"),'node/'.$node->nid."/edit",array('target' => '_blank') )."</div>";
+  echo "<div id='bubble_full_edit'>". l(t("edit"),'node/'.$node->nid."/edit",array('target' => '_top') )."</div>";
 }
 ?>
 
@@ -46,7 +52,6 @@ if($node->field_image[0]['value'] > '') {
 } elseif($node->field_video[0]['value'] > '') {
   $media_thumb = theme('emvideo_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
 }
-$media_thumb = preg_replace('/<a href="[^"]+"/', '<a href="#multimedia"', $media_thumb);
 
 // RM $siteicons code moved up along with icons display code ////////////
 if($node->field_accessible_by_public_tran[0]['value'] == 1) {
@@ -134,7 +139,7 @@ if($node->field_involved[0]['value'] == 'yes') {
       $contents .= '<div class="fieldemail">'. content_format('field_email', $field_email[0]) .'</div>';
     }
     if ($field_web[0] > '') {
-      $link = str_replace('<a href=', '<a target="_blank" href=', content_format('field_web', $field_web[0]));
+      $link = str_replace('<a href=', '<a target="_parent" href=', content_format('field_web', $field_web[0]));
       $contents .= '<div class="fieldweb">'. $link .'</div>';
     }
 
@@ -147,35 +152,25 @@ if($node->field_involved[0]['value'] == 'yes') {
   if(count($node->og_groups_both) > 0) {
     list($group_nid) = array_keys($node->og_groups_both);
     $group_title = $node->og_groups_both[$group_nid];
-    $contents .= l($group_title, 'node/'.$group_nid, array('target' =>'_blank', 'title' => t('View this Open Green Map')));
+    $contents .= l($group_title, 'node/'.$group_nid, array('target' =>'_top', 'title' => t('View this Open Green Map')));
   }
   if($node->uid){
-    $contents .= '<br />'. t('added @date by <a href="@profile_link" target="_blank" title="View Profile">@name</a>',
-      array('@date' => date('m/Y', $node->created),
-        '@profile_link' => url('user/'. $node->uid),
-        '@name' => $node->name));
+    $contents .= '<br />'. t('added @date by <a href="@profile_link" title="View Profile">@name</a>',
+    array('@date' => date('m/Y', $node->created), '@profile_link' => url('user/'. $node->uid), '@name' => $node->name));
   }
   $contents .= '</div>';
   $img_alt = t('This site was added by an official Mapmaker');
   $contents .= '<img class="submitted_icon" src="' . base_path() . path_to_theme() . '/img/mapper.gif" width="20px" height="19px" alt="'  . $img_alt . '" title="'  . $img_alt . '"/>';
 
+  // debug
+  //print_r($node);
   $contents .= '</div><!-- /meta-->';
 
-  // insert a small map on the site pages when viewed as a node as in search click throughs.
-  if (arg(2) != 'simple') {
-    $macro = ogm_custom_misc_site_mini_map($node->location['latitude'],
-        $node->location['longitude']);
-    $map = gmap_filter('process', NULL, NULL, $macro);
-    // this was inside the view-header div before: <ul><li><a href="/dev/ogm_lines/en/greenmap/nycs-green-apple-map">NYC's Green Apple Map</a></li></ul>
-    $contents .= '
-    <div class="site-mini-map">
-      <div class="view-header"><p>Location:</p>
-      </div>
-      <div class="content-site-mini-map">'. $map .'</div>
-      <br />
-    </div>
-    ';
-  }
+// ncm: insert a small map on the site pages when viewed as a node
+// as in search click throughs.
+//   if (arg(0) != 'greenmap') {
+  $contents .= views_embed_view('site_mini_map');
+//   }
 
   $contents .= '</div>';
 
@@ -200,121 +195,60 @@ if($node->field_involved[0]['value'] == 'yes') {
   drupal_add_js(drupal_get_path('theme', 'opengreenmap').'/multimedia.js', 'theme', 'footer');
   $media = array();
   // add site video
-  if (!empty($node->field_video[0]['view']) && !empty($node->field_video[0]['provider'])) {
-    // unfortunately, it's impossible to check if these have been deleted from
-    // the provider
+  if (!empty($node->field_video[0]['view'])) {
     $node->field_video[0]['type'] = 'video';
     $node->field_video[0]['title'] = $node->field_video_caption[0]['view'];
     $node->field_video[0]['author'] = $name;
-    if (user_access('edit any green_site content')) {
-      $node->field_video[0]['description'] .= 
-        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
-            $node->nid, $node->nid);
-    }
-    $tmp = $node->field_video;
-    $tmp[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $tmp[0]['view']);
-    $media = array_merge($media, $tmp);
+    $media = array_merge($media, $node->field_video);
   }
   // add contributed videos
   $result = db_query('SELECT a.nid FROM {content_type_video} AS a, {node} AS b WHERE field_site_0_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
   while ($line = db_fetch_object($result)) {
     $medianode = node_load(array('nid' => $line->nid));
-    // make sure this is a valid image
-    if (!$medianode->field_video_0[0]['provider']) {
-      continue;
-    }
-    // unfortunately, it's impossible to check if these have been deleted from
-    // the provider
     $medianode->field_video_0[0]['type'] = 'video';
     $medianode->field_video_0[0]['title'] = $medianode->title;
     $medianode->field_video_0[0]['description'] = $medianode->body;
-    if (user_access('edit any video content')) {
-      $medianode->field_video_0[0]['description'] .= 
-        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
-            $medianode->nid, $node->nid);
-    }
     $medianode->field_video_0[0]['nid'] = $medianode->nid;
     $usr = user_load(array('uid' => $medianode->uid));
     $medianode->field_video_0[0]['author'] = theme_username($usr);
     // HACKHACK
     $medianode->field_video_0[0]['view'] = theme('emvideo_video_video', array_merge($medianode->field_video_0, array('widget' => array('video_width' => 320, 'video_height' => 240))), $medianode->field_video_0[0], 'video_video', $medianode);
-    $medianode->field_video_0[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $medianode->field_video_0[0]['view']);
     $media = array_merge($media, $medianode->field_video_0);
   }
   // add site images
-  if (!empty($node->field_image[0]['view']) && !empty($node->field_image[0]['provider'])) {
-    // don't add deleted flickr or picasa images
-    if (! ( ($node->field_image[0]['provider'] == 'flickr' 
-            && !$node->field_image[0]['data']['owner']) ||
-            ($node->field_image[0]['provider'] == 'picasa'
-             && !$node->field_image[0]['data']['original']))) {
-      $node->field_image[0]['type'] = 'image';
-      $node->field_image[0]['title'] = $node->field_image_caption[0]['view'];
-      $node->field_image[0]['author'] = $name;
-      if (user_access('edit any green_site content')) {
-        $node->field_image[0]['description'] .= 
-          sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
-              $node->nid, $node->nid);
-      }
-      $tmp = $node->field_image;
-      $tmp[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $tmp[0]['view']);
-      $media = array_merge($media, $tmp);
-    }
+  if (!empty($node->field_image[0]['view'])) {
+    $node->field_image[0]['type'] = 'image';
+    $node->field_image[0]['title'] = $node->field_image_caption[0]['view'];
+    $node->field_image[0]['author'] = $name;
+    $media = array_merge($media, $node->field_image);
   }
   // add contributed photos
   $result = db_query('SELECT a.nid FROM {content_type_photo} AS a, {node} AS b WHERE field_site_1_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
   while ($line = db_fetch_object($result)) {
     $medianode = node_load(array('nid' => $line->nid));
-    // make sure this is a valid image
-    if (!$medianode->field_photo[0]['provider']) {
-      continue;
-    }
-    // don't add deleted flickr or picasa images
-    if ($medianode->field_photo[0]['provider'] == 'flickr'
-        && !$medianode->field_photo[0]['data']['owner']) {
-      continue;
-    }
-    if ($medianode->field_photo[0]['provider'] == 'picasa'
-        && !$medianode->field_photo[0]['data']['original']) {
-      continue;
-    }
     $medianode->field_photo[0]['type'] = 'image';
     $medianode->field_photo[0]['title'] = $medianode->title;
     $medianode->field_photo[0]['description'] = $medianode->body;
-    if (user_access('edit any photo content')) {
-      $medianode->field_photo[0]['description'] .= 
-        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
-            $medianode->nid, $node->nid);
-    }
     $medianode->field_photo[0]['nid'] = $medianode->nid;
     $usr = user_load(array('uid' => $medianode->uid));
     $medianode->field_photo[0]['author'] = theme_username($usr);
     // HACKHACK
-    $medianode->field_photo[0]['view'] = theme('emimage_image_full', array_merge($medianode->field_photo, array('widget' => array('full_width' => 320, 'full_height' => 0))), $medianode->field_photo[0], 'image_full', $medianode);
+    $medianode->field_photo[0]['view'] = theme('emimage_image_full', array_merge($medianode->field_photo, array('widget' => array('full_width' => 320, 'full_height' => 240))), $medianode->field_photo[0], 'image_full', $medianode);
     $medianode->field_photo[0]['view'] = str_replace('<a href=', '<a target="_blank" href=', $medianode->field_photo[0]['view']);
     $media = array_merge($media, $medianode->field_photo);
   }
   // add contributed documents
   $result = db_query('SELECT a.nid FROM {content_type_document} AS a, {node} AS b WHERE field_site_2_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
   while ($line = db_fetch_object($result)) {
-    // TODO check if these have been deleted from slideshare
     $medianode = node_load(array('nid' => $line->nid));
     $medianode->field_document[0]['type'] = 'document';
     $medianode->field_document[0]['title'] = $medianode->title;
     $medianode->field_document[0]['description'] = $medianode->body;
-    if (user_access('edit any document content')) {
-      $medianode->field_photo[0]['description'] .= 
-        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
-            $medianode->nid, $node->nid);
-    }
     $medianode->field_document[0]['nid'] = $medianode->nid;
     $usr = user_load(array('uid' => $medianode->uid));
     $medianode->field_document[0]['author'] = theme_username($usr);
     // HACKHACK
     $embed_code = $medianode->field_document[0]['data']['EMBED'][0];
-    if (!$embed_code) {
-      continue;
-    }
 
     /*
     the slideshare api doesn't provide much control, in particular the
@@ -347,10 +281,9 @@ if($node->field_involved[0]['value'] == 'yes') {
     $embed_code = str_replace('<a href=', '<a target="_blank" href=', $embed_code);
     $embed_code = preg_replace('@width:\d+px@', 'width:320px', $embed_code);
     $embed_code = preg_replace('@width="\d+"@', 'width="320"', $embed_code);
-    $embed_code = preg_replace('@height="\d+"@', 'height="342"', $embed_code);
+    $embed_code = preg_replace('@height="\d+"@', 'height="240"', $embed_code);
     $embed_code = preg_replace('@<div[^>]*>View more.*?</div>@', '', $embed_code);
     $medianode->field_document[0]['view'] = $embed_code;
-    $medianode->field_document[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $medianode->field_document[0]['view']);
     $medianode->field_document[0]['thumb'] = $medianode->field_document[0]['data']['THUMBNAILSMALLURL'][0];
     $media = array_merge($media, $medianode->field_document);
   }
@@ -437,13 +370,10 @@ if($node->field_involved[0]['value'] == 'yes') {
   '#weight' => '-6',
     '#content' => $contents,
   );
-  $comments_tab_title = $comment_count ?
-    t('Comments (@comment-count)', array('@comment-count' => $comment_count))
-    : t('Comments');
   // theme('comment_wrapper') pulls in comments formatted in template.php, though it doesn't work. comment_render($node) does work but it shows up twice.
   $form['tabs']['tab2'] = array(
     '#type' => 'tabpage',
-    '#title' => $comments_tab_title,
+    '#title' => t('Comments') . ' (' . $comment_count . ')' ,
   '#weight' => '-4',
     '#content' => '<div class="mycomments">'  . $comments . '</div>',
   );

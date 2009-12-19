@@ -48,7 +48,7 @@ InfoBubbleIcons.prototype.initialize = function(map) {
 	var container = document.createElement("div");
 	container.id = 'infobubbleicons_container';
 	// content goes here
-	container.innerHTML = '<div id="infobubbleicons_top"><div id="infobubbleicons_close"></div></div>';
+	container.innerHTML = '<div id="infobubbleicons_top"></div>';
 	container.innerHTML += '<div id="infobubbleicons_middle"><div>'+Drupal.t('Use the Legend to filter the icons.')+'</div></div>';
 	container.innerHTML += '<div id="infobubbleicons_bottom"></div>';
 	map.getContainer().appendChild(container);
@@ -112,9 +112,6 @@ Drupal.gmap.addHandler('gmap', function(elem) {
 		// if (getCookie2("seen_infobubblezoom") == null) {
 			gInfoBubbleZoom = new InfoBubbleZoom();
 			map.addControl(gInfoBubbleZoom);
-
-      gInfoBubbleIcons = new InfoBubbleIcons();
-      map.addControl(gInfoBubbleIcons);
 		//	setCookie2("seen_infobubblezoom", "1", 30);
 		// }
 
@@ -126,18 +123,9 @@ Drupal.gmap.addHandler('gmap', function(elem) {
 				gInfoBubbleZoomInterval = undefined;
 			}
 		});
- // remove icons bubble when map is clicked
-  $("#infobubbleicons_close").click(function () {
-    map.removeControl(gInfoBubbleIcons);
-  });
-  $("#keys").hover(function () {
-    map.removeControl(gInfoBubbleIcons);
-  },
-  function () {
-//     map.addControl(gInfoBubbleIcons);
-  });
+
+/* GEvent.addListener(map, "click", function() {
+      map.removeControl(gInfoBubbleZoom);
+  });*/
  });
-
-
 });
-
