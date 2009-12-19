@@ -1,0 +1,114 @@
+<?php
+
+// $Id: primary_icon.module,v 0.1 2008/03/13 16:39:43 tom_o_t Exp $
+
+/**
+ * hook_form_alter()
+ * Change the title of primary term field on node/add form
+ */
+function primary_icon_form_alter(&$form, &$form_state, $form_id) {
+  $type = $form['type']['#value'];
+  switch ($form_id) {
+    case $type .'_node_form':
+      if ($vids = variable_get('pt_vocabs_'. $form['type']['#value'], array())) {
+        // Change the title of the primary icon field
+        $form['taxonomy']['primaryterm']['#title'] = t('Primary Icon');
+        // make the primary icon field required
+        $form['taxonomy']['primaryterm']['#required'] = 1;
+
+        $vid = 1;
+
+        /*
+        Removing this code for now - it messed up when you edited a node - random wrong icons were selected
+
+        // re-order the list to be alphabetical
+        // add js
+        drupal_add_js(drupal_get_path('module', 'primary_icon') .'/jquery.selectboxes.min.js');
+        // do the re-order using jquery code
+        $js = '$(document).ready(function() { $("#edit-primaryterm").sortOptions() });';
+        drupal_add_js($js,'inline');
+        */
+
+        // change title of secondary icons field
+        $form['taxonomy'][$vid]['#title'] = t('Secondary Icons');
+        $form['taxonomy'][$vid]['#description'] = t('Choose up to seven additional icons. Let people know about the site’s other features.
+');
+
+        // use optgroups to make genres and categories non-selectable
+        if (isset($form['taxonomy'][$vid])) {
+          $tree = taxonomy_get_tree($vid);
+          $parents = array();
+          $grandparents = array();
+          $options[''] = $form['taxonomy'][$vid]['#options'][''];
+          $i = 0;
+          foreach ($tree as $term) {
+            $tt_name = tt("taxonomy:term:$term->tid:name", $term->name);
+            $ptid = $term->parents[0];
+            if ($ptid) {
+              // second level items
+              if (isset($grandparents[$ptid])) {
+                $parents[$term->tid] = $tt_name;
+                $options[$grandparents[$ptid]]['-- '.$tt_name] = array();
+              }
+              // third level items
+              else {
+                foreach ($options as $options_grandparents => $options_parents) {
+                  if (!$options_grandparents) {
+                    continue;
+                  }
+                  $obj = new stdClass();
+                  $obj->option[$term->tid] = $tt_name;
+                  $options[$options_grandparents]['-- '.$parents[$ptid]][] = $obj;
+                }
+              }
+            } else {
+              // first level items
+              $grandparents[$term->tid] = $tt_name;
+              $options[$tt_name] = array();
+            }
+          }
+          $form['taxonomy'][$vid]['#options'] = $options;
+        }
+
+      }
+    break;
+  }
+}
+
+/**
+ * hook_nodeapi()
+ * If there's a primary icon, then we need to override gmap_taxonomy to ensure
+ * that it's the primary icon that is set as the marker icon
+ */
+function primary_icon_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  switch ($op) {
+    case 'insert':
+    case 'update':
+      // check if there's a primary_icon
+      $primaryterm = primary_term_get_term($node->vid);
+      if (! empty($primaryterm)) {
+        $marker = '';
+        // as a shortcut (not sure if valid) just going to get the marker from
+        // the gmap_taxonomy_term table for this term
+        $result = db_query('SELECT marker FROM {gmap_taxonomy_term} WHERE tid = %d', $primaryterm);
+        if ($m = db_fetch_object($result)) {
+          $marker = $m->marker;
+        }
+        else {
+          form_set_error('primaryterm', t('You must choose a valid Primary Icon.'));
+        }
+        if (!empty($marker)) {
+          db_query('DELETE FROM {gmap_taxonomy_node} WHERE nid = %d', $node->nid);
+          db_query("INSERT INTO {gmap_taxonomy_node} (nid, vid, tid, marker) VALUES (%d, %d, %d, '%s')",
+              $node->nid, $node->vid, $primaryterm, $marker);
+        }
+      }
+    break;
+    case 'validate':
+      // print '<pre>'.print_r($node, TRUE).'</pre>'; die();
+      if (isset($node->primaryterm) && !$node->primaryterm) {
+        form_set_error('primaryterm', t('You must choose a Primary Icon.'));
+      }
+    break;
+  }
+}
