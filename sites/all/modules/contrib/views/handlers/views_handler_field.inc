@@ -578,6 +578,9 @@ class views_handler_field extends views_handler {
         break;
       }
     }
+    if (isset($this->options['alter']['language'])) {
+      $options['language'] = $this->options['alter']['language'];
+    }
 
     return $tokens;
   }

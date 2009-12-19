@@ -31,7 +31,7 @@
 /** body **/
   body
   {
-  	padding: 0;
+    padding: 0;
     background:  #F9FBF6;
   }
   a:active, a:focus {
@@ -39,20 +39,25 @@
   }
   #page
   {
-  	background: #fff url(images/top.png) repeat-x;
+    background: #fff url(images/top.png) repeat-x;
   }
 
   #page-inner
   {
-  	padding-left: 25px;
-	padding-right: 20px;
-/*	background: url(images/bottom.png) repeat-x bottom;*/
+    padding-left: 25px;
+    padding-right: 20px;
+/*  background: url(images/bottom.png) repeat-x bottom;*/
+  }
+
+  body.simple #page-inner {
+    padding-left: 0px;
+    padding-right: 0px;
   }
 
 /** header **/
   #header
   {
-  	/* padding-left: 10px; */
+    /* padding-left: 10px; */
   }
 
   #header-inner
@@ -65,7 +70,7 @@
 
   #logo /* Wrapper for logo */
   {
-  	margin-right: 20px;
+    margin-right: 20px;
   }
 
   #logo-image /* The actual logo image */
@@ -94,8 +99,8 @@
 
   #header-blocks /* Wrapper for any blocks placed in the header region */
   {
-  	line-height: 1.7em;
-	padding-bottom: 1em;
+    line-height: 1.7em;
+  padding-bottom: 1em;
   }
 
 /** main (container for everything else) **/
@@ -118,7 +123,9 @@
 
   body.simple #content
   {
-	background: #fff;
+    background: #fff;
+    width: 100%;
+    margin-left: 0px;
   }
 
   #content-inner
@@ -209,7 +216,11 @@
 
   #content-area /* Wrapper for the actual page content */
   {
-		padding-top: 10px;
+    padding-top: 10px;
+  }
+
+  body.simple #content-area {
+    padding-top: 0px;
   }
 
   .pager /* A list of page numbers when more than 1 page of content is available */
@@ -283,7 +294,7 @@
   #footer-message /* Wrapper for the footer message from Drupal's "Site information"
                      and for any blocks placed in the footer region */
   {
-    margin-left: 10px;
+    margin-left: 24px;
   }
 
 /** closure **/
@@ -292,6 +303,7 @@
   position: absolute;
   width: 100%;
   font-size: 0.75em;
+  padding-left: 40px;
 }
 
   #closure-blocks /* Wrapper for any blocks placed in the closure region */
@@ -338,13 +350,13 @@ form#map-prox-search select#nearby_unit {
 /** Drupal nodes **/
   .node /* Node wrapper */
   {
-  	padding: 0; /*10px*/
+    padding: 0; /*10px*/
   }
 
   body.simple .node /* for simple theme */
   {
-	padding: 0;
-	background: #fff;
+    padding: 0;
+    background: #fff;
   }
 
   .node-inner /* Additional wrapper for node */
@@ -397,7 +409,7 @@ form#map-prox-search select#nearby_unit {
 
   .node-type-green_map /* Map content node */
   {
-  	padding: 0;
+    padding: 0;
   }
 
   .node h2.title /* Node title */
@@ -475,12 +487,12 @@ form#map-prox-search select#nearby_unit {
 
   .comment-inner /* Additional wrapper for a single comment */
   {
-  	padding: 0.5em 1em;
+    padding: 0.5em 1em;
   }
 
   .comment.odd /* An odd-numbered comment in the list of comments */
   {
-  	background-color: #DCEEC5;
+    background-color: #DCEEC5;
   }
 
   .comment.even /* An even-numbered comment in the list of comments */
@@ -523,7 +535,7 @@ form#map-prox-search select#nearby_unit {
 
   .comment .submitted /* The "posted by" information */
   {
-  	color: #1C75BA;
+    color: #1C75BA;
   }
 
   .comment .content /* Comment's content wrapper */
@@ -533,20 +545,20 @@ form#map-prox-search select#nearby_unit {
   .comment div.links /* Wrapper for comment links. See also the ul.links declaration in the node section above. */
   {
     margin: 0;
-	float: right;
+  float: right;
   }
 
   .comment p
   {
-  	display: inline;
+    display: inline;
   }
 
   .indented /* Nested comments are indented */
   {
     padding-left: 25px;  /* Drupal core uses a 25px left margin */
-	background-image: url('images/indent.gif');
-	background-repeat: no-repeat;
-	background-position: 10px 5px;
+  background-image: url('images/indent.gif');
+  background-repeat: no-repeat;
+  background-position: 10px 5px;
   }
 
   .preview .comment /* Preview of the comment before submitting new or updated comment */
@@ -590,9 +602,9 @@ form#map-prox-search select#nearby_unit {
 
   .block h2.title /* Block title */
   {
-  	font-size: 1.3em;
-	/* GH: added to match the intendation of "Green Maps Icons" on the right bar */
-	padding-left: 9px;
+    font-size: 1.3em;
+  /* GH: added to match the intendation of "Green Maps Icons" on the right bar */
+  padding-left: 9px;
   }
 
   .block .content /* Block's content wrapper */
@@ -633,7 +645,7 @@ form#map-prox-search select#nearby_unit {
 
   #block-menu-primary-links /* "Primary links" block */
   {
-  	float: right;
+    float: right;
   }
 
   #block-menu-primary-links ul
@@ -648,40 +660,40 @@ form#map-prox-search select#nearby_unit {
   }
 
   div#block-menu-menu-footer  {
-  	margin-bottom: 0;
+    margin-bottom: 0;
   }
 
   div#block-menu-menu-footer ul {
-  	margin-bottom: 0;
-	padding: 0 0 3px 0;
+    margin-bottom: 0;
+  padding: 0 0 3px 0;
   }
 
   #block-user-0 .form-item
   {
-	margin: 0.5em 0;
-	font-size: 0.9em;
+  margin: 0.5em 0;
+  font-size: 0.9em;
   }
 
   #block-user-0 .form-item input
   {
-	font-size: 1em;
-	color: gray;
-	width: 100%;
+  font-size: 1em;
+  color: gray;
+  width: 100%;
   }
 
   #block-user-0 div.login-links
   {
-	float: right;
+  float: right;
   }
 
   #block-user-0 div.login-links ul
   {
-	margin: 0;
+  margin: 0;
   }
 
   #block-user-0 input.form-submit
   {
-	float: left;
+  float: left;
   }
 
   #block-user-1 /* "Navigation" block for Drupal navigation menu */
@@ -699,7 +711,7 @@ form#map-prox-search select#nearby_unit {
 
   #block-i18n-0 /* Language switcher block */
   {
-  	width: 400px;
+    width: 400px;
   }
 
 /** Drupal boxes **/
@@ -716,7 +728,7 @@ form#map-prox-search select#nearby_unit {
 
   .box h2.title /* Box title */
   {
-  	font-size: 1.4em;
+    font-size: 1.4em;
   }
 
   .box .content /* Box's content wrapper */
@@ -804,16 +816,16 @@ form#map-prox-search select#nearby_unit {
     margin: 0.4em 0;
   }
 
-	.form-submit /* The submit button - RM - reduce submit buttona  */
+  .form-submit /* The submit button - RM - reduce submit buttona  */
   {
-		font-size: 0.86em;
-		margin: 0;
-		padding:0;
+    font-size: 0.86em;
+    margin: 0;
+    padding:0;
   }
 
   .container-inline .form-submit /* search submit button width - RM  */
   {
-		width: 50px;
+    width: 50px;
   }
 
   .tips /* Tips for Drupal's input formats */
@@ -823,10 +835,10 @@ form#map-prox-search select#nearby_unit {
     font-size: 0.9em;
   }
 
-	input#edit-search-block-form-keys /** search form needs to be smaller - RM 1/15/09 **/
-	{
-		width: 110px;
-	}
+  input#edit-search-block-form-keys /** search form needs to be smaller - RM 1/15/09 **/
+  {
+    width: 110px;
+  }
 
 
 /** Drupal admin tables **/
@@ -870,58 +882,58 @@ form#map-prox-search select#nearby_unit {
 
 
 #connections_container {
-	margin-top: 15px;
+  margin-top: 15px;
 }
 
 #connections_menu {
-	border-color: #cccccc;
-	border-style: solid;
-	border-width: 1px;
-	float: left;
-	margin-left: 12px;
-	margin-right: 10px;
-	padding: 0px;
-	padding-bottom: 12px;
-	padding-top: 12px;
-	width: 150px;
+  border-color: #cccccc;
+  border-style: solid;
+  border-width: 1px;
+  float: left;
+  margin-left: 12px;
+  margin-right: 10px;
+  padding: 0px;
+  padding-bottom: 12px;
+  padding-top: 12px;
+  width: 150px;
 }
 
 .connections_menu_item,
 .connections_menu_item_active {
-	padding-top: 2px;
-	margin: 0px;
-	padding-bottom: 3px;
-	padding-left: 18px;
-	padding-right: 10px;
-	padding-top: 3px;
+  padding-top: 2px;
+  margin: 0px;
+  padding-bottom: 3px;
+  padding-left: 18px;
+  padding-right: 10px;
+  padding-top: 3px;
 }
 
 .connections_menu_item_active,
 .connections_menu_item:hover {
-	background-color: #8cc641;
-	color: #ffffff;
-	cursor: pointer;
+  background-color: #8cc641;
+  color: #ffffff;
+  cursor: pointer;
 }
 
 #connections_content {
-	border-color: #cccccc;
-	border-style: solid;
-	border-width: 1px;
-	float: left;
-	height: 170px;
-	margin-left: 10px;
-	overflow: scroll;
-	padding-bottom: 10px;
-	padding-left: 18px;
-	padding-right: 10px;
-	padding-top: 10px;
-	width: 360px;
+  border-color: #cccccc;
+  border-style: solid;
+  border-width: 1px;
+  float: left;
+  height: 170px;
+  margin-left: 10px;
+  overflow: scroll;
+  padding-bottom: 10px;
+  padding-left: 18px;
+  padding-right: 10px;
+  padding-top: 10px;
+  width: 360px;
 }
 
 /* Impacts Tab */
 
 div.item-list div.odd {
-	background-color: #DCEEC5;
+  background-color: #DCEEC5;
 }
 
 /* Link to GreenMap.org */
@@ -935,58 +947,58 @@ div#block-menu-primary-links a#dhtml_menu-3315-1 {color: #9c3;}
 /* Admin Message */
 
 div.admin-message {
-	padding: 5px;
-	margin: 5px 0;
-	background-color: #FFFFE0;
+  padding: 5px;
+  margin: 5px 0;
+  background-color: #FFFFE0;
 }
 
 div.admin-message p {
-	margin: 0;
-	padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 div.admin-message a.close {
-	background-image: url(images/close.gif);
-	color: #fff;
-	width: 16px;
-	height: 16px;
-	font-size: 0;
+  background-image: url(images/close.gif);
+  color: #fff;
+  width: 16px;
+  height: 16px;
+  font-size: 0;
 }
 
 /* Advanced Mapboard view */
 
 div.view-sites-advanced-management form div div {
-	float: left;
-	margin-right: 2em;
+  float: left;
+  margin-right: 2em;
 }
 
 div.view-sites-advanced-management form div div div {
-	float: none;
+  float: none;
 }
 
 div.view-sites-advanced-management form div input{
-	float: none;
-	clear: both;
-	display: block;
+  float: none;
+  clear: both;
+  display: block;
 }
 
 div.view-sites-advanced-management div.view-content{
-	float: none;
-	clear: both;
+  float: none;
+  clear: both;
 }
 
 /* Loading */
 
 div.gmap-map, div#maxcontentdiv {
-	background-image: url(images/throbber.gif);
-	background-position: center center;
-	background-repeat: no-repeat;
+  background-image: url(images/throbber.gif);
+  background-position: center center;
+  background-repeat: no-repeat;
 }
 
 /* translation */
 
 div#l10n-client.hidden {
-	display: block;
+  display: block;
 }
 
 /* rating star */
@@ -1002,29 +1014,29 @@ div#siteactions ul {
 /* make stuff the default OGM Green */
 
 .green {
-	color: #8cc63f;
+  color: #8cc63f;
 }
 
 /* ************ map lists styles * RM added 12/08 **************************** */
 
 .view-content th, .view-content td, .view-content th, .view-content td
 {
-	padding: 0 4px;
+  padding: 0 4px;
 }
 
 .view-content tr.even, .view-content tr.even
 {
-	background-color: #eee;  /* Drupal core uses a #eee background */
+  background-color: #eee;  /* Drupal core uses a #eee background */
 }
 
 .view-content  tr.odd, .view-content tr.odd
 {
-	background-color: #fff;  /* Drupal core uses a #eee background */
+  background-color: #fff;  /* Drupal core uses a #eee background */
 }
 
 .view-content .view-cell-header, .view-content .view-cell-header
 {
-	background-color: #8CC63F;
+  background-color: #8CC63F;
 }
 
 .view-content td.view-field.view-field-node-title, .view-content  td.view-field.view-field-node-title
@@ -1033,39 +1045,41 @@ div#siteactions ul {
 
 .view-content td.view-field.view-field-node-data-field-country-field-country-value, .view-content td.view-field.view-field-node-data-field-country-field-country-value
 {
-	text-transform: uppercase;
+  text-transform: uppercase;
 }
 
 .view-content td.view-field.view-field-og-post-count, .view-content td.view-field.view-field-og-post-count
 {
 }
+
 /* mini map style */
-.view-site-mini-map {
+.site-mini-map {
   width: 200px;
   border-top: 1px solid #cacaca;
   border-bottom: 1px solid #cacaca;
   margin: 50px 0 25px 0;
 }
-.view-site-mini-map p {
+.site-mini-map p {
   margin: 0;
   padding: 3px 0;
   font-weight: bold;
   font-size: .8em;
 }
-.view-site-mini-map ul {
+.site-mini-map ul {
   margin: 0;
   padding: 0;
 }
-.view-site-mini-map ul li{
+.site-mini-map ul li{
   list-style-type: none;
   display: block;
   margin: 0;
   padding: 0 0 3px 0;
   font-size: 1.2em;
 }
-.view-site-mini-map a {
+.site-mini-map a {
   color: #9c3;
 }
+
 /* custom block styles */
 div#block-block-8 {
   border: 2px solid #FFAC06;
@@ -1155,21 +1169,21 @@ div#block-menu-primary-links ul.menu li ul.menu li.last a {
 /* rollover effects */
 
 div#block-menu-primary-links ul.menu li ul.menu li:hover {
-	background: #9c3;
+  background: #9c3;
 }
 
 div#block-menu-primary-links ul.menu li ul.menu li a:hover {
-	text-decoration: none;
-	color: #FFF;
+  text-decoration: none;
+  color: #FFF;
 }
 
 div#block-menu-primary-links ul.menu li ul.menu li.last a:hover {
-	text-decoration: none;
-	color: #FFF;
+  text-decoration: none;
+  color: #FFF;
 }
 
 div#block-menu-primary-links ul.menu li ul.menu li.last:hover {
-	background: #9c3;
+  background: #9c3;
 }
 
 /* lightbox pop up */

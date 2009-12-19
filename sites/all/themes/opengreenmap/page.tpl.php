@@ -12,6 +12,7 @@ if(arg(0) == 'greenmap_widget'){
 	return;
 }
 */
+global $language;
 if ($_GET['isSimple']) {
 	include('page-simple.tpl.php');
 	return;
@@ -27,6 +28,7 @@ if ($_GET['isSimple']) {
   <?php print $styles; ?>
   <script type="text/javascript">
     var Drupal_base_path = '<?php print base_path()?>';
+    var Drupal_language = '<?php print $language->language ?>';
   </script>
 
   <!--[if IE]>
@@ -59,7 +61,7 @@ if ($_GET['isSimple']) {
         <div id="logo-title">
         <?php opengreenmap_custom_login();?>
           <?php if ($logo): ?>
-            <div id="logo"><a href="<?php print url('<front>'); ?>" title="<?php print t('Home'); ?>" rel="home"><img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" id="logo-image" /></a></div>
+            <div id="logo"><a href="<?php print $language->language == 'en' ? '/home' : url('<front>'); ?>" title="<?php print t('Home'); ?>" rel="home"><img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>" id="logo-image" /></a></div>
           <?php endif; ?>
 
           <?php if ($site_name): ?>
@@ -131,11 +133,8 @@ if ($_GET['isSimple']) {
                 $node = node_load(arg(1));
               }
               if ($node->type == 'green_map') {
-                $tabs = str_replace('<span class="tab">Ver</span>',
-                    '<span class="tab">'.t('View Map').'</span>', $tabs);
-                $tabs = str_replace('<span class="tab">View</span>',
-                    '<span class="tab">'.t('View Map').'</span>', $tabs);
-                $tabs = str_replace('<span class="tab">Anzeigen</span>',
+                $view_string = t('View');
+                $tabs = str_replace('<span class="tab">'. $view_string .'</span>',
                     '<span class="tab">'.t('View Map').'</span>', $tabs);
               }
               ?>
@@ -202,7 +201,6 @@ if ($_GET['isSimple']) {
   <?php if ($closure_region  || $search_box): ?>
     <div id="closure-region" class="clear-block">
       <?php
-      global $language;
       $theme_path = base_path().path_to_theme().'/images/';
       $donate_image = 'donate_button.gif';
       $donate_link = url('donate');
@@ -216,7 +214,7 @@ if ($_GET['isSimple']) {
       ?>
       <div id="donte-button"><a href="<?php print $donate_link ?>"><img src="<?php print $donate_image; ?>" alt="<?php print t('Donate to GreenMaps') ?>"></a></div>
       <div id="closure-blocks"><?php print $closure_region; ?></div>
-      <?php if ($search_box): ?>
+      <?php if ( FALSE ): // was if ( $search_box ), but search box needs to be disabled due to redundancy ?>
         <div id="search-box">
           <?php print $search_box; ?>
         </div> <!-- /#search-box -->
@@ -235,7 +233,7 @@ document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.
 </script>
 <script type="text/javascript">
 try{
-var pageTracker = _gat._getTracker("UA-418876-6");
+var pageTracker = _gat._getTracker("UA-418876-5");
 pageTracker._trackPageview();
 } catch(err) {}</script>
 

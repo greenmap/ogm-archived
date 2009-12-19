@@ -1,7 +1,12 @@
 LOCAL CHANGES
 -------------
+- Patched to incorporate security changes in 6.14 release, see SA-CORE-2009-008 -- mvc
+- Patched to incorporate security changes in 6.13 release, see SA-CORE-2009-007 -- mvc
+- Patched path.module as per http://drupal.org/node/269877 comment #85 to fix
+  issue #1407 -- mvc
 - Patched to incorporate security changes in 6.12 release, see SA-CORE-2009-006 -- mvc
 - Patched to incorporate security changes in 6.11 release, see SA-CORE-2009-005 -- mvc
+- Patched locale.inc as per http://drupal.org/node/384794 -- mvc
 
 // $Id: CHANGELOG.txt,v 1.253.2.25 2009/02/25 21:02:36 goba Exp $
 
