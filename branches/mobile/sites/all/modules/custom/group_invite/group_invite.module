@@ -55,6 +55,7 @@ function group_invite_mail($key, &$message, $params) {
       $link_text = "You can join ". $link ." to see the map.";
       $message['subject'] = t('Invitation to !site', $variables, $language->language);
       $message['body'][] = "<p>". $params['body'] ."</p>";
+      $message['body'][] = group_invite_instructions();
       $message['body'][] = "<p>". $link_text ."</p>";
       break;
     case 'existing_user':
@@ -65,6 +66,8 @@ function group_invite_mail($key, &$message, $params) {
       $message['subject'] = t('You have been added to a new map at !site', $variables, $language->language);
       $message['body'][] = "<p>". $user->name ." has added you to the ". $map_link ." at ". $ogm_link ."</p>";
       $message['body'][] = "<p>If you have any questions or comments, please email ". $user->mail ."</p>";
+      $message['body'][] = "<p>". $params['body'] ."</p>";
+      $message['body'][] = group_invite_instructions();
       break;
   }
 }
@@ -81,14 +84,14 @@ function group_invite_perm() {
  */
 function group_invite_menu() {
   $items = array();
-  $items['og/users/%node/invite_users'] = array(
-    'title' => 'Invite new members',
+  $items['node/%group_invite_map/invite_users'] = array(
+    'title' => t('Invite new members'),
     'page callback'     => 'drupal_get_form',
-    'page arguments' => array('group_invite_create_group_invite_page', 2),
+    'page arguments' => array('group_invite_create_group_invite_page', 1),
     'type' => MENU_LOCAL_TASK,
     'access callback' => 'og_is_group_admin',
-    'access arguments' => array(2),
-    'weight' => 5,
+    'access arguments' => array(1),
+    'weight' => 12,
     );
   $items['group_invite/%node/js'] = array(
     'title' => 'Invite new members',
@@ -97,17 +100,24 @@ function group_invite_menu() {
     'access callback' => 'group_invite_js_access_wrapper',
     'access arguments' => array(1),
     );
-// TODO:
-//  use this as ahah path for role selection
-//  $items['group_invite/%node/js_map/%'] = array(
-//    'title' => 'Invite new members Redux',
-//    'page callback'     => 'group_invite_js_map',
-//    'page arguments'     => array(3),
-//    'type' => MENU_CALLBACK,
-//    'access callback' => 'group_invite_js_access_wrapper',
-//    'access arguments' => array(1),
-//    );
   return $items;
+}
+
+function return_true() {
+  return TRUE;
+}
+
+function group_invite_map_load($nid) {
+  $map_type = 'green_map';
+  if ( is_numeric($nid) &&
+       ($node = node_load($nid)) &&
+       $node->type == $map_type )
+  {
+    return $node;
+  }
+  else  {
+    return FALSE;
+  }
 }
 
 /**
@@ -280,7 +290,7 @@ function group_invite_create_group_invite_page($form_state, $node) {
   // I belive there is a bug in drupal or at least in how they suggest to set
   //   up #ahah. see: http://drupal.org/node/371339
   // the workaround follows:
-  $correct_path = implode('/', array( 'og', 'users', $node->nid, 'invite_users'));
+  $correct_path = implode('/', array( 'node', $node->nid, 'invite_users'));
   $form['#action'] = url($correct_path);
   // end crazy workaround
 
@@ -356,11 +366,15 @@ function group_invite_create_group_invite_page_validate($form, &$form_state) {
  *  helper for validation
  */
 function _group_invite_create_group_invite_page_validate($form, &$form_state) {
+  global $user;
   foreach ( $form_state['values']['member'] as $i => $memberdata ) {
     if ( ! empty($memberdata['mail']) &&
          ! valid_email_address($memberdata['mail']) )
     {
       form_set_error('member]['. $i . '][mail', 'invalid email address');
+    }
+    if ( $user->mail == $memberdata['mail'] ) {
+      form_set_error('member]['. $i . '][mail', t('You cannot invite yourself to a group.'));
     }
   }
 }
@@ -400,14 +414,10 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
     }
     if ( group_invite_email_exists($member['mail']) ) {
       $existing_user = user_load(array('mail' => trim($member['mail'])));
-      if ($user->uid == $existing_user->uid) {
-        // Users should not be able to change their own roles.
-        drupal_set_message(t('You cannot invite yourself to a group.'), 'error');
-        continue;
-      }
       $mail_language = user_preferred_language($existing_user);
       $mail_from = variable_get('site_mail', ini_get('sendmail_from'));
       $mail_to = $existing_user->mail;
+      $mail_params['body'] = $form_state['values']['message'];
       $mail_success = FALSE;
       foreach ( $member['maps_wrapper']['maps'] as $gid => $checked ) {
         if ( $checked) {
@@ -455,7 +465,7 @@ function group_invite_create_group_invite_page_submit($form, &$form_state) {
       }
     }
   }
-  $form_state['redirect'] = implode('/', array("og", "users", $form_state['values']['group_nid']));
+  $form_state['redirect'] = implode('/', array("node", $form_state['values']['group_nid'], 'members'));
 }
 
 /**
@@ -644,3 +654,34 @@ function group_invite_js() {
 //
 //  drupal_json(array('status' => TRUE, 'data' => $output));
 //}
+
+function group_invite_instructions() {
+  $ret = <<<EOF
+<p>
+You have been invited to be part of the Open Green Map. If you were invited to
+take part in a specific map, you need to be a registered contributor. If you
+haven't done it, we suggest you take a moment to register by clicking Create
+New Account on the upper right of OpenGreenMap.org/home.
+</p>
+
+<p>
+As a registered Contributor, you will not need to add your name, email and
+spell out the "captcha" code each time you add text or an image. Login when you
+return and save steps each time you contribute new content. Your username will
+appear by each image or text you contribute.
+</p>
+
+<p>
+If you were invited by a Registered Mapmaker, he/she can give you extra
+permissions so you can be a Team Member or a Coordinator to add sites directly
+to the map and help in the management of the project.
+</p>
+
+<p>
+- Thank you on behalf of the Green Map movement.
+</p>
+EOF;
+
+  return $ret;
+}
+

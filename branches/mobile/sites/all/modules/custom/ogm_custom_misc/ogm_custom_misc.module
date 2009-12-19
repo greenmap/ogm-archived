@@ -9,42 +9,15 @@
 // }
 
 /**
- * Views argument handling for site page mini maps
+ * Build gmap macro for site page mini map, given the coordinates
  */
-
-
-function ogm_custom_misc_view_args_site_mini_map($args, $view) {
-  if (!$args && arg(0) == 'node' && is_numeric(arg(1)) && !arg(2)) {
-    $args[0] = arg(1);
-
-    // grab the lat and long of the site to center the map
-    $query = db_query('SELECT l.latitude, l.longitude FROM {location} l INNER JOIN {location_instance} li ON l.lid = li.lid INNER JOIN {node} n ON n.nid = li.nid AND n.vid = li.vid WHERE li.nid= %d', $args[0]);
-    $geocodes = db_fetch_array($query);
-
-
-    // build the gmap macro
-    $macro = '[gmap zoom=15 |';
-    $macro .= 'center='. $geocodes['latitude'] .','. $geocodes['longitude'] .' |';
-    $macro .= 'width=175px |height=175px |control=None |type=Map | tcontrol=off | scontrol=off|drag=no|align=center]';
-
-    // add the macro to the view
-    $view->gmap_macro = $macro;
-
-    // list the maps that this site is on
-    $groups = db_query('SELECT DISTINCT(group_nid) FROM {og_ancestry} WHERE nid = %d', $args[0]);
-
-    $links = '<ul>';
-    while ($group = db_fetch_object($groups)) {
-      $mapname = db_result(db_query('SELECT title FROM {node} WHERE nid = %d', $group->group_nid));
-      $links .= '<li>'. l($mapname, 'node/'. $group->group_nid) .'</li>';
-    }
-    $links .= '</ul>';
-    // add the links to the block footer
-    $view->block_header = '<span class="jto">'. t('Jump To:') .' </span>'. $links;
-  }
-  return $args;
+function ogm_custom_misc_site_mini_map($latitude, $longitude) {
+  // build the gmap macro
+  $macro = '[gmap zoom=15 |';
+  $macro .= "center=$latitude,$longitude |";
+  $macro .= 'width=175px |height=175px |control=None |type=Map | tcontrol=off | scontrol=off|drag=no|align=center]';
+  return $macro;
 }
-
 
 /**
  * Front page code
@@ -65,7 +38,7 @@ function ogm_custom_misc_front_page() {
       <li class="explore big">
         <h2 class="explore"><a class="bigbuttons explore" href="'. url('greenmap') .'">'. t('Explore') .'</a></h2>
         <p><a class="bigbuttons" href="'. url('greenmap') .'">'.
-        t('@count green living sites! See the world from a new perspective.', array('@count' => variable_get('gmap_bubble_site_count', t('many')))).
+        t('@count green living sites!<br />See the world from a<br />new perspective', array('@count' => variable_get('gmap_bubble_site_count', t('many')))).
         '</a></p>
       </li>
       <li class="expand big">
@@ -110,19 +83,13 @@ function ogm_custom_misc_front_page() {
 
   $output .= '<div id="homepagetext" class="clear-block">
     <p><strong>'.
-    t('Transforming Local Information into Global Interaction!').
+    t('Green Living Sites. Nature. Social and Cultural Resources. Find them all on the Green Map!').
     '</strong></p><p>'.
-    t('Open Green Map interactively charts natural, cultural and green living sites in your community and worldwide.').
+    t('Interact with thousands of great places charged by local Green Mapmakers around the world. <br />Make these places part of your life, and help your community become a greener and healthier place.').
     '</p><p>'.
-    t('On this platform, you can enhance every site, path and area on ' .
-        'any map, and share your insights, impacts, images and videos. ' .
-        'Rate, update, translate -- there is <a href="@more_to_come_link">more to come</a>.',
-         array('@more_to_come_link' => url('design'))).
+    t('Open Green Maps are designed to be explored, customized and enhanced by people like you. <br />You can share your insights, ratings and images or suggest, compare and share sites.').
     ' '.'</p><p>'.
-    t('<a href="@greenmap_link">Green Map System</a> has promoted inclusive ' .
-        'participation in sustainable development since 1995, engaging ' .
-        'communities in 55 countries. <a href="@support">Support</a> this locally-led global movement!',
-        array('@greenmap_link' => url('http://greenmap.org'), '@support' => url('donate'))).
+    t('<a href="@greenmap_link">Green Map System</a> promotes inclusive participation in sustainable development, engaging hundreds of communities in 55 countries in mapmaking since 1995. Get involved and <a href="@support">support</a> this global movement!', array('@greenmap_link' => url('http://greenmap.org'), '@support' => url('donate'))).
     '</p><p><em class="pink">'.
     t('Think Global, Map Social!').
     '</em></p> </div> </div>';

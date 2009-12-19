@@ -101,6 +101,11 @@ function theme_emimage_formatter_image_embed($element) {
   return module_invoke('emimage', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
 
+function theme_emimage_formatter_image_link($element) {
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emimage', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
+}
+
 function theme_emimage_formatter_default($element) {
   $field = content_fields($element['#field_name'], $element['#type_name']);
   return module_invoke('emimage', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
@@ -121,4 +126,8 @@ function theme_emimage_image_embed($field, $item, $formatter, $node) {
     $output = drupal_get_form('emimage_embed_form', $field, $item, $formatter, $node);
   }
   return $output;
+}
+
+function theme_emimage_image_link($field, $item, $formatter, $node, $options = array()) {
+  return module_invoke('emimage', $item['provider'] .'_embedded_link', $item['value']);
 }

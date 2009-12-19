@@ -15,6 +15,9 @@ class views_handler_field_node extends views_handler_field {
   function construct() {
     parent::construct();
     $this->additional_fields['nid'] = 'nid';
+    if (module_exists('translation')) {
+      $this->additional_fields['language'] = array('table' => 'node', 'field' => 'language');
+    }
   }
 
   function option_definition() {
@@ -46,6 +49,10 @@ class views_handler_field_node extends views_handler_field {
       $this->options['alter']['make_link'] = TRUE;
       $this->options['alter']['path'] = "node/" . $values->{$this->aliases['nid']};
       $this->options['alter']['alt'] = check_plain($data);
+      if (isset($this->aliases['language'])) {
+        $languages = language_list();
+        $this->options['alter']['language'] = $languages[$values->{$this->aliases['language']}]; 
+      }
     }
     return $data;
   }
