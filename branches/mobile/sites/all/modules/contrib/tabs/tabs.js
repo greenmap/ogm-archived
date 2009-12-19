@@ -1,6 +1,12 @@
-// $Id: tabs.js,v 1.4 2008/04/14 18:35:30 nedjo Exp $
+// $Id: tabs.js,v 1.6 2009/08/19 15:02:23 nedjo Exp $
 
 Drupal.behaviors.tabs = function (context) {
+  // Set the active class to the first tab with an form error.
+  $('.drupal-tabs ul').children('li').each( function() {
+    if ($($(this).find('a').attr('href')).find('div.form-item .error:first').size()) {
+      $(this).addClass('error').addClass('active');
+    }
+  });
 
   var fx = {duration: Drupal.settings.tabs.speed};
   if (Drupal.settings.tabs.fade) {
@@ -10,6 +16,7 @@ Drupal.behaviors.tabs = function (context) {
     fx.height = 'toggle';
   }
   // Process custom tabs.
+  var selected = null;
   $('.drupal-tabs:not(.tabs-processed)', context)
     .addClass('tabs-processed')
     .each(function () {
@@ -18,7 +25,12 @@ Drupal.behaviors.tabs = function (context) {
       }
     })
     .find('> ul')
+    .each(function () {
+      var href = $(this).find('li.active:first a').attr('href');
+      selected = href ? href.substring(href.indexOf('#')) : 1;
+    })
     .tabs({
+      select: selected,
       selectedClass: 'active',
       fx: fx
     })
@@ -34,14 +46,15 @@ Drupal.behaviors.tabs = function (context) {
 };
 
 Drupal.tabsNavigation = function(elt) {
-  // Extract tabset name
+  // Extract tabset name.
   var tabsetName = $(elt).get(0).id.substring(5);
-  var count = $(elt).find('> ul > li').size();
   var $tabs = $(elt).tabs();
-  for (i = 1; i <= count; i++) {
-    var tabContent = $('#tabs-' + tabsetName + '-' + i);
+  var i = 1;
+  var $tabsContent = $('div.' + 'tabs-' + tabsetName, elt);
+  var count = $tabsContent.size();
+  $tabsContent.each(function() {
     if ((i > 1) || (i < count)) {
-      tabContent.append('<span class="clear"></span><div class="tabs-nav-link-sep"></div>');
+      $(this).append('<span class="clear"></span><div class="tabs-nav-link-sep"></div>');
     }
     if (i > 1) {
       var link = $(document.createElement('a'))
@@ -54,7 +67,7 @@ Drupal.tabsNavigation = function(elt) {
           //Drupal.scrollTo(elt);
           return false;
         });
-      tabContent.append(link);
+      $(this).append(link);
     }
     if (i < count) {
       var link = $(document.createElement('a'))
@@ -67,58 +80,10 @@ Drupal.tabsNavigation = function(elt) {
           //Drupal.scrollTo(elt);
           return false;
         });
-      tabContent.append(link);
+      $(this).append(link);
     }
-    tabContent.append('<span class="clear"></span>')
-  }
-}
-
-Drupal.tabsLocalTasks = function(elt) {
-  var elt = elt ? elt : document;
-  // Process standard Drupal local task tabs.
-  // Only proceed if we have dynamicload available.
-  if (Drupal.settings && Drupal.settings.tabs && Drupal.dynamicload && typeof(Drupal.dynamicload == 'function')) {
-
-    $(elt).find('ul.tabs.primary')
-      .each(function() {
-        var index = 1;
-        var activeIndex;
-        $(this)
-        .addClass('tabs-processed')
-        .find('li > a')
-        .each(function () {
-          var div = document.createElement('div');
-          $(div)
-            .attr('id', 'section-' + index)
-            .addClass('fragment');
-          var parentDiv = $(this).parents('div').get(0);
-          parentDiv.appendChild(div);
-          // The active tab already has content showing.
-          if ($(this).is('.active')) {
-            activeIndex = parseInt(index);
-          }
-          // Other tabs need to load their content.
-          else {
-            Drupal.dynamicload(this, {
-              target: document.getElementById('section-' + index),
-              useClick: false,
-              show: false
-            });
-          }
-          $(this).attr('href', '#section-' + index);
-          index++;
-        })
-        .end()
-        .parent('div')
-        .each(function() {
-          while (this.nextSibling) {
-            var oldDiv = this.parentNode.removeChild(this.nextSibling);
-            document.getElementById('section-' + activeIndex).appendChild(oldDiv);
-          }
-        })
-        .tabs({
-          onShow: Drupal.tabsAddClassesCallback()
-        });
-    });
-  }
+    $tabsContent.append('<span class="clear"></span>');
+    i++;
+  });
 };
+

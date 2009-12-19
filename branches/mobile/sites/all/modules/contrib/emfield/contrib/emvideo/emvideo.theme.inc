@@ -212,6 +212,10 @@ function theme_emvideo_video_replace_preview($field, $item, $formatter, $node, $
   return theme('emvideo_thickbox', $field, $item, $formatter, $node, $options);
 }
 
+function theme_emvideo_video_link($field, $item, $formatter, $node, $options = array()) {
+  return module_invoke('emvideo', $item['provider'] .'_embedded_link', $item['value']);
+}
+
 function theme_emvideo_formatter_video_video($element) {
   $field = content_fields($element['#field_name'], $element['#type_name']);
   return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
@@ -233,6 +237,11 @@ function theme_emvideo_formatter_video_preview($element) {
 }
 
 function theme_emvideo_formatter_video_thumbnail($element) {
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
+}
+
+function theme_emvideo_formatter_video_link($element) {
   $field = content_fields($element['#field_name'], $element['#type_name']);
   return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
