@@ -8,6 +8,7 @@
   <?php print $styles; ?>
   <script type="text/javascript">
     var Drupal_base_path = '<?php print base_path()?>';
+    var Drupal_language = '<?php print $language->language ?>';
   </script>
 
   <!--[if IE]>
