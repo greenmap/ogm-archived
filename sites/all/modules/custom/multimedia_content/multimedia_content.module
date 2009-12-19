@@ -67,7 +67,7 @@ function multimedia_content_media_description($m, $name) {
   elseif ($m['type'] == 'image') {
     $ret .= '<img src="'. base_path() . path_to_theme() .'/images/camera.png" alt="image" title="image">';
   }
-  $m['author'] = str_replace('<a href=', '<a target="_blank" href=', $m['author']);
+  $m['author'] = str_replace('<a href=', '<a target="_parent" href=', $m['author']);
   $ret .= ' '.t('added by !name', array('!name' => $m['author']));
   $ret .= '</p>';
   if (!empty($m['nid'])) {

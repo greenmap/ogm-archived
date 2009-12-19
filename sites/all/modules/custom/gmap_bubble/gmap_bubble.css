@@ -80,13 +80,3 @@
   float: right;
   z-index: 999;
 }
-
-#infobubbleicons_close {
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  background: url("http://maps.gstatic.com/intl/en_us/mapfiles/iw_close.gif") no-repeat;
-  height: 12px;
-  width: 12px;
-  z-index: 999;
-}

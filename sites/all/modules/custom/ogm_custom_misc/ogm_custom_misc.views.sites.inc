@@ -217,9 +217,6 @@ function sites_views_default_views() {
   $handler->override_option('access', array(
     'type' => 'none',
   ));
-  $handler->override_option('cache', array(
-    'type' => 'none',
-  ));
   $handler->override_option('title', 'Green Sites');
   $handler->override_option('empty', 'No sites found');
   $handler->override_option('empty_format', '1');
@@ -1386,6 +1383,147 @@ function sites_views_default_views() {
   $handler->override_option('link_display', 'page_5');
   $handler->override_option('block_description', 'Sites by Country');
   $handler->override_option('block_caching', -1);
+  $handler = $view->new_display('page', 'Embedded Map', 'page_6');
+  $handler->override_option('fields', array(
+    'latitude' => array(
+      'label' => '',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
+      ),
+      'style' => 'dd',
+      'exclude' => 0,
+      'id' => 'latitude',
+      'table' => 'location',
+      'field' => 'latitude',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+    'longitude' => array(
+      'label' => '',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'strip_tags' => 0,
+        'html' => 0,
+      ),
+      'style' => 'dd',
+      'exclude' => 0,
+      'id' => 'longitude',
+      'table' => 'location',
+      'field' => 'longitude',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+    ),
+  ));
+  $handler->override_option('arguments', array(
+    'nid' => array(
+      'default_action' => 'empty',
+      'style_plugin' => 'default_summary',
+      'style_options' => array(),
+      'wildcard' => 'all',
+      'wildcard_substitution' => 'All',
+      'title' => '',
+      'default_argument_type' => 'fixed',
+      'default_argument' => '',
+      'validate_type' => 'php',
+      'validate_fail' => 'empty',
+      'break_phrase' => 0,
+      'not' => 0,
+      'id' => 'nid',
+      'table' => 'node',
+      'field' => 'nid',
+      'validate_user_argument_type' => 'uid',
+      'validate_user_roles' => array(
+        '2' => 0,
+        '3' => 0,
+        '6' => 0,
+        '4' => 0,
+        '5' => 0,
+        '7' => 0,
+        '8' => 0,
+      ),
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+      'default_options_div_prefix' => '',
+      'default_argument_user' => 0,
+      'default_argument_fixed' => '',
+      'default_argument_php' => '',
+      'validate_argument_node_type' => array(
+        'poll' => 0,
+        'faq' => 0,
+        'admin_message' => 0,
+        'green_map' => 0,
+        'green_site' => 0,
+        'impact' => 0,
+        'mapmaker_profile' => 0,
+        'page' => 0,
+        'photo' => 0,
+        'poly' => 0,
+        'story' => 0,
+        'testimonial' => 0,
+        'transport_direction' => 0,
+        'video' => 0,
+      ),
+      'validate_argument_node_access' => 0,
+      'validate_argument_nid_type' => 'nid',
+      'validate_argument_vocabulary' => array(
+        '2' => 0,
+        '3' => 0,
+        '1' => 0,
+        '5' => 0,
+        '4' => 0,
+      ),
+      'validate_argument_type' => 'tid',
+      'validate_argument_transform' => 0,
+      'validate_user_restrict_roles' => 0,
+      'validate_argument_is_member' => 0,
+      'validate_argument_php' => '$handler->argument = ogm_custom_misc_view_args_site_mini_map($argument, $view);
+                return TRUE;',
+    ),
+  ));
+  $handler->override_option('path', 'site_mini_map/%');
+  $handler->override_option('menu', array(
+    'type' => 'none',
+    'title' => '',
+    'description' => '',
+    'weight' => 0,
+    'name' => 'navigation',
+  ));
+  $handler->override_option('tab_options', array(
+    'type' => 'none',
+    'title' => '',
+    'description' => '',
+    'weight' => 0,
+  ));
   $handler = $view->new_display('page', 'Related sites (InfoWindow) (tid, !og_nid)', 'page_7');
   $handler->override_option('fields', array(
     'title' => array(
@@ -1615,8 +1753,8 @@ function sites_views_default_views() {
     ),
   ));
   $handler->override_option('empty', 'n/a');
-  $handler->override_option('items_per_page', 25);
   $handler->override_option('use_pager', '0');
+  $handler->override_option('items_per_page', 25);
   $handler->override_option('style_plugin', 'list');
   $handler->override_option('style_options', array(
     'grouping' => '',
@@ -1640,3 +1778,4 @@ function sites_views_default_views() {
 
   return $views;
 }
+

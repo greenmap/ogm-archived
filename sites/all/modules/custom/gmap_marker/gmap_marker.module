@@ -8,6 +8,24 @@ function gmap_marker_perm() {
 
 function gmap_marker_menu(){
   $items = array();
+
+/* TODO
+   Non menu code that was placed in hook_menu under the '!$may_cache' block
+   so that it could be run during initialization, should now be moved to hook_init.
+   Previously we called hook_init twice, once early in the bootstrap process, second
+   just after the bootstrap has finished. The first instance is now called boot
+   instead of init.
+
+   In Drupal 6, there are now two hooks that can be used by modules to execute code
+   at the beginning of a page request. hook_boot() replaces hook_boot() in Drupal 5
+   and runs on each page request, even for cached pages. hook_boot() now only runs
+   for non-cached pages and thus can be used for code that was previously placed in
+   hook_menu() with $may_cache = FALSE:
+
+   Dynamic menu items under a '!$may_cache' block can often be simplified
+   to remove references to arg(n) and use of '%<function-name>' to check
+   conditions. See http://drupal.org/node/103114.
+*/
   $items['node/gmap_marker/onmapchange'] = array(
       'title' => 'OnMapChange',
       'page callback' => 'gmap_marker_onMapChange',
@@ -20,6 +38,7 @@ function gmap_marker_menu(){
       'type' => MENU_CALLBACK,
       'access arguments' => array('access content'),
     );
+
   $items['node/gmap_marker/clearnids'] = array(
       'title' => 'Clear nid from the session',
       'page callback' => 'gmap_marker_clearnids',
@@ -70,14 +89,7 @@ function gmap_marker_gmap($op, $map=null) {
         drupal_add_js($path . '/key.js');
         // break;
       }
-      if (
-           ((arg(0) == 'node' && is_numeric(arg(1))) ||
-            (arg(0) == 'greenmap') ||
-            (arg(0) == 'greenmap_widget'))
-          // don't show icons if we're editing a node
-           && ('edit' != arg(2))
-         )
-      {
+      if((arg(0) == 'node' && is_numeric(arg(1))) || (arg(0) == 'greenmap') || (arg(0) == 'greenmap_widget') ) {
         $icons = '';
         $icons .= "function getIcon(img){\n";
         $icons .= "  var ico = new GIcon();\n";
@@ -258,7 +270,6 @@ function onMapChange_casezoom($args = array()) {
      ".$nid_q1."
      WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' ".$og2." ".$nid_q2."
      AND (".$lat."< l.latitude AND  l.latitude < ".($lat + $dy)." AND ".($lon)." < l.longitude AND l.longitude < ".($lon + $dx).")
-     ORDER BY RAND()
      LIMIT ".($limit * 4);
 
   //print_r($data);

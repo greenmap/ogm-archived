@@ -113,10 +113,6 @@ function emimage_field_formatter_info() {
       'label' => t('Embed Code'),
       'field types' => $types,
     ),
-    'image_link' => array(
-      'label' => t('Link to Image'),
-      'field types' => $types,
-    ),
   );
   return $formats;
 }
@@ -326,14 +322,6 @@ function emimage_theme(){
         'formatter' => NULL,
         'node' => NULL),
 	  'file' => 'emimage.theme.inc',
-    ),
-    'emimage_image_link' => array(
-        'arguments' => array('element' => NULL),
-        'file' => 'emimage.theme.inc'
-    ),
-    'emimage_formatter_image_link' => array(
-        'arguments' => array('element' => NULL),
-        'file' => 'emimage.theme.inc'
     ),
     'emimage_image_image' => array(
       'arguments' => array(
