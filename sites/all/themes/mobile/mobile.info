@@ -56,7 +56,6 @@ base theme = zen
 regions[navbar]         = navigation bar
 regions[content_top]    = content top
 regions[pre_content]    = pre content
-regions[mobile_bottom]  = mobile bottom
 regions[content_bottom] = content bottom
 regions[header]         = header
 regions[footer]         = footer
