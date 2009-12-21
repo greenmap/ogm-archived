@@ -1,0 +1,6 @@
+; $Id$
+name = Example field
+description = Defines an example field type.
+dependencies[] = content
+package = CCK
+core = 6.x
