@@ -28,9 +28,19 @@ function gmap_poly_field_info() {
   //   where $op = 'database colums'
   return array(
      // 'type'   =>  arrray( data about type )
-    'gmap_poly_geometric_data' => array('label' => t('Google Maps Geometric (Polygon or Line) Data')),
+    'gmap_poly_geometric_data' =>
+      array('label' => t('Google Maps Geometric (Polygon or Line) Data')),
   );
 }
+
+//function gmap_poly_field($op, &$node, $field, &$items, $teaser, $page) {
+//  switch ($op) {
+//    case 'validate':
+//    break;
+//    case 'sanitize':
+//    break;
+//  }
+//}
 
 /**
  *  implementation of hook_field_settings
@@ -40,8 +50,9 @@ function gmap_poly_field_settings($op, $field) {
     case 'database columns':
         // types declared in hook_field_info
         $columns = array(
-          // see http://dev.mysql.com/doc/refman/5.0/en/gis-class-geometry.html
-          'gmap_poly_geometric_data' => array('type' => 'TEXT'),
+          'value' => array(
+            'type' => 'text', 'not null' => FALSE, 'sortable' => FALSE, 'default' => '',
+          ),
         );
         return $columns;
       break;
@@ -55,7 +66,12 @@ function gmap_poly_widget_info() {
   return array(
     'gmap_poly_line_widget' => array(
       'label' => 'Line',
-      'field types' => array('gmap_poly_geometric_data')),
+      'field types' => array('gmap_poly_geometric_data'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+      'callbacks' => array(
+        'default value' => CONTENT_CALLBACK_DEFAULT,
+      ),
+    ),
     'gmap_poly_area_widget' => array(
       'label' => 'Area',
       'field types' => array('gmap_poly_geometric_data')),
@@ -99,7 +115,9 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
   _gmap_doheader();
   // need to get lat, lon & center for map
   $node = $form['#node'];
-  $nodegid = array_shift($node->og_groups);
+  if ( is_array($node->og_groups) ) {
+    $nodegid = array_shift($node->og_groups);
+  }
   $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $nodegid;
   $groupnode = node_load($gid);
 
@@ -149,15 +167,20 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
   }
 }
 
+function gmap_poly_widget_process() {
+//  dsm(func_get_args());
+}
+
 /**
  * Implementation of hook_content_is_empty().
  */
 function gmap_poly_content_is_empty($item, $field) {
-//   if (empty($item['value']) && (string)$item['value'] !== '0') {
-//     return TRUE;
-//   }
+  if (empty($item['value']) && (string)$item['value'] !== '0') {
+    return TRUE;
+  }
   return FALSE;
 }
-// function gmap_poly_default_value() {
-//   return '';
-// }
+
+function gmap_poly_default_value() {
+  return 'blah blah FOO';
+}
