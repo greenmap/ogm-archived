@@ -1,0 +1,12 @@
+; $Id$
+name = gmap_shapes
+description = Module for shapes and lines to open greenmap
+package = GreenMap
+dependencies[] = content
+dependencies[] = group_map
+dependencies[] = gmap
+;; this next dependency ensures the module won't be enabled.
+;; remove this when the module is ready to use.
+dependencies[] = Engie2aato3eeGh
+
+core = 6.x
