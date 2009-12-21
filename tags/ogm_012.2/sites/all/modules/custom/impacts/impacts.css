@@ -1,0 +1,8 @@
+/* $Id$ */
+
+/* hide these two form inputs */
+
+div#edit-field-site-nid-nid-wrapper,
+div#edit-field-because-of-this-site-value-wrapper {
+  display: none;
+}

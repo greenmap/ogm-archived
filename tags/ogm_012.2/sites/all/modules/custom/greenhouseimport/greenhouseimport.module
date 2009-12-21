@@ -1,0 +1,57 @@
+<?php 
+/*
+* hook_form_alter()
+* to add the js, which acts when a map url is entered and checks it
+*/
+
+function greenhouseimport_form_alter(&$form, &$form_state, $form_id){
+  switch ($form_id) {
+    case 'green_map_node_form':
+      /*
+      $path = drupal_get_path('module', 'greenhouseimport');
+      drupal_add_js( $path.'/greenhouseimport.js' );
+      $path = drupal_get_path('module', 'gmap_marker');
+      drupal_add_js( $path.'/ajax.js' );
+      */
+
+      /*
+      if ($form['field_greenhouse_map_nid']['#default_value'][0]['value']) {
+        $gm_nid = $form['field_greenhouse_map_nid']['#default_value'][0]['value'];
+        $result = db_query('SELECT filepath FROM sync_gm_green_maps WHERE gm_nid = %d', $gm_nid);
+        $gm_map = db_fetch_object($result);
+        if ($gm_map) {
+          $url = check_plain('http://www.greenmap.org/greenhouse/'. $gm_map->filepath);
+          // $form['field_map_pdf'][0]['#default_value']['value'] = 'http://www.greenmap.org/greenhouse/'. $gm_map->filepath;
+          $form['field_map_pdf']['#description'] 
+            .= "<br /> Leave this blank to use the map uploaded to www.GreenMap.org ($url)";
+        }
+      }
+      */
+    break;
+  }
+}
+
+
+function greenhouseimport_green_map_options() {
+  global $user;
+
+  $uid = 0;
+  if (arg(0) == 'node' && arg(2) == 'edit' && is_numeric(arg(1))) {
+    $node = node_load(arg(1));
+    $uid = $node->uid;
+  }
+  elseif (arg(0) == 'node' && arg(1) == 'add') {
+    $uid = $user->uid;
+  }
+  else {
+    return array();
+  }
+
+  $options = array();
+  $gm_maps = sync_fetch_gm_maps($uid);
+  foreach($gm_maps as $gm_map) {
+    $options[$gm_map->gm_nid] = $gm_map->title;
+  }
+
+  return $options;
+}
