@@ -109,8 +109,8 @@ function gmap_poly_widget_info() {
  * @return
  *   the form item for a single element for this field
  */
-function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
-  drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/egeoxml.js', 'module');
+function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
+//  drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/egeoxml.js', 'module');
   drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/gmap_poly.js', 'module', 'footer');
   _gmap_doheader();
   // need to get lat, lon & center for map
@@ -154,6 +154,8 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
     case 'gmap_poly_line_widget':
     $element['value'] = array(
         '#type' => 'textarea',
+        //FIXME: when editing works, enable this line
+        //'#type' => 'hidden',
         '#prefix' => '<div id="'. $mapdiv .'" style="width: auto; height: 450px; "></div><div class="gmap_poly_clear"><a href="javascript:void(0)" onClick="clearPoly()">Start Over</a></div><div id="'. $coordiv .'">',
         '#suffix' => '</div>',
       );
@@ -167,10 +169,6 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
   }
 }
 
-function gmap_poly_widget_process() {
-//  dsm(func_get_args());
-}
-
 /**
  * Implementation of hook_content_is_empty().
  */
@@ -179,8 +177,4 @@ function gmap_poly_content_is_empty($item, $field) {
     return TRUE;
   }
   return FALSE;
-}
-
-function gmap_poly_default_value() {
-  return 'blah blah FOO';
 }
