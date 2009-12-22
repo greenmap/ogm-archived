@@ -152,7 +152,7 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
 
   switch($field['widget']['type']) {
     case 'gmap_poly_line_widget':
-    $element = array(
+    $element['value'] = array(
         '#type' => 'textarea',
         '#prefix' => '<div id="'. $mapdiv .'" style="width: auto; height: 450px; "></div><div class="gmap_poly_clear"><a href="javascript:void(0)" onClick="clearPoly()">Start Over</a></div><div id="'. $coordiv .'">',
         '#suffix' => '</div>',
