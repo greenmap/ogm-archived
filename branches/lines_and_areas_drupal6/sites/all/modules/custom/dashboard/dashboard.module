@@ -100,6 +100,7 @@ function dashboard_menu(){
   );
   //FIXME: maybe don't hardcode this
   $green_route_type_name = 'green_route';
+  //FIXME: need some test for existence of content type to hide this tab if content type gets disabled
   $items['node/%dashboard_map/add_route'] = array(
     'title' => 'Add a Route',
     'access callback' => 'dashboard_access_member_callback',
