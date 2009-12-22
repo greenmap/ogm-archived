@@ -138,7 +138,7 @@ function gmap_poly_widget($form, $form_state, $field, $items, $delta) {
 
   $fieldname = $field['field_name'];
   $cssfieldname = str_replace('_', '-', $fieldname);
-  $textareadiv = 'edit-'. $cssfieldname .'-'. $delta;
+  $textareadiv = 'edit-'. $cssfieldname .'-'. $delta .'-value';
 
   drupal_add_js(array(
     'gmap_poly_widget_'. $delta => array(
