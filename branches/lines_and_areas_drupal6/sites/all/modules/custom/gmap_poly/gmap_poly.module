@@ -154,6 +154,7 @@ function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
     case 'gmap_poly_line_widget':
     $element['value'] = array(
         '#type' => 'textarea',
+        '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL,
         //FIXME: when editing works, enable this line
         //'#type' => 'hidden',
         '#prefix' => '<div id="'. $mapdiv .'" style="width: auto; height: 450px; "></div><div class="gmap_poly_clear"><a href="javascript:void(0)" onClick="clearPoly()">Start Over</a></div><div id="'. $coordiv .'">',
