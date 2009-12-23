@@ -99,7 +99,8 @@ function suggest_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 function suggest_form_alter(&$form, &$form_state, $form_id) {
   global $user;
   // only alter green_site forms
-  if ( $form_id != 'green_site_node_form') {
+  // FIXME: this is not right, should move non-suggest changes to some other hook_form_alter()
+  if ( ! in_array( $form_id, array('green_site_node_form', 'green_route_node_form', 'green_area_node_form')) ) {
     return;
   }
   $should_suggest = FALSE;

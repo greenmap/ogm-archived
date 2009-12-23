@@ -138,8 +138,10 @@ function string2vertices( strcoords ) {
       var point = new GLatLng(parseFloat(path[p][1]),parseFloat(path[p][0]));
       points.push(point);
     }
-    newPolyline(points);
-
+    return points;
+  }
+  else {
+    return [];
   }
 }
 
@@ -167,3 +169,10 @@ function clearPoly() {
 };
 
 //})() // end closure
+
+//function is_array(value) {
+//  return value &&
+//    typeof value === 'object' &&
+//    value.constructor === Array;
+//}
+
