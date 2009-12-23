@@ -1,6 +1,11 @@
+// (function () { // Begin closure to make contents private
+
+// vim:shiftwidth=2:tabstop=2:expandtab
+
 // Declare a few div ids that will be used later
 // TODO: Figure out a way to loop this for fields with multiple values
 var MapDivId = Drupal.settings.gmap_poly_widget_0.mapDiv;
+// FIXME: unused variable
 var MapCoordId = Drupal.settings.gmap_poly_widget_0.coorDiv;
 var MapFieldId = Drupal.settings.gmap_poly_widget_0.fieldDiv;
 
@@ -29,15 +34,20 @@ mmap.setCenter(center, zoom);
 mmap.addControl(new GLargeMapControl());
 mmap.addControl(new GMapTypeControl());
 
-var polylineCoordinates = "";
+var polylineCoordinates = document.getElementById(MapFieldId).value;
 
-function newPolyline(){
+function newPolyline( points ){
   // name the textarea
   var textarea = document.getElementById(MapFieldId);
   textarea.value = polylineCoordinates;
 
   //define the line
-  polyline = new GPolyline([], "#000000", 5);
+  if ( points ) {
+    polyline = new GPolyline(points, "#000000", 5);
+  }
+  else {
+    polyline = new GPolyline([], "#000000", 5);
+  }
 
   // add the line to the map
   mmap.addOverlay(polyline);
@@ -69,35 +79,69 @@ function newPolyline(){
   // this listener populates the textfield with the "output" coordinates variable.
   polyLineUpdatedListener = GEvent.addListener(polyline,"lineupdated",function(){
     var output = "";
-
-    // loop through the line vertices to grab and strip out the lat/lng coordinates
-    for(var i = 0; i < polyline.getVertexCount();i++){
-      var tmp = "";
-      // get an individual set of points
-      tmp += polyline.getVertex(i);
-      // clean some Google stuff out
-      tmp = tmp.replace("(","");
-      tmp = tmp.replace(")","");
-
-      var tmpLatLng = tmp.split(",");
-
-      // add a space between points
-      if(output != ""){
-        output += " ";
-      }
-      // build a set of coordinates
-      output +=  tmpLatLng[1] + "," + tmpLatLng[0];
-    }
-
+    output = vertices2string(polyline);
     // write coordinates to the text area
     textarea.value = output;
   });
 };
 
-newPolyline();
+if ( polylineCoordinates ) {
+  newPolyline(string2vertices(polylineCoordinates));
+}
+else {
+  newPolyline();
+}
+
+function vertices2string (polyline) {
+  var output = "";
+  for(var i = 0; i < polyline.getVertexCount();i++){
+    var tmp = "";
+    // get an individual set of points
+    tmp += polyline.getVertex(i);
+    // clean some Google stuff out
+    tmp = tmp.replace("(","");
+    tmp = tmp.replace(")","");
+
+    var tmpLatLng = tmp.split(",");
+
+    // add a space between points
+    if(output != ""){
+      output += " ";
+    }
+    // build a set of coordinates
+    output +=  tmpLatLng[1] + "," + tmpLatLng[0];
+  }
+  return output;
+}
 
 
+function string2vertices( strcoords ) {
+  placemarks = strcoords.split(" ");
 
+  var path = [];
+  for (var i = 0; i < placemarks.length; i++) {
+    var coords = placemarks[i];
+    coords = coords.replace(/\s+/g," "); // tidy the whitespace
+    coords = coords.replace(/^ /,"");    // remove possible leading whitespace
+    coords = coords.replace(/ $/,"");    // remove possible trailing whitespace
+    coords = coords.replace(/, /,",");   // tidy the commas
+    if ( coords !== "" ) {
+      path.push(coords.split(","));
+    }
+  }
+
+  if (path.length > 1) {
+    // Build the list of points
+    var points = [];
+    var pbounds = new GLatLngBounds();
+    for (var p = 0; p < path.length; p++) {
+      var point = new GLatLng(parseFloat(path[p][1]),parseFloat(path[p][0]));
+      points.push(point);
+    }
+    newPolyline(points);
+
+  }
+}
 
 // single left click on the map
 GEvent.addListener(mmap, "click",function() {
@@ -122,3 +166,4 @@ function clearPoly() {
   newPolyline();
 };
 
+//})() // end closure
