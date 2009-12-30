@@ -110,13 +110,13 @@ function gmap_poly_widget_info() {
  *   the form item for a single element for this field
  */
 function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
-//  drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/egeoxml.js', 'module');
   drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/gmap_poly.js', 'module', 'footer');
   _gmap_doheader();
   // need to get lat, lon & center for map
   $node = $form['#node'];
   if ( is_array($node->og_groups) ) {
-    $nodegid = array_shift($node->og_groups);
+    // "current()" returns the first element
+    $nodegid = current($node->og_groups);
   }
   $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $nodegid;
   $groupnode = node_load($gid);
