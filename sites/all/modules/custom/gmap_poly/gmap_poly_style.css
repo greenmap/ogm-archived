@@ -1,0 +1,14 @@
+.gmap_poly_controls {
+  text-align: center; 
+}
+
+.gmap_poly_clear a {
+  background: #FFFF90;
+  padding: 1em;
+}
+
+.gmap_poly_toggledraw a {
+  background: #FFFF90;
+  padding: 1em;
+}
+
