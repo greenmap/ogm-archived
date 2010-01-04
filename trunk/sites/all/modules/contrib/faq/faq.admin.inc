@@ -1,5 +1,5 @@
 <?php
-// $Id: faq.admin.inc,v 1.1.2.10 2009/01/04 20:42:34 snpower Exp $
+// $Id: faq.admin.inc,v 1.1.2.22 2009/11/30 20:57:00 snpower Exp $
 
 /**
  * @file
@@ -44,16 +44,9 @@ function faq_general_settings_form() {
     '#description' => t('Your FAQ description.  This will be placed at the top of the page, above the questions and can serve as an introductory text.'),
     '#rows' => 5,
   );
-  $form['body_filter']['faq_description_format'] = filter_form(variable_get('faq_description_format', ''));
+  $form['body_filter']['faq_description_format'] = filter_form(variable_get('faq_description_format', ''), NULL, array('faq_description_format'));
 
-  $form['update'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save configuration'),
-    '#weight' => 3,
-    '#submit' => array('faq_general_settings_form_submit'),
-  );
-
-  return $form;
+  return system_settings_form($form);
 }
 
 /**
@@ -64,6 +57,8 @@ function faq_general_settings_form() {
  */
 function faq_questions_settings_form() {
 
+  drupal_add_js(array('faq' => array('faq_hide_qa_accordion' => variable_get('faq_hide_qa_accordion', FALSE))), 'setting');
+  drupal_add_js(array('faq' => array('faq_category_hide_qa_accordion' => variable_get('faq_category_hide_qa_accordion', FALSE))), 'setting');
   drupal_add_js(drupal_get_path('module', 'faq') .'/faq.js', 'module');
 
   $display_options['questions_inline'] = t('Questions inline');
@@ -122,6 +117,20 @@ function faq_questions_settings_form() {
     '#default_value' => variable_get('faq_question_length', 'short'),
   );
 
+  $form['faq_questions_misc']['faq_hide_qa_accordion'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use accordion effect for "opens/hides answer under question" layout'),
+    '#description' => t('This enables an "accordion" style effect where when a question is clicked, the answer appears beneath, and is then hidden when another question is opened.'),
+    '#default_value' => variable_get('faq_hide_qa_accordion', FALSE),
+  );
+
+  $form['faq_questions_misc']['faq_show_expand_all'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show "expand / collapse all" links for collapsed questions'),
+    '#description' => t('The links will only be displayed if using the "opens/hides answer under question" or "opens/hides questions and answers under category" layouts.'),
+    '#default_value' => variable_get('faq_show_expand_all', FALSE),
+  );
+
   $form['faq_questions_misc']['faq_use_teaser'] = array(
     '#type' => 'checkbox',
     '#title' => t('Use answer teaser'),
@@ -152,9 +161,9 @@ function faq_questions_settings_form() {
 
   $form['faq_questions_misc']['faq_default_sorting'] = array(
     '#type' => 'select',
-    '#title' => t('Default Sorting for Non-Weighted FAQs'),
+    '#title' => t('Default sorting for unordered FAQs'),
     '#options' => array('DESC' => t('Date Descending'), 'ASC' => t('Date Ascending')),
-    '#description' => t("This controls the default weighting behaviour for new FAQ nodes which haven't been assigned a weight."),
+    '#description' => t("This controls the default ordering behaviour for new FAQ nodes which haven't been assigned a position."),
     '#default_value' => variable_get('faq_default_sorting', 'DESC'),
   );
 
@@ -171,6 +180,8 @@ function faq_categories_settings_form() {
   if (!module_exists("taxonomy")) {
     drupal_set_message(t('Categorization of questions will not work without the "taxonomy" module being enabled.'), 'error');
   }
+  drupal_add_js(array('faq' => array('faq_hide_qa_accordion' => variable_get('faq_hide_qa_accordion', FALSE))), 'setting');
+  drupal_add_js(array('faq' => array('faq_category_hide_qa_accordion' => variable_get('faq_category_hide_qa_accordion', FALSE))), 'setting');
   drupal_add_js(drupal_get_path('module', 'faq') .'/faq.js', 'module');
 
   // Set up a hidden variable.
@@ -186,6 +197,7 @@ function faq_categories_settings_form() {
     '#default_value' => variable_get('faq_use_categories', FALSE),
   );
 
+  $category_options['none'] = t("Don't display");
   $category_options['categories_inline'] = t('Categories inline');
   $category_options['hide_qa'] = t('Clicking on category opens/hides questions and answers under category');
   $category_options['new_page'] = t('Clicking on category opens the questions/answers in a new page');
@@ -210,6 +222,13 @@ function faq_categories_settings_form() {
     '#title' => t('Categories listing style'),
     '#description' => t("This allows to select how the categories listing is presented.  It only applies to the 'Clicking on category opens the questions/answers in a new page' layout.  An ordered listing would number the categories, whereas an unordered list will have a bullet to the left of each category."),
     '#default_value' => variable_get('faq_category_listing', 'ul'),
+  );
+
+  $form['faq_category_misc']['faq_category_hide_qa_accordion'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use accordion effect for "opens/hides questions and answers under category" layout'),
+    '#description' => t('This enables an "accordion" style effect where when a category is clicked, the questions appears beneath, and is then hidden when another category is opened.'),
+    '#default_value' => variable_get('faq_category_hide_qa_accordion', FALSE),
   );
 
   $form['faq_category_misc']['faq_count'] = array(
@@ -260,14 +279,16 @@ function faq_categories_settings_form() {
     foreach ($vocabularies as $vid => $vobj) {
       $vocab_options[$vid] = $vobj->name;
     }
-    $form['faq_category_advanced']['faq_omit_vocabulary'] = array(
-      '#type' => 'select',
-      '#title' => t('Omit vocabulary'),
-      '#description' => t('Terms from these vocabularies will be excluded from the FAQ pages.'),
-      '#default_value' => variable_get('faq_omit_vocabulary', 0),
-      '#options' => $vocab_options,
-      '#multiple' => TRUE,
-    );
+    if (!empty($vocab_options)) {
+      $form['faq_category_advanced']['faq_omit_vocabulary'] = array(
+        '#type' => 'checkboxes',
+        '#title' => t('Omit vocabulary'),
+        '#description' => t('Terms from these vocabularies will be <em>excluded</em> from the FAQ pages.'),
+        '#default_value' => variable_get('faq_omit_vocabulary', 0),
+        '#options' => $vocab_options,
+        '#multiple' => TRUE,
+      );
+    }
 
     $form['faq_category_advanced']['faq_enable_term_links'] = array(
       '#type' => 'checkbox',
@@ -281,16 +302,18 @@ function faq_categories_settings_form() {
 }
 
 /**
- * Define the elements for the FAQ Settings page - weight tab.
+ * Define the elements for the FAQ Settings page - order tab.
  *
  * @param $form_state
  *   Store the submitted form values.
  * @return
  *   The form code, before being converted to HTML format.
  */
-function faq_weight_settings_form($form_state) {
+function faq_order_settings_form($form_state, $category = NULL) {
   $order = $date_order = '';
 
+  drupal_add_js(array('faq' => array('faq_hide_qa_accordion' => variable_get('faq_hide_qa_accordion', FALSE))), 'setting');
+  drupal_add_js(array('faq' => array('faq_category_hide_qa_accordion' => variable_get('faq_category_hide_qa_accordion', FALSE))), 'setting');
   drupal_add_js(drupal_get_path('module', 'faq') .'/faq.js', 'module');
   drupal_add_css(drupal_get_path('module', 'faq') .'/faq.css');
 
@@ -298,7 +321,7 @@ function faq_weight_settings_form($form_state) {
   if (!$use_categories) {
     $step = "order";
   }
-  elseif (!isset($form_state['values'])) {
+  elseif (!isset($form_state['values']) && empty($category)) {
     $step = "categories";
   }
   else {
@@ -333,7 +356,7 @@ function faq_weight_settings_form($form_state) {
         $form['choose_cat']['search'] = array(
           '#type' => 'submit',
           '#value' => t('Search'),
-          '#submit' => array('faq_weight_settings_choose_cat_form_submit'),
+          '#submit' => array('faq_order_settings_choose_cat_form_submit'),
         );
       }
     }
@@ -348,117 +371,68 @@ function faq_weight_settings_form($form_state) {
     }
 
     $options = array();
-    $category = 0;
     if (!empty($form_state['values']['faq_category'])) {
       $category = $form_state['values']['faq_category'];
     }
+
+    // Uncategorized ordering.
     if (empty($category)) {
       $category = 0;
+      // Descending.
       if ($default_sorting == 'DESC') {
         $result = db_query(db_rewrite_sql("SELECT n.nid, n.title, if((w.weight IS NULL), %d, w.weight) as weight, n.sticky, n.created FROM {node} n LEFT JOIN {faq_weights} w ON n.nid = w.nid AND w.tid = '%d' WHERE n.type='faq' AND n.status = 1 ORDER BY weight ASC, n.sticky DESC, n.created DESC", "n", "nid"), $default_weight, $category);
-        $date_result = db_query(db_rewrite_sql("SELECT n.nid, n.title, if((w.weight IS NULL), %d, w.weight) as weight, n.sticky, n.created FROM {node} n LEFT JOIN {faq_weights} w ON n.nid = w.nid AND w.tid = '%d 'WHERE n.type='faq' AND n.status = 1 ORDER BY n.sticky DESC, n.created DESC", "n", "nid"), $default_weight, $category);
       }
+      // Ascending.
       else {
         $result = db_query(db_rewrite_sql("SELECT n.nid, n.title, if((w.weight IS NULL), %d, w.weight) as weight, n.sticky, n.created FROM {node} n LEFT JOIN {faq_weights} w ON n.nid = w.nid AND w.tid = '%d' WHERE n.type='faq' AND n.status = 1 ORDER BY weight ASC, n.sticky DESC, n.created ASC", "n", "nid"), $default_weight, $category);
-        $date_result = db_query(db_rewrite_sql("SELECT n.nid, n.title, if((w.weight IS NULL), %d, w.weight) as weight, n.sticky, n.created FROM {node} n LEFT JOIN {faq_weights} w ON n.nid = w.nid AND w.tid = '%d 'WHERE n.type='faq' AND n.status = 1 ORDER BY n.sticky DESC, n.created ASC", "n", "nid"), $default_weight, $category);
       }
     }
+    // Categorized ordering.
     else {
+      // Descending.
       if ($default_sorting == 'DESC') {
         $result = db_query(db_rewrite_sql("SELECT n.nid, n.title, if((w.weight IS NULL), %d, w.weight) as weight, n.sticky, n.created FROM {node} n INNER JOIN {term_node} tn ON (n.nid = tn.nid AND n.vid = tn.vid) LEFT JOIN {faq_weights} w ON n.nid = w.nid AND w.tid = '%d' WHERE n.type='faq' AND n.status = 1 AND tn.tid = '%d' ORDER BY weight ASC, n.sticky DESC, n.created DESC", "n", "nid"), $default_weight, $category, $category);
-        $date_result = db_query(db_rewrite_sql("SELECT n.nid, n.title, if((w.weight IS NULL), %d, w.weight) as weight, n.sticky, n.created FROM {node} n INNER JOIN {term_node} tn ON (n.nid = tn.nid AND n.vid = tn.vid) LEFT JOIN {faq_weights} w ON n.nid = w.nid AND w.tid = '%d' WHERE n.type='faq' AND n.status = 1 AND tn.tid = '%d' ORDER BY n.sticky DESC, n.created DESC", "n", "nid"), $default_weight, $category, $category);
       }
+      // Ascending.
       else {
         $result = db_query(db_rewrite_sql("SELECT n.nid, n.title, if((w.weight IS NULL), %d, w.weight) as weight, n.sticky, n.created FROM {node} n INNER JOIN {term_node} tn ON (n.nid = tn.nid AND n.vid = tn.vid) LEFT JOIN {faq_weights} w ON n.nid = w.nid AND w.tid = '%d' WHERE n.type='faq' AND n.status = 1 AND tn.tid = '%d' ORDER BY weight ASC, n.sticky DESC, n.created ASC", "n", "nid"), $default_weight, $category, $category);
-        $date_result = db_query(db_rewrite_sql("SELECT n.nid, n.title, if((w.weight IS NULL), %d, w.weight) as weight, n.sticky, n.created FROM {node} n INNER JOIN {term_node} tn ON (n.nid = tn.nid AND n.vid = tn.vid) LEFT JOIN {faq_weights} w ON n.nid = w.nid AND w.tid = '%d' WHERE n.type='faq' AND n.status = 1 AND tn.tid = '%d' ORDER BY n.sticky DESC, n.created ASC", "n", "nid"), $default_weight, $category, $category);
       }
     }
 
 
     while ($node = db_fetch_object($result)) {
-      $title = (drupal_strlen($node->title) <= 64) ? $node->title : substr_replace($node->title, "...", 63);
-      $options[$node->nid] = $title;
-      $order .= "$node->nid,";
+      $options[$node->nid] = $node->title;
     }
-    $order = rtrim($order, ",");
 
-    while ($node = db_fetch_object($date_result)) {
-      $date_options[$node->nid] = $node->title;
-      $date_order .= "$node->nid,";
-    }
-    $date_order = rtrim($date_order, ",");
-
-    $form['weight']['faq_node_order'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $order,
-    );
-    $form['weight']['faq_node_date_order'] = array(
-      '#type' => 'hidden',
-      '#default_value' => $date_order,
-    );
     $form['weight']['faq_category'] = array(
       '#type' => 'value',
       '#value' => $category,
     );
 
-    // Can't generate these links using l() - it doesn't allow an empty
-    // fragment.
-    $asc = '<a href="#" onclick="faq_order_by_date(\'ASC\');">'. t('ascending') .'</a>';
-    $desc = '<a href="#" onclick="faq_order_by_date(\'DESC\');">'. t('descending') .'</a>';
+    // Show table ordering form.
+    $form['order_no_cats']['#tree'] = TRUE;
+    $form['order_no_cats']['#theme'] = 'faq_draggable_question_order_table';
 
-    $form['weight']['order_no_cats'] = array(
-      '#type' => 'select',
-      '#title' => t('Question Order'),
-      '#description' => t("This determines the order of the questions and answers on the FAQ page.  Just select one or more questions and use the arrows to change their position in the list.  You can also order the list by the question creation date !desc or !asc.", array('!desc' => $desc, '!asc' => $asc)),
-      '#options' => $options,
-      '#multiple' => TRUE,
-      '#size' => min(20, count($options)),
-    );
+    $i = 0;
+    foreach ($options as $nid => $title) {
+      $form['order_no_cats'][$i]['nid'] = array('#type' => 'hidden', '#value' => $nid);
+      $form['order_no_cats'][$i]['title'] = array('#value' => $title);
+      $form['order_no_cats'][$i]['sort'] = array('#type' => 'weight', '#delta' => count($options), '#default_value' => $i);
+      $i++;
+    }
 
-    $form['weight']['move_up'] = array(
-      '#type' => 'markup',
-      '#value' => '<input type="button" onclick="faq_move_selected_item_up();"
-      value="&uarr;" class="faq-arrow"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
-    );
-
-    $form['weight']['move_down'] = array(
-      '#type' => 'markup',
-      '#value' => '<input type="button" onclick="faq_move_selected_item_down();"
-      value="&darr;" class="faq-arrow"/><br />',
-    );
-
-    $form['update']['attach'] = array(
+    $form['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Save order'),
       '#weight' => 3,
       '#attributes' => array('onclick' => 'faq_update_order();'),
-      '#submit' => array('faq_weight_settings_reorder_form_submit'),
+      '#submit' => array('faq_order_settings_reorder_form_submit'),
     );
   }
 
 
   return $form;
 }
-
-/**
- * Function saves the options set by the user in the FAQ Settings - General tab.
- *
- * @param $form
- *   Array, containing the form structure.
- * @param &$form_state
- *   $form_state['values'] stores the submitted values from the form.
- */
-function faq_general_settings_form_submit($form, &$form_state) {
-  if ($form_state['values']['op'] == t('Save configuration')) {
-
-    variable_set('faq_title', $form_state['values']['faq_title']);
-    variable_set('faq_description', $form_state['values']['faq_description']);
-    variable_set('faq_description_format', $form_state['values']['format']);
-
-    drupal_set_message(t('Configuration has been updated.'));
-  }
-}
-
 
 /**
  * Function set the rebuild of the form in the FAQ Settings - Weight tab.
@@ -470,7 +444,7 @@ function faq_general_settings_form_submit($form, &$form_state) {
  *   'redirect' key: when it is set to TRUE, the form will be rebuilt from
  *   scratch and displayed on screen.
  */
-function faq_weight_settings_choose_cat_form_submit($form, &$form_state) {
+function faq_order_settings_choose_cat_form_submit($form, &$form_state) {
   $form_state['rebuild'] = TRUE;
 }
 
@@ -482,24 +456,29 @@ function faq_weight_settings_choose_cat_form_submit($form, &$form_state) {
  * @param &$form_state
  *   $form_state['values'] stores the submitted values from the form.
  */
-function faq_weight_settings_reorder_form_submit($form, &$form_state) {
-  if ($form_state['values']['op'] == t('Save order')) {
+function faq_order_settings_reorder_form_submit($form, &$form_state) {
+  if ($form_state['values']['op'] == t('Save order') && !empty($form_state['values']['order_no_cats'])) {
 
-    $order = explode(",", $form_state['values']['faq_node_order']);
-    switch ($GLOBALS['db_type']) {
-      case 'mysql':
-      case 'mysqli':
-        foreach ($order as $index => $nid) {
-          $result = db_query("REPLACE INTO {faq_weights} (tid, nid, weight) VALUES('%d', '%d', '%d')", $form_state['values']['faq_category'], $nid, $index);
-        }
-        break;
+    foreach ($form_state['values']['order_no_cats'] as $i => $faq) {
+      $nid = $faq['nid'];
+      $index = $faq['sort'];
+      $result = db_query("DELETE FROM {faq_weights} WHERE tid = %d AND nid = %d", $form_state['values']['faq_category'], $nid);
+      $result = db_query("INSERT INTO {faq_weights} (tid, nid, weight) VALUES(%d, %d, %d)", $form_state['values']['faq_category'], $nid, $index);
 
-      case 'pgsql':
-        foreach ($order as $index => $nid) {
-          $result = db_query("DELETE FROM {faq_weights} WHERE tid = '%d' AND nid = '%d'", $form_state['values']['faq_category'], $nid);
-          $result = db_query("INSERT INTO {faq_weights} (tid, nid, weight) VALUES('%d', '%d', '%d')", $form_state['values']['faq_category'], $nid, $index);
+      // If node translation module enabled, update order of the translation
+      // node counterparts.
+      if (module_exists('translation')) {
+        $node = node_load($nid);
+        if ($node->tnid) {
+          $translations = translation_node_get_translations($node->tnid);
+          if (!empty($translations)) {
+            foreach ($translations as $language => $tnode) {
+              $result = db_query("DELETE FROM {faq_weights} WHERE tid = %d AND nid = %d", $form_state['values']['faq_category'], $tnode->nid);
+              $result = db_query("INSERT INTO {faq_weights} (tid, nid, weight) VALUES(%d, %d, %d)", $form_state['values']['faq_category'], $tnode->nid, $index);
+            }
+          }
         }
-        break;
+      }
     }
 
     drupal_set_message(t('Configuration has been updated.'));

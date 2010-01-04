@@ -1,5 +1,5 @@
 <?php
-// $Id: faq.install,v 1.1.4.16.2.22 2008/12/30 16:45:53 snpower Exp $
+// $Id: faq.install,v 1.1.4.16.2.28 2009/11/29 21:50:34 snpower Exp $
 
 /**
  * @file
@@ -14,22 +14,22 @@
  */
 function faq_schema() {
   $schema['faq_weights'] = array(
-    'description' => t('A table containing the weight of each faq node by category.'),
+    'description' => 'A table containing the weight of each faq node by category.',
     'fields' => array(
-      'tid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => t('The primary identifier for a term or category.  This will be 0 for non-categorized nodes.')),
-      'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => t('The primary identifier for a node.')),
-      'weight' => array('type' => 'int', 'size' => 'tiny', 'not null' => TRUE, 'default' => 0, 'description' => t('A number representing the weight of a node.  Nodes with lower weight values will appear above those with higher weight values.')),
+      'tid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'The primary identifier for a term or category.  This will be 0 for non-categorized nodes.'),
+      'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'The primary identifier for a node.'),
+      'weight' => array('type' => 'int', 'size' => 'tiny', 'not null' => TRUE, 'default' => 0, 'description' => 'A number representing the weight of a node.  Nodes with lower weight values will appear above those with higher weight values.'),
     ),
     'primary key' => array('nid', 'tid'),
   );
 
   $schema['faq_questions'] = array(
-    'description' => t('A table containing the long question text of each faq node revision.'),
+    'description' => 'A table containing the long question text of each faq node revision.',
     'fields' => array(
-      'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => t('The primary identifier for a node.')),
-      'vid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => t('The primary identifier for a node revision.')),
-      'question' => array('type' => 'text', 'size' => 'normal', 'not null' => TRUE, 'description' => t('The faq short question text.')),
-      'detailed_question' => array('type' => 'text', 'size' => 'normal', 'not null' => TRUE, 'description' => t('The faq long question text.')),
+      'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'The primary identifier for a node.'),
+      'vid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'The primary identifier for a node revision.'),
+      'question' => array('type' => 'text', 'size' => 'normal', 'not null' => TRUE, 'description' => 'The faq short question text.'),
+      'detailed_question' => array('type' => 'text', 'size' => 'normal', 'not null' => TRUE, 'description' => 'The faq long question text.'),
     ),
     'primary key' => array('nid', 'vid'),
   );
@@ -45,6 +45,7 @@ function faq_schema() {
  */
 function faq_install() {
   drupal_install_schema('faq');
+  variable_set('node_type_faq', array('status'));
 }
 
 /**
@@ -54,38 +55,41 @@ function faq_install() {
  */
 function faq_uninstall() {
   // Delete the variables we created.
-  variable_del('faq_display');
-  variable_del('faq_back_to_top');
-  variable_del('faq_use_categories');
-  variable_del('faq_category_display');
-  variable_del('faq_block_recent_faq_count');
-  variable_del('faq_block_random_faq_count');
-  variable_del('faq_question_length');
-  variable_del('faq_use_teaser');
-  variable_del('faq_more_link');
-  variable_del('faq_show_node_links');
+  // General settings.
+  variable_del('faq_title');
   variable_del('faq_description');
   variable_del('faq_description_format');
-  variable_del('faq_group_questions_top');
-  variable_del('faq_hide_child_terms');
-  variable_del('faq_show_term_page_children');
-  variable_del('faq_answer_category_name');
+  // Questions page.
+  variable_del('faq_display');
   variable_del('faq_question_listing');
   variable_del('faq_qa_mark');
   variable_del('faq_question_label');
   variable_del('faq_answer_label');
-  variable_del('faq_category_listing');
-  variable_del('faq_count');
-  variable_del('faq_omit_vocabulary');
-  variable_del('faq_enable_term_links');
+  variable_del('faq_question_length');
+  variable_del('faq_hide_qa_accordion');
+  variable_del('faq_show_expand_all');
+  variable_del('faq_use_teaser');
+  variable_del('faq_show_node_links');
+  variable_del('faq_back_to_top');
   variable_del('faq_disable_node_links');
   variable_del('faq_default_sorting');
-
-  // Remove all FAQ nodes.
-  $result = db_query("SELECT nid FROM {node} WHERE type = 'faq'");
-  while ($obj = db_fetch_object($result)) {
-    node_delete($obj->nid);
-  }
+  // Categories page.
+  variable_del('faq_use_categories');
+  variable_del('faq_category_display');
+  variable_del('faq_category_listing');
+  variable_del('faq_category_hide_qa_accordion');
+  variable_del('faq_count');
+  variable_del('faq_answer_category_name');
+  variable_del('faq_group_questions_top');
+  variable_del('faq_hide_child_terms');
+  variable_del('faq_show_term_page_children');
+  variable_del('faq_omit_vocabulary');
+  variable_del('faq_enable_term_links');
+  // Block settings.
+  variable_del('faq_block_recent_faq_count');
+  variable_del('faq_block_random_faq_count');
+  // Deprecated.
+  variable_del('faq_more_link');
 
   drupal_uninstall_schema('faq');
 
@@ -107,7 +111,7 @@ function faq_uninstall() {
  */
 function faq_update_1() {
   $schema['faq_weights'] = array(
-    'description' => t('A table containing the weight of each faq node by category.'),
+    'description' => 'A table containing the weight of each faq node by category.',
     'fields' => array(
       'tid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
       'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
@@ -133,11 +137,11 @@ function faq_update_1() {
  */
 function faq_update_2() {
   $schema['faq_questions'] = array(
-    'description' => t('A table containing the long question text of each faq node revision.'),
+    'description' => 'A table containing the long question text of each faq node revision.',
     'fields' => array(
-      'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => t('The primary identifier for a node.')),
-      'vid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => t('The primary identifier for a node revision.')),
-      'question' => array('type' => 'text', 'size' => 'normal', 'not null' => TRUE, 'description' => t('The faq long question text.')),
+      'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'The primary identifier for a node.'),
+      'vid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'description' => 'The primary identifier for a node revision.'),
+      'question' => array('type' => 'text', 'size' => 'normal', 'not null' => TRUE, 'description' => 'The faq long question text.'),
     ),
     'primary key' => array('nid', 'vid'),
   );

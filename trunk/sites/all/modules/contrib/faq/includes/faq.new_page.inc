@@ -1,5 +1,5 @@
 <?php
-// $Id: faq.new_page.inc,v 1.1.2.6 2008/12/30 17:06:49 snpower Exp $
+// $Id: faq.new_page.inc,v 1.1.2.7 2009/11/17 23:00:52 snpower Exp $
 
 /**
  * @file
@@ -17,7 +17,7 @@ function template_preprocess_faq_new_page(&$variables) {
   $data = $variables['data'];
 
   foreach ($data as $node) {
-    $items[] = l($node->question, "node/$node->nid");
+    $items[] = l($node->title, "node/$node->nid");
   }
 
   $list_style = variable_get('faq_question_listing', 'ul');
@@ -125,7 +125,7 @@ function template_preprocess_faq_category_new_page(&$variables) {
     if (!$hide_child_terms) {
       $count++;
     }
-    $nodes[] = l($node->question, "node/$node->nid");
+    $nodes[] = l($node->title, "node/$node->nid");
   }
   $variables['question_list'] = $nodes;
   $variables['question_list_style'] = variable_get('faq_question_listing', 'ul');
