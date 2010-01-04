@@ -1,5 +1,6 @@
 // vim:shiftwidth=2:tabstop=2:expandtab
 
+// FIXME: polyline is still a global variable
 
 // helper function declarations:
 
@@ -115,9 +116,7 @@ function string2vertices( strcoords ) {
 
 // end helper function declarations
 
-// This script should take its whole input from the Drupal.settings.gmap_poly_widgets object
-//   This object will be an array
-//   At some point, we will iterate over it like this:
+// iterate over all widgets in page: 
 for ( i = 0; i < Drupal.settings.gmap_poly_widgets.length; i = i + 1 ) {
   var s = Drupal.settings.gmap_poly_widgets[i];
   // initialize the google map object for the div
