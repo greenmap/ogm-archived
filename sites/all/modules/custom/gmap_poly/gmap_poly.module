@@ -110,7 +110,9 @@ function gmap_poly_widget_info() {
  *   the form item for a single element for this field
  */
 function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
-  drupal_add_js(drupal_get_path('module', 'gmap_poly') .'/gmap_poly.js', 'module', 'footer');
+  $gmap_poly_modpath = drupal_get_path('module', 'gmap_poly');
+  drupal_add_js($gmap_poly_modpath .'/gmap_poly.js', 'module', 'footer');
+  drupal_add_css($gmap_poly_modpath . '/gmap_poly_style.css');
   _gmap_doheader();
   // need to get lat, lon & center for map
   $node = $form['#node'];
@@ -121,44 +123,38 @@ function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
   $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $nodegid;
   $groupnode = node_load($gid);
 
-  // pass map center  to js
-  drupal_add_js(array(
-    'gmap_poly_group_map' => array(
-      'lat' => $groupnode->location['latitude'],
-      'lng' => $groupnode->location['longitude'],
-      'zoom' => $groupnode->field_map_zoom[0]['value'],
-      )
-    ),
-    'setting'
-  );
-
   // pass the right settings widget div names to be used by JS
   $mapdiv = 'gmap_poly_map_widget_'. $delta ;
-  $coordiv = 'gmap_poly_coordinates_'. $delta;
 
   $fieldname = $field['field_name'];
   $cssfieldname = str_replace('_', '-', $fieldname);
   $textareadiv = 'edit-'. $cssfieldname .'-'. $delta .'-value';
 
-  drupal_add_js(array(
-    'gmap_poly_widget_'. $delta => array(
-      'mapDiv' => $mapdiv,
-      'coorDiv' => $coordiv,
-      'fieldDiv' => $textareadiv,
-      )
-    ),
-    'setting'
+  $gmap_poly_js_settings = array(
+    'gmap_poly_widgets' =>
+      array( $delta => array(
+                         'mapDiv' => $mapdiv, 'fieldDiv' => $textareadiv,
+                         'gmap_poly_group_map' => array(
+                           'lat' => $groupnode->location['latitude'],
+                           'lng' => $groupnode->location['longitude'],
+                           'zoom' => $groupnode->field_map_zoom[0]['value'],
+                         ),
+                       ),
+      ),
   );
+
+  drupal_add_js($gmap_poly_js_settings, 'setting');
 
   switch($field['widget']['type']) {
     case 'gmap_poly_line_widget':
     $element['value'] = array(
-        '#type' => 'textarea',
         '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL,
-        //FIXME: when editing works, enable this line
-        //'#type' => 'hidden',
-        '#prefix' => '<div id="'. $mapdiv .'" style="width: auto; height: 450px; "></div><div class="gmap_poly_clear"><a href="javascript:void(0)" onClick="clearPoly()">Start Over</a></div><div id="'. $coordiv .'">',
-        '#suffix' => '</div>',
+        '#type' => 'hidden',
+        '#prefix' =>
+          //the map
+          '<div id="'. $mapdiv .'" style="width: auto; height: 450px; "></div>'.
+          // some helpful buttons
+          gmap_poly_controls($delta),
       );
 
       return $element;
@@ -168,6 +164,20 @@ function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
   //     (code for this widget)
       break;
   }
+}
+
+function gmap_poly_controls($delta = 0) {
+    //<span class="gmap_poly_toggledraw" id="gmap_poly_controls_toggledraw_'. $delta .'>
+  return '
+    <div class="gmap_poly_controls" id="gmap_poly_controls_'. $delta .'"
+    <span class="gmap_poly_toggledraw">
+      <a href="javascript:void(0)" onClick="toggleUserDraw('. $delta .')">Toggle Drawing Tool On/Off</a>
+    </span>
+    &nbsp; &nbsp;
+    <span class="gmap_poly_clear">
+      <a href="javascript:void(0)" onClick="clearPoly('. $delta .')">Discard My Changes</a>
+    </span>
+  ';
 }
 
 /**

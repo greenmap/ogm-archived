@@ -1,45 +1,11 @@
-// (function () { // Begin closure to make contents private
-
 // vim:shiftwidth=2:tabstop=2:expandtab
 
-// Declare a few div ids that will be used later
-// TODO: Figure out a way to loop this for fields with multiple values
-var MapDivId = Drupal.settings.gmap_poly_widget_0.mapDiv;
-// FIXME: unused variable
-var MapCoordId = Drupal.settings.gmap_poly_widget_0.coorDiv;
-var MapFieldId = Drupal.settings.gmap_poly_widget_0.fieldDiv;
 
-var polymouseOver = false;
-var polyMissing = false;
-var polyline;
+// helper function declarations:
 
-// create a new GMap instance
-var mmap=new GMap2(document.getElementById(MapDivId));
-
-// Get the center point and zoom of the group map.
-var MapSettings = Drupal.settings.gmap_poly_group_map;
-
-var lat = MapSettings.lat;
-var lng = MapSettings.lng;
-var zoom = MapSettings.zoom;
-
-// change these into usable values
-zoom = parseInt(zoom);
-var center = new GLatLng(parseFloat(lat),parseFloat(lng));
-
-// pass settings to the map.
-mmap.setCenter(center, zoom);
-
-// add map controls
-mmap.addControl(new GLargeMapControl());
-mmap.addControl(new GMapTypeControl());
-
-var polylineCoordinates = document.getElementById(MapFieldId).value;
-
-function newPolyline( points ){
+function newPolyline( s, points ){
   // name the textarea
-  var textarea = document.getElementById(MapFieldId);
-  textarea.value = polylineCoordinates;
+  var textarea = document.getElementById(s.fieldDiv);
 
   //define the line
   if ( points ) {
@@ -50,47 +16,44 @@ function newPolyline( points ){
   }
 
   // add the line to the map
-  mmap.addOverlay(polyline);
+  s.map.addOverlay(polyline);
 
   // turn on line drawing
   polyline.enableDrawing();
-
+  s.drawing = 1;
 
   // Mouseover the the poly line
-  polyMouseoverListener = GEvent.addListener(polyline, "mouseover", function() {
-    polymouseOver = true;
+  var polyMouseoverListener = GEvent.addListener(polyline, "mouseover", function() {
+    s.polymouseOver = true;
     polyline.enableEditing(); // edit points are shown
   });
 
   // Mouse Out for the poly line
-  polyMouseoutListener = GEvent.addListener(polyline, "mouseout", function() {
-    polymouseOver = false;
+  var polyMouseoutListener = GEvent.addListener(polyline, "mouseout", function() {
+    s.polymouseOver = false;
     polyline.disableEditing();
   });
 
   // Mouse Out for the poly line
-  polyCancelineListener = GEvent.addListener(polyline, "cancelline", function() {
+  var polyCancelineListener = GEvent.addListener(polyline, "cancelline", function() {
     if (polyline.getVertexCount() <= 1) {
-      polyMissing = true;
+      s.polyMissing = true;
     }
+    s.drawing = 0;
+  });
 
+  var polyEndlineListener = GEvent.addListener(polyline, "endline", function() {
+    s.drawing = 0;
   });
 
   // this listener populates the textfield with the "output" coordinates variable.
-  polyLineUpdatedListener = GEvent.addListener(polyline,"lineupdated",function(){
+  var polyLineUpdatedListener = GEvent.addListener(polyline,"lineupdated", function() {
     var output = "";
     output = vertices2string(polyline);
     // write coordinates to the text area
     textarea.value = output;
   });
 };
-
-if ( polylineCoordinates ) {
-  newPolyline(string2vertices(polylineCoordinates));
-}
-else {
-  newPolyline();
-}
 
 function vertices2string (polyline) {
   var output = "";
@@ -113,7 +76,6 @@ function vertices2string (polyline) {
   }
   return output;
 }
-
 
 function string2vertices( strcoords ) {
   placemarks = strcoords.split(" ");
@@ -145,34 +107,92 @@ function string2vertices( strcoords ) {
   }
 }
 
-// single left click on the map
-GEvent.addListener(mmap, "click",function() {
-  if (polyMissing) {
-    polyMissing = false;
-    newPolyline();
-  }
-});
-
-
-// single right click on the map
-GEvent.addListener(mmap, "singlerightclick",function(a,b,overlay) {
-   // limit right click actions to the line.
-   if(polymouseOver) {
-    polyline.deleteVertex(overlay.index);
-  }
-});
-
-
-function clearPoly() {
-  mmap.removeOverlay(polyline);
-  newPolyline();
-};
-
-//})() // end closure
-
 //function is_array(value) {
 //  return value &&
 //    typeof value === 'object' &&
 //    value.constructor === Array;
 //}
 
+// end helper function declarations
+
+// This script should take its whole input from the Drupal.settings.gmap_poly_widgets object
+//   This object will be an array
+//   At some point, we will iterate over it like this:
+for ( i = 0; i < Drupal.settings.gmap_poly_widgets.length; i = i + 1 ) {
+  var s = Drupal.settings.gmap_poly_widgets[i];
+  // initialize the google map object for the div
+  s.map = new GMap2(document.getElementById(s.mapDiv));
+  s.polymouseOver = false;
+
+  // set the lat lng and zoom based on the first group map this node is part of
+  //requires: Drupal.settings.gmap_poly_widgets[i].gmap_poly_group_map
+  var lat = s.gmap_poly_group_map.lat;
+  var lng = s.gmap_poly_group_map.lng;
+  var zoom = s.gmap_poly_group_map.zoom;
+
+  zoom = parseInt(zoom);
+  var center = new GLatLng(parseFloat(lat),parseFloat(lng));
+
+  // pass settings to the map.
+  s.map.setCenter(center, zoom);
+
+  // add map controls
+  s.map.addControl(new GLargeMapControl());
+  s.map.addControl(new GMapTypeControl());
+
+  //requires: Drupal.settings.gmap_poly_widgets[i].MapFieldId
+  var polylineCoordinates = document.getElementById(s.fieldDiv).value;
+  s.original_coords = polylineCoordinates;
+  polylineInit(polylineCoordinates, s);
+}
+
+// parameter "s" should be passed an object from Drupal.settings.gmap_poly_widgets
+function polylineInit(coords, s) {
+  if ( coords ) {
+    newPolyline(s, string2vertices(coords));
+  }
+  else {
+    newPolyline(s);
+  }
+  // single left click on the map
+  GEvent.addListener(s.map, "click",function() {
+    if (s.polyMissing) {
+      s.polyMissing = false;
+      newPolyline(s);
+    }
+  });
+  // single right click on the map
+  GEvent.addListener(s.map, "singlerightclick",function(a,b,overlay) {
+     // limit right click actions to the line.
+     if(s.polymouseOver) {
+      polyline.deleteVertex(overlay.index);
+    }
+  });
+}
+
+//functions exposed to the user directly via onclick attributes:
+
+function clearPoly(delta) {
+  var s = Drupal.settings.gmap_poly_widgets[delta];
+  s.map.removeOverlay(polyline);
+  if ( s.original_coords ) {
+    newPolyline(s, string2vertices(s.original_coords));
+  }
+  else {
+    newPolyline(s);
+  }
+};
+
+function toggleUserDraw(delta) {
+  var s = Drupal.settings.gmap_poly_widgets[delta];
+  var toggleDivId = document.getElementById("gmap_poly_controls_" + delta);
+  var test = toggleDivId.getElementsByClassName("gmap_poly_toggledraw");
+  if ( s.drawing && polyline ) {
+    polyline.disableEditing();
+    s.drawing = 0;
+  }
+  else if (polyline) {
+    polyline.enableDrawing();
+    s.drawing = 1;
+  }
+}
