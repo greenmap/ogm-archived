@@ -133,6 +133,8 @@ function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
   $gmap_poly_js_settings = array(
     'gmap_poly_widgets' =>
       array( $delta => array(
+                         'delta' => $delta,
+                         'type' => $field['widget']['type'],
                          'mapDiv' => $mapdiv, 'fieldDiv' => $textareadiv,
                          'gmap_poly_group_map' => array(
                            'lat' => $groupnode->location['latitude'],
@@ -147,6 +149,7 @@ function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
 
   switch($field['widget']['type']) {
     case 'gmap_poly_line_widget':
+    case 'gmap_poly_area_widget':
     $element['value'] = array(
         '#default_value' => isset($items[$delta]['value']) ? $items[$delta]['value'] : NULL,
         '#type' => 'hidden',
@@ -156,12 +159,7 @@ function gmap_poly_widget(&$form, &$form_state, $field, $items, $delta = 0) {
           // some helpful buttons
           gmap_poly_controls($delta),
       );
-
       return $element;
-      break;
-
-    case 'gmap_poly_area_widget':
-  //     (code for this widget)
       break;
   }
 }
