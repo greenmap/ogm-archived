@@ -1,5 +1,5 @@
 <?php
-// $Id: faq-category-hide-answer.tpl.php,v 1.1.2.4 2008/12/21 18:58:26 snpower Exp $
+// $Id: faq-category-hide-answer.tpl.php,v 1.1.2.6 2009/10/26 03:19:44 snpower Exp $
 
 /**
  * @file
@@ -76,7 +76,7 @@ else {
   <?php endif; ?>
 
   <?php if (!empty($description)): ?>
-    <div class="faq-qa-description"><p><?php print $description ?></p></div>
+    <div class="faq-qa-description"><?php print $description ?></div>
   <?php endif; ?>
   <?php if (!empty($term_image)): ?>
     <div class="clear-block"></div>
@@ -94,7 +94,7 @@ else {
         (<?php print $subcat['count']; ?>)
       <?php endif; ?>
       <?php if (!empty($subcat['description'])): ?>
-      <div class="faq-qa-description"><p><?php print $subcat['description']; ?></p></div>
+      <div class="faq-qa-description"><?php print $subcat['description']; ?></div>
       <?php endif; ?>
       <div class="clear-block"></div>
       </li>
@@ -116,6 +116,7 @@ else {
   <div class="faq-dl-hide-answer">
   <?php if (count($nodes)): ?>
     <?php foreach ($nodes as $i => $node): ?>
+      <div class="faq-question-answer">
       <div class="faq-question faq-dt-hide-answer">
       <?php print $node['question']; ?>
       </div> <!-- Close div: faq-question faq-dt-hide-answer -->
@@ -126,6 +127,7 @@ else {
         <?php print $node['links']; ?>
       <?php endif; ?>
       </div> <!-- Close div: faq-answer faq-dd-hide-answer -->
+      </div> <!-- Close div: faq-question-answer -->
     <?php endforeach; ?>
   <?php endif; ?>
   </div> <!-- Close div: faq-dl-hide-answer -->

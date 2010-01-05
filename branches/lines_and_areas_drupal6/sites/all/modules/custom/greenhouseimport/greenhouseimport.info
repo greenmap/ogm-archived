@@ -1,6 +1,6 @@
 ; $Id$
 name = Greenhouse Import
-description = Import data from greenhouse
+description = Import data from greenmap.org
 package = GreenMap
 core = 6.x
 project = greenhouseimport
