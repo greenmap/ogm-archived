@@ -9,13 +9,29 @@ function newPolyline( s, points ){
   var textarea = document.getElementById(s.fieldDiv);
 
   //define the line
-  if ( points ) {
-    polyline = new GPolyline(points, "#000000", 5);
-    s.drawing = 0;
+  if ( s.type === 'gmap_poly_line_widget' ) {
+    if ( points ) {
+      polyline = new GPolyline(points, "#000000", 5);
+      s.drawing = 0;
+    }
+    else {
+      polyline = new GPolyline([], "#000000", 5);
+      s.drawing = 1;
+    }
+  }
+  else if ( s.type === 'gmap_poly_area_widget' ) {
+    if ( points ) {
+      polyline = new GPolygon(points, "#000000", 5);
+      s.drawing = 0;
+    }
+    else {
+      polyline = new GPolygon([], "#000000", 5);
+      s.drawing = 1;
+    }
   }
   else {
-    polyline = new GPolyline([], "#000000", 5);
-    s.drawing = 1;
+    // throw error, perhaps?
+    return;
   }
 
   // add the line to the map
@@ -119,7 +135,7 @@ function string2vertices( strcoords ) {
 
 // end helper function declarations
 
-// iterate over all widgets in page: 
+// iterate over all widgets in page:
 for ( i = 0; i < Drupal.settings.gmap_poly_widgets.length; i = i + 1 ) {
   var s = Drupal.settings.gmap_poly_widgets[i];
   // initialize the google map object for the div
