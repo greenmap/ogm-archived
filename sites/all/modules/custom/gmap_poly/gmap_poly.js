@@ -11,17 +11,20 @@ function newPolyline( s, points ){
   //define the line
   if ( points ) {
     polyline = new GPolyline(points, "#000000", 5);
+    s.drawing = 0;
   }
   else {
     polyline = new GPolyline([], "#000000", 5);
+    s.drawing = 1;
   }
 
   // add the line to the map
   s.map.addOverlay(polyline);
 
   // turn on line drawing
-  polyline.enableDrawing();
-  s.drawing = 1;
+  if ( s.drawing ) {
+    polyline.enableDrawing();
+  }
 
   // Mouseover the the poly line
   var polyMouseoverListener = GEvent.addListener(polyline, "mouseover", function() {
