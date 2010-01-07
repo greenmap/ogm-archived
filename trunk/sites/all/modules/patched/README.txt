@@ -3,6 +3,11 @@ The following changes have been made to third-party modules for this site.
 Patches have also been applied to Drupal core for this site.  See
 CHANGELOG.txt in the site document root for details.
 
+gmap module:
+  - small patch to views handler which allows passing macro settings from the
+    og node so that map has correct centre & zoom level; see
+    gmap/gmap_plugin_style_gmap.patch (TODO: submit to drupal.org)
+
 recaptcha module:
   - properly pass the language code pt-BR to the reCAPTCHA API
     http://drupal.org/node/356348
@@ -54,7 +59,9 @@ multiselect module:
 
 taxonomy_image.module:
   - translate img alt attribute http://drupal.org/node/642950
-  - fetch img from filesystem, not over http, to calculate img size http://drupal.org/node/438378#comment-2280398
+  - fetch img from filesystem, not over http, to calculate img size
+    http://drupal.org/node/438378#comment-2280398
 
 mobile_tools module
-  - removed the awful cache clear that was being run on every page http://drupal.org/node/642176
+  - removed the awful cache clear that was being run on every page
+    http://drupal.org/node/642176
