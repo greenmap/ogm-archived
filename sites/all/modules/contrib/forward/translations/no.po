@@ -1,4 +1,4 @@
-# $Id: no.po,v 1.1.2.2 2008/12/22 13:35:37 johnalbin Exp $
+# $Id: no.po,v 1.1 2008/12/22 13:31:19 johnalbin Exp $
 #
 # Norwegian translation of Drupal (general)
 # Copyright YEAR NAME <EMAIL@ADDRESS>
