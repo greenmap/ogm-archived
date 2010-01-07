@@ -32,6 +32,7 @@ function sync_open_mysql_connect($db_user, $db_pass, $db_name, $db_server = 'loc
       mysql_close($link); // close connect
     return FALSE;
   }
+  mysql_set_charset('utf8', $link);
   return $link;
 }
 
