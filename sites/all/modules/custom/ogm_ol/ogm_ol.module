@@ -3,6 +3,7 @@
 /**
  * Implementation of hook_form_alter().
 */
+
 function ogm_ol_form_alter(&$form, $form_state, $form_id) {
   if ($form_id == 'green_route_node_form') {
 
@@ -14,36 +15,14 @@ function ogm_ol_form_alter(&$form, $form_state, $form_id) {
     }
     $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $nodegid;
     $groupnode = node_load($gid);
-
-
-     // hardcode a delta, to avoid multiple values
-    $delta = 0;
-
-    // pass the right settings widget div names to be used by JS
-    $mapdiv = 'openlayers-cck-widget-map-field_test_poly';
-    $fieldname = 'field_test_poly';
-    $cssfieldname = str_replace('_', '-', $fieldname);
-    $textareadiv = 'edit-'. $cssfieldname .'-'. $delta .'-value';
-    $ogm_ol_js_settings = array(
-      'ogm_ol' =>
-        array(
-          $delta => array(
-            'delta' => $delta,
-            'type' => $form[$fieldname]['#type'],
-            'mapDiv' => $mapdiv,
-            'fieldDiv' => $textareadiv,
-            'ogm_ol_group_map' => array(
-              'lat' => $groupnode->location['latitude'],
-              'lng' => $groupnode->location['longitude'],
-              'zoom' => $groupnode->field_map_zoom[0]['value'],
-          ),
-        ),
-      ),
+    $groupmap_settings = array(
+      'lat' => $groupnode->location['latitude'],
+      'lon' => $groupnode->location['longitude'],
+      'zoom' => $groupnode->field_map_zoom[0]['value'],
+      'maptype' => $groupnode->field_gmap_type[0]['value'],
     );
-    drupal_add_js($ogm_ol_js_settings, 'setting');
-//     $ogm_ol_modpath = drupal_get_path('module', 'ogm_ol');
-//     drupal_add_js($ogm_ol_modpath .'/ogm_ol.js', 'module', 'footer');
-
+    // set a variable to be used by the map_alter hook.
+    variable_set('ogm_ol_groupmap_settings', $groupmap_settings);
   }
 }
 
@@ -51,17 +30,43 @@ function ogm_ol_form_alter(&$form, $form_state, $form_id) {
  * Implementation of hook_openlayers_map_alter().
  */
 function ogm_ol_openlayers_map_alter(&$map = array()) {
-// dsm($map);
-  $lat = "40.728078";
-  $lon = "-73.997040";
+  // pull in the group map data.
+  $groupmap = variable_get('ogm_ol_groupmap_settings', NULL);
 
-//   $lat = "800000";
-//   $lon = "10000000";
+  // determine the proper gmap type string.
+  $default_layer = ogm_ol_gmap_maptype($groupmap['maptype']);
 
-  $zoom = "5";
-
-  $map['center']['lat'] = $lat;
-  $map['center']['lon'] = $lon;
+  // since the Drupal OL implementatin currently has trouble with
+  // zooms higher tha 15, zoom out to 15 if higher than that.
+  if ($groupmap['zoom'] > 15) {
+    $zoom = 15;
+  }
+  else {
+    $zoom = $groupmap['zoom'];
+  }
+  // set values for the map about to be displayed.
+  $map['center']['lat'] = $groupmap['lat'];
+  $map['center']['lon'] = $groupmap['lon'];
   $map['center']['zoom'] = $zoom;
-// dsm($map);
+  $map['default_layer'] = $default_layer;
+
+  // remove the variable to keep it from being used on another map.
+  variable_del('ogm_ol_groupmap_settings');
+}
+
+/**
+ * Helper function to change OGM map type to OL default layer
+ */
+function ogm_ol_gmap_maptype($groupmaptype) {
+  // currently the CCK field that defines this only supports Sattelite and Street
+  // this function will need to be updated if that ever changes --ncm
+  switch ($groupmaptype) {
+    case 'Map':
+      $layer = 'openlayers_layers_google_street';
+      break;
+    case 'Satellite':
+      $layer = 'openlayers_layers_google_satellite';
+      break;
+  }
+  return $layer;
 }
