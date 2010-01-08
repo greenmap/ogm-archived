@@ -1,0 +1,9 @@
+; $Id$
+name = ogm_ol
+description = Helper module for Open GreenMap and Open Layers
+package = GreenMap
+dependencies[] = content
+dependencies[] = group_map
+dependencies[] = openlayers_cck
+
+core = 6.x

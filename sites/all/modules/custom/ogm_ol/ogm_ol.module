@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * Implementation of hook_form_alter().
+*/
+function ogm_ol_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'green_route_node_form') {
+
+    // need to get lat, lon & center for map
+    $node = $form['#node'];
+    if ( is_array($node->og_groups) ) {
+      // "current()" returns the first element
+      $nodegid = current($node->og_groups);
+    }
+    $gid = $_GET['gids'][0] ? $_GET['gids'][0] : $nodegid;
+    $groupnode = node_load($gid);
+
+
+     // hardcode a delta, to avoid multiple values
+    $delta = 0;
+
+    // pass the right settings widget div names to be used by JS
+    $mapdiv = 'openlayers-cck-widget-map-field_test_poly';
+    $fieldname = 'field_test_poly';
+    $cssfieldname = str_replace('_', '-', $fieldname);
+    $textareadiv = 'edit-'. $cssfieldname .'-'. $delta .'-value';
+    $ogm_ol_js_settings = array(
+      'ogm_ol' =>
+        array(
+          $delta => array(
+            'delta' => $delta,
+            'type' => $form[$fieldname]['#type'],
+            'mapDiv' => $mapdiv,
+            'fieldDiv' => $textareadiv,
+            'ogm_ol_group_map' => array(
+              'lat' => $groupnode->location['latitude'],
+              'lng' => $groupnode->location['longitude'],
+              'zoom' => $groupnode->field_map_zoom[0]['value'],
+          ),
+        ),
+      ),
+    );
+    drupal_add_js($ogm_ol_js_settings, 'setting');
+//     $ogm_ol_modpath = drupal_get_path('module', 'ogm_ol');
+//     drupal_add_js($ogm_ol_modpath .'/ogm_ol.js', 'module', 'footer');
+
+  }
+}
+
+/**
+ * Implementation of hook_openlayers_map_alter().
+ */
+function ogm_ol_openlayers_map_alter(&$map = array()) {
+// dsm($map);
+  $lat = "40.728078";
+  $lon = "-73.997040";
+
+//   $lat = "800000";
+//   $lon = "10000000";
+
+  $zoom = "5";
+
+  $map['center']['lat'] = $lat;
+  $map['center']['lon'] = $lon;
+  $map['center']['zoom'] = $zoom;
+// dsm($map);
+}
