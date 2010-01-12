@@ -164,6 +164,8 @@ function dashboard_import_export($nid) {
   if (user_access('export sites') || user_access('import sites')) {
     $content .= "<p><strong>". t("Character Encoding Notes") ."</strong></p>";
     $content .= "<p>". t('Text in these files is encoding using the Unicode character set UTF-8.  In particular, you may need to set your spreadsheet or GIS software to open the <abbr title="Comma Separated Variable">CSV</abbr> file using UTF-8.  Please make sure the CSV file you wish to import also uses the character set UTF-8.') ."</p>";
+    $content .= "<p><strong>". t("Tutorial") ."</strong></p>";
+    $content .= "<p>". t('Learn how to properly open the CSV and KML for use in spreadsheets or Geographical Information Systems (GIS) by <a href="http://GreenMap.org/greenhouse/files/OGM_export_tutorial_1-2010.pdf">accessing our tutorial</a>.') ."</p>";
   }
 
   return $content;
