@@ -15,7 +15,6 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
         $form['taxonomy']['primaryterm']['#title'] = t('Primary Icon');
         // make the primary icon field required
         $form['taxonomy']['primaryterm']['#required'] = 1;
-
         $vid = 1;
 
         /*
@@ -31,13 +30,13 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
 
         // change title of secondary icons field
         $form['taxonomy'][$vid]['#title'] = t('Secondary Icons');
-        $form['taxonomy'][$vid]['#description'] = t('Choose up to seven additional icons. Let people know about the site’s other features.
-');
+        $form['taxonomy'][$vid]['#description'] = t('Choose up to seven additional icons. Let people know about the site’s other features.');
 
         // use optgroups to make genres and categories non-selectable
         if (isset($form['taxonomy'][$vid])) {
           $tree = taxonomy_get_tree($vid);
           $parents = array();
+          $parents_pids = array();
           $grandparents = array();
           $options[''] = $form['taxonomy'][$vid]['#options'][''];
           $i = 0;
@@ -49,6 +48,7 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
               if (isset($grandparents[$ptid])) {
                 $parents[$term->tid] = $tt_name;
                 $options[$grandparents[$ptid]]['-- '.$tt_name] = array();
+                $parents_pids[$term->tid] = $ptid;
               }
               // third level items
               else {
@@ -58,7 +58,7 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
                   }
                   $obj = new stdClass();
                   $obj->option[$term->tid] = $tt_name;
-                  $options[$options_grandparents]['-- '.$parents[$ptid]][] = $obj;
+                  $options[$grandparents[$parents_pids[$ptid]]]['-- '.$parents[$ptid]][$term->tid] = $obj;
                 }
               }
             } else {
@@ -68,6 +68,8 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
             }
           }
           $form['taxonomy'][$vid]['#options'] = $options;
+          // use the same options for the primary term dropdown, since the same optgroups apply there too
+          $form['taxonomy']['primaryterm']['#options'] = $options;
         }
 
       }
@@ -81,6 +83,9 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
  * that it's the primary icon that is set as the marker icon
  */
 function primary_icon_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type != 'green_site') {
+    return;
+  }
   switch ($op) {
     case 'insert':
     case 'update':
@@ -88,8 +93,7 @@ function primary_icon_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       $primaryterm = primary_term_get_term($node->vid);
       if (! empty($primaryterm)) {
         $marker = '';
-        // as a shortcut (not sure if valid) just going to get the marker from
-        // the gmap_taxonomy_term table for this term
+        // get the marker from the gmap_taxonomy_term table for this term
         $result = db_query('SELECT marker FROM {gmap_taxonomy_term} WHERE tid = %d', $primaryterm);
         if ($m = db_fetch_object($result)) {
           $marker = $m->marker;
@@ -97,7 +101,7 @@ function primary_icon_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         else {
           form_set_error('primaryterm', t('You must choose a valid Primary Icon.'));
         }
-        if (!empty($marker)) {
+        if ($marker) {
           db_query('DELETE FROM {gmap_taxonomy_node} WHERE nid = %d', $node->nid);
           db_query("INSERT INTO {gmap_taxonomy_node} (nid, vid, tid, marker) VALUES (%d, %d, %d, '%s')",
               $node->nid, $node->vid, $primaryterm, $marker);
@@ -105,9 +109,20 @@ function primary_icon_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       }
     break;
     case 'validate':
-      // print '<pre>'.print_r($node, TRUE).'</pre>'; die();
-      if (isset($node->primaryterm) && !$node->primaryterm) {
-        form_set_error('primaryterm', t('You must choose a Primary Icon.'));
+      if (isset($node->primaryterm)) {
+        if (!$node->primaryterm) {
+          form_set_error('primaryterm', t('You must choose a Primary Icon.'));
+        }
+        else {
+          $marker = '';
+          $result = db_query('SELECT marker FROM {gmap_taxonomy_term} WHERE tid = %d', $node->primaryterm);
+          if ($m = db_fetch_object($result)) {
+            $marker = $m->marker;
+          }
+          else {
+            form_set_error('primaryterm', t('You must choose a valid Primary Icon.'));
+          }
+        }
       }
     break;
   }

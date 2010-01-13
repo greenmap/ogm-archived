@@ -189,16 +189,31 @@ function onMapChange_case0($args = array()) {
   $maxZoom = 0;
   $data = array();
 
-  $q = "SELECT DISTINCT(n.nid), n.title,l.country, l.latitude, l.longitude , m.marker, m.tid, og.nid AS og_nid
-     FROM {node} AS n
-     INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid INNER JOIN {location} AS l  ON  li.lid = l.lid
-     INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
-     LEFT JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid
-     LEFT JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
-     LEFT JOIN {og}   AS og  ON  n2.nid = og.nid
-
-     WHERE (l.latitude != 0 OR l.longitude != 0) AND n.type ='green_site' AND n.status = '1' AND ( (oa.is_public = '1' ) AND n2.status = '1' AND og.og_private = '0')
-     ORDER BY og_nid DESC";
+  $q = "SELECT
+    DISTINCT(n.nid)
+    , n.title
+    , l.country
+    , l.latitude
+    , l.longitude
+    , m.marker
+    , m.tid
+    , og.nid AS og_nid
+  FROM
+    {node} AS n
+    INNER JOIN {location_instance} AS li ON n.vid = li.vid AND n.nid = li.nid
+    INNER JOIN {location} AS l  ON  li.lid = l.lid
+    INNER JOIN {gmap_taxonomy_node} m ON n.nid = m.nid
+    LEFT JOIN {og_ancestry}   AS oa  ON  n.nid = oa.nid
+    LEFT JOIN {node}   AS n2  ON  oa.group_nid = n2.nid
+    LEFT JOIN {og}   AS og  ON  n2.nid = og.nid
+  WHERE
+    (l.latitude != 0 OR l.longitude != 0)
+    AND n.type ='green_site'
+    AND n.status = '1'
+    AND ( (oa.is_public = '1' ) AND n2.status = '1' AND og.og_private = '0')
+  ORDER BY
+    og_nid DESC,
+    RAND()";
 
   $prevousNid = null;
   $mapcid = 'gmap_marker:homepage';
@@ -537,7 +552,7 @@ function onMapChange_casenearbybounds($args = array()) {
   $lat_range = earth_latitude_range($lon, $lat, $distance_meters);
   $lon_range = earth_longitude_range($lon, $lat, $distance_meters);
 
-$r ='<?xml version="1.0"?>
+$r ='<?xml version="1.0"?'.'>
   <bounds>
   <bound name="sw" lat="'. $lat_range[0] .'" lng="'. $lon_range[0] .'"/>
   <bound name="nw" lat="'. $lat_range[1] .'" lng="'. $lon_range[0] .'"/>

@@ -1,7 +1,8 @@
 <?php
-// $Id: forward.install,v 1.4.2.2 2009/03/16 15:08:13 seanr Exp $
+// $Id: forward.install,v 1.4.2.4 2009/09/21 15:43:44 seanr Exp $
 function forward_install() {
   drupal_install_schema('forward');
+  variable_set('forward_theme_template', 1);
 }
 
 function forward_uninstall() {
@@ -15,7 +16,7 @@ function forward_schema() {
   $schema['forward_log'] = array(
     'fields' => array(
       'path'      => array('type' => 'varchar', 'not null' => TRUE, 'default' => '<front>', 'length' => 255),
-      'type'      => array('type' => 'varchar', 'not null' => TRUE, 'default' => 0, 'length' => 8),
+      'type'      => array('type' => 'varchar', 'not null' => TRUE, 'length' => 8),
       'timestamp' => array('type' => 'int', 'not null' => TRUE, 'default' => 0)
     ),
     'indexes' => array(
