@@ -34,20 +34,6 @@ function group_map_request_join(){
 }
 
 /**
- *  if we figure out a way to hide the Country field from the UI, we can do
- *  away with this function
- */
-function _group_map_form_hide_location_fields(&$form, $hide_fields) {
-  foreach ( $form['locations'] as $index => $unused ) {
-    if ( is_array($form['locations'][$index]) ) {
-      foreach ( $hide_fields as $hide_me ) {
-        $form['locations'][$index]['#location_settings']['form']['fields'][$hide_me]['collect'] = 0;
-      }
-    }
-  }
-}
-
-/**
  *  Modify the green site add/edit form.
  *
  *  Important note:
@@ -63,11 +49,6 @@ function _group_map_form_green_site_node_form_alter(&$form, &$form_state) {
 
   // first off, hide the preview button as it doesn't work
   unset($form['buttons']['preview']);
-
-  $hidden_fields = array(
-    'country',
-  );
-  _group_map_form_hide_location_fields($form, $hidden_fields);
 
   // Change the group section to 'map'
   $form['og_nodeapi']['#title'] = t('Maps');
@@ -105,6 +86,8 @@ function _group_map_form_green_site_node_form_alter(&$form, &$form_state) {
   $form['og_nodeapi']['visible']['og_public']['#default_value'] =
     $form['#node']->nid ? $form['#node']->og_public : 1; // override og module which defaults it tor private
 
+  // TODO see if removing this will help geocoding -- mvc 13jan2010
+  /*
   // If site is being added to a map
   $get_gids = isset($_GET['gids'][0]) ? (int) $_GET['gids'][0] : 0;
   $get_suggest = isset($_GET['suggest']) ? (int) $_GET['suggest'] : 0;
@@ -154,6 +137,8 @@ function _group_map_form_green_site_node_form_alter(&$form, &$form_state) {
     // Adds the javascript that alters map into website
     drupal_add_js(drupal_get_path('module', 'group_map').'/edit_zoom.js', 'module', 'footer');
   }
+  */
+
 }
 
 /**
@@ -179,10 +164,6 @@ function _group_map_form_green_map_node_form_alter(&$form, &$form_state) {
     '#value' => $form['og_description']['#default_value'] ?
                   $form['og_description']['#default_value'] : '',
   );
-  $hidden_fields = array(
-    'country',
-  );
-  _group_map_form_hide_location_fields($form, $hidden_fields);
 
   // improving instructions on how to let people join the group/map
   $form['og_selective']['#title'] = t('Building Your Map Team');
