@@ -3,7 +3,7 @@ name = ogm_ol
 description = Helper module for Open GreenMap and Open Layers
 package = GreenMap
 dependencies[] = content
-dependencies[] = group_map
+dependencies[] = gmap_marker
 dependencies[] = openlayers_cck
 dependencies[] = geo_data
 
