@@ -98,6 +98,7 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         $i = 0;
         $lines = array();
         while ($line = db_fetch_array($lines_result)) {
+          $lines[$i]['nid'] = $line['nid'];
           // convert the line info from wkt to an array which can be
           // passed to the DOM via js.
           $points = str_replace('LINESTRING(', '', $line['geo']);
@@ -105,7 +106,7 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           $points_arr = explode(',', $points);
           foreach ($points_arr as $key => $value) {
             $coords = explode(' ', $value);
-            $lines[$i][] = $coords;
+            $lines[$i]['coords'][] = $coords;
           }
           $i++;
         }
@@ -124,6 +125,7 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         $i = 0;
         $areas = array();
         while ($area = db_fetch_array($areas_result)) {
+          $areas[$i]['nid'] = $area['nid'];
           // convert the line info from wkt to an array which can be
           // passed to the DOM via js.
           $points = str_replace('POLYGON((', '', $area['geo']);
@@ -131,7 +133,7 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           $points_arr = explode(',', $points);
           foreach ($points_arr as $key => $value) {
             $coords = explode(' ', $value);
-            $areas[$i][] = $coords;
+            $areas[$i]['coords'][] = $coords;
           }
           $i++;
         }
