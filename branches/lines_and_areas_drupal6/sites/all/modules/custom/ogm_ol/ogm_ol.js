@@ -4,18 +4,20 @@
 Drupal.gmap.addHandler('gmap',function(elem) {
   var map = this;
   map.bind("ready", function() {
-//     var coords = [];
-console.log('here');
-// console.debug(Drupal.settings.ogm_ol_lines);
-/*    for ( i = 0; i < Drupal.settings.ogm_ol_lines.length; i = i + 1 ) {
-      console.debug(Drupal.settings.ogm_ol_lines[i]);
-    }*/
-//     var polyline = new GPolyline([
-//       new GLatLng(parseFloat(40.72085157020638), parseFloat(-73.99309158325195)),
-//       new GLatLng(parseFloat(40.728078), parseFloat(-74))
-//     ], "#000000", 5);
-//     map.map.addOverlay(polyline);
-
+    // loop through the line coordinates passed from the module for the map
+    for ( i = 0; i < Drupal.settings.ogm_ol_lines.length; i = i + 1 ) {
+      var coords = [];
+      var line = Drupal.settings.ogm_ol_lines[i];
+      // since there are multiple points in a line, loop through those,
+      // turn them into Google GLatLng objects, and add that to an array
+      for ( var j=line.length-1; j>=0; --j ) {
+        var latlon = new GLatLng(parseFloat(line[j][1]), parseFloat(line[j][0]));
+        coords.push(latlon);
+      }
+      // create the line instance
+      var polyline = new GPolyline(coords, "#000000", 5);
+      // add it to the map
+      map.map.addOverlay(polyline);
+    }
   });
-
 });

@@ -106,9 +106,8 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           }
           $i++;
         }
-        $js_settings = array('ogm_ol_lines' => array($lines));
+        $js_settings = array('ogm_ol_lines' => $lines);
         drupal_add_js($js_settings, 'setting');
-
       }
     break;
   }
