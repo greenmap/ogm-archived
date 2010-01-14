@@ -70,3 +70,8 @@ function ogm_ol_gmap_maptype($groupmaptype) {
   }
   return $layer;
 }
+
+function ogm_ol_init() {
+  $path = drupal_get_path('module', 'ogm_ol');
+  drupal_add_js($path .'/ogm_ol.js', 'module', 'footer');
+}
