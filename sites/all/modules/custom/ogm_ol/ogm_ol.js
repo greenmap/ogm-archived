@@ -51,20 +51,15 @@
 // function OgmOlAddPoly(map) {
 // }
 
-console.debug(Drupal.gmap.map);
 Drupal.gmap.addHandler('gmap',function(elem) {
-console.log('in the handler');
   var map = this;
-console.debug(map);
-  GEvent.addListener(map, "click", function() {
-console.log('mouse over');
-    //define the line
+  map.bind("init", function() {
     var polyline = new GPolyline([
-    new GLatLng(parseFloat(40.72085157020638), parseFloat(-73.99309158325195)),
-    new GLatLng(parseFloat(40.728078), parseFloat(-74))
+      new GLatLng(parseFloat(40.72085157020638), parseFloat(-73.99309158325195)),
+      new GLatLng(parseFloat(40.728078), parseFloat(-74))
     ], "#000000", 5);
 
-    // add the line to the map
-      map.map.addOverlay(polyline);
+    console.debug(map);
+    map.map.addOverlay(polyline);
   });
 });
