@@ -5,7 +5,7 @@
 */
 
 function ogm_ol_form_alter(&$form, $form_state, $form_id) {
-  if ($form_id == 'green_route_node_form') {
+  if ($form_id == 'green_route_node_form' || $form_id == 'green_area_node_form') {
 
     // need to get lat, lon & center for map
     $node = $form['#node'];
@@ -86,18 +86,21 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   switch ($op) {
     case 'view':
       if ($node->type == 'green_map') {
-        $query = 'SELECT ct.nid, AsText(ct.field_line_contour_geo) AS geo
+        // query for lines in a group map
+        $lines_query = 'SELECT ct.nid, AsText(ct.field_line_contour_geo) AS geo
           FROM {content_type_green_route} ct
           LEFT JOIN {node} n ON n.nid = ct.nid AND n.vid = ct.vid
           LEFT JOIN {og_ancestry} oga ON ct.nid = oga.nid
           WHERE n.status = %d
           AND n.type = "%s"
           AND oga.group_nid = %d';
-        $result = db_query($query, 1, 'green_route', $node->nid);
+        $lines_result = db_query($lines_query, 1, 'green_route', $node->nid);
         $i = 0;
         $lines = array();
-        while ($routes = db_fetch_array($result)) {
-          $points = str_replace('LINESTRING(', '', $routes['geo']);
+        while ($line = db_fetch_array($lines_result)) {
+          // convert the line info from wkt to an array which can be
+          // passed to the DOM via js.
+          $points = str_replace('LINESTRING(', '', $line['geo']);
           $points = str_replace(')','', $points);
           $points_arr = explode(',', $points);
           foreach ($points_arr as $key => $value) {
@@ -106,8 +109,34 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           }
           $i++;
         }
-        $js_settings = array('ogm_ol_lines' => $lines);
-        drupal_add_js($js_settings, 'setting');
+        $js_lines_settings = array('ogm_ol_lines' => $lines);
+        drupal_add_js($js_lines_settings, 'setting');
+
+       // query for areas in a group map
+        $areas_query = 'SELECT ct.nid, AsText(ct.field_area_contour_geo) AS geo
+          FROM {content_type_green_area} ct
+          LEFT JOIN {node} n ON n.nid = ct.nid AND n.vid = ct.vid
+          LEFT JOIN {og_ancestry} oga ON ct.nid = oga.nid
+          WHERE n.status = %d
+          AND n.type = "%s"
+          AND oga.group_nid = %d';
+        $areas_result = db_query($areas_query, 1, 'green_area', $node->nid);
+        $i = 0;
+        $areas = array();
+        while ($area = db_fetch_array($areas_result)) {
+          // convert the line info from wkt to an array which can be
+          // passed to the DOM via js.
+          $points = str_replace('POLYGON((', '', $area['geo']);
+          $points = str_replace('))','', $points);
+          $points_arr = explode(',', $points);
+          foreach ($points_arr as $key => $value) {
+            $coords = explode(' ', $value);
+            $areas[$i][] = $coords;
+          }
+          $i++;
+        }
+        $js_areas_settings = array('ogm_ol_areas' => $areas);
+        drupal_add_js($js_areas_settings, 'setting');
       }
     break;
   }
