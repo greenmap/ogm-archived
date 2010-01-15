@@ -8,6 +8,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
     for ( i = 0; i < Drupal.settings.ogm_ol_lines.length; i = i + 1 ) {
       var coords = [];
       var nid = Drupal.settings.ogm_ol_lines[i]['nid'];
+      var color = Drupal.settings.ogm_ol_lines[i]['color'];
       var line = Drupal.settings.ogm_ol_lines[i]['coords'];
       // since there are multiple points in a line, loop through those,
       // turn them into Google GLatLng objects, and add that to an array
@@ -16,7 +17,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
         coords.push(latlon);
       }
       // create the line instance
-      var polyline = new GPolyline(coords, "#000000", 5);
+      var polyline = new GPolyline(coords, color, 5);
       // single left click on the line
       GEvent.addListener(polyline, "click", OgmOlOnClick(nid, polyline.getBounds().getCenter()));
       // add it to the map
@@ -27,6 +28,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
     for ( i = 0; i < Drupal.settings.ogm_ol_areas.length; i = i + 1 ) {
       var coords = [];
       var nid = Drupal.settings.ogm_ol_areas[i]['nid'];
+      var color = Drupal.settings.ogm_ol_areas[i]['color'];
       var line = Drupal.settings.ogm_ol_areas[i]['coords'];
       // since there are multiple points in an area, loop through those,
       // turn them into Google GLatLng objects, and add that to an array
@@ -35,7 +37,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
         coords.push(latlon);
       }
       // create the line instance
-      var polyarea = new GPolygon(coords, "#000000", 5);
+      var polyarea = new GPolygon(coords, color, 5);
       // single left click on the area
       GEvent.addListener(polyarea, "click", OgmOlOnClick(nid, polyarea.getBounds().getCenter()));
       // add it to the map

@@ -99,6 +99,17 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         $lines = array();
         while ($line = db_fetch_array($lines_result)) {
           $lines[$i]['nid'] = $line['nid'];
+
+          // determine the color based on what term the line is
+          $tid = db_result(db_query('SELECT tn.tid FROM {term_node} tn LEFT JOIN {term_data} td ON tn.tid = td.tid WHERE tn.nid = %d AND td.vid = %d', $line['nid'], 5));
+          $color = ogm_ol_load_poly_colors($tid);
+          if (!is_array($color)) {
+            $lines[$i]['color'] = $color;
+          }
+          else {
+            $lines[$i]['color'] = '#000000';
+          }
+
           // convert the line info from wkt to an array which can be
           // passed to the DOM via js.
           $points = str_replace('LINESTRING(', '', $line['geo']);
@@ -126,6 +137,17 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         $areas = array();
         while ($area = db_fetch_array($areas_result)) {
           $areas[$i]['nid'] = $area['nid'];
+
+          // determine the color based on what term the area is
+          $tid = db_result(db_query('SELECT tn.tid FROM {term_node} tn LEFT JOIN {term_data} td ON tn.tid = td.tid WHERE tn.nid = %d AND td.vid = %d', $area['nid'], 5));
+          $color = ogm_ol_load_poly_colors($tid);
+          if (!is_array($color)) {
+            $areas[$i]['color'] = $color;
+          }
+          else {
+            $areas[$i]['color'] = '#000000';
+          }
+
           // convert the line info from wkt to an array which can be
           // passed to the DOM via js.
           $points = str_replace('POLYGON((', '', $area['geo']);
@@ -141,5 +163,41 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         drupal_add_js($js_areas_settings, 'setting');
       }
     break;
+  }
+}
+
+/**
+ * Helper function to create an array containing all the colors fo polygons
+ *
+ * @param $tid (optional) The term id of a poly type
+ * @return the hexicdecimal color value of a tid, or an array of tids
+ *   and color values if no $tid is supplied.
+ * @TODO - turn this into something configurable in the UI
+ */
+function ogm_ol_load_poly_colors($tid = NULL) {
+  $colors = array(
+    '312' => '#33cccc', // walking
+    '309' => '#0000cc', // cycling
+    '313' => '#0099ff', // PUblic transport
+    '318' => '#009900', // eco tour
+    '317' => '#006600', // natural corridor
+    '311' => '#ff3300', // cultural tour
+    '314' => '#ff0099', // historical feature
+    '324' => '#66ccff', // Mobility zone
+    '325' => '#9966ff', //hazards & challenges
+    '328' => '#00ff00', // green space
+    '329' => '#339966', // protected area
+    '330' => '#99ff00', // future redev
+    '332' => '#ff6600', // cultural zone
+    '321' => '#ff0000', // green map boundary
+  );
+  if ($tid) {
+    $color = $colors[$tid];
+  }
+  if (strstr($color, '#')) {
+      return $color;
+  }
+  else {
+    return $colors;
   }
 }
