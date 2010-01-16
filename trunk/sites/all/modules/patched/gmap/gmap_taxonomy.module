@@ -145,7 +145,6 @@ function gmap_taxonomy_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
               if ($m = db_fetch_object($result)) {
                 $marker = $m->marker;
               }
-              dsm("found primary term marker $marker");
             }
             else {
               $t = $terms;
@@ -164,9 +163,6 @@ function gmap_taxonomy_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         }
         if (!empty($marker)) {
           db_query("INSERT INTO {gmap_taxonomy_node} (nid, vid, tid, marker) VALUES (%d, %d, %d, '%s')", $node->nid, $node->vid, $markertid, $marker);
-          dsm($node);
-          dsm($markertid);
-          dsm($marker);
         }
       }
       break;
