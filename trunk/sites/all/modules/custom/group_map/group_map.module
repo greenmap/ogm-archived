@@ -477,14 +477,18 @@ function group_map_block_0_contents() {
     $infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Map Website'), $node->field_map_website[0]['url'], array('attributes' => array('class'=>'external', 'target'=>'_blank'))) . '</div>';
   }
 
-  $download_link_printed = FALSE;
-  // get map info
-  if($node->field_greenhouse_map_nid[0]['value']){
-    $infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . l(t('Map Profile'), 'http://www.greenmap.org/greenhouse/node/' . $node->field_greenhouse_map_nid[0]['value'],
-        array('attributes' => array('class' => 'external', 'target' => '_blank'))) . '</div>';
+  // download link
 
+  if($node->field_greenhouse_map_nid[0]['value'] && (!is_array($node->field_map_override) ||
+        $node->field_map_override[0]['value'] != 'yes')) {
+    // get map info
+    $infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . 
+      l(t('Map Profile'), 'http://www.greenmap.org/greenhouse/node/' .
+          $node->field_greenhouse_map_nid[0]['value'], array('attributes' =>
+            array('class' => 'external', 'target' => '_blank'))) . '</div>';
     // download link
-    $result = db_query('SELECT filepath FROM sync_gm_green_maps WHERE gm_nid = %d', $node->field_greenhouse_map_nid[0]['value']);
+    $result = db_query('SELECT filepath FROM sync_gm_green_maps WHERE gm_nid = %d',
+        $node->field_greenhouse_map_nid[0]['value']);
     $gm_map = db_fetch_object($result);
     if ($gm_map && $gm_map->filepath) {
       $url = check_plain('http://www.greenmap.org/greenhouse/'. $gm_map->filepath);
@@ -496,11 +500,9 @@ function group_map_block_0_contents() {
         $attributes = array('attributes' => array('class' => 'img'));
       }
       $infocontent .= '<div><span class="label">' . t('Download') . ':</span>&nbsp;' . l(t('Map'), $url, $attributes) . '</div>';
-      $download_link_printed = TRUE;
     }
   }
-  // download link
-  if(!$download_link_printed && $node->field_map_pdf[0]['value']){
+  elseif ($node->field_map_pdf[0]['value']) {
     $attributes = array();
     if (strtolower(substr($node->field_map_pdf[0]['value'], -4)) == '.pdf') {
       $attributes = array('attributes' => array('class' => 'pdf'));
@@ -508,7 +510,9 @@ function group_map_block_0_contents() {
     else {
       $attributes = array('attributes' => array('class' => 'img'));
     }
-    $infocontent .= '<div><span class="label">' . t('Download') . ':</span>&nbsp;' . l(t('Map'), check_plain($node->field_map_pdf[0]['value']), $attributes) . '</div>';
+    $infocontent .= '<div><span class="label">' . t('Download') .
+      ':</span>&nbsp;' . l(t('Map'), check_plain($node->field_map_pdf[0]['value']), $attributes) .
+      '</div>';
   }
 
   // Need to add a link to download locally made pdf/image
@@ -517,7 +521,7 @@ function group_map_block_0_contents() {
   $infocontent .= '<hr />';
 
   $infocontent .= '<p>' . $description . '</p>';
-  if (count($node->field_start_date)) {
+  if (is_array($node->field_start_date) && $node->field_start_date[0]['value']) {
     $start_date = strtotime($node->field_start_date[0]['value']);
     $start_date = date("M Y",$start_date);
   }
