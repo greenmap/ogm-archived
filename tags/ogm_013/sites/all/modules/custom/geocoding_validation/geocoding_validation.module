@@ -1,0 +1,45 @@
+<?php
+// $Id$
+
+/**
+ *  Set a weight on this module to ensure it is called after 'location'
+ */
+function geocoding_validation_install() {
+  // set the weight of this module here
+  // location appears to have weight 0, so we'll go with 1
+  $module_weight = 1;
+  //FIXME: I don't think this works the first time (because it's an update not an insert)
+  db_query("UPDATE {system} SET weight = %d WHERE name = 'geocoding_validation'", $module_weight);
+}
+
+/**
+ *  Add our custom validation function to the green site node form
+ */
+function geocoding_validation_form_alter(&$form, &$form_state, $form_id) {
+  if ( 'green_map_node_form' == $form_id ) {
+    $form['#validate'][] = 'geocoding_validation_location_element_validate';
+  }
+}
+
+/**
+ * Require that a user provide a lat and long. when submitting a green map,
+ * because we don't collect enough information for geocoding to work
+ */
+function geocoding_validation_location_element_validate() {
+  $loc_err_msg = t('Please set a location on the map.');
+
+  $args = func_get_args();
+  $locations = $args[1]['values']['locations'];
+
+  if ( is_array($locations) ) {
+    foreach ( $locations as $loc_form ) {
+      if ( 
+           (! $loc_form['locpick']['user_latitude']) ||
+           (! $loc_form['locpick']['user_longitude'])
+         )
+      {
+        form_set_error('locations', $loc_err_msg);
+      }
+    }
+  }
+}
