@@ -779,18 +779,3 @@ body.node-type-green-map ul.links {
   margin-top: 5px;
 }
 
-a.external {
-  background: url(images/external.png) center right no-repeat;
-  padding-right: 13px;
-}
-
-a.pdf {
-  background: url(images/pdf.png) center right no-repeat !important;
-  padding-right: 13px !important;
-}
-
-a.img {
-  background: url(images/img.png) center right no-repeat !important;
-  padding-right: 13px !important;
-}
-
