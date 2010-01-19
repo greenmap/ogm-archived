@@ -17,7 +17,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
         coords.push(latlon);
       }
       // create the line instance
-      var polyline = new GPolyline(coords, color, 5);
+      var polyline = new GPolyline(coords, color, 5, .5);
       // single left click on the line
       GEvent.addListener(polyline, "click", OgmOlOnClick(nid, polyline.getBounds().getCenter()));
       // add it to the map
@@ -37,7 +37,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
         coords.push(latlon);
       }
       // create the line instance
-      var polyarea = new GPolygon(coords, color, 5);
+      var polyarea = new GPolygon(coords, color, 3, .3, color, .3);
       // single left click on the area
       GEvent.addListener(polyarea, "click", OgmOlOnClick(nid, polyarea.getBounds().getCenter()));
       // add it to the map
