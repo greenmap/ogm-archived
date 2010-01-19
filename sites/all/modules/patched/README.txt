@@ -66,3 +66,10 @@ taxonomy_image.module:
 mobile_tools module
   - removed the awful cache clear that was being run on every page
     http://drupal.org/node/642176
+
+openlayers module
+  - added a patch to set GMap center and zoom properly: http://drupal.org/node/678602
+
+gmap module
+  - patch to the view handler to allow for passing of custom macro stuff to the view on page views.
+    the actual patch file is in the module directory.

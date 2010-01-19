@@ -192,7 +192,10 @@ function group_map_form_alter(&$form, &$form_state, $form_id) {
   if ( 'green_map_node_form' == $form_id  ) {
     _group_map_form_green_map_node_form_alter($form, $form_state);
   }
-  else if ( 'green_site_node_form' == $form_id  ) {
+  else if ( 'green_site_node_form' == $form_id ||
+            //FIXME: need to generalize this logic
+            'green_route_node_form' == $form_id ) {
+    //mjg
     _group_map_form_green_site_node_form_alter($form, $form_state);
   }
 }
