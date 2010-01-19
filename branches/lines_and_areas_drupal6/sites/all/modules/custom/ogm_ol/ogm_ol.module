@@ -139,7 +139,7 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           $areas[$i]['nid'] = $area['nid'];
 
           // determine the color based on what term the area is
-          $tid = db_result(db_query('SELECT tn.tid FROM {term_node} tn LEFT JOIN {term_data} td ON tn.tid = td.tid WHERE tn.nid = %d AND td.vid = %d', $area['nid'], 5));
+          $tid = db_result(db_query('SELECT tn.tid FROM {term_node} tn LEFT JOIN {term_data} td ON tn.tid = td.tid WHERE tn.nid = %d AND td.vid = %d', $area['nid'], 7));
           $color = ogm_ol_load_poly_colors($tid);
           if (!is_array($color)) {
             $areas[$i]['color'] = $color;
