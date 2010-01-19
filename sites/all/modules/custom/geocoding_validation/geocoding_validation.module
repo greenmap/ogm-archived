@@ -16,13 +16,14 @@ function geocoding_validation_install() {
  *  Add our custom validation function to the green site node form
  */
 function geocoding_validation_form_alter(&$form, &$form_state, $form_id) {
-  if ( 'green_site_node_form' == $form_id ) {
+  if ( 'green_map_node_form' == $form_id ) {
     $form['#validate'][] = 'geocoding_validation_location_element_validate';
   }
 }
 
 /**
- *  Require that a user provide a lat and long. when submitting a green site
+ * Require that a user provide a lat and long. when submitting a green map,
+ * because we don't collect enough information for geocoding to work
  */
 function geocoding_validation_location_element_validate() {
   $loc_err_msg = t('Please set a location on the map.');
