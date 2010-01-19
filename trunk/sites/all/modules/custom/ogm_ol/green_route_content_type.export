@@ -1,0 +1,169 @@
+$content['type']  = array (
+  'name' => 'Green Route',
+  'type' => 'green_route',
+  'description' => 'Green Routes are lines. See also: Green Area',
+  'title_label' => 'Title',
+  'body_label' => 'Body',
+  'min_word_count' => '0',
+  'help' => '',
+  'node_options' => 
+  array (
+    'status' => true,
+    'promote' => true,
+    'sticky' => false,
+    'revision' => false,
+  ),
+  'language_content_type' => '0',
+  'upload' => '1',
+  'forward_display' => 1,
+  'pt_vocabs' => 
+  array (
+    2 => false,
+    3 => false,
+    1 => false,
+    5 => false,
+    6 => false,
+    4 => false,
+  ),
+  'i18n_node' => '1',
+  'i18nsync_nodeapi' => 
+  array (
+    'author' => false,
+    'status' => false,
+    'promote' => false,
+    'moderate' => false,
+    'sticky' => false,
+    'revision' => false,
+    'parent' => false,
+    'taxonomy' => false,
+    'comment' => false,
+    'files' => false,
+    'field_line_contour' => false,
+  ),
+  'old_type' => 'green_route',
+  'orig_type' => '',
+  'module' => 'node',
+  'custom' => '1',
+  'modified' => '1',
+  'locked' => '0',
+  'og_content_type_usage' => 'omitted',
+  'fivestar' => 0,
+  'fivestar_stars' => 5,
+  'fivestar_labels_enable' => 1,
+  'fivestar_label_0' => 'Cancel rating',
+  'fivestar_label_1' => 'Poor',
+  'fivestar_label_2' => 'Okay',
+  'fivestar_label_3' => 'Good',
+  'fivestar_label_4' => 'Great',
+  'fivestar_label_5' => 'Awesome',
+  'fivestar_label_6' => 'Give it @star/@count',
+  'fivestar_label_7' => 'Give it @star/@count',
+  'fivestar_label_8' => 'Give it @star/@count',
+  'fivestar_label_9' => 'Give it @star/@count',
+  'fivestar_label_10' => 'Give it @star/@count',
+  'fivestar_style' => 'average',
+  'fivestar_text' => 'dual',
+  'fivestar_title' => 1,
+  'fivestar_feedback' => 1,
+  'fivestar_unvote' => 0,
+  'fivestar_position_teaser' => 'hidden',
+  'fivestar_position' => 'below',
+  'fivestar_comment' => 0,
+  'comment' => '2',
+  'comment_default_mode' => '4',
+  'comment_default_order' => '1',
+  'comment_default_per_page' => '50',
+  'comment_controls' => '3',
+  'comment_anonymous' => '0',
+  'comment_subject_field' => '1',
+  'comment_preview' => '1',
+  'comment_form_location' => '0',
+  'comment_upload' => '0',
+  'comment_upload_images' => 'none',
+);
+$content['fields']  = array (
+  0 => 
+  array (
+    'label' => 'Line Countour',
+    'field_name' => 'field_line_contour',
+    'type' => 'geo',
+    'widget_type' => 'openlayers_wkt_widget',
+    'change' => 'Change basic information',
+    'weight' => '31',
+    'openlayers_cck_preset_map' => 'gmap_street',
+    'openlayers_cck_show_empty_map' => 0,
+    'description' => '',
+    'default_value' => 
+    array (
+      0 => 
+      array (
+        '' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' => NULL,
+    'group' => false,
+    'required' => 1,
+    'multiple' => '0',
+    'geo_type' => 'linestring',
+    'srid' => 4326,
+    'op' => 'Save field settings',
+    'module' => 'geo',
+    'widget_module' => 'openlayers_cck',
+    'columns' => 
+    array (
+      'geo' => 
+      array (
+        'type' => 'blob',
+        'mysql_type' => 'geometry',
+        'pgsql_type' => 'geometry',
+        'gis type' => 'linestring',
+        'description' => 'Geometry field',
+      ),
+    ),
+    'display_settings' => 
+    array (
+      'label' => 
+      array (
+        'format' => 'above',
+        'exclude' => 0,
+      ),
+      'teaser' => 
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' => 
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      4 => 
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      2 => 
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      3 => 
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' => 
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+);
+$content['extra']  = array (
+  'title' => '-5',
+  'body_field' => '0',
+  'menu' => '-2',
+  'attachments' => '30',
+);
