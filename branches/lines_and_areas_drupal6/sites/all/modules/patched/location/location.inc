@@ -477,8 +477,9 @@ function location_standardize_country_code(&$country) {
  * Load the support file for a country.
  */
 function location_load_country($country) {
+  $supported_countries = _location_supported_countries();
   location_standardize_country_code($country);
-  if ($country != 'xx') {
+  if (isset($supported_countries[$country])) {
     include_once(drupal_get_path('module', 'location') .'/supported/location.'. $country .'.inc');
   }
 }

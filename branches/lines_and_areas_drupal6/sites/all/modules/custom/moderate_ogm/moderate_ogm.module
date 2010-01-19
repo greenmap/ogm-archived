@@ -117,6 +117,7 @@ function moderate_ogm_ajax() {
       'display' => 'default',
     ),
   );
+  // TODO why is this country value hardcoded here? something's not right -- mvc 13jan2010
   $country_string = $returnValue->field_moderated_countries_value;
   $country_string = "US";
   foreach ( $views_to_embed as $ve ) {
