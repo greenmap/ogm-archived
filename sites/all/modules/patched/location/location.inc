@@ -95,12 +95,32 @@ function location_get_postalcode_data($location = array()) {
     return NULL;
   }
   $country_specific_function = 'location_get_postalcode_data_'. $location['country'];
-  if (function_exists($country_specific_function)) {
-    return $country_specific_function($location);
-  }
-  else {
-    return NULL;
-  }
+    if (function_exists($country_specific_function)) {
+      return $country_specific_function($location);
+    }
+    else {
+      if ($cache = cache_get('location:supported-countries', 'cache_location')) {
+        $country = $location['country'];
+          if ($cache->data[$country]) {
+            $include = drupal_get_path('module', 'location') .'/supported/location.'. $location['country'] .'.inc';
+              if (file_exists($include)){
+                include_once($include);
+                  if (function_exists($country_specific_function)) {
+                    return $country_specific_function($location);
+                  } else {
+                    drupal_set_message(t('The support file for: ' . $location['country']. ' found at <i>' . $include .'</i>. does not have a function to support zip code look ups. Missing funtion: <i>' . $country_specific_function . '</i>'), 'error');
+                  }
+            } else {
+              drupal_set_message(t('The support file for: ' . $location['country']. ' could not be found at <i>' . $include .'</i>.'), 'error');
+            }
+          } else {
+            drupal_set_message(t('The country code requested: ' . $location['country']. ' is not supported by this site.'), 'warning');
+          }
+        } else {
+          drupal_set_message(t('There are no supported countries in the site cache.'), 'warning');
+        }
+      return NULL;
+    }
 }
 
 /**

@@ -13,32 +13,48 @@ function geocoding_validation_install() {
 }
 
 /**
- *  Add our custom validation function to the green site node form
+ *  Add our custom validation function to the node form
  */
 function geocoding_validation_form_alter(&$form, &$form_state, $form_id) {
-  if ( 'green_map_node_form' == $form_id ) {
-    $form['#validate'][] = 'geocoding_validation_location_element_validate';
+  switch($form_id) {
+    case 'green_map_node_form':
+    case 'green_site_node_form':
+      $form['#validate'][] = 'geocoding_validation_location_element_validate';
   }
 }
 
 /**
- * Require that a user provide a lat and long. when submitting a green map,
- * because we don't collect enough information for geocoding to work
+ * Require that a user provide a latitude and longitude
+ * if we haven't collected enough information for geocoding to work
  */
 function geocoding_validation_location_element_validate() {
-  $loc_err_msg = t('Please set a location on the map.');
+  $loc_err_msg_missing = t('Please set a location on the map or enter an address.');
+  $loc_err_msg_geocoding = t('The location could not be identified based on the address or postal code provided.');
 
   $args = func_get_args();
   $locations = $args[1]['values']['locations'];
 
   if ( is_array($locations) ) {
     foreach ( $locations as $loc_form ) {
-      if ( 
-           (! $loc_form['locpick']['user_latitude']) ||
-           (! $loc_form['locpick']['user_longitude'])
-         )
+      if ((! $loc_form['locpick']['user_latitude']) ||
+          (! $loc_form['locpick']['user_longitude']))
       {
-        form_set_error('locations', $loc_err_msg);
+        // test exact geocoding
+        if ($data = location_latlon_exact($loc_form)) {
+          drupal_set_message(t('Site location automatically determined from address; please set a location on the map if this is inaccurate'));
+        }
+        // test inexact geocoding against a local postcode database
+        elseif ($data = location_get_postalcode_data($loc_form)) {
+          drupal_set_message(t('Approximate site location determined from postal code; please set a location on the map if this is inaccurate'));
+        }
+        else {
+          if (! ( empty($loc_form['street']) && empty($loc_form['postal_code']) ) ){
+            form_set_error('locations', $loc_err_msg_geocoding);
+          }
+          else {
+            form_set_error('locations', $loc_err_msg_missing);
+          }
+        }
       }
     }
   }
