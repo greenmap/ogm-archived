@@ -14,7 +14,8 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
         // Change the title of the primary icon field
         $form['taxonomy']['primaryterm']['#title'] = t('Primary Icon');
         // make the primary icon field required
-        $form['taxonomy']['primaryterm']['#required'] = 1;
+        $form['taxonomy']['primaryterm']['#required'] = TRUE;
+        // TODO fix this to use $vids !
         $vid = 1;
 
         /*
