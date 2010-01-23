@@ -22,6 +22,9 @@ location module:
   - give option to output coordinates in order expected by KML
     http://drupal.org/node/558144
   - check for valid country code http://drupal.org/node/685946
+  - validate geocoding results; patch at
+    https://bugs.openflows.com/view.php?id=2003
+    (based on http://drupal.org/node/411360)
 
 views_bonus module:
   - KML output option as views feed display

@@ -31,10 +31,12 @@
  * @see template_preprocess_comment_wrapper()
  * @see theme_comment_wrapper()
  */
+$map_overlay_types = array('green_site', 'green_route', 'green_area');
+
 ?>
 <?php if ($content) { ?>
   <div id="comments">
-    <?php if ($node->type != 'green_site') { ?>
+    <?php if (!in_array($node->type , $map_overlay_types)) { ?>
       <h2 id="comments-title"><?php print t('Comments'); ?></h2>
     <?php } ?>
     <div id="comments-inner">
