@@ -109,6 +109,14 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           else {
             $lines[$i]['color'] = '#000000';
           }
+          // and now opacity
+          $opacity = ogm_ol_load_opacities($tid);
+          if (!is_array($opacity)) {
+            $lines[$i]['opacity'] = $opacity;
+          }
+          else {
+            $lines[$i]['opacity'] = '.5';
+          }
 
           // convert the line info from wkt to an array which can be
           // passed to the DOM via js.
@@ -147,7 +155,14 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           else {
             $areas[$i]['color'] = '#000000';
           }
-
+          // and now the opacity
+          $opacity = ogm_ol_load_opacities($tid);
+          if (!is_array($opacity)) {
+            $areas[$i]['opacity'] = $opacity;
+          }
+          else {
+            $areas[$i]['opacity'] = '.3';
+          }
           // convert the line info from wkt to an array which can be
           // passed to the DOM via js.
           $points = str_replace('POLYGON((', '', $area['geo']);
@@ -192,12 +207,46 @@ function ogm_ol_load_poly_colors($tid = NULL) {
     '321' => '#ff0000', // green map boundary
   );
   if ($tid) {
-    $color = $colors[$tid];
-  }
-  if (strstr($color, '#')) {
-      return $color;
+    return $colors[$tid];
   }
   else {
     return $colors;
   }
+}
+/**
+ * function to create an array containing all the colors
+ * @TODO - turn this into something configurable in the UI
+ */
+function ogm_ol_load_opacities($tid = NULL) {
+  $opacs = array(
+    '312' => '1', // walking
+    '309' => '0.5', // cycling
+    '313' => '1', // PUblic transport
+    '318' => '1', // eco tour
+    '317' => '0.8', // natural corridor
+    '311' => '1', // cultural tour
+    '314' => '1', // historical feature
+    '324' => '0.4', // Mobility zone
+    '325' => '0.5', //hazards & challenges
+    '328' => '0.5', // green space
+    '329' => '0.5', // protected area
+    '330' => '0.8', // future redev
+    '332' => '0.6', // cultural zone
+    '321' => '0.6', // green map boundary
+  );
+  if ($tid) {
+    return $opacs[$tid];
+  }
+  else {
+    return $opacs;
+  }
+}
+
+/**
+ * Build the key for the lines & areas
+ */
+function ogm_ol_key_build() {
+  // loop through taxonomy turning it into an un-ordered nested list
+  $key = array(getKeyList(taxonomy_get_tree(5)), getKeyList(taxonomy_get_tree(7)));
+  return $key;
 }
