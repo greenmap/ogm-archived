@@ -1238,7 +1238,9 @@ function location_strip(&$location) {
   }
   foreach ($location as $k => $v) {
     if (!isset($tmp[$k])) {
-      unset($location[$k]);
+      if(!($location[$k] == "locpick" || $location[$k] == "user_latitude" || $location[$k] == "user_longitude")) {
+        unset($location[$k]);
+      }
     }
   }
 }
@@ -1288,7 +1290,7 @@ function _location_geo_logic(&$location, $changed, $filled, $inhibit_geocode = F
   if (!$inhibit_geocode) {
     // Have any of the fields possibly affecting geocoding changed?
     // Or, was the location previously user submitted but is no longer?
-    if ($changed['street'] || $changed['additional'] || $changed['city'] || $changed['province'] || $changed['country'] || $changed['postal_code'] || $location['source'] == LOCATION_LATLON_USER_SUBMITTED) {
+    if ($changed['street'] || $changed['additional'] || $changed['city'] || $changed['province'] || $changed['country'] || $changed['postal_code'] || $location['source'] == LOCATION_LATLON_USER_SUBMITTED || $location['source'] == LOCATION_LATLON_UNDEFINED) {
 
       // Attempt exact geocoding.
       if ($data = location_latlon_exact($location)) {
