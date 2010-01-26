@@ -16,6 +16,7 @@ var key_states = [];
  */
 function displayTid(tid, enable)
 {
+console.debug(tid);
 	if (enable){
 		key_states[tid] = true;
 		GlobalObj.gm.showGroupByName(tid);
@@ -23,8 +24,8 @@ function displayTid(tid, enable)
 		key_states[tid] = false;
 		GlobalObj.gm.hideGroupByName(tid);
 	}
-	
-		
+
+
 }
 
 
@@ -52,12 +53,13 @@ function getTidFromId(id)
  *	@param obj		checkbox (jQuery object)
  *	@param enable		true to check, false to uncheck
  */
-function toggleCheckbox(obj, enable)
-{
-	if (enable)
+function toggleCheckbox(obj, enable) {
+	if (enable) {
 		obj.attr('checked', 'true');
-	else
+  }
+	else {
 		obj.removeAttr('checked');
+  }
 }
 
 
@@ -67,8 +69,7 @@ function toggleCheckbox(obj, enable)
  *	@param obj		icon (jQuery object, we use a <div> here)
  *	@param enable		true to enable icon, false to disable
  */
-function toggleIcon(obj, enable)
-{
+function toggleIcon(obj, enable) {
 	// update map
 	jQuery.each(obj, function() {
 		displayTid(getTidFromId($(this).attr('id')), enable);
@@ -94,7 +95,6 @@ function toggleIcon(obj, enable)
 function keyCheckboxGenre_OnChange()
 {
 	var checked = $(this).attr('checked');
-
 	// check/uncheck all child categories
 	toggleCheckbox($(this).parents('.key_genre_title').find('.key_checkbox_category'), checked);
 
@@ -116,7 +116,7 @@ function keyCheckboxCategory_OnChange()
 		parent.attr('checked', 'true');
 
 	// enable/disable all child icons
-	toggleIcon($(this).parents('.key_category_title').find('.key_icon'), checked);	
+	toggleIcon($(this).parents('.key_category_title').find('.key_icon'), checked);
 }
 
 
