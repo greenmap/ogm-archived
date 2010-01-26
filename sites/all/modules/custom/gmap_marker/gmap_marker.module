@@ -62,13 +62,8 @@ function gmap_marker_gmap($op, $map=null) {
       }
 
       if(arg(0) == 'greenmap_widget') {
-        // drupal_add_js( $path.'/ajax.js' );
-        // drupal_add_js( $icons,'inline');
         drupal_add_js( $path.'/gmap_marker.js','module','header' );
-        // drupal_add_js( $path .'/gmap_groupmarker.js');
-//         drupal_add_js(drupal_get_path('module', 'group_map').'/key.js');
         drupal_add_js($path . '/key.js');
-        // break;
       }
       if (
            ((arg(0) == 'node' && is_numeric(arg(1))) ||
