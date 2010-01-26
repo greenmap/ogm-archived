@@ -62,8 +62,9 @@ function gmap_marker_gmap($op, $map=null) {
       }
 
       if(arg(0) == 'greenmap_widget') {
+        $group_map_path = drupal_get_path('module', 'group_map');
         drupal_add_js( $path.'/gmap_marker.js','module','header' );
-        drupal_add_js($path . '/key.js');
+        drupal_add_js($group_map_path . '/key.js');
       }
       if (
            ((arg(0) == 'node' && is_numeric(arg(1))) ||
