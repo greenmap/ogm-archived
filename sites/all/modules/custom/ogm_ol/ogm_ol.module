@@ -103,6 +103,8 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           // determine the color based on what term the line is
           $tid = db_result(db_query('SELECT tn.tid FROM {term_node} tn LEFT JOIN {term_data} td ON tn.tid = td.tid WHERE tn.nid = %d AND td.vid = %d', $line['nid'], 5));
           $color = ogm_ol_load_poly_colors($tid);
+
+          $lines[$i]['tid'] = $tid;
           if (!is_array($color)) {
             $lines[$i]['color'] = $color;
           }
@@ -148,6 +150,7 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 
           // determine the color based on what term the area is
           $tid = db_result(db_query('SELECT tn.tid FROM {term_node} tn LEFT JOIN {term_data} td ON tn.tid = td.tid WHERE tn.nid = %d AND td.vid = %d', $area['nid'], 7));
+          $areas[$i]['tid'] = $tid;
           $color = ogm_ol_load_poly_colors($tid);
           if (!is_array($color)) {
             $areas[$i]['color'] = $color;
@@ -247,6 +250,46 @@ function ogm_ol_load_opacities($tid = NULL) {
  */
 function ogm_ol_key_build() {
   // loop through taxonomy turning it into an un-ordered nested list
-  $key = array(getKeyList(taxonomy_get_tree(5)), getKeyList(taxonomy_get_tree(7)));
+  $key = array(ogm_ol_getKeyList(taxonomy_get_tree(5)), ogm_ol_getKeyList(taxonomy_get_tree(7)));
   return $key;
+}
+
+function ogm_ol_getKeyList($terms) {
+  $nested_terms = ogm_ol_nest_terms($terms);
+  $output = '';
+  $output .= '<ul id="notkeys">';
+
+  foreach ($nested_terms as $catid => $category) {
+      $output .= '<li id="key_genre_title_'.$catid.'" class="key_genre_title">';
+      $output .=  '<div class="key_title" onclick="javascript:toggleGenre(\'key_genre_content_'.$catid.'\', \'key_genre_title_'.$catid.'\');"><a><span title="'. $category['desc'] .'">' . t($category['name']) . '</span></a>
+              </div>';
+
+      $output .= '<div class="key_checkbox"><input type="checkbox" id="key_checkbox_category_'.$catid.'" class="key_checkbox_category" checked></input>
+              </div>';
+      $output .= '<div id="key_genre_content_'.$catid.'" class="key_genre_content">';
+      foreach ($category as $key => $info) {
+        if (is_numeric($key)) {
+          $output .= '<span id="key_icon_'.$key.'" class="key_icon">' .taxonomy_image_display($key, NULL, NULL, array('resize' => '1', 'width' => '21', 'height' => '18', 'imagecache_preset' => 'ORIGINAL')). '</span>';
+        }
+      }
+      $output .=  '</li>';
+
+  }
+  $output .= '</ul>';
+  return $output;
+}
+
+function ogm_ol_nest_terms($terms) {
+  $nest = array();
+  foreach ($terms as $term) {
+    if ($term->depth > 0) {
+      $nest[$term->parents[0]][$term->tid]['name'] = $term->name;
+      $nest[$term->parents[0]][$term->tid]['desc'] = $term->description;
+    }
+    else {
+      $nest[$term->tid]['name'] = $term->name;
+      $nest[$term->tid]['desc'] = $term->description;
+    }
+  }
+  return $nest;
 }
