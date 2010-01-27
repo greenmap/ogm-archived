@@ -635,6 +635,12 @@ size="12" maxlength="255" /> within<br/>';
     }
   }
   if ($legend) {
+    if ($node->field_use_poly[0]['value'] == 'Yes') {
+       $keyout = $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />'. t('Lines') . $polykey[0] .'<br />' .t('Areas') .'<br />' . $polykey[1];
+    }
+    else {
+      $keyout = $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.');
+    }
     $form['tabskey']['tab'. $tabnum] = array(
       '#type' => 'tabpage',
       '#title' => t('Legend'),
@@ -643,7 +649,7 @@ size="12" maxlength="255" /> within<br/>';
   //  '#content' => $key . $trimmed_description,
   // ncm modified because $trimmed_description was printing
   // a ghost array. TODO: find the real cause of the problem
-    '#content' => $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />'. t('Lines') . $polykey[0] .'<br />' .t('Areas') .'<br />' . $polykey[1],
+    '#content' => $keyout,
     );
     $tabnum++;
   }
