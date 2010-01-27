@@ -258,7 +258,6 @@ function group_map_block($op = 'list', $delta = 0, $edit = array()) {
  */
 
 function getKeyList($icons) {
-  $keyListString = '<ul id="keys">';
   // iterate through all icons for the map
   foreach ($icons as $genre) {
     if (count($genre->parents) == 1 && $genre->parents[0] == 0) {
@@ -296,7 +295,6 @@ function getKeyList($icons) {
       $keyListString .= "</li>";
     }
   }
-  $keyListString .= '</ul>';
   return $keyListString;
 }
 
@@ -636,10 +634,11 @@ size="12" maxlength="255" /> within<br/>';
   }
   if ($legend) {
     if ($node->field_use_poly[0]['value'] == 'Yes') {
-       $keyout = $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />'. t('Lines') . $polykey[0] .'<br />' .t('Areas') .'<br />' . $polykey[1];
+
+       $keyout = '<ul id="keys">'. $key .'<br /><strong>'. t('Routes and Areas') .'</strong> '. $polykey[0] . $polykey[1] .'<br />'.  t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '</ul>';
     }
     else {
-      $keyout = $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.');
+      $keyout = '<ul id="keys">'. $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') .'</ul>';
     }
     $form['tabskey']['tab'. $tabnum] = array(
       '#type' => 'tabpage',
