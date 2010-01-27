@@ -15,16 +15,18 @@ var key_states = [];
  *	@param enable		true to show, false to hide
  */
 function displayTid(tid, enable) {
-console.debug(tid);
 	if (enable){
 		key_states[tid] = true;
 		GlobalObj.gm.showGroupByName(tid);
-	} else {
+    ogmOlAddPolies(GlobalObj.gm.map, tid);
+	}
+  else {
 		key_states[tid] = false;
 		GlobalObj.gm.hideGroupByName(tid);
+    ogmOlRemovePolies(GlobalObj.gm.map, tid);
 	}
-	
-		
+
+
 }
 
 
@@ -113,7 +115,7 @@ function keyCheckboxCategory_OnChange() {
 		parent.attr('checked', 'true');
 
 	// enable/disable all child icons
-	toggleIcon($(this).parents('.key_category_title').find('.key_icon'), checked);	
+	toggleIcon($(this).parents('.key_category_title').find('.key_icon'), checked);
 }
 
 
