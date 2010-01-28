@@ -40,7 +40,7 @@ function ogm_form_tweaks_form_alter(&$form, &$form_state, $form_id) {
       */
 
       // TODO -- re-enable this field when lines & areas are actually available
-      unset($form['field_use_poly']);
+//       unset($form['field_use_poly']);
       break;
 
     case 'green_site_node_form':

@@ -14,17 +14,19 @@ var key_states = [];
  *	@param tid		tid
  *	@param enable		true to show, false to hide
  */
-function displayTid(tid, enable)
-{
+function displayTid(tid, enable) {
 	if (enable){
 		key_states[tid] = true;
 		GlobalObj.gm.showGroupByName(tid);
-	} else {
+    ogmOlAddPolies(GlobalObj.gm.map, tid);
+	}
+  else {
 		key_states[tid] = false;
 		GlobalObj.gm.hideGroupByName(tid);
+    ogmOlRemovePolies(GlobalObj.gm.map, tid);
 	}
-	
-		
+
+
 }
 
 
@@ -35,8 +37,7 @@ function displayTid(tid, enable)
  *	@param id		id string
  *	@return		id (string)
  */
-function getTidFromId(id)
-{
+function getTidFromId(id) {
 	pos = id.lastIndexOf('_');
 	if (pos != -1) {
 		return id.substring(pos+1);
@@ -52,12 +53,13 @@ function getTidFromId(id)
  *	@param obj		checkbox (jQuery object)
  *	@param enable		true to check, false to uncheck
  */
-function toggleCheckbox(obj, enable)
-{
-	if (enable)
+function toggleCheckbox(obj, enable) {
+	if (enable) {
 		obj.attr('checked', 'true');
-	else
+        }
+	else {
 		obj.removeAttr('checked');
+        }
 }
 
 
@@ -67,8 +69,7 @@ function toggleCheckbox(obj, enable)
  *	@param obj		icon (jQuery object, we use a <div> here)
  *	@param enable		true to enable icon, false to disable
  */
-function toggleIcon(obj, enable)
-{
+function toggleIcon(obj, enable) {
 	// update map
 	jQuery.each(obj, function() {
 		displayTid(getTidFromId($(this).attr('id')), enable);
@@ -91,8 +92,7 @@ function toggleIcon(obj, enable)
 /**
  *	being called when the user clicks a genre checkbox.
  */
-function keyCheckboxGenre_OnChange()
-{
+function keyCheckboxGenre_OnChange() {
 	var checked = $(this).attr('checked');
 
 	// check/uncheck all child categories
@@ -106,8 +106,7 @@ function keyCheckboxGenre_OnChange()
 /**
  *	being called when the user clicks a category checkbox.
  */
-function keyCheckboxCategory_OnChange()
-{
+function keyCheckboxCategory_OnChange() {
 	var checked = $(this).attr('checked');
 
 	// make sure the parent genre is also checked
@@ -116,15 +115,14 @@ function keyCheckboxCategory_OnChange()
 		parent.attr('checked', 'true');
 
 	// enable/disable all child icons
-	toggleIcon($(this).parents('.key_category_title').find('.key_icon'), checked);	
+	toggleIcon($(this).parents('.key_category_title').find('.key_icon'), checked);
 }
 
 
 /**
  *	begin called when the user clicks an icon.
  */
-function keyIcon_OnClick()
-{
+function keyIcon_OnClick() {
 	var enable = false;
 	if ($(this).is('.key_icon_disabled'))
 		enable = true;
@@ -146,8 +144,7 @@ function keyIcon_OnClick()
 /**
  *	display the informative bubble control when hovering over the keys for the first time.
  */
-function key_OnMouseOver()
-{
+function key_OnMouseOver() {
 	if (!gInfoBubbleIcons && getCookie("seen_infobubbleicons") == null) {
 		try {
 			// see gmap_bubble/gmap_bubble.js
@@ -174,16 +171,14 @@ function key_OnMouseOver()
 
 // taken from http://www.w3schools.com/JS/js_cookies.asp, modified
 
-function setCookie(name, value, expires)
-{
+function setCookie(name, value, expires) {
 	var exdate = new Date();
 	exdate.setDate(exdate.getDate()+expires);
 	document.cookie = name+"="+escape(value)+((expires==null) ? "" : ";expires="+exdate.toGMTString());
 }
 
 
-function getCookie(name)
-{
+function getCookie(name) {
 	if (document.cookie.length > 0) {
 		c_start = document.cookie.indexOf(name + "=");
 		if (c_start != -1) {
@@ -232,8 +227,7 @@ $(document).ready(function() {
  *	@param name		id of the content div
  *	@param	title		id of the title div (for the arrow icon)
  */
-function toggleElement(name, title)
-{
+function toggleElement(name, title) {
 	$('#'+name).toggle('slow');
 	if ($('#'+title).is('.key_expanded')) {
 		$('#'+title).removeClass('key_expanded');
@@ -250,8 +244,7 @@ function toggleElement(name, title)
  *	@param name		id of the content div
  *	@param title		id of the title div (for the arrow icon)
  */
-function toggleGenre(name, title)
-{
+function toggleGenre(name, title) {
 	// hide all other genres exept the clicked one
 	$('.key_genre_content:not(#'+name+')').hide('slow');
 	$('.key_genre_title:not(#'+title+')').removeClass('key_expanded');
