@@ -103,11 +103,21 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           // determine the color based on what term the line is
           $tid = db_result(db_query('SELECT tn.tid FROM {term_node} tn LEFT JOIN {term_data} td ON tn.tid = td.tid WHERE tn.nid = %d AND td.vid = %d', $line['nid'], 5));
           $color = ogm_ol_load_poly_colors($tid);
+
+          $lines[$i]['tid'] = $tid;
           if (!is_array($color)) {
             $lines[$i]['color'] = $color;
           }
           else {
             $lines[$i]['color'] = '#000000';
+          }
+          // and now opacity
+          $opacity = ogm_ol_load_opacities($tid);
+          if (!is_array($opacity)) {
+            $lines[$i]['opacity'] = $opacity;
+          }
+          else {
+            $lines[$i]['opacity'] = '.5';
           }
 
           // convert the line info from wkt to an array which can be
@@ -140,6 +150,7 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 
           // determine the color based on what term the area is
           $tid = db_result(db_query('SELECT tn.tid FROM {term_node} tn LEFT JOIN {term_data} td ON tn.tid = td.tid WHERE tn.nid = %d AND td.vid = %d', $area['nid'], 7));
+          $areas[$i]['tid'] = $tid;
           $color = ogm_ol_load_poly_colors($tid);
           if (!is_array($color)) {
             $areas[$i]['color'] = $color;
@@ -147,7 +158,14 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           else {
             $areas[$i]['color'] = '#000000';
           }
-
+          // and now the opacity
+          $opacity = ogm_ol_load_opacities($tid);
+          if (!is_array($opacity)) {
+            $areas[$i]['opacity'] = $opacity;
+          }
+          else {
+            $areas[$i]['opacity'] = '.3';
+          }
           // convert the line info from wkt to an array which can be
           // passed to the DOM via js.
           $points = str_replace('POLYGON((', '', $area['geo']);
@@ -192,12 +210,95 @@ function ogm_ol_load_poly_colors($tid = NULL) {
     '321' => '#ff0000', // green map boundary
   );
   if ($tid) {
-    $color = $colors[$tid];
-  }
-  if (strstr($color, '#')) {
-      return $color;
+    return $colors[$tid];
   }
   else {
     return $colors;
   }
+}
+/**
+ * function to create an array containing all the colors
+ * @TODO - turn this into something configurable in the UI
+ */
+function ogm_ol_load_opacities($tid = NULL) {
+  $opacs = array(
+    '312' => '1', // walking
+    '309' => '0.5', // cycling
+    '313' => '1', // PUblic transport
+    '318' => '1', // eco tour
+    '317' => '0.8', // natural corridor
+    '311' => '1', // cultural tour
+    '314' => '1', // historical feature
+    '324' => '0.4', // Mobility zone
+    '325' => '0.5', //hazards & challenges
+    '328' => '0.5', // green space
+    '329' => '0.5', // protected area
+    '330' => '0.8', // future redev
+    '332' => '0.6', // cultural zone
+    '321' => '0.6', // green map boundary
+  );
+  if ($tid) {
+    return $opacs[$tid];
+  }
+  else {
+    return $opacs;
+  }
+}
+
+/**
+ * Build the key for the lines & areas
+ */
+function ogm_ol_key_build() {
+  // loop through taxonomy turning it into an un-ordered nested list
+  $key = array(ogm_ol_getKeyList(taxonomy_get_tree(5)), ogm_ol_getKeyList(taxonomy_get_tree(7)));
+  return $key;
+}
+
+function ogm_ol_getKeyList($terms) {
+  $nested_terms = ogm_ol_nest_terms($terms);
+  $output = '';
+  $output .= '<li id="key_genre_title_'. $nested_terms['vocab']['vid'] .'" class="key_genre_title">
+        <div class="key_title" onclick="javascript:toggleGenre(\'key_genre_content_'. $nested_terms['vocab']['vid'] .'\', \'key_genre_title_'. $nested_terms['vocab']['vid'] .'\');"><a><span title="'. $nested_terms['vocab']['description'] .'">'. t($nested_terms['vocab']['name']) .'</span></a>
+        </div>
+        <div class="key_checkbox"><input type="checkbox" id="key_checkbox_genre_'.$nested_terms['vocab']['vid'] .'" class="key_checkbox_genre" checked></input>
+        </div>';
+
+  $output .= '<ul id="key_genre_content_'.$nested_terms['vocab']['vid'].'" class="key_genre_content">';
+
+  foreach ($nested_terms as $catid => $category) {
+    if (is_numeric($catid)) {
+      $output .= '<li id="key_category_title_'.$catid.'" class="key_category_title key_expanded">';
+      $output .= '<div class="key_title" onclick="javascript:toggleElement(\'key_category_content_'.$catid.'\', \'key_category_title_'.$catid.'\');"><a><span title="'. $category['desc'] .'">' . t($category['name']) . '</span></a>
+        </div>';
+      $output .= '<div class="key_checkbox"><input type="checkbox" id="key_checkbox_category_'.$catid.'" class="key_checkbox_category" checked></input>
+        </div>';
+      $output .= '<div id="key_category_content_'.$catid.'" class="key_category_content">';
+
+      foreach ($category as $key => $info) {
+        if (is_numeric($key)) {
+          $output .= '<span id="key_icon_'.$key.'" class="key_icon" title="'. $info->desc .'">' .taxonomy_image_display($key, NULL, NULL, array('resize' => '1', 'width' => '21', 'height' => '18', 'imagecache_preset' => 'ORIGINAL')). '</span>';
+        }
+      }
+      $output .=  '</div></li>';
+    }
+  }
+  $output .= '</ul></li>';
+  return $output;
+}
+
+function ogm_ol_nest_terms($terms) {
+  $nest = array();
+  foreach ($terms as $term) {
+    $vocab = taxonomy_vocabulary_load($term->vid);
+    $nest['vocab'] = array('vid' => $term->vid, 'name' => $vocab->name, 'description' => $vocab->description);
+    if ($term->depth > 0) {
+      $nest[$term->parents[0]][$term->tid]['name'] = $term->name;
+      $nest[$term->parents[0]][$term->tid]['desc'] = $term->description;
+    }
+    else {
+      $nest[$term->tid]['name'] = $term->name;
+      $nest[$term->tid]['desc'] = $term->description;
+    }
+  }
+  return $nest;
 }

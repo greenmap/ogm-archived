@@ -163,18 +163,19 @@ if($node->field_involved[0]['value'] == 'yes') {
 
   // insert a small map on the site pages when viewed as a node as in search click throughs.
   if (arg(2) != 'simple') {
-    $macro = ogm_custom_misc_site_mini_map($node->location['latitude'],
-        $node->location['longitude']);
-    $map = gmap_filter('process', NULL, NULL, $macro);
-    // this was inside the view-header div before: <ul><li><a href="/dev/ogm_lines/en/greenmap/nycs-green-apple-map">NYC's Green Apple Map</a></li></ul>
-    $contents .= '
-    <div class="site-mini-map">
-      <div class="view-header"><p>Location:</p>
+    if ($node->type == 'green_site') {
+      $macro = ogm_custom_misc_site_mini_map($node->location['latitude'], $node->location['longitude']);
+      $map = gmap_filter('process', NULL, NULL, $macro);
+      // this was inside the view-header div before: <ul><li><a href="/dev/ogm_lines/en/greenmap/nycs-green-apple-map">NYC's Green Apple Map</a></li></ul>
+      $contents .= '
+      <div class="site-mini-map">
+        <div class="view-header"><p>Location:</p>
+        </div>
+        <div class="content-site-mini-map">'. $map .'</div>
+        <br />
       </div>
-      <div class="content-site-mini-map">'. $map .'</div>
-      <br />
-    </div>
-    ';
+      ';
+    }
   }
 
   $contents .= '</div>';
@@ -207,7 +208,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $node->field_video[0]['title'] = $node->field_video_caption[0]['view'];
     $node->field_video[0]['author'] = $name;
     if (user_access('edit any green_site content')) {
-      $node->field_video[0]['description'] .= 
+      $node->field_video[0]['description'] .=
         sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
             $node->nid, $node->nid);
     }
@@ -229,7 +230,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $medianode->field_video_0[0]['title'] = $medianode->title;
     $medianode->field_video_0[0]['description'] = $medianode->body;
     if (user_access('edit any video content')) {
-      $medianode->field_video_0[0]['description'] .= 
+      $medianode->field_video_0[0]['description'] .=
         sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
             $medianode->nid, $node->nid);
     }
@@ -244,7 +245,7 @@ if($node->field_involved[0]['value'] == 'yes') {
   // add site images
   if (!empty($node->field_image[0]['view']) && !empty($node->field_image[0]['provider'])) {
     // don't add deleted flickr or picasa images
-    if (! ( ($node->field_image[0]['provider'] == 'flickr' 
+    if (! ( ($node->field_image[0]['provider'] == 'flickr'
             && !$node->field_image[0]['data']['owner']) ||
             ($node->field_image[0]['provider'] == 'picasa'
              && !$node->field_image[0]['data']['original']))) {
@@ -252,7 +253,7 @@ if($node->field_involved[0]['value'] == 'yes') {
       $node->field_image[0]['title'] = $node->field_image_caption[0]['view'];
       $node->field_image[0]['author'] = $name;
       if (user_access('edit any green_site content')) {
-        $node->field_image[0]['description'] .= 
+        $node->field_image[0]['description'] .=
           sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
               $node->nid, $node->nid);
       }
@@ -282,7 +283,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $medianode->field_photo[0]['title'] = $medianode->title;
     $medianode->field_photo[0]['description'] = $medianode->body;
     if (user_access('edit any photo content')) {
-      $medianode->field_photo[0]['description'] .= 
+      $medianode->field_photo[0]['description'] .=
         sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
             $medianode->nid, $node->nid);
     }
@@ -303,7 +304,7 @@ if($node->field_involved[0]['value'] == 'yes') {
     $medianode->field_document[0]['title'] = $medianode->title;
     $medianode->field_document[0]['description'] = $medianode->body;
     if (user_access('edit any document content')) {
-      $medianode->field_photo[0]['description'] .= 
+      $medianode->field_photo[0]['description'] .=
         sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
             $medianode->nid, $node->nid);
     }
@@ -336,9 +337,9 @@ if($node->field_involved[0]['value'] == 'yes') {
         <param name="allowScriptAccess" value="always" />
         <embed src="http://static.slidesharecdn.com/swf/ssplayerd.swf?doc=loremipsum-090602133056-phpapp02&stripped_title=lorem-ipsum-title" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="477" height="510"></embed>
       </object>
-      <div style="font-size:11px;font-family:tahoma,arial;height:26px;padding-top:2px;">View more 
+      <div style="font-size:11px;font-family:tahoma,arial;height:26px;padding-top:2px;">View more
         <a style="text-decoration:underline;" href="http://www.slideshare.net/">PDF documents</a>
-        from 
+        from
         <a style="text-decoration:underline;" href="http://www.slideshare.net/matt_openflows">matt_openflows</a>.
       </div>
     </div>

@@ -258,7 +258,6 @@ function group_map_block($op = 'list', $delta = 0, $edit = array()) {
  */
 
 function getKeyList($icons) {
-  $keyListString = '<ul id="keys">';
   // iterate through all icons for the map
   foreach ($icons as $genre) {
     if (count($genre->parents) == 1 && $genre->parents[0] == 0) {
@@ -296,7 +295,6 @@ function getKeyList($icons) {
       $keyListString .= "</li>";
     }
   }
-  $keyListString .= '</ul>';
   return $keyListString;
 }
 
@@ -447,7 +445,7 @@ function group_map_block_0_contents() {
     return NULL; // don't return a block
   }
 
-  $trimmed_description = '<span id="trimmed-description">' . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '<br /><br />' . t('Coming soon: lines and areas') . '</span>';
+  $trimmed_description = '<span id="trimmed-description">' . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '</span>';
   $trimmed_description .= print_r(taxonomy_get_tree(1), true);
 
   $description = content_format('field_description',$node->field_description[0], 'default', $node);
@@ -485,7 +483,7 @@ function group_map_block_0_contents() {
   if($node->field_greenhouse_map_nid[0]['value'] && (!is_array($node->field_map_override) ||
         $node->field_map_override[0]['value'] != 'yes')) {
     // get map info
-    $infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' . 
+    $infocontent .= '<div><span class="label">' . t('View') . ':</span>&nbsp;' .
       l(t('Map Profile'), 'http://www.greenmap.org/greenhouse/node/' .
           $node->field_greenhouse_map_nid[0]['value'], array('attributes' =>
             array('class' => 'external', 'target' => '_blank'))) . '</div>';
@@ -627,7 +625,21 @@ size="12" maxlength="255" /> within<br/>';
     '#type' => 'tabset',
   );
 
+  $polykey = '';
+  if (module_exists('ogm_ol')) {
+    // only add if they've chosen it for the map
+    if ($node->field_use_poly[0]['value'] == 'Yes') {
+       $polykey = ogm_ol_key_build();
+    }
+  }
   if ($legend) {
+    if ($node->field_use_poly[0]['value'] == 'Yes') {
+
+       $keyout = '<ul id="keys">'. $key .'<br /><strong>'. t('Routes and Areas') .'</strong> '. $polykey[0] . $polykey[1] .'<br />'.  t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') . '</ul>';
+    }
+    else {
+      $keyout = '<ul id="keys">'. $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') .'</ul>';
+    }
     $form['tabskey']['tab'. $tabnum] = array(
       '#type' => 'tabpage',
       '#title' => t('Legend'),
@@ -636,7 +648,7 @@ size="12" maxlength="255" /> within<br/>';
   //  '#content' => $key . $trimmed_description,
   // ncm modified because $trimmed_description was printing
   // a ghost array. TODO: find the real cause of the problem
-    '#content' => $key . t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.').'<br /><br />'.t('Coming soon: lines and areas'),
+    '#content' => $keyout,
     );
     $tabnum++;
   }
