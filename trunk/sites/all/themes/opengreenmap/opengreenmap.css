@@ -1152,9 +1152,10 @@ div#block-menu-primary-links ul.menu li ul.menu {
   margin-top: .25em;
   width: 170px;
 }
+
 div#block-menu-primary-links ul.menu li ul.menu li ul.menu {
   right: 194px;
-  top: -5px;
+  margin-top: -23px;
 }
 div#block-menu-primary-links ul.menu li ul.menu li{
   display: block;
