@@ -85,7 +85,7 @@ function ogm_ol_init() {
 function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   switch ($op) {
     case 'view':
-      if ($node->type == 'green_map') {
+      if ($node->type == 'green_map' && $node->field_use_poly[0]['value'] == 'Yes') {
         // query for lines in a group map
         $lines_query = 'SELECT ct.nid, AsText(ct.field_line_contour_geo) AS geo
           FROM {content_type_green_route} ct
