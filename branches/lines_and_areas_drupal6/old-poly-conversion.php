@@ -132,7 +132,7 @@ if (!empty($update_free_access) || $user->uid == 1) {
   die;
 }
 else {
-  print 'nothing to see here';
+  print "This file is protected in the same way as update.php. If you can't use that, you can't use this.";
 }
 
 
