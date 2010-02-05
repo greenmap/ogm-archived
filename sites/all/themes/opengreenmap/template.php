@@ -439,11 +439,40 @@ function opengreenmap_custom_login() {
 }
 
 function opengreenmap_filter_tips_more_info() {
-  return '<p>'. l( 
+  return '<p>'. l(
     t('More information about formatting options'),
     'filter/tips',
     array(
       'attributes' => array('target' => '_blank'),
     )
     ) .'</p>';
+}
+
+
+function opengreenmap_openlayers_cck_map($field = array(), $map = array()) {
+  $title = check_plain($field['widget']['label']);
+  $description = content_filter_xss($field['widget']['description']);
+  $output = '';
+
+  // Check for errors
+  if (!empty($map['errors'])) {
+    return $output;
+  }
+
+  $output = '
+    <div id="openlayers-cck-map-container-' . $map['id'] . '" class="form-item openlayers-cck-map-container">
+      <label for="openlayers-cck-map-' . $map['id'] . '">' . $title . ':</label>
+      <div class="description openlayers-cck-map-instructions">
+        ' . t('Click the tools in the upper right-hand corner of the map to switch between draw mode and zoom/pan mode. Draw your shape, double-clicking to finish. You may edit your shape using the control points. To delete a shape, select it and press the delete key. To delete a vertex hover over it and press the d key.') . '
+      </div>
+      ' . $map['themed'] . '
+      <div class="description openlayers-cck-map-description">
+        ' . $description . '
+      </div>
+      <div class="openlayers-cck-actions">
+        <a href="#" id="' . $map['id'] . '-wkt-switcher" rel="' . $map['id'] . '">' . t('Show/Hide WKT Fields') . '</a>
+      </div>
+    </div>
+  ';
+  return $output;
 }
