@@ -1,0 +1,29 @@
+--- gmap_plugin_style_gmap.inc.orig	2009-05-26 11:01:25.000000000 -0400
++++ gmap_plugin_style_gmap.inc	2009-05-26 11:01:25.000000000 -0400
+@@ -134,7 +134,26 @@ class gmap_plugin_style_gmap extends vie
+         }
+       }
+       if (!empty($markers)) { // Don't draw empty maps.
++
++      // TODO: need to replace this hack which maintains custom zoom level
++      //   with a long term solution
++      $arguments = $this->view->argument;
++      foreach ($arguments as $argobj) {
++        if (is_numeric($argobj->argument)) {
++          $gid = $argobj->argument;
++          $macro = group_map_gmap_macro($gid);
++        }
++      }
++      if ($macro) {
++        $map = gmap_parse_macro($macro);
++      }
++      else {
+         $map = gmap_parse_macro($this->options['macro']);
++      }
++      // End hack;
++      // $map = gmap_parse_macro($this->options['macro']);
++
++
+         $map['markers'] = $markers;
+         $output .= theme($this->theme_functions(), $this->view, $this->options, $map, $title);
+       }
