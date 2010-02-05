@@ -178,7 +178,7 @@ ini_set('url_rewriter.tags',        '');
  *
  * Remove the leading hash signs to enable.
  */
-# $conf = array(
+ $conf = array(
 #   'site_name' => 'My Drupal site',
 #   'theme_default' => 'minnelli',
 #   'anonymous' => 'Visitor',
@@ -190,7 +190,7 @@ ini_set('url_rewriter.tags',        '');
  * theme. It is located inside 'modules/system/maintenance-page.tpl.php'.
  * Note: This setting does not apply to installation and update pages.
  */
-#   'maintenance_theme' => 'minnelli',
+   'maintenance_theme' => 'opengreenmap',
 /**
  * reverse_proxy accepts a boolean value.
  *
@@ -219,7 +219,7 @@ ini_set('url_rewriter.tags',        '');
  * your web server spoofing the X-Forwarded-For headers.
  */
 #   'reverse_proxy_addresses' => array('a.b.c.d', ...),
-# );
+ );
 
 /**
  * String overrides:
