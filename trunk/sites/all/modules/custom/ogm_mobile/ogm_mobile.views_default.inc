@@ -214,9 +214,128 @@ function ogm_mobile_views_default_views() {
     ),
     'separator' => '',
   ));
-  $handler = $view->new_display('page', 'Page', 'page_1');
   $handler->override_option('exposed_block', TRUE);
+  $handler = $view->new_display('page', 'Page', 'page_1');
   $handler->override_option('path', 'mobile/list');
+  $handler->override_option('menu', array(
+    'type' => 'none',
+    'title' => '',
+    'description' => '',
+    'weight' => 0,
+    'name' => 'navigation',
+  ));
+  $handler->override_option('tab_options', array(
+    'type' => 'none',
+    'title' => '',
+    'description' => '',
+    'weight' => 0,
+  ));
+  $handler = $view->new_display('page', 'Page', 'page_2');
+  $handler->override_option('filters', array(
+    'distance' => array(
+      'operator' => 'mbr',
+      'value' => array(
+        'latitude' => '',
+        'longitude' => '',
+        'postal_code' => '',
+        'country' => '',
+        'search_distance' => '1000',
+        'search_units' => 'mile',
+      ),
+      'group' => '0',
+      'exposed' => TRUE,
+      'expose' => array(
+        'use_operator' => 0,
+        'operator' => 'distance_op',
+        'identifier' => 'distance',
+        'label' => 'Location: Distance / Proximity',
+        'optional' => 1,
+        'remember' => 0,
+      ),
+      'type' => 'latlon',
+      'identifier' => 'dist',
+      'id' => 'distance',
+      'table' => 'location',
+      'field' => 'distance',
+      'relationship' => 'none',
+      'override' => array(
+        'button' => 'Use default',
+      ),
+    ),
+    'status' => array(
+      'operator' => '=',
+      'value' => '1',
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'status',
+      'table' => 'node',
+      'field' => 'status',
+      'relationship' => 'none',
+    ),
+    'type' => array(
+      'operator' => 'in',
+      'value' => array(
+        'green_site' => 'green_site',
+      ),
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'type',
+      'table' => 'node',
+      'field' => 'type',
+      'relationship' => 'none',
+    ),
+    'private' => array(
+      'operator' => '=',
+      'value' => '0',
+      'group' => '0',
+      'exposed' => FALSE,
+      'expose' => array(
+        'operator' => FALSE,
+        'label' => '',
+      ),
+      'id' => 'private',
+      'table' => 'og',
+      'field' => 'private',
+      'relationship' => 'group_nid',
+    ),
+    'tid' => array(
+      'operator' => 'and',
+      'value' => array(),
+      'group' => '0',
+      'exposed' => TRUE,
+      'expose' => array(
+        'use_operator' => 0,
+        'operator' => 'tid_op',
+        'identifier' => 'tid',
+        'label' => 'Taxonomy: Term',
+        'optional' => 1,
+        'single' => 1,
+        'remember' => 0,
+        'reduce' => 0,
+      ),
+      'type' => 'select',
+      'limit' => TRUE,
+      'vid' => '1',
+      'id' => 'tid',
+      'table' => 'term_node',
+      'field' => 'tid',
+      'hierarchy' => 1,
+      'override' => array(
+        'button' => 'Use default',
+      ),
+      'relationship' => 'none',
+      'reduce_duplicates' => 0,
+    ),
+  ));
+  $handler->override_option('path', 'taxsearch');
   $handler->override_option('menu', array(
     'type' => 'none',
     'title' => '',
