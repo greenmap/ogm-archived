@@ -228,12 +228,18 @@ $(document).ready(function() {
  *	@param	title		id of the title div (for the arrow icon)
  */
 function toggleElement(name, title) {
-	$('#'+name).toggle('slow');
-	if ($('#'+title).is('.key_expanded')) {
-		$('#'+title).removeClass('key_expanded');
-	} else {
-		$('#'+title).addClass('key_expanded');
-	}
+  $('#'+name).toggle('slow');
+  if ($('#'+title).is('.key_expanded')) {
+    $('#'+title).removeClass('key_expanded');
+    $('#'+title).removeClass(title+'_expanded');
+    $('#'+title).addClass(title+'_collapsed');
+  }
+  else {
+    $('#'+title).addClass('key_expanded');
+    $('#'+title).addClass(title+'_expanded');
+    $('#'+title).removeClass(title+'_collapsed');
+
+  }
 }
 
 
