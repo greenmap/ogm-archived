@@ -84,3 +84,10 @@
 .key_expanded {
 	list-style-image: url(images/menu-expanded-green.png);
 }
+
+div#startarrow {
+  position: absolute;
+  z-index: 1000;
+  right: 195px;
+  top: 55px;
+}
