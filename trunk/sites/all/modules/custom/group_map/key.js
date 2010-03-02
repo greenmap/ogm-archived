@@ -144,24 +144,34 @@ function keyIcon_OnClick() {
 /**
  *	display the informative bubble control when hovering over the keys for the first time.
  */
+// function key_OnMouseOver() {
+//   if (!gInfoBubbleIcons && getCookie("seen_infobubbleicons") == null) {
+//     try {
+//       // see gmap_bubble/gmap_bubble.js
+//       // display bubble control
+//       gInfoBubbleIcons = new InfoBubbleIcons();
+//       GlobalMap.addControl(gInfoBubbleIcons);
+//
+//       // set session coockie
+//       setCookie("seen_infobubbleicons", "1", null);
+//
+//       // fade out after 5 seconds
+//       setTimeout(function() {
+// /*        $('#infobubbleicons_container').fadeOut('slow', function() {
+//           GlobalMap.removeControl(gInfoBubbleIcons);
+//         });*/
+//
+//         $('#startarrow').fadeOut('slow', function() {});
+//       }, 5000);
+//     }
+//     catch (e) {
+//     }
+//   }
+// }
+
+
 function key_OnMouseOver() {
-	if (!gInfoBubbleIcons && getCookie("seen_infobubbleicons") == null) {
-		try {
-			// see gmap_bubble/gmap_bubble.js
-			// display bubble control
-			gInfoBubbleIcons = new InfoBubbleIcons();
-			GlobalMap.addControl(gInfoBubbleIcons);
-			// set session coockie
-			setCookie("seen_infobubbleicons", "1", null);
-			// fade out after 5 seconds
-			setTimeout(function() {
-				$('#infobubbleicons_container').fadeOut('slow', function() {
-					GlobalMap.removeControl(gInfoBubbleIcons);
-				});
-			}, 5000);
-		} catch (e) {
-		}
-	}
+  $('#startarrow').fadeOut('slow', function() {});
 }
 
 
@@ -216,6 +226,9 @@ $(document).ready(function() {
 	$('#infobubblezoom_container').click(function() {
 		$(this).fadeOut('slow');
 	});
+
+
+
 });
 
 
