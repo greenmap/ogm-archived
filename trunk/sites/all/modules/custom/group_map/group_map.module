@@ -633,6 +633,9 @@ size="12" maxlength="255" /> within<br/>';
     }
   }
   if ($legend) {
+    // add in a div to be used as an arrow
+    $startarrow = '<div id="startarrow"><img src="http://www.waterexpress.com.my/images/arrow_right.png"></div>';
+
     if ($node->field_use_poly[0]['value'] == 'Yes') {
 
        $keyout = '<ul id="keys"><span class="instructions">'.  t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') .'</span>' . $key .'<br /><strong>'. t('Routes and Areas') .'</strong> '. $polykey[0] . $polykey[1] .'<br />'. '</ul>';
@@ -648,7 +651,7 @@ size="12" maxlength="255" /> within<br/>';
   //  '#content' => $key . $trimmed_description,
   // ncm modified because $trimmed_description was printing
   // a ghost array. TODO: find the real cause of the problem
-    '#content' => $keyout,
+    '#content' => $startarrow . $keyout,
     );
     $tabnum++;
   }
