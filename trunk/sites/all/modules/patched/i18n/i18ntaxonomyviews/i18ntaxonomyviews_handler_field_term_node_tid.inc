@@ -4,7 +4,7 @@
 /**
  * Field handler for terms.
  */
-class i18ntaxonomy_handler_field_term_node_tid extends views_handler_field_term_node_tid {
+class i18ntaxonomyviews_handler_field_term_node_tid extends views_handler_field_term_node_tid {
   function pre_render($values) {
     $this->field_alias = $this->aliases['vid'];
     $vids = array();

@@ -4,7 +4,7 @@
 /**
  * Allow taxonomy term ID(s) as argument
  */
-class i18ntaxonomy_handler_argument_term_node_tid extends views_handler_argument_term_node_tid {
+class i18ntaxonomyviews_handler_argument_term_node_tid extends views_handler_argument_term_node_tid {
   function title_query() {
     $titles = array();
     $placeholders = implode(', ', array_fill(0, sizeof($this->value), '%d'));
