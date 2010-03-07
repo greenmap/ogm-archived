@@ -4,7 +4,7 @@
 /**
  * Filter by term id
  */
-class i18ntaxonomy_handler_filter_term_node_tid extends views_handler_filter_term_node_tid {
+class i18ntaxonomyviews_handler_filter_term_node_tid extends views_handler_filter_term_node_tid {
 
   function value_form(&$form, &$form_state) {
     $vocabulary = taxonomy_vocabulary_load($this->options['vid']);
