@@ -112,12 +112,12 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
             $lines[$i]['color'] = '#000000';
           }
           // and now opacity
-          $opacity = ogm_ol_load_opacities($tid);
-          if (!is_array($opacity)) {
-            $lines[$i]['opacity'] = $opacity;
+          $opacity = ogm_ol_load_line_opacities($tid);
+          if (!is_array($line_opacity)) {
+            $lines[$i]['line_opacity'] = $line_opacity;
           }
           else {
-            $lines[$i]['opacity'] = '.5';
+            $lines[$i]['line_opacity'] = '.5';
           }
 
           // convert the line info from wkt to an array which can be
