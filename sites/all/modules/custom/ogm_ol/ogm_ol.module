@@ -159,12 +159,19 @@ function ogm_ol_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
             $areas[$i]['color'] = '#000000';
           }
           // and now the opacity
-          $opacity = ogm_ol_load_opacities($tid);
-          if (!is_array($opacity)) {
-            $areas[$i]['opacity'] = $opacity;
+          $line_opacity = ogm_ol_load_line_opacities($tid);
+          if (!is_array($line_opacity)) {
+            $areas[$i]['line_opacity'] = $line_opacity;
           }
           else {
-            $areas[$i]['opacity'] = '.3';
+            $areas[$i]['line_opacity'] = '.3';
+          }
+          $area_opacity = ogm_ol_load_area_opacities($tid);
+          if (!is_array($area_opacity)) {
+            $areas[$i]['area_opacity'] = $area_opacity;
+          }
+          else {
+            $areas[$i]['area_opacity'] = '.3';
           }
           // convert the line info from wkt to an array which can be
           // passed to the DOM via js.
@@ -220,7 +227,7 @@ function ogm_ol_load_poly_colors($tid = NULL) {
  * function to create an array containing all the colors
  * @TODO - turn this into something configurable in the UI
  */
-function ogm_ol_load_opacities($tid = NULL) {
+function ogm_ol_load_line_opacities($tid = NULL) {
   $opacs = array(
     '312' => '1', // walking
     '309' => '0.5', // cycling
@@ -236,6 +243,18 @@ function ogm_ol_load_opacities($tid = NULL) {
     '330' => '0.8', // future redev
     '332' => '0.6', // cultural zone
     '321' => '0.6', // green map boundary
+  );
+  if ($tid) {
+    return $opacs[$tid];
+  }
+  else {
+    return $opacs;
+  }
+}
+
+function ogm_ol_load_area_opacities($tid = NULL) {
+  $opacs = array(
+    '321' => '0', // green map boundary
   );
   if ($tid) {
     return $opacs[$tid];

@@ -7,15 +7,23 @@ var allPolygons = [];
 
 Drupal.gmap.addHandler('gmap',function(elem) {
   var map = this;
+  var coords = [];
+  var nid;
+  var color;
+  var line;
+  var line_opacity;
+  var area_opacity;
+  var tid;
+
   map.bind("ready", function() {
     // loop through the line coordinates passed from the module for the map
     for ( i = 0; i < Drupal.settings.ogm_ol_lines.length; i = i + 1 ) {
-      var coords = [];
-      var nid = Drupal.settings.ogm_ol_lines[i]['nid'];
-      var color = Drupal.settings.ogm_ol_lines[i]['color'];
-      var line = Drupal.settings.ogm_ol_lines[i]['coords'];
-      var opacity = Drupal.settings.ogm_ol_lines[i]['opacity'];
-      var tid = Drupal.settings.ogm_ol_lines[i]['tid'];
+      coords = [];
+      nid = Drupal.settings.ogm_ol_lines[i]['nid'];
+      color = Drupal.settings.ogm_ol_lines[i]['color'];
+      line = Drupal.settings.ogm_ol_lines[i]['coords'];
+      line_opacity = Drupal.settings.ogm_ol_lines[i]['line_opacity'];
+      tid = Drupal.settings.ogm_ol_lines[i]['tid'];
       // since there are multiple points in a line, loop through those,
       // turn them into Google GLatLng objects, and add that to an array
       for ( var j=line.length-1; j>=0; --j ) {
@@ -23,7 +31,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
         coords.push(latlon);
       }
       // create the line instance
-      var polyline = new GPolyline(coords, color, 5, opacity);
+      var polyline = new GPolyline(coords, color, 5, line_opacity);
       allPolygons.push([tid,polyline]);
 
       // single left click on the line
@@ -34,12 +42,13 @@ Drupal.gmap.addHandler('gmap',function(elem) {
 
     // loop through the area coordinates passed from the module for the map
     for ( i = 0; i < Drupal.settings.ogm_ol_areas.length; i = i + 1 ) {
-      var coords = [];
-      var nid = Drupal.settings.ogm_ol_areas[i]['nid'];
-      var color = Drupal.settings.ogm_ol_areas[i]['color'];
-      var line = Drupal.settings.ogm_ol_areas[i]['coords'];
-      var opacity = Drupal.settings.ogm_ol_areas[i]['opactiy'];
-      var tid = Drupal.settings.ogm_ol_areas[i]['tid'];
+      coords = [];
+      nid = Drupal.settings.ogm_ol_areas[i]['nid'];
+      color = Drupal.settings.ogm_ol_areas[i]['color'];
+      line = Drupal.settings.ogm_ol_areas[i]['coords'];
+      line_opacity = Drupal.settings.ogm_ol_areas[i]['line_opacity'];
+      area_opacity = Drupal.settings.ogm_ol_areas[i]['area_opacity'];
+      tid = Drupal.settings.ogm_ol_areas[i]['tid'];
       // since there are multiple points in an area, loop through those,
       // turn them into Google GLatLng objects, and add that to an array
       for ( var j=line.length-1; j>=0; --j ) {
@@ -47,7 +56,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
         coords.push(latlon);
       }
       // create the area instance
-      var polyarea = new GPolygon(coords, color, 3, opacity, color, opacity);
+      var polyarea = new GPolygon(coords, color, 3, line_opacity, color, area_opacity);
       allPolygons.push([tid,polyarea]);
       // single left click on the area
       GEvent.addListener(polyarea, "click", OgmOlOnClick(nid, polyarea.getBounds().getCenter()));
