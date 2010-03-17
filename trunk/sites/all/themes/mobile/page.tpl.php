@@ -107,6 +107,7 @@
   
   .view-proximity li{
   list-style-type: none;
+  margin-left: -25px;
   }
   
   .forward_links {
@@ -138,6 +139,7 @@
   	color:  #666;
   	margin-top: 5px;
   	margin-bottom: 5px;
+  	text-align: center;
   }
   
   h3{
