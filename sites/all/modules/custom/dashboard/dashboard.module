@@ -304,7 +304,7 @@ function dashboard_access_member_callback($group_nid = NULL, $poly = FALSE) {
   else {
     $node = node_load($group_nid);
     if ($poly) {
-      if ($node->field_use_poly[0] == 'Yes') {
+      if ($node->field_use_poly[0]['value'] == 'Yes') {
         return og_is_group_member($node);
       }
       else {
