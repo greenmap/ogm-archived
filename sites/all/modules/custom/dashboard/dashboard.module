@@ -100,11 +100,15 @@ function dashboard_menu(){
   );
   //FIXME: maybe don't hardcode this
   $green_route_type_name = 'green_route';
-  //FIXME: need some test for existence of content type to hide this tab if content type gets disabled
+  //FIXME: need some test for existence of content type to hide this tab if
+  //   content type gets disabled
+
+  // this may be addressed by the second access argument, which checks if
+  // poly fields are enabled on the map.-- ncm
   $items['node/%dashboard_map/add_route'] = array(
     'title' => 'Add a Route',
     'access callback' => 'dashboard_access_member_callback',
-    'access arguments' => array(1),
+    'access arguments' => array(1, TRUE),
     'page callback' => 'dashboard_add',
     'page arguments'=> array(1, $green_route_type_name),
     'type' => MENU_LOCAL_TASK,
@@ -115,7 +119,7 @@ function dashboard_menu(){
   $items['node/%dashboard_map/add_area'] = array(
     'title' => 'Add an Area',
     'access callback' => 'dashboard_access_member_callback',
-    'access arguments' => array(1),
+    'access arguments' => array(1, TRUE),
     'page callback' => 'dashboard_add',
     'page arguments'=> array(1, $green_area_type_name),
     'type' => MENU_LOCAL_TASK,
@@ -289,7 +293,7 @@ function dashboard_access_admin_callback($group_nid = 0, $import_export = FALSE)
   }
 }
 
-function dashboard_access_member_callback($group_nid = 0) {
+function dashboard_access_member_callback($group_nid = NULL, $poly = FALSE) {
   global $user;
   if ( !$user->uid ) {
     return FALSE;
@@ -299,7 +303,17 @@ function dashboard_access_member_callback($group_nid = 0) {
   }
   else {
     $node = node_load($group_nid);
-    return og_is_group_member($node);
+    if ($poly) {
+      if ($node->field_use_poly[0] == 'Yes') {
+        return og_is_group_member($node);
+      }
+      else {
+        return FALSE;
+      }
+    }
+    else {
+      return og_is_group_member($node);
+    }
   }
 }
 
