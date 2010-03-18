@@ -56,9 +56,7 @@ InfoBubbleIcons.prototype.initialize = function(map) {
 }
 InfoBubbleIcons.prototype.getDefaultPosition = function() {
 	// position goes here
-
-  // turned off as per issue #2052 --ncm
-  // 	return new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(4, 40));
+	return new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(4, 40));
 }
 
 
