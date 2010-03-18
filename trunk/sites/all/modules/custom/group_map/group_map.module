@@ -651,7 +651,8 @@ size="12" maxlength="255" /> within<br/>';
   //  '#content' => $key . $trimmed_description,
   // ncm modified because $trimmed_description was printing
   // a ghost array. TODO: find the real cause of the problem
-    '#content' => $startarrow . $keyout,
+//     '#content' => $startarrow . $keyout,
+'#content' => $keyout,
     );
     $tabnum++;
   }
