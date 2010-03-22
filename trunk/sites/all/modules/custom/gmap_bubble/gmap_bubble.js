@@ -62,7 +62,6 @@ InfoBubbleIcons.prototype.getDefaultPosition = function() {
 
 // global variables
 
-var gInfoBubbleIcons = null;
 var gInfoBubbleZoom = null;
 var gInfoBubbleZoomCount = 0;
 var gInfoBubbleZoomInterval;
@@ -113,8 +112,6 @@ Drupal.gmap.addHandler('gmap', function(elem) {
 			gInfoBubbleZoom = new InfoBubbleZoom();
 			map.addControl(gInfoBubbleZoom);
 
-      gInfoBubbleIcons = new InfoBubbleIcons();
-      map.addControl(gInfoBubbleIcons);
 		//	setCookie2("seen_infobubblezoom", "1", 30);
 		// }
 
@@ -126,16 +123,6 @@ Drupal.gmap.addHandler('gmap', function(elem) {
 				gInfoBubbleZoomInterval = undefined;
 			}
 		});
- // remove icons bubble when map is clicked
-  $("#infobubbleicons_close").click(function () {
-    map.removeControl(gInfoBubbleIcons);
-  });
-  $("#keys").hover(function () {
-    map.removeControl(gInfoBubbleIcons);
-  },
-  function () {
-//     map.addControl(gInfoBubbleIcons);
-  });
  });
 
 
