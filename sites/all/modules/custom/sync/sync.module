@@ -229,3 +229,8 @@ function sync_fetch_gm_maps($uid = 0) {
 function sync_cron() {
   sync_fetch_all_gm_maps();
 }
+
+function sync_init() {
+  // let's fail more loudly, and earlier
+  include_once 'sync.inc.php';
+}
