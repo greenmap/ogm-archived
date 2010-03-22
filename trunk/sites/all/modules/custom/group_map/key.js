@@ -164,7 +164,6 @@ function key_OnMouseOver() {
 	}
 }
 
-
 /**
  *	Cookie helper Code
  */
@@ -194,10 +193,11 @@ function getCookie(name) {
 
 
 /**
- *	Main Code
+ *	Add JQuery document ready listeners
  */
 
 $(document).ready(function() {
+  /* key events */
 	// collapse all
 	$('.key_genre_content').css('display', 'block');		// temporarily set to display none during loading
 	$('.key_genre_content').hide(0);
@@ -211,13 +211,51 @@ $(document).ready(function() {
 	$('.key_checkbox_category').click(keyCheckboxCategory_OnChange);
 	$('.key_icon').click(keyIcon_OnClick);
 
-	// this is for the informative bubbles
-	$('#keys').mouseover(key_OnMouseOver);
-	$('#infobubblezoom_container').click(function() {
-		$(this).fadeOut('slow');
-	});
+  /* there are X sites bubble */
+  $('#infobubblezoom_container').click(function() {
+    $(this).fadeOut('slow');
+  });
+
+  /* Help bubble listeners */
+  $("#instruction_bubble_close").click(InstructionBubbleClose);
+  $("#keys_help_button").click(HelpButtonToggle);
+
+  // set the help icon to active if the bubble is displayed
+  if ($("#instruction_bubble").is(':visible')) {
+    if ($("#keys_help_button").not('.active')) {
+      $("#keys_help_button").addClass('active');
+    }
+  }
 });
 
+/**
+ * Instruction bubble handling code.
+ */
+function InstructionBubbleClose() {
+  $("#instruction_bubble").fadeOut('slow');
+  if ($("#keys_help_button").is('.active')) {
+    $("#keys_help_button").removeClass('active');
+  }
+  // set a session variable for users who have seen this
+  $.post('user/seeninstructionbubble');
+
+}
+
+function InstructionBubbleOpen() {
+  if ($("#keys_help_button").not('.active')) {
+    $("#keys_help_button").addClass('active');
+  }
+  $("#instruction_bubble").fadeIn('slow');
+}
+
+function HelpButtonToggle() {
+  if ($("#instruction_bubble").is(':visible')) {
+    InstructionBubbleClose();
+  }
+  else {
+    InstructionBubbleOpen();
+  }
+}
 
 
 /**
@@ -233,12 +271,13 @@ function toggleElement(name, title) {
     $('#'+title).removeClass('key_expanded');
     $('#'+title).removeClass(title+'_expanded');
     $('#'+title).addClass(title+'_collapsed');
+    $('#'+title).addClass('key_collapsed');
   }
   else {
     $('#'+title).addClass('key_expanded');
     $('#'+title).addClass(title+'_expanded');
     $('#'+title).removeClass(title+'_collapsed');
-
+    $('#'+title).removeClass('key_collapsed');
   }
 }
 
