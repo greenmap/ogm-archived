@@ -270,7 +270,7 @@ function getKeyList($icons) {
     if (count($genre->parents) == 1 && $genre->parents[0] == 0) {
       // display genres
       $keyListString .= '
-      <li id="key_genre_title_'. $genre->tid .'" class="key_genre_title key_genre_title_'. $genre->tid .'_collapsed">
+      <li id="key_genre_title_'. $genre->tid .'" class="key_genre_title">
         <div class="key_title" onclick="javascript:toggleGenre(\'key_genre_content_'.$genre->tid.'\', \'key_genre_title_'.$genre->tid.'\');"><a><span title="'. $genre->description .'">'. t($genre->name) .'</span></a>
         </div>
         <div class="key_checkbox"><input type="checkbox" id="key_checkbox_genre_'.$genre->tid.'" class="key_checkbox_genre" checked></input>
