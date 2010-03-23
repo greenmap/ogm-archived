@@ -269,15 +269,11 @@ function toggleElement(name, title) {
   $('#'+name).toggle('slow');
   if ($('#'+title).is('.key_expanded')) {
     $('#'+title).removeClass('key_expanded');
-    $('#'+title).removeClass(title+'_expanded');
-    $('#'+title).addClass(title+'_collapsed');
     $('#'+title).addClass('key_collapsed');
   }
   else {
-    $('#'+title).addClass('key_expanded');
-    $('#'+title).addClass(title+'_expanded');
-    $('#'+title).removeClass(title+'_collapsed');
     $('#'+title).removeClass('key_collapsed');
+    $('#'+title).addClass('key_expanded');
   }
 }
 
@@ -293,7 +289,6 @@ function toggleGenre(name, title) {
 	// hide all other genres exept the clicked one
 	$('.key_genre_content:not(#'+name+')').hide('slow');
 	$('.key_genre_title:not(#'+title+')').removeClass('key_expanded');
-
 	// do stuff with the clicked genre
 	toggleElement(name, title);
 }
