@@ -82,7 +82,7 @@
 }
 
 div#instruction_bubble {
-  background: url('images/legend_bubble.png') no-repeat top right;
+  background: url('images/legend_bubble_resized.png') no-repeat top right;
   position: absolute;
   z-index: 1000;
   right: 200px;
