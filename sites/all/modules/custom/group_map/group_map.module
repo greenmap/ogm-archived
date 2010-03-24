@@ -647,13 +647,13 @@ size="12" maxlength="255" /> within<br/>';
     if ($_SESSION['SeenInstructionBubble'])  {
       $hide = 'style="display:none;"';
     }
-    $instruction_bubble = '<div id="instruction_bubble" '. $hide .'><div id="instruction_bubble_close"></div><div class="instructions">'.  t('Use this <strong>Legend</strong> To customize the map. Click an Icon or check box to turn site <strong>On/Off</strong><br /><br /> Mouse over the Icons for <strong>definitions</strong><br /><br /> More: Click tabs above for Map <strong>Info</strong> or <strong>Search</strong>')  .'</div></div>';
+    $instruction_bubble = '<div id="instruction_bubble" '. $hide .'><div id="instruction_bubble_close"></div><div class="instructions">'.  t('Use this <strong>Legend</strong> To customize the map. Click category, checkbox or Icons to turn related sites <strong>On/Off</strong><br /><br /> Mouse over the Icons for <strong>definitions</strong><br /><br /> More: Click tabs above for Map <strong>Info</strong> or <strong>Search</strong>')  .'</div></div>';
     if ($node->field_use_poly[0]['value'] == 'Yes') {
 
-       $keyout = '<ul id="keys"><div id="keys_help_button"></div><h3>' . t('Green Map Icons') . '</h3>' . $key .'<br /><strong>'. t('Routes and Areas') .'</strong> '. $polykey[0] . $polykey[1] .'<br />'. '</ul>';
+       $keyout = '<ul id="keys"><div class="clear-block"><h3 class="keys">' . t('Green Map Icons') . '</h3><div id="keys_help_button"></div></div>' . $key .'<br /><strong>'. t('Routes and Areas') .'</strong> '. $polykey[0] . $polykey[1] .'<br />'. '</ul>';
     }
     else {
-      $keyout = '<ul id="keys"><div id="keys_help_button"></div><h3>' . t('Green Map Icons') . '</h3>' . $key .'</ul>';
+      $keyout = '<ul id="keys"><div class="clear-block"><h3 class="keys">' . t('Green Map Icons') . '</h3><div id="keys_help_button"></div></div>' . $key .'</ul>';
     }
     $form['tabskey']['tab'. $tabnum] = array(
       '#type' => 'tabpage',
