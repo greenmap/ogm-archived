@@ -13,6 +13,7 @@
 
 
 .key_genre_title {
+	list-style-image: url(images/menu-collapsed-green.png);
 	list-style-type: none;
 	list-style-position:inside;
 }
@@ -21,6 +22,8 @@
 .key_genre_content {
 	display: none;	/* to hide the icons while loading */
 }
+
+
 .key_category {
 	margin-bottom: 2px;
 	margin-left: 10px;
@@ -31,13 +34,9 @@
 }
 
 
-.key_category_title, .key_genre_title {
+.key_category_title {
 	list-style-image: url(images/menu-collapsed-green.png);
 	list-style-type: none;
-}
-.key_expanded {
-  list-style-image: url(images/menu-expanded-green.png);
-  list-style-type: none;
 }
 
 
@@ -53,7 +52,7 @@
 .key_checkbox {
 	display: inline;
 	position: absolute;
-	right: 25px;
+	right: 20px;
 }
 
 
@@ -81,71 +80,14 @@
 .key_icon_disabled {
 }
 
-div#instruction_bubble {
-  background: url('images/legend_bubble_resized.png') no-repeat top right;
+
+.key_expanded {
+	list-style-image: url(images/menu-expanded-green.png);
+}
+
+div#startarrow {
   position: absolute;
   z-index: 1000;
-  right: 200px;
-  top: 10px;
-  width: 225px;
-  height: 225px;
+  right: 195px;
+  top: 55px;
 }
-div#instruction_bubble .instructions {
-  font-family: helvetica, arial, sans-serif;
-  font-size: 12px;
-  width: 140px;
-  margin: 15px;
-}
-div#instruction_bubble .instructions strong {
-  color: #C6006F;
-}
-#instruction_bubble_close {
-  position: absolute;
-  top: 10px;
-  right: 60px;
-  background: url("http://maps.gstatic.com/intl/en_us/mapfiles/iw_close.gif") no-repeat;
-  height: 12px;
-  width: 12px;
-  float: right;
-  z-index: 999;
-}
-#keys h3.keys {
-  float: left;
-}
-#keys_help_button {
-  background: url("images/question.png") top right no-repeat;
-  height: 16px;
-  width: 16px;
-  float: left;
-  margin: .3em 0 0 1.3em;
-}
-#keys_help_button:hover {
-  background: url("images/question_active.png") top right no-repeat;
-}
-
-
-/* Handle custom list style arrows */
-
-/* blue */
-#key_genre_title_42 , #key_genre_title_42 li.key_collapsed, #key_category_title_307, #key_category_title_307 li.key_collapsed, #key_category_title_323, #key_category_title_323.key_collapsed {
-  list-style-image: url(images/menu-collapsed-blue.png);
-}
-#key_genre_title_42.key_expanded, #key_genre_title_42 li.key_expanded, #key_category_title_307.key_expanded, #key_category_title_307 li.key_expanded, #key_category_title_323, #key_category_title_323 li.key_expanded {
-  list-style-image: url(images/menu-expanded-blue.png);
-}
-/* green */
-#key_genre_title_43, #key_genre_title_43 li.key_collapsed, #key_category_title_308, #key_category_title_308 li.key_collapsed,  #key_category_title_327, #key_category_title_327 li.key_collapsed {
-  list-style-image: url(images/menu-collapsed-newgreen.png);
-}
-#key_genre_title_43.key_expanded, #key_genre_title_43 li.key_expanded, #key_category_title_308.key_expanded, #key_category_title_308 li.key_expanded, #key_category_title_327.key_expanded, #key_category_title_327 li.key_expanded {
-  list-style-image: url(images/menu-expanded-newgreen.png);
-}
-/* orange  */
-#key_genre_title_44, #key_genre_title_44 li.key_collapsed, #key_category_title_310, #key_category_title_310 li.key_collapsed, #key_category_title_331, #key_category_title_331 li.key_collapsed {
-  list-style-image: url(images/menu-collapsed-orange.png);
-}
-
-#key_genre_title_44.key_expanded, #key_genre_title_44 li.key_expanded, #key_category_title_310.key_expanded, #key_category_title_310 li.key_expanded, #key_category_title_331.key_expanded, #key_category_title_331 li.key_expanded {
-  list-style-image: url(images/menu-expanded-orange.png);
-}
-key_category_title key_category_title_310_collapsed key_collapsed
