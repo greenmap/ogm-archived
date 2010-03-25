@@ -13,13 +13,6 @@ function group_map_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 8,
   );
-  $items['greenmap/user/seeninstructionbubble'] = array(
-    'title' => 'SeenInstructionBubble',
-    'page callback' => 'group_map_seen_instruction_bubble',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  );
-
   return $items;
 }
 
@@ -270,7 +263,7 @@ function getKeyList($icons) {
     if (count($genre->parents) == 1 && $genre->parents[0] == 0) {
       // display genres
       $keyListString .= '
-      <li id="key_genre_title_'. $genre->tid .'" class="key_genre_title">
+      <li id="key_genre_title_'. $genre->tid .'" class="key_genre_title key_genre_title_'. $genre->tid .'_collapsed">
         <div class="key_title" onclick="javascript:toggleGenre(\'key_genre_content_'.$genre->tid.'\', \'key_genre_title_'.$genre->tid.'\');"><a><span title="'. $genre->description .'">'. t($genre->name) .'</span></a>
         </div>
         <div class="key_checkbox"><input type="checkbox" id="key_checkbox_genre_'.$genre->tid.'" class="key_checkbox_genre" checked></input>
@@ -291,9 +284,7 @@ function getKeyList($icons) {
           foreach ($icons as $icon) {
             if (in_array($category->tid, $icon->parents)) {
               // display child icons
-//               $keyListString .= '<span id="key_icon_'.$icon->tid.'" class="key_icon">' .taxonomy_image_display($icon->tid, NULL, NULL, array('resize' => '1', 'width' => '21', 'height' => '18', 'imagecache_preset' => 'ORIGINAL')). '</span>';
-//             }
-$keyListString .= '<span id="key_icon_'.$icon->tid.'" class="key_icon">' .taxonomy_image_display($icon->tid). '</span>';
+              $keyListString .= '<span id="key_icon_'.$icon->tid.'" class="key_icon">' .taxonomy_image_display($icon->tid, NULL, NULL, array('resize' => '1', 'width' => '21', 'height' => '18', 'imagecache_preset' => 'ORIGINAL')). '</span>';
             }
           }
           $keyListString .= '</div>';
@@ -321,7 +312,7 @@ $keyListString .= '<span id="key_icon_'.$icon->tid.'" class="key_icon">' .taxono
 function display_key($icons) {
   drupal_add_js(drupal_get_path('module', 'group_map').'/key.js');
   drupal_add_css(drupal_get_path('module', 'group_map').'/key.css');
-  return '<form>'. getKeyList($icons) . ' </form>';
+  return '<form><h3>' . t('Green Map Icons') . '</h3>' . getKeyList($icons) . ' </form>';
 }
 
 /**
@@ -642,24 +633,26 @@ size="12" maxlength="255" /> within<br/>';
     }
   }
   if ($legend) {
-    // don't show the instructions if they've seen it
-    // but you do want to load it in case they want help.
-    if ($_SESSION['SeenInstructionBubble'])  {
-      $hide = 'style="display:none;"';
-    }
-    $instruction_bubble = '<div id="instruction_bubble" '. $hide .'><div id="instruction_bubble_close"></div><div class="instructions">'.  t('Use this <strong>Legend</strong> To customize the map. Click category, checkbox or Icons to turn related sites <strong>On/Off</strong><br /><br /> Mouse over the Icons for <strong>definitions</strong><br /><br /> More: Click tabs above for Map <strong>Info</strong> or <strong>Search</strong>')  .'</div></div>';
+    // add in a div to be used as an arrow
+    $startarrow = '<div id="startarrow"><img src="http://www.waterexpress.com.my/images/arrow_right.png"></div>';
+
     if ($node->field_use_poly[0]['value'] == 'Yes') {
 
-       $keyout = '<ul id="keys"><div class="clear-block"><h3 class="keys">' . t('Green Map Icons') . '</h3><div id="keys_help_button"></div></div>' . $key .'<br /><strong>'. t('Routes and Areas') .'</strong> '. $polykey[0] . $polykey[1] .'<br />'. '</ul>';
+       $keyout = '<ul id="keys"><span class="instructions">'.  t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') .'</span>' . $key .'<br /><strong>'. t('Routes and Areas') .'</strong> '. $polykey[0] . $polykey[1] .'<br />'. '</ul>';
     }
     else {
-      $keyout = '<ul id="keys"><div class="clear-block"><h3 class="keys">' . t('Green Map Icons') . '</h3><div id="keys_help_button"></div></div>' . $key .'</ul>';
+      $keyout = '<ul id="keys"><span class="instructions">'. t('Click category, then toggle the Icons to personalize your view. Hover over to read the definition.') .'</span>'. $key .'</ul>';
     }
     $form['tabskey']['tab'. $tabnum] = array(
       '#type' => 'tabpage',
       '#title' => t('Legend'),
     '#weight' => '-6',
-    '#content' => $instruction_bubble . $keyout,
+  // GH: changed to new key UI code
+  //  '#content' => $key . $trimmed_description,
+  // ncm modified because $trimmed_description was printing
+  // a ghost array. TODO: find the real cause of the problem
+//     '#content' => $startarrow . $keyout,
+'#content' => $keyout,
     );
     $tabnum++;
   }
@@ -808,15 +801,12 @@ function group_map_token_values($type, $object = NULL) {
   if ( is_array($object->og_groups) ) {
   $gids = array_filter($object->og_groups);
   }
-  foreach ($gids as $gid) {
-    $admin_email = db_result(db_query("select mail from users join node n on n.uid=users.uid right join og_ancestry oga on n.nid=oga.group_nid where oga.group_nid=%d", $gid));
-    $values['og-admin-email'] = $admin_email;
+    foreach ($gids as $gid) {
+         $admin_email = db_result(db_query("select mail from users join node n on n.uid=users.uid right join og_ancestry oga on n.nid=oga.group_nid where oga.group_nid=%d", $gid));
+         $values['og-admin-email'] = $admin_email;
 
-    return $values;
-    break;
-  }
+        return $values;
+
+      break;
 }
-
-function group_map_seen_instruction_bubble() {
-  $_SESSION['SeenInstructionBubble'] = TRUE;
 }

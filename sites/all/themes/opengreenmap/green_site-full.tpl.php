@@ -92,7 +92,7 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
 
   $contents .= '</div>'; // end of media & actions
 
-  $contents .= content_format('field_details', $field_details[0], 'default', $node);
+  $contents .= content_format('field_details', $field_details[0]);
 
 /* // RM moved all this up so as sit in right side ///////
 if($node->field_accessible_by_public_tran[0]['value'] == 1) {
