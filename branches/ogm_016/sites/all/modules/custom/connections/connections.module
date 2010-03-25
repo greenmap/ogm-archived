@@ -1,0 +1,179 @@
+<?php
+/*
+ * @file
+ *  This module appears to control the connections tab on a GreenMap
+ */
+
+function connections_escape_js($str) {
+  $str = str_replace('\'', '&#039;', $str);
+  $str = str_replace('"', '\"', $str);
+  $str = str_replace("\n", ' ', $str);
+  $str = str_replace("\r", ' ', $str);
+  return $str;
+}
+
+function connections_output_connections($node) {
+
+  // build a variable containing the embedded view of all related sites
+  $related_desc = t('Every site using the same primary Icon on Open Green Map is automatically linked here. You can compare different approaches and solutions on this map and others around the world.');
+  $getting_here_desc = t('You may see directions the Mapmaker has included, or directions shared by the public on how to get here by bike, wheelchair, mass transit, etc.');
+  $volunteering_desc = t('Not available yet');
+  $sharing_desc = t('Coming soon! Open Green Map sharing resources, including widgets, promotional buttons, using this map on mobile phones and other wireless devices.');
+  $header = t('Compare related sites, explore the related maps, find out about volunteering, how to get here and more. Soon, you will find ways to share this map here, too.');
+
+  $og_nid = array_keys($node->og_groups);
+  $og_nid = $og_nid[0];
+
+  $og = node_load($og_nid);
+
+  // all sites on this maps with the same primary icon
+  $relsite1 = views_embed_view('sites', 'page_3', $node->primary_term->tid, $og_nid, $node->nid);
+  // all sites on other maps with the same primary icon
+  $relsite1 = str_replace('<a href=', '<a target="_blank" href=', $relsite1);
+
+  $relsite2 = views_embed_view('sites', 'page_7', $node->primary_term->tid, $og_nid);
+  $relsite2 = str_replace('<a href=', '<a target="_blank" href=', $relsite2);
+
+  $relsite = $related_desc;
+  $relsite .= '<br /><div style=""><div style=""><div style=""><b>'. t('Other Sites on Map') .'</b></div>';
+  $relsite .= $relsite1;
+  $relsite .= '</div><div style=""><b>'. t('Related Sites Worldwide') .'</b></div><div style="">';
+  $relsite .= $relsite2;
+  $relsite .= '</div></div>';
+  $relsite = connections_escape_js($relsite);
+
+  // build a variable containing the Getting Here
+  $getting_here = $getting_here_desc;
+  $getting_here_link_options = array(
+    'attributes' => array('title' => t('Add Directions')),
+    'query' => '&destination=node/'. $node->nid .'/simple&nid='. $node->nid
+      .'&node_title='. htmlspecialchars($node->title) .'&isSimple=true',
+    );
+  $getting_here .= '<p>'. t('<a href="@directions-page">Add</a> directions to help people get here.  Follow these directions at your own risk.',
+    array('@directions-page' => url('node/add/transport-direction', $getting_here_link_options))) .'</p>';
+  $getting_here .= '<p>'.
+    content_format('field_public_transport_directio', $node->field_public_transport_directio[0])
+    .'</p>';
+
+  $getting_here .= views_embed_view('transport_directions', 'default', $node->nid);
+  $getting_here = connections_escape_js($getting_here);
+
+  // build a variable containing the Contacts
+  $contacts = '';
+  if (!empty($node->field_phone[0]['value'])) {
+    $contacts .= '<br /><b>'. t('Telephone').'</b> '.content_format('field_phone', $node->field_phone[0]);
+  }
+  if (!empty($node->field_email[0]['email'])) {
+    $contacts .= '<br /><b>'. t('E-mail').'</b> '.content_format('field_email', $node->field_email[0]);
+  }
+  if (!empty($node->field_web[0]['url'])) {
+    $contacts .= '<br /><b>'. t('Web Address').'</b> '.content_format('field_web', $node->field_web[0]);
+  }
+  $contacts = connections_escape_js($contacts);
+
+  // list maps by this mapmaker
+  $remap1 = views_embed_view('maps', 'page_5', $node->uid, $og_nid);
+  $remap1 = str_replace('<a href=', '<a target="_blank" href=', $remap1);
+
+  // list closest maps, excluding maps by this mapmaker
+  $remap2 = get_location_proximity_view('maps_proximity_search',
+      $node->location['latitude'], $node->location['longitude'], $node->uid);
+
+  $relmap = '<div style="related_maps_wrapper">';
+  if ($node->uid != 0) {
+    $relmap .= '<div style="related_maps_author"><b>'.
+      t('Other Maps by @name', array('@name' => $node->name)) . '</b></div>';
+    $relmap .= $remap1.'<br />';
+  }
+  $relmap .= '<div style="related_maps_nearby"><b>'. t('Other Nearby Maps') .'</b></div>';
+  $relmap .= $remap2;
+  $relmap .= '</div>';
+  $relmap = connections_escape_js($relmap);
+
+  // build up the javascript containing the content for each of the connections tabs
+  $js = sprintf('
+      var c_content = [];
+      c_content["Related Sites"] = "%s";
+      c_content["Related Maps"] = "%s";
+      %s // Volunteering
+      c_content["Getting Here"] = "%s";
+      %s // Contacts
+      %s // Sharing
+      function replace_connections_content(item) {
+        document.getElementById("connections_content").innerHTML = c_content[item];
+        for (key in c_content) {
+          if (key == item) {
+            document.getElementById("connections_menu_item_"+key.replace(" ", "_")).className = "connections_menu_item_active";
+          }
+          else {
+            document.getElementById("connections_menu_item_"+key.replace(" ", "_")).className = "connections_menu_item";
+          }
+        }
+      }',
+      $relsite,
+      $relmap,
+      $volunteering ? 'c_content["Volunteering"] = "'.$volunteering.'";' : '',
+      $getting_here,
+      $contacts ? 'c_content["Contacts"] = "'.$contacts.'";' : '',
+      $sharing ? 'c_content["Sharing"] = "'.$sharing_desc.'";' : ''
+      );
+  drupal_add_js($js, 'inline');
+
+  // create the div to contain all the connections stuff
+  $connections = '';
+  $connections .= '<div id="connections_container">';
+  $connections .= $header;
+  $connections .= '<p></p>';
+  $connections .= '<div id="connections_menu">';
+  $menu_items[] = t('Related Sites');
+  $menu_items[] = t('Related Maps');
+  if ($volunteering) {
+    $menu_items[] = t('Volunteering');
+  }
+  $menu_items[] = t('Getting Here');
+  if ($contacts) {
+    $menu_items[] = t('Contacts');
+  }
+  if ($sharing) {
+    $menu_items[] = t('Sharing');
+  }
+  foreach ($menu_items as $menu_item) {
+    $connections .= sprintf('<p class="connections_menu_item" id="connections_menu_item_%s" '.
+        'onclick="javascript:replace_connections_content(\'%s\');">%s</p>',
+        str_replace(' ', '_', $menu_item), $menu_item, $menu_item);
+  }
+  $connections .= '</div>';
+  $connections .= '<div id="connections_content">';
+  $connections .= t('Choose a connections category from the list on the left.');
+  $connections .= '</div>';
+  $connections .= '<div style="clear: left;"></div>';
+  $connections .= '</div>';
+
+  return $connections;
+}
+
+function get_location_proximity_view($view, $latitude, $longitude, $uid) {
+  $view = views_get_view($view);
+  $view->set_display('default');
+  $view->is_cacheable = FALSE;
+
+  // Fetch the distance filter (name of exposed Location proximity filter)
+  $item = $view->get_item('default', 'filter', 'distance');
+
+  // Apply dynamic elements to our exposed filter based on current node
+  $item['value'] = array(
+    'latitude' => $latitude,
+    'longitude' => $longitude,
+    'search_distance' => 1000,
+    'search_units' => 'km',
+  );
+  $view->set_item('default', 'filter', 'distance', $item);
+
+  $view->args[] = $uid;
+
+  return $view->render();
+}
+
+function connections_views_api() {
+  return array('api' => 2.0,);
+}

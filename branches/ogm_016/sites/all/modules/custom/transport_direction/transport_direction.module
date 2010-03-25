@@ -1,0 +1,31 @@
+<?php
+
+// $Id: transport_direction.module,v 0.1 2008/06/23 16:39:43 tom_o_t Exp $
+/**
+ * @file
+ * This module controls the transportation directions a site tab on a greenmap
+ */
+
+/**
+ *	hook_form_alter()
+ *
+ *	Alters the form that is being displayed after a user chooses to add a directions
+ *	in the getting here tab, so that the Site selector is not being shown.
+ *	This code was taken from impacts/impacts.module.
+ */
+function transport_direction_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'transport_direction_node_form' :
+      $get_nid = (int) $_GET['nid'];
+      if ($get_nid) {
+        drupal_add_css(drupal_get_path('module', 'transport_direction') .'/transport_direction.css');
+        $form['field_field_site_2']['#default_value'][0]['nid'] = $get_nid;
+      }
+      unset($form['preview']);
+      break;
+  }
+}
+
+function transport_direction_views_api() {
+  return array('api' => 2.0,);
+}
