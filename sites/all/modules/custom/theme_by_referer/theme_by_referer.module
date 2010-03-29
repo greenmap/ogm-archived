@@ -1,0 +1,37 @@
+<?php
+
+function theme_by_referer_init() {
+  global $custom_theme;
+  drupal_set_message('<pre>'. print_r($custom_theme, TRUE) .'</pre>');
+  $http_referer = $_SERVER["HTTP_REFERER"];
+  include_once('theme_by_referer.inc.php');
+  if ( is_array($theme_by_referer_config) ) {
+    drupal_set_message('found config');
+    //match the path
+    foreach ( $theme_by_referer_config as $path => $r ) {
+      drupal_set_message('found path: '. $path);
+      if ( preg_match($path, theme_by_referer_path_to_here()) ) {
+        drupal_set_message('matched path: '. $path);
+        foreach ( $r['referers'] as $referer => $theme ) {
+          drupal_set_message('found referer: '. $referer);
+          if ( preg_match($referer, $http_referer) ) {
+            drupal_set_message('matched referer: '. $referer);
+             // FIXME: replace this assignment with a call to a function that
+             //   is a session-storage mechanism for the custom_theme
+            $custom_theme = $theme ? $theme : $custom_theme ;
+            drupal_set_message('theme set to '. $custom_theme ? $custom_theme : '<nothing>' . '.');
+          }
+        }
+      }
+    }
+  }
+}
+
+function theme_by_referer_path_to_here() {
+  drupal_set_message('real path is: '. $_GET['q']);
+  return $_GET['q'];
+}
+
+function theme_by_referer_set_custom_theme($name) {
+  // IMPLEMENT ME
+}
