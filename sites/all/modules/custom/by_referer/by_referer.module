@@ -43,8 +43,5 @@ function by_referer_debug($msg) {
   if ( $by_referer_config['DEBUG'] ) {
     drupal_set_message($msg);
   }
-  else {
-    drupal_set_message('<pre>'. print_r($by_referer_config, TRUE) .'</pre>');
-  }
 }
 
