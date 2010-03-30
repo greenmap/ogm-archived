@@ -158,7 +158,9 @@
   	font-size: .75em;
   }
 
-  
+  .messages status ul, .messages status li {
+  list-style: none !important;
+  }
   </style>
 
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
