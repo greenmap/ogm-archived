@@ -92,10 +92,13 @@
     min-height: 402px;
     padding:0;
     margin: 0;
+    font-family: lucida grande, verdana, helvetica, arial;
+    font-size: 13px;
   }
   .masthead{
   	background-color: #99cc33;
   	padding: 1px;
+  	display: none;
   }
   
   .view-proximity{
@@ -127,19 +130,11 @@
   }
   
   #logo-image{
-  padding-top: 6px;
-  }
-  
-  #content-area{
-  	padding:2px;
+  display: none;
   }
     
   h1{
-  	font-size: 1.5em;
-  	color:  #666;
-  	margin-top: 5px;
-  	margin-bottom: 5px;
-  	text-align: center;
+  	display: none;
   }
   
   h3{
@@ -161,14 +156,42 @@
   .messages status ul, .messages status li {
   list-style: none !important;
   }
+  
+  a {color: #8cc63f;}
+  a:hover {text-decoration: underline;}
   </style>
-
+<base target="_blank">
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
   <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
-  
-</head>
-<body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
+<script type="text/javascript">
+<!--
 
+window.onload = function()
+{
+var links = document.links;
+var length = links.length;
+
+for(var i=0; i<length; i++)
+{
+var link = links[i];
+if(externalLink(link.href))
+{
+link.target = "_blank";
+}
+}
+}
+
+function externalLink(href)
+{
+return href.substring(0,10) != "javascript";
+}
+
+//-->
+</script>
+</head>
+<body onload="externalLinks()">
+
+</script>
  <?php if ($logo): ?>
             <div class="masthead">
             <center>
