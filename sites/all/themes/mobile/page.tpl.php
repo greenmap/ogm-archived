@@ -193,7 +193,7 @@ return href.substring(0,10) != "javascript";
 </script>
 </head>
 <body onload="externalLinks()">
-
+       
 </script>
  <?php if ($logo): ?>
             <div class="masthead">
