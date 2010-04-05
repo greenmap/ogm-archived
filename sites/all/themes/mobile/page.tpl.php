@@ -217,7 +217,7 @@ return href.substring(0,10) != "javascript";
             <?php print $mobile_bottom; ?>
            
         <div id="footer"><?php if ($footer_message): ?>
-          &copy; Green Map&reg; System, 2009<br/>
+          &copy; Green Map&reg; System, 2010<br/>
           Visit GreenMap.org on your desktop
           
           
