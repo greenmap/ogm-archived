@@ -157,7 +157,7 @@
   list-style: none !important;
   }
   
-  a {color: #ffffff;}
+  a {color: #8cc63f;}
   a:hover {text-decoration: underline;}
   
   .messages error {display: none;}
