@@ -156,18 +156,12 @@
   .messages status ul, .messages status li {
   list-style: none !important;
   }
-<<<<<<< .mine
   
   a {color: #ffffff;}
   a:hover {text-decoration: underline;}
   
   .messages error {display: none;}
   
-=======
-  
-  a {color: #8cc63f;}
-  a:hover {text-decoration: underline;}
->>>>>>> .r561
   </style>
 <base target="_blank">
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
