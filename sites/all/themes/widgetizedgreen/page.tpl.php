@@ -157,7 +157,7 @@
   list-style: none !important;
   }
   
-  a {color: #8cc63f;}
+  a {color: #ffffff;}
   a:hover {text-decoration: underline;}
   
   .messages error {display: none;}
@@ -193,7 +193,7 @@ return href.substring(0,10) != "javascript";
 </script>
 </head>
 <body onload="externalLinks()">
-       
+
 </script>
  <?php if ($logo): ?>
             <div class="masthead">
