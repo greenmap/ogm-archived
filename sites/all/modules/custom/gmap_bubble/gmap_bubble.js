@@ -19,7 +19,7 @@ InfoBubbleZoom.prototype.initialize = function(map) {
 			// get the number of total icons
 			var count = GlobalObj.gm.countObjects();
       var params = {
-        "@count": count["total"]
+        "@count": count["total"],
       };
       container.innerHTML += '<div id="infobubblezoom_middle"><div>'+Drupal.t('@count sites are shown, Zoom to view more.', params)+'</div></div>';
 			container.innerHTML += '<div id="infobubblezoom_bottom"></div>';
