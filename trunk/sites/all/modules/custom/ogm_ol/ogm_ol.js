@@ -4,7 +4,8 @@
 
 var allPolygons = [];
 
-
+if ( null == Drupal.gmap ) {
+} else {
 Drupal.gmap.addHandler('gmap',function(elem) {
   var map = this;
   var coords = [];
@@ -15,6 +16,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
   var area_opacity;
   var tid;
 
+  if ( undefined != Drupal.settings.ogm_ol_lines ) {
   map.bind("ready", function() {
     // loop through the line coordinates passed from the module for the map
     for ( i = 0; i < Drupal.settings.ogm_ol_lines.length; i = i + 1 ) {
@@ -64,7 +66,9 @@ Drupal.gmap.addHandler('gmap',function(elem) {
       map.map.addOverlay(polyarea);
     }
  });
+ } // end outer if
 });
+} // end else wrapped around whole block above
 
 function OgmOlOnClick(nid, point) {
   return function() {
