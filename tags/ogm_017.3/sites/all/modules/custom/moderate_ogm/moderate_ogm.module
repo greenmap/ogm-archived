@@ -1,0 +1,156 @@
+<?php
+// $Id$
+
+/**
+* Valid permissions for this module
+* @return array An array of valid permissions for the moderate_ogm module
+*/
+function moderate_ogm_perm() {
+  return array('moderate');
+}
+
+//TODO: this could be accomplished by giving moderators the permission to edit this
+//particular type of node, and taking that permission away from other user
+//roles.  --mjgoins
+function moderate_ogm_form_alter($form_id, &$form) {
+  if ( $form_id == 'mapmaker_profile_node_form' ) {
+    if ( !user_access('moderate') ) {
+      $form['#node'] = NULL;
+    }
+  }
+}
+
+function moderate_ogm_menu() {
+  $items = array();
+  $items['node/moderate'] = array(
+    'title' => 'Moderate',
+    'page callback' => 'moderate_ogm_moderate_page',
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array('moderate'),
+  );
+  $items['moderate/ajax'] = array(
+    'title' => 'Ajax page',
+    'page callback' => 'moderate_ogm_ajax',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('moderate'),
+  );
+  return $items;
+}
+
+/**
+ *  this query was hardcoded twice.
+ *  it needs to be rewritten as an INNER JOIN
+ */
+function moderate_ogm_get_moderated_countries($uid) {
+  $query = "SELECT
+              cfmc.*
+            FROM {node}
+              LEFT JOIN {content_field_moderated_countries} cfmc
+                ON node.nid = cfmc.nid
+            WHERE cfmc.nid IS NOT NULL
+              AND node.uid = %d;
+            ";
+  $result = db_query($query, $uid);
+  return $result;
+}
+
+function moderate_ogm_moderate_page() {
+  global $user;
+  $path = drupal_get_path('module', 'moderate_ogm');
+  drupal_add_js($path .'/ajax.js', 'module');
+  drupal_add_js($path .'/collapse_moderate.js', 'module');
+  $countries = location_get_iso3166_list();
+  $result = moderate_ogm_get_moderated_countries($user->uid);
+  if ( ! $result ) {
+    $content = "You have not been assigned any countries to moderate. Please ".
+                l(t('contact Green Map System'), 'contact') .
+                " and let us know which countries you would like to moderate.";
+  }
+  else {
+    $content = '';
+    while ( $returnValue = db_fetch_object($result) ) {
+      $content .= "<fieldset name='".
+            $returnValue->field_moderated_countries_value .
+            "' class='collapsible collapsed'>".
+            "<legend> ".
+            $countries[$returnValue->field_moderated_countries_value];
+      $content .= "</legend>";
+      // this div gets its content from ajax query. Look collapse_moderate.js, hook_menu and moderate_ogm_ajax()
+      $content .= "<div id='DIV". $returnValue->field_moderated_countries_value. "'></div>";
+
+      $content .= "</fieldset>";
+    }
+  }
+  return $content;
+}
+/**
+ * @author Miikka Lammela
+ * @return null
+ */
+function moderate_ogm_ajax() {
+  global $user;
+  /* **************************************************************************** *\
+   * For the countries they moderate, there should be:              *
+   * - all sites                                  *
+   * - all flags (with a count of how many times the each site has been flagged)  *
+   * - all comments                               *
+  \* **************************************************************************** */
+  if ( !arg(2) ) { // if argument is missing
+    die();
+  }
+  $result = moderate_ogm_get_moderated_countries($user->uid);
+  $returnValue = db_fetch_object($result);
+  $views_to_embed = array(
+    array(
+      'view' => 'moderate_list_of_user_sites',
+      'title' => t('Sites') .': ',
+      'display' => 'default',
+    ),
+    array(
+      'view' => 'moderate_comments_recent',
+      'title' => t('Recent Comments') .': ',
+      'display' => 'default',
+    ),
+    array(
+      'view' => 'moderate_list_all_flags',
+      'title' => t('Flags') .': ',
+      'display' => 'default',
+    ),
+  );
+  // TODO why is this country value hardcoded here? something's not right -- mvc 13jan2010
+  $country_string = $returnValue->field_moderated_countries_value;
+  $country_string = "US";
+  foreach ( $views_to_embed as $ve ) {
+    $content .= "<h3>".$ve['title']."</h3>";
+    $content .= "<div style='overflow:auto;max-height:150px;'>";
+    $content .= views_embed_view($ve['view'], $ve['display'], $country_string);
+    $content .= "</div>";
+  }
+  /*
+  $content .= "<h3>".t("Sites:")."</h3>";
+  $content .= "<div style='overflow:auto;height:150px;'>";
+        $view = views_get_view('moderate_list_of_user_sites');
+        $view->args[0]=$returnValue->field_moderated_countries_value;
+        //$site_list = views_build_view('block', $view,$view->args, FALSE, FALSE);
+  $content .= $site_list;
+  $content .= "</div>";
+  $content .= "<h3>".t("Recent Comments:")."</h3>";
+        $comment_view = views_get_view('moderate_comments_recent');
+        $comment_view->args[0]=$returnValue->field_moderated_countries_value;
+        //$comment_site_list = views_build_view('block', $comment_view,$comment_view->args, FALSE, FALSE);
+  $content .= "<div style='overflow:auto;height:150px;'>";
+  $content .= $comment_site_list;
+  $content .= "</div>";
+
+  $content .= "<h3>".t("Flags:")."</h3>";
+        $flag_view = views_get_view('moderate_list_all_flags');
+        $flag_view->args[0]=$returnValue->field_moderated_countries_value;
+        //$flag_site_list = views_build_view('block', $flag_view,$flag_view->args, FALSE, FALSE);
+  $content .= "<div style='overflow:auto;height:150px;'>";
+  $content .=   $flag_site_list;
+  $content .= "</div>";
+  */
+  echo $content;
+  die();
+}
+
