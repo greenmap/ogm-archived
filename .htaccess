@@ -56,7 +56,11 @@ DirectoryIndex index.php
   php_value mbstring.http_input             pass
   php_value mbstring.http_output            pass
   php_value mbstring.encoding_translation   0
-  php_value memory_limit	256M
+  php_value memory_limit	128M
+# 2009-06-02 - greg - This supposedly fixes some taxonomy_image errors.
+# May not be needed if taxonomy_image cleans up its act.
+# http://drupal.org/node/454414
+  php_flag allow_url_fopen on
 </IfModule>
 
 # Requires mod_expires to be enabled.
@@ -84,7 +88,11 @@ DirectoryIndex index.php
   # adapt and uncomment the following:
   # RewriteCond %{HTTP_HOST} ^example\.com$ [NC]
   # RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
-  #
+
+  RewriteCond %{HTTP_HOST} ^opengreenmap\.org$ [NC]
+  RewriteRule ^(.*)$ http://www.opengreenmap.org/$1 [L,R=301]
+
+
   # To redirect all users to access the site WITHOUT the 'www.' prefix,
   # (http://www.example.com/... will be redirected to http://example.com/...)
   # uncomment and adapt the following:
@@ -99,7 +107,7 @@ DirectoryIndex index.php
   #
   # If your site is running in a VirtualDocumentRoot at http://example.com/,
   # uncomment the following line:
-  RewriteBase /~mjgoins/ogm
+  # RewriteBase /
 
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
@@ -107,6 +115,5 @@ DirectoryIndex index.php
   RewriteCond %{REQUEST_URI} !=/favicon.ico
   RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
 </IfModule>
-
 
 # $Id: .htaccess,v 1.90.2.3 2008/12/10 20:04:08 goba Exp $
