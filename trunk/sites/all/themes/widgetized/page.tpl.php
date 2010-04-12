@@ -156,7 +156,7 @@ margin-right: 3px;
   .views-field-vid img{
   float: left;
   margin-right: 5px;
-  margin-left: 3px;
+  margin-left: 7px;
   }
   
   .views-field-title {
