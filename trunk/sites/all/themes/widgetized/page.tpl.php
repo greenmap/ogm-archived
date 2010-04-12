@@ -101,6 +101,14 @@
   	display: none;
   }
   
+  #content-area {
+  margin-top: -13px;
+  }
+  
+  .pager li{
+  height: 8px !important;
+  }
+  
   .view-proximity{
     color: #666;
   }
@@ -111,10 +119,49 @@
   .view-proximity li{
   list-style-type: none;
   margin-left: -39px;
+  padding-bottom: 6px !important;
+  height: 44px;
+  width: 230px;
+  }
+  
+  .views-row {
+  border-top:1px solid #8CC63F;
+padding-top:5px;
+  }
+  
+  .views-row-even {
+  background: #D7EFC2;
+  }
+  
+  .views-row-even .views-field-title {
+
   }
   
   .forward_links {
   display: none;
+  }
+  
+  .messages {
+  display: none !important;
+  }
+  
+  .views-field-distance {
+float:right;
+font-size:10px;
+text-align:right;
+padding-top:3px;
+margin-right: 3px;
+  }
+  
+  .views-field-vid img{
+  float: left;
+  margin-right: 5px;
+  margin-left: 3px;
+  }
+  
+  .views-field-title {
+  width: 128px;
+  float: left;
   }
   
   .box-inner {
@@ -149,7 +196,6 @@
   }
     
   #footer{
-  	margin-top:70px;
   	font-size: .75em;
   }
 
@@ -212,7 +258,7 @@ return href.substring(0,10) != "javascript";
            
         <div id="footer"><?php if ($footer_message): ?>
           &copy; Green Map&reg; System, 2010<br/>
-          Visit GreenMap.org on your desktop
+          Visit GreenMap.org to learn more.
           
           
         </div>
