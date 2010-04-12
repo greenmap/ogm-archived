@@ -203,7 +203,7 @@ margin-right: 3px;
   list-style: none !important;
   }
   
-  a {color: #8cc63f;}
+  a {color: #333333;}
   a:hover {text-decoration: underline;}
   
   .messages error {display: none;}
