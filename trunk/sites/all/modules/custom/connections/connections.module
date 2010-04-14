@@ -13,9 +13,7 @@ function connections_escape_js($str) {
 }
 
 function connections_output_connections($green_site) {
-  watchdog('connection', 'hi there');
   // build a variable containing the embedded view of all related sites
-
 
   $og_nid = array_keys($green_site->og_groups);
   $og_nid = $og_nid[0];
