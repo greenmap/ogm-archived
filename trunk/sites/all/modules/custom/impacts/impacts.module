@@ -56,8 +56,9 @@ function impacts_outcomes_page($mapid) {
   $outcomes .= '<div id="about_content">'.'<div id="top_left">';
   
   // ABOUT
+  if ($node->field_outcomes){
   $outcomes .= '<div class="block_title">'. t('About') .'</div><br>';
-  $outcomes .= $node->field_outcomes[0]['value'];
+  $outcomes .= $node->field_outcomes[0]['value'];}
   
   // OUTCOMES
   $outcomes .= '<div class="block_title">'.t('Outcomes') .'</div><br>';
@@ -81,9 +82,8 @@ function impacts_outcomes_page($mapid) {
   // TEAM MEMBER NAMES
   $members = db_query("SELECT u.name,u.uid FROM {og_uid} n INNER JOIN {users} u ON n.uid = u.uid WHERE n.nid = %d and is_active = 1", $node->nid);
   
+  
   while ($member=db_fetch_object($members)){
- 
-  $outcomes .= '-      ' . $member->name;
   $outcomes .= l($member->name,'user/'.$member->uid);
   $outcomes .= '<br>';
   }
@@ -96,9 +96,10 @@ function impacts_outcomes_page($mapid) {
     )
    );
 
+  if ($views_to_embed_multimedia){
   $outcomes .= '<div class="block_title">'.t('Videos') .'</div><br>';
   
-  foreach ( $views_to_embed_photos as $ve ) {
+  foreach ( $views_to_embed_multimedia as $ve ) {
     if ( $fun = $ve['access'] ) {
       if ( !($fun()) ) {
         continue;
@@ -107,6 +108,7 @@ function impacts_outcomes_page($mapid) {
     $outcomes .= "<div style='overflow:auto;max-height:150px;'>";
     $outcomes .= views_embed_view($ve['view'], $ve['display'], $node->nid);
     $outcomes .= "</div>";
+  }
   }
   
   // IMAGE
@@ -117,9 +119,10 @@ function impacts_outcomes_page($mapid) {
       )
   );
   
+  if ($views_to_embed_photos){
   $outcomes .= '<div class="block_title">'.t('Photos') .'</div><br>';
   
-   foreach ( $views_to_embed_multimedia as $ve2 ) {
+   foreach ( $views_to_embed_photos as $ve2 ) {
     if ( $fun = $ve2['access'] ) {
       if ( !($fun()) ) {
         continue;
@@ -128,15 +131,16 @@ function impacts_outcomes_page($mapid) {
     $outcomes .= "<div style='overflow:auto;max-height:150px;'>";
     $outcomes .= views_embed_view($ve2['view'], $ve2['display'], $node->nid);
     $outcomes .= "</div>";
-  }
+  }}
 
   
   // RECENT COMMENTS
-  $outcomes .= '<div class="block_title">'.t('Recent Comments') .'</div><br>';
-  
   $count = 'SELECT count(*) FROM {content_type_impact} c, {og_ancestry} og '.
       'WHERE og.group_nid = %d AND c.field_site_nid = og.nid';
+  
+    
   if (db_result(db_query($count, $mapid))) {
+    $outcomes .= '<div class="block_title">'.t('Recent Comments') .'</div><br>';
     $outcomes .= impacts_comments_list($mapid);
 
   }
@@ -145,7 +149,7 @@ function impacts_outcomes_page($mapid) {
   $outcomes .= '</div>'.'<div id="top_right">';
 
   // IMPACTS
-  $outcomes .= '<div class="block_title">'. t('Impacts') .'</div><br>';
+  
   $count = 'SELECT count(*)
             FROM {content_type_impact}
             WHERE field_site_nid IN
@@ -154,6 +158,7 @@ function impacts_outcomes_page($mapid) {
             
        
   if (db_result(db_query($count, $mapid))) {
+    $outcomes .= '<div class="block_title">'. t('Impacts') .'</div><br>';
     $outcomes .= impacts_output_impacts_formap($mapid);
   }
     
