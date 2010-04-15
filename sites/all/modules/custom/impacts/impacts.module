@@ -25,6 +25,7 @@ function impacts_menu() {
   return $items;
 }
 
+
 function impacts_should_show_tab($nid, $perm) {
   $node = node_load($nid);
   if ($node->type != 'green_map') {
@@ -146,6 +147,10 @@ function impacts_outcomes_page($mapid) {
   }
 
  
+  
+  
+  
+  
   $outcomes .= '</div>'.'<div id="top_right">';
 
   // IMPACTS
@@ -215,12 +220,15 @@ function impacts_outcomes_page($mapid) {
     $outcomes .= '<div id="sponsor_desc">'.$node->field_description_3[0]['value'].'</div>';
   }
   
-  $outcomes .= '</div>'.'</div>';
-  
   }
-
+  
+  $outcomes .= '</div>'.'</div>';
   return $outcomes;
 }
+
+ 
+ 
+ 
 
 /* end of the About page
  * hook_form_alter()
