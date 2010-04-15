@@ -57,9 +57,9 @@ function impacts_outcomes_page($mapid) {
   $outcomes .= '<div id="about_content">'.'<div id="top_left">';
   
   // ABOUT
-  if ($node->field_outcomes){
+  
   $outcomes .= '<div class="block_title">'. t('About') .'</div><br>';
-  $outcomes .= $node->field_outcomes[0]['value'];}
+  $outcomes .= $node->field_outcomes[0]['value'];
   
   // OUTCOMES
   $outcomes .= '<div class="block_title">'.t('Outcomes') .'</div><br>';
@@ -93,7 +93,7 @@ function impacts_outcomes_page($mapid) {
   $views_to_embed_multimedia = array(
     array(
       'view' => 'dashboard_multimedia',
-      'display' => 'page_1',
+      'display' => 'block_1',
     )
    );
 
@@ -106,9 +106,9 @@ function impacts_outcomes_page($mapid) {
         continue;
       }
     }
-    $outcomes .= "<div style='overflow:auto;max-height:150px;'>";
+   
     $outcomes .= views_embed_view($ve['view'], $ve['display'], $node->nid);
-    $outcomes .= "</div>";
+    
   }
   }
   
@@ -116,7 +116,7 @@ function impacts_outcomes_page($mapid) {
   $views_to_embed_photos =  array(
     array(
       'view' => 'dashboard_photos',
-      'display' => 'page_1',
+      'display' => 'block_1',
       )
   );
   
@@ -129,9 +129,9 @@ function impacts_outcomes_page($mapid) {
         continue;
       }
     }
-    $outcomes .= "<div style='overflow:auto;max-height:150px;'>";
+
     $outcomes .= views_embed_view($ve2['view'], $ve2['display'], $node->nid);
-    $outcomes .= "</div>";
+
   }}
 
   
@@ -182,9 +182,10 @@ function impacts_outcomes_page($mapid) {
   $outcomes .= '</p>' ;
     
   // SPONSOR 
-  $outcomes .= '<div class="block_title">'. t('Sponsor') .'</div><br>';
-    
+
+      
   if (count($node->field_sponsor_name)) {
+    $outcomes .= '<div class="block_title">'. t('Sponsor') .'</div><br>';
     $outcomes .= '<div id="sponsor_name">'.$node->field_sponsor_name[0]['value'].'</div>';
   }
     
