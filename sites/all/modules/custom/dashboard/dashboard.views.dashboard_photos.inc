@@ -255,7 +255,7 @@ function dashboard_photos_views_default_views() {
   $handler->override_option('header_empty', 0);
   $handler->override_option('footer_format', '1');
   $handler->override_option('footer_empty', 0);
-  $handler->override_option('empty', 'No videos.');
+  $handler->override_option('empty', 'No photos');
   $handler->override_option('empty_format', '1');
   $handler->override_option('items_per_page', 40);
   $handler->override_option('use_pager', '1');
