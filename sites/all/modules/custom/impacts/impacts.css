@@ -54,15 +54,15 @@ div#edit-field-because-of-this-site-value-wrapper {
 }
 
 #content-area #top_left {
-	width: 60%;
+	width: 57%;
 	float: left;
 }
 
 #content-area #top_right {
-	width: 35%;
+	width: 40%;
 	min-height: 800px;
 	float: right;
-	margin-left: 5%;
+	margin-left: 3%;
 }
 
 #sidebar-right {
