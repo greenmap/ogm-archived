@@ -57,22 +57,41 @@ function impacts_outcomes_page($mapid) {
   $outcomes .= '<div id="about_content">'.'<div id="top_left">';
   
   // ABOUT
-  
-  $outcomes .= '<div class="block_title">'. t('About') .'</div><br>';
-  $outcomes .= $node->field_outcomes[0]['value'];
+
+
+  	$outcomes .= '<div class="block_title">'. t('About') .'</div><br>';
+  	$outcomes .= $node->field_description[0]['value'];
+
   
   // OUTCOMES
   $outcomes .= '<div class="block_title">'.t('Outcomes') .'</div><br>';
   
+  $res = db_query('SELECT COUNT(vid) AS cnt '.
+      'FROM {content_type_impact}, {og_ancestry} og '.
+      'WHERE og.group_nid = %d AND field_discover_site_value = 1 '.
+      'AND field_site_nid = og.nid', $mapid);
+
+    $line = db_fetch_object($res);
+
+  if ($line->cnt > 0) {
+    $count = format_plural($line->cnt, '1 person', '@count people');
+    $outcomes .= 
+       t('@count discovered green places because of this map. ',
+       array('@count' => $count)
+       );  
+    $outcomes .= '<br><br>';
+    }
+
+
   // NUMBER OF SITES
   $num_sites = db_result(db_query("SELECT count(*) FROM {node} n INNER JOIN {og_ancestry} oga ON n.nid=oga.nid WHERE n.status = 1 AND oga.group_nid = %d", $node->nid));
   $outcomes .=  t('Number of sites:&nbsp;@num_sites', array('@num_sites' => $num_sites));
-  $outcomes .= '<br>';
+  $outcomes .= '<br><br>';
 
   // COMMENTS
   $num_comments = db_result(db_query("SELECT count(*) FROM {comments} c, {og_ancestry} og where c.nid = og.nid and og.group_nid = %d and c.status = 0", $node->nid));
   $outcomes .= t('Comments:&nbsp;@num_comments', array('@num_comments' =>  $num_comments));
-  $outcomes .= '<br>';
+  $outcomes .= '<br><br>';
   
   // NUMBER OF TEAM MEMBERS
   $num_members = db_result(db_query("SELECT count(*) FROM {og_uid} n WHERE n.nid = %d and is_active = 1", $node->nid));
@@ -89,6 +108,29 @@ function impacts_outcomes_page($mapid) {
   $outcomes .= '<br>';
   }
   
+  // RECENT COMMENT
+  $views_to_embed_comments =  array(
+    array(
+      'view' => 'comments',
+      'display' => 'block_6',
+      )
+  );
+  
+  if ($views_to_embed_comments){
+  $outcomes .= '<div class="block_title">'.t('Recent Comments') .'</div><br>';
+  
+   foreach ( $views_to_embed_comments as $ve3 ) {
+    if ( $fun = $ve3['access'] ) {
+      if ( !($fun()) ) {
+        continue;
+      }
+    }
+
+    $outcomes .= views_embed_view($ve3['view'], $ve3['display'], $node->nid);
+
+  }}
+  
+  
   // VIDEO
   $views_to_embed_multimedia = array(
     array(
@@ -98,7 +140,7 @@ function impacts_outcomes_page($mapid) {
    );
 
   if ($views_to_embed_multimedia){
-  $outcomes .= '<div class="block_title">'.t('Videos') .'</div><br>';
+  $outcomes .= '<div class="block_title">'.t('Recent Videos') .'</div><br>';
   
   foreach ( $views_to_embed_multimedia as $ve ) {
     if ( $fun = $ve['access'] ) {
@@ -121,7 +163,7 @@ function impacts_outcomes_page($mapid) {
   );
   
   if ($views_to_embed_photos){
-  $outcomes .= '<div class="block_title">'.t('Photos') .'</div><br>';
+  $outcomes .= '<div class="block_title">'.t('Recent Photos') .'</div><br>';
   
    foreach ( $views_to_embed_photos as $ve2 ) {
     if ( $fun = $ve2['access'] ) {
@@ -134,22 +176,7 @@ function impacts_outcomes_page($mapid) {
 
   }}
 
-  
-  // RECENT COMMENTS
-  $count = 'SELECT count(*) FROM {content_type_impact} c, {og_ancestry} og '.
-      'WHERE og.group_nid = %d AND c.field_site_nid = og.nid';
-  
-    
-  if (db_result(db_query($count, $mapid))) {
-    $outcomes .= '<div class="block_title">'.t('Recent Comments') .'</div><br>';
-    $outcomes .= impacts_comments_list($mapid);
 
-  }
-
- 
-  
-  
-  
   
   $outcomes .= '</div>'.'<div id="top_right">';
 
@@ -167,19 +194,7 @@ function impacts_outcomes_page($mapid) {
     $outcomes .= impacts_output_impacts_formap($mapid);
   }
     
-  $res = db_query('SELECT COUNT(vid) AS cnt '.
-      'FROM {content_type_impact}, {og_ancestry} og '.
-      'WHERE og.group_nid = %d AND field_discover_site_value = 1 '.
-      'AND field_site_nid = og.nid', $mapid);
-  $line = db_fetch_object($res);
-  
-  if ($line->cnt > 0) {
-    $count = format_plural($line->cnt, '1 person', '@count people');
-    $outcomes .= '<p id="impacts_stats">'.
-       t('@count discovered green places because of this map. ',
-       array('@count' => $count)
-       );
-  $outcomes .= '</p>' ;
+      
     
   // SPONSOR 
 
@@ -221,7 +236,7 @@ function impacts_outcomes_page($mapid) {
     $outcomes .= '<div id="sponsor_desc">'.$node->field_description_3[0]['value'].'</div>';
   }
   
-  }
+  
   
   $outcomes .= '</div>'.'</div>';
   return $outcomes;
