@@ -71,7 +71,7 @@ function impacts_outcomes_page($mapid) {
       'WHERE og.group_nid = %d AND field_discover_site_value = 1 '.
       'AND field_site_nid = og.nid', $mapid);
 
-    $line = db_fetch_object($res);
+  $line = db_fetch_object($res);
 
   if ($line->cnt > 0) {
     $count = format_plural($line->cnt, '1 person', '@count people');
@@ -189,18 +189,31 @@ function impacts_outcomes_page($mapid) {
              WHERE group_nid = %d)';
             
        
+
   if (db_result(db_query($count, $mapid))) {
     $outcomes .= '<div class="block_title">'. t('Impacts') .'</div><br>';
     $outcomes .= impacts_output_impacts_formap($mapid);
   }
     
-      
+    
     
   // SPONSOR 
 
-      
-  if (count($node->field_sponsor_name)) {
+ 
+  $sponsor = db_query('SELECT COUNT(vid) AS spn '.
+      'FROM {content_node_field}, {og_ancestry} og '.
+      'WHERE og.group_nid = %d'.'AND field_site_nid = og.nid', $mapid);
+
+  $spline = db_fetch_object($sponsor);
+
+  if ($spline->spn > 0) {
     $outcomes .= '<div class="block_title">'. t('Sponsor') .'</div><br>';
+    }
+    
+    
+    
+  if (count($node->field_sponsor_name)) {
+    
     $outcomes .= '<div id="sponsor_name">'.$node->field_sponsor_name[0]['value'].'</div>';
   }
     
