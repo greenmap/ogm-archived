@@ -58,9 +58,12 @@ function impacts_outcomes_page($mapid) {
   
   // ABOUT
 
+  if ($node->field_description[0]['value']){
+    $outcomes .= '<div class="block_title">'. t('About') .'</div><br>';
+    $outcomes .= $node->field_description[0]['value'];
+   }
 
-  	$outcomes .= '<div class="block_title">'. t('About') .'</div><br>';
-  	$outcomes .= $node->field_description[0]['value'];
+  	
 
   
   // OUTCOMES
@@ -194,58 +197,47 @@ function impacts_outcomes_page($mapid) {
     $outcomes .= '<div class="block_title">'. t('Impacts') .'</div><br>';
     $outcomes .= impacts_output_impacts_formap($mapid);
   }
-    
-    
-    
+ 
+       
   // SPONSOR 
 
- 
-  $sponsor = db_query('SELECT COUNT(vid) AS spn '.
-      'FROM {content_node_field}, {og_ancestry} og '.
-      'WHERE og.group_nid = %d'.'AND field_site_nid = og.nid', $mapid);
 
-  $spline = db_fetch_object($sponsor);
 
-  if ($spline->spn > 0) {
+  if ($node->field_sponsor_name[0]['value']) {
     $outcomes .= '<div class="block_title">'. t('Sponsor') .'</div><br>';
-    }
-    
-    
-    
-  if (count($node->field_sponsor_name)) {
-    
     $outcomes .= '<div id="sponsor_name">'.$node->field_sponsor_name[0]['value'].'</div>';
   }
-    
-  if (count($node->field_sponsor_image) && $node->field_sponsor_image[0]['filepath']) {
-    $outcomes .= '<div id="sponsor_image"><img src="'. base_path() . $node->field_sponsor_image[0]['filepath'] .'" alt="'. t('Sponsor Image') .'" height=130px"/></div>';
+  
+  if ($node->field_sponsor_image && $node->field_sponsor_image[0]['filepath']) {
+    $outcomes .= '<div id="sponsor_image"><img src="'. base_path() . $node->field_sponsor_image[0]['filepath'] .'" alt="'. t('Sponsor Image') .'" width=130px"/></div>';
   }
    
-  if (count($node->field_description_0)) {
+  if ($node->field_description_0[0]['value']) {
     $outcomes .= '<div id="sponsor_desc">'.$node->field_description_0[0]['value'].'</div>';
   }
 
-  if (count($node->field_sponsor_name_2)) {
+  if ($node->field_sponsor_name_2[0]['value']) {
     $outcomes .= '<div id="sponsor_name">'.$node->field_sponsor_name_2[0]['value'].'</div>';
   }
   
-   if (count($node->field_sponsor_image_2) && $node->field_sponsor_image_2[0]['filepath']) {
-    $outcomes .= '<div id="sponsor_image"><img src="'. base_path() . $node->field_sponsor_image_2[0]['filepath'] .'" alt="'. t('Sponsor Image') .'" height=130px"/></div>';
+   if ($node->field_sponsor_image_2 && $node->field_sponsor_image_2[0]['filepath']) {
+    $outcomes .= '<div id="sponsor_image"><img src="'. base_path() . $node->field_sponsor_image_2[0]['filepath'] .'" alt="'. t('Sponsor Image') .'" width=130px"/></div>';
   }
     
-  if (count($node->field_description_2)) {
+  if ($node->field_description_2[0]['value']) {
     $outcomes .= '<div id="sponsor_desc">'.$node->field_description_2[0]['value'].'</div>';
   }
   
-  if (count($node->field_sponsor_name_3)) {
+  if ($node->field_sponsor_name_3[0]['value']) {
     $outcomes .= '<div id="sponsor_name">'.$node->field_sponsor_name_3[0]['value'].'</div>';
+  } 
+  
+  if ($node->field_sponsor_image_3 && $node->field_sponsor_image_3[0]['filepath']) {
+    
+    $outcomes .= '<div id="sponsor_image"><img src="'. base_path() . $node->field_sponsor_image_3[0]['filepath'] .'" alt="'. t('Sponsor Image') .'" width=130px"/></div>';
   }
   
-  if (count($node->field_sponsor_image_3) && $node->field_sponsor_image_3[0]['filepath']) {
-    $outcomes .= '<div id="sponsor_image"><img src="'. base_path() . $node->field_sponsor_image_3[0]['filepath'] .'" alt="'. t('Sponsor Image') .'" height=130px"/></div>';
-  }
-  
-  if (count($node->field_description_3)) {
+  if ($node->field_description_3[0]['value']) {
     $outcomes .= '<div id="sponsor_desc">'.$node->field_description_3[0]['value'].'</div>';
   }
   
