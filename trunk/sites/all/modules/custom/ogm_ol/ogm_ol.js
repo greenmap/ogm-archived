@@ -86,9 +86,6 @@ function OgmOlOnClick(nid, point) {
         GlobalMap.openInfoWindowHtml(point, html.responseText,
         {maxContent: maxContentDiv, maxTitle: ''});
       }
-      else {
-        alert('Problems with the ajax (code 228)');
-      }
     };
   };
 };
