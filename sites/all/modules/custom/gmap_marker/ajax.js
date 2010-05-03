@@ -37,10 +37,7 @@ Drupal.makeRequest = function (url, params,returnFunc,returnArgs) {
 			// call return handler function
 			returnFunc = "Drupal." + returnFunc + "(http_request,returnArgs)";
 			eval(returnFunc);
-	  	} else {
-			// failed
-        	alert(Drupal.t('Problems with the ajax (code 101):') + url);
-		}
+	  	}
     };
 
     http_request.open('POST', url, true);
