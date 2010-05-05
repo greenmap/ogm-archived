@@ -367,7 +367,9 @@ function group_map_block_1_form() {
       $term->description = tt("taxonomy:term:$term->tid:description", $term->description);
       $translated_terms[] = $term;
     }
-    $legend = display_key($translated_terms);
+    $legend = '<div id="instruction_bubble" '. $hide .'><div id="instruction_bubble_close"></div><div class="instructions">'.  t('Use this <strong>Legend</strong> To customize the map. Click category, checkbox or Icons to turn related sites <strong>On/Off</strong><br /><br /> Mouse over the Icons for <strong>definitions</strong><br /><br /> More: Click tabs above for Map <strong>Info</strong> or <strong>Search</strong>')  .'</div></div>';
+    $legend .= '<ul id="keys"><div class="clear-block"><h3 class="keys">' . t('Green Map Icons') . '</h3><div id="keys_help_button"></div></div>' . display_key($translated_terms) .'</ul>';
+
     $legend .= "<p><strong>".t("Explore our World View!")."</strong></p>".
           "<p>".t("This map view starts with 2 sites from every Open Green Map. Zoom in to see more (or click Maps above to explore each map separately).")."</p>".
           "<p>".t("At Legend, click categories, then toggle different icons to filter your view. Use the Search Tab to jump to different world locations. Each map's introduction will appear on the Info Tab.")."</p>".
