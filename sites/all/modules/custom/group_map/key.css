@@ -117,8 +117,11 @@ div#instruction_bubble .instructions strong {
   background: url("images/question.png") top right no-repeat;
   height: 16px;
   width: 16px;
-  float: left;
   margin: .3em 0 0 1.2em;
+  position:absolute;
+  right: 25px;
+  top: 45px;
+
 }
 #keys_help_button:hover {
   background: url("images/question_active.png") top right no-repeat;

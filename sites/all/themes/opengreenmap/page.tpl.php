@@ -37,6 +37,14 @@ if ($_GET['isSimple']) {
       <link rel="stylesheet" href="<?php print $base_path . $subtheme_directory; ?>/ie.css" type="text/css">
     <?php endif; ?>
   <![endif]-->
+  <!--[if IE 8]>
+    <link rel="stylesheet" href="<?php print base_path() . path_to_theme(); ?>/ie8.css" type="text/css">
+    <?php if ($subtheme_directory && file_exists($subtheme_directory .'/ie.css')): ?>
+      <link rel=" stylesheet" href="<?php print $base_path . $subtheme_directory; ?>/ie.css" type="text/css">
+      <link rel="stylesheet" href="<?php print $base_path . $subtheme_directory; ?>/ie8.css" type="text/css">
+    <?php endif; ?>
+  <![endif]-->
+
   <?php print $scripts; ?>
 </head>
 
