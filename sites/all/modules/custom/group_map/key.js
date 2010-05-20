@@ -237,7 +237,7 @@ function InstructionBubbleClose() {
     $("#keys_help_button").removeClass('active');
   }
   // set a session variable for users who have seen this
-  $.post('user/seeninstructionbubble');
+  $.post('greenmap/user/seeninstructionbubble');
 
 }
 

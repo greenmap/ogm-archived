@@ -367,6 +367,12 @@ function group_map_block_1_form() {
       $term->description = tt("taxonomy:term:$term->tid:description", $term->description);
       $translated_terms[] = $term;
     }
+    // don't show the instructions if they've seen it
+    // but you do want to load it in case they want help.
+    if ($_SESSION['SeenInstructionBubble'])  {
+      $hide = 'style="display:none;"';
+    }
+
     $legend = '<div id="instruction_bubble" '. $hide .'><div id="instruction_bubble_close"></div><div class="instructions">'.  t('Use this <strong>Legend</strong> To customize the map. Click category, checkbox or Icons to turn related sites <strong>On/Off</strong><br /><br /> Mouse over the Icons for <strong>definitions</strong><br /><br /> More: Click tabs above for Map <strong>Info</strong> or <strong>Search</strong>')  .'</div></div>';
     $legend .= '<ul id="keys"><div class="clear-block"><h3 class="keys">' . t('Green Map Icons') . '</h3><div id="keys_help_button"></div></div>' . display_key($translated_terms) .'</ul>';
 
