@@ -260,21 +260,12 @@ width:150px;
 
 
 <body onLoad="lightboxonclick();">
-
- <?php if ($logo): ?>
-            <div class="masthead">
-            <center>
-            <a href="http://www.opengreenmap.org/mobile">
-            <img src="<?php print $logo; ?>" alt="<?php print t('Open Green Map'); ?>" id="logo-image"  border="0"/></a></center></div>
-          <?php endif; ?>
-    
-    <?php print $breadcrumb; ?>        
+          
      <div id="content-area">
                 <h1 class="title"><?php print $title; ?></h1>
 		    <?php print $messages; ?>      
     		<?php print $pre_content; ?>        
             <?php print $content; ?>
-            <?php print $mobile_bottom; ?>
            
 
         </div>
