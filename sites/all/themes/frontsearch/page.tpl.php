@@ -1,14 +1,34 @@
 <head>
-<script type="text/javascript">
 
-window.onload = function() {
-links=document.getElementsByTagName("a");
-for(var i=0; i<links.length; i++) {
-links[i].target="_top";
-}
-}
-</script>
 <?php print $scripts; ?>
+<script type="text/javascript">
+function lightboxonclick(){
+if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){ 
+ for (i=0;i<document.links.length;i++){
+document.links[i].setAttribute("target","_blank");
+}
+}
+else
+ for (i=0;i<document.links.length;i++){
+var hHref=document.links[i].getAttribute("href")
+var lTxt=document.links[i].innerHTML;
+document.links[i].setAttribute("onclick","window.top.Lightbox.start({'href':'"+hHref+"'},false,true);");
+document.links[i].setAttribute("href","javascript:void(0)");
+}
+}
+
+
+//  function lightboxonclick(){
+//  for (i=0;i<document.links.length;i++){
+//var hHref=document.links[i].getAttribute("href")
+//var lTxt=document.links[i].innerHTML;
+//document.links[i].setAttribute("onclick","window.top.Lightbox.start({'href':'http://opengreenmap.org"+hHref+"'},false,true);");
+//document.links[i].setAttribute("href","javascript:void(0)");
+//}
+//}
+
+
+</script>
 
 <?php
 // $Id: page.tpl.php,v 1.14.2.6 2009/02/13 16:28:33 johnalbin Exp $
@@ -249,7 +269,7 @@ width:150px;
   <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
 
 
-<body>
+<body onLoad="lightboxonclick();">
 
  <?php if ($logo): ?>
             <div class="masthead">
@@ -260,7 +280,7 @@ width:150px;
     
     <?php print $breadcrumb; ?>        
      <div id="content-area">
-            <h1 class="title"><?php print $title; ?></h1>
+                <h1 class="title"><?php print $title; ?></h1>
 		    <?php print $messages; ?>      
     		<?php print $pre_content; ?>        
             <?php print $content; ?>
