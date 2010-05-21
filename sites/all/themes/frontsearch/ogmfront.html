@@ -7,7 +7,7 @@ body {margin:0;}
 background: #8cc63f;
 color: #ffffff;
 width: 140px;
-margin: 2px 0 2px 0;
+margin: -10px 0 2px 0;
 font-family: lucida grande;
 border: none;
 font-size: 14px;
@@ -15,9 +15,10 @@ height: 25px;
 }
 
 .addresslabel {
-font-size: 13px;
+font-size: 11px;
 color: #8cc63f;
 letter-spacing: 1px;
+margin-bottom: 2px;
 }
 
 #edit-address {
@@ -25,6 +26,7 @@ border: 2px #8cc63f solid;
 height: 25px;
 font-family: Arial;
 letter-spacing: .5px;
+margin-top:4px;
 }
 
 .formelements {
@@ -42,7 +44,7 @@ margin: 15px 0 10px 0;
 
 
    <form action="http://staging.opengreenmap.org/mobile/geocode" accept-charset="UTF-8" method="post" id="ogm-mobile-address-form" target="wgncontainer">
-<div class="formelements"> <font color="white" face="lucida grande"><span class="addresslabel"><label for="edit-address">City/Address: </label></font></span>
+<div class="formelements"> <font color="white" face="lucida grande"><span class="addresslabel"><label for="edit-address">City/Address/Zipcode: </label></font></span>
 <input type="text" maxlength="128" name="address" id="edit-address" size="20" value="" class="form-text" /><p></p>
 <input class="submit" type="submit" name="op" id="edit-submit" value="search"  class="form-submit" />
 <input type="hidden" name="form_build_id" id="form-ece946180415ca9a9d9dbbd5940c3cad" value="form-ece946180415ca9a9d9dbbd5940c3cad"  />
