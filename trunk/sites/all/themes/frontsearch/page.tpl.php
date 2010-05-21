@@ -18,16 +18,6 @@ document.links[i].setAttribute("href","javascript:void(0)");
 }
 
 
-//  function lightboxonclick(){
-//  for (i=0;i<document.links.length;i++){
-//var hHref=document.links[i].getAttribute("href")
-//var lTxt=document.links[i].innerHTML;
-//document.links[i].setAttribute("onclick","window.top.Lightbox.start({'href':'http://opengreenmap.org"+hHref+"'},false,true);");
-//document.links[i].setAttribute("href","javascript:void(0)");
-//}
-//}
-
-
 </script>
 
 <?php
