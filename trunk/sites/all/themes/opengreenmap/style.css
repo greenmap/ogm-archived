@@ -786,7 +786,7 @@ display: none;
 }
 
 #block-search-0 #edit-submit {
-background: #8cc63f;
+background: #f89938;
 color: #ffffff;
 width: 140px;
 margin: 6px 0 2px 0;
@@ -799,7 +799,7 @@ text-transform: lowercase;
 
 #block-search-0 label {
 font-size: 12px;
-color: #8cc63f;
+color: #f89938;
 letter-spacing: 1px;
 font-weight:100;
 font-family: lucida grande;
@@ -807,8 +807,8 @@ letter-spacing: .5px;
 text-transform: lowercase
 }
 
-#block-search-0 #edit-search-block-form-1 {
-border: 2px #8cc63f solid;
+#block-search-0 #edit-search-block-form-1, #block-search-0 #edit-submit-1 {
+border: 2px #f89938 solid;
 height: 19px;
 width:136px;
 font-family: Arial;
@@ -826,7 +826,7 @@ text-align: center;
 
 #advsearch a{
 font-size: 10px;
-color: #8cc63f;
+color: #f89938;
 letter-spacing: 1px;
 font-weight:100;
 font-family: lucida grande;
