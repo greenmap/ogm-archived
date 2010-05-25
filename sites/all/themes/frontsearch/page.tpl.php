@@ -12,8 +12,7 @@ else
  for (i=0;i<document.links.length;i++){
 var hHref=document.links[i].getAttribute("href");
 hHref = hHref + "&lightboxtheme=true";
-var lTxt=document.links[i].innerHTML;
-document.links[i].setAttribute("onclick","window.top.Lightbox.start({'href':'"+hHref+"'},false,true);");
+document.links[i].setAttribute("onclick","window.parent.parent.Lightbox.start({'href':'"+hHref+"'},false,true);");
 document.links[i].setAttribute("href","javascript:void(0)");
 }
 }
