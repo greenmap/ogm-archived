@@ -10,7 +10,7 @@ document.links[i].setAttribute("target","_blank");
 }
 else
  for (i=0;i<document.links.length;i++){
-var hHref=document.links[i].getAttribute("href")
+var hHref=document.links[i].getAttribute("href");
 hHref = hHref + "&lightboxtheme=true";
 var lTxt=document.links[i].innerHTML;
 document.links[i].setAttribute("onclick","window.top.Lightbox.start({'href':'"+hHref+"'},false,true);");
