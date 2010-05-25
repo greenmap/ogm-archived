@@ -785,6 +785,22 @@ body.node-type-green-map ul.links {
 display: none;
 }
 
+#block-block-13 {
+padding-top: -10px;
+}
+
+#block-block-13 iframe{
+overflow-x: hidden;
+}
+
+#block-search-0 {
+border-bottom:2px solid #F89938;
+margin-left:17px;
+margin-right:17px;
+padding-bottom:17px;
+text-align:center;
+}
+
 #block-search-0 #edit-submit {
 background: #f89938;
 color: #ffffff;
@@ -804,7 +820,6 @@ letter-spacing: 1px;
 font-weight:100;
 font-family: lucida grande;
 letter-spacing: .5px;
-text-transform: lowercase
 }
 
 #block-search-0 #edit-search-block-form-1, #block-search-0 #edit-submit-1 {
