@@ -1,6 +1,5 @@
   <?php print $head; ?>
    <?php print $styles; ?>
-  <?php print $scripts; ?>
 
 <script type="text/javascript">
 function alltargettop(){
@@ -19,8 +18,12 @@ background: #ffffff !important;
 margin-right: 10px;
 }
 
-#lightboxaddress{
+#lightboxaddress-center{
 padding-left:10px;
+text-align: center;
+}
+
+#lightboxaddress-right{
 text-align: right;
 float: right;
 padding-top: 10px;
@@ -39,9 +42,10 @@ padding-bottom: 5px;
 
 .subinfo {
 height: 80px;
-border-bottom:2px solid #8CC63F;
-width: 450px;
+border-bottom:1px solid #8CC63F;
 padding-bottom:5px;
+padding-left: 100px;
+padding-right: 90px;
 }
 
 .field-field-involved {
@@ -85,6 +89,10 @@ margin-bottom:-2px !important;
 margin-left:1px !important;
 margin-top:2px !important;
 width:17px;
+}
+
+div.fivestar-widget-static {
+display: none !important;
 }
 </style>
 
@@ -162,7 +170,8 @@ $media_thumb = preg_replace('/<a href="[^"]+"/', '<a href="#multimedia"', $media
  <div class="thumbnail">
 <?php print $media_thumb ?>
 </div>
-<div id="lightboxaddress">
+<?php if ($media_thumb > '') { ?>
+<div id="lightboxaddress-right">
 <?php 
 $location = $node->locations[0];
 ?>
@@ -183,6 +192,31 @@ $location = $node->locations[0];
       <?php print $location[province] . ' ' . $location[postal_code]; ?></div>
         <?php } ?>
       </div>
+              <?php }
+              else { ?>
+<div id="lightboxaddress-center">
+<?php 
+$location = $node->locations[0];
+?>
+  <?php if ($location[name] > '') { ?>
+    <div class="location name"> <?php print $location[name]; ?> </div>
+  <?php } ?>
+  <?php if ($location[street] > '') { ?>
+    <div class="location street"> <?php print $location[street]; ?> </div>
+  <?php } ?>
+  <?php if ($location[additional] > '') { ?>
+    <div class="location additional"> <?php print $location[additional]; ?> </div>
+  <?php } ?>
+  <?php if ($location[city] > '') { ?>
+    <div class="location city"> <?php print $location[city]; ?> </div>
+  <?php } ?>
+  <?php if ($location[postal_code] > '' || $location[province] > '') { ?>
+    <div class="location postalcode">
+      <?php print $location[province] . ' ' . $location[postal_code]; ?></div>
+        <?php } ?>
+      </div>
+
+                     <?php } ?>
 </center>
 </div>
 
