@@ -3,7 +3,6 @@
 
 // include instance-specific drupal configuration information from
 // settings.inc.php (which is ignored by svn)
-require_once('settings.inc.php');
 
 /**
  * @file
@@ -230,10 +229,9 @@ ini_set('url_rewriter.tags',        '');
  *
  * Remove the leading hash signs to enable.
  */
-# $conf['locale_custom_strings_en'] = array(
-#   'forum'      => 'Discussion board',
-#   '@count min' => '@count minutes',
-# );
+$conf['locale_custom_strings_en'] = array(
+  'Search this site' => 'Enter Keywords',
+);
 
 /**
  * Multilingual settings
@@ -266,3 +264,5 @@ $conf['i18n_variables'] = array(
   'date_format_long_custom',
 */
 );
+
+require_once('settings.inc.php');
