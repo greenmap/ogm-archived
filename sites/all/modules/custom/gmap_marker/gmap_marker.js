@@ -196,12 +196,30 @@ function randObjects(){
 var maxContentDiv;
 
 
-function createMarker(point, opts,nid) {
+function createMarker(point, opts, nid) {
   var opt = {};
   eval(opts); // puts all options to opt-object
-  var object = new GMarker(point,opt);
+  var object = new GMarker(point, opt);
   object.value = nid;
   object.setId(nid);
+
+  if ( Drupal.settings.group_map != undefined && 
+       Drupal.settings.group_map.autoBubbleNID != undefined ) {
+    if ( Drupal.settings.group_map.autoBubbleNID === nid ) {
+      var html = Drupal.makeReq(Drupal_base_path + Drupal_language + '/' + 'node/gmap_marker/getMiniBubble/' + nid,'');
+      html.onreadystatechange = function() {
+        if (html.readyState != 4) {return;}
+        maxContentDiv = document.createElement('div');
+        // somewhere in here is a problem which results in two <html> tags
+        maxContentDiv.id = 'maxcontentdiv';
+        maxContentDiv.innerHTML = '<iframe frameborder="0" src="' + Drupal_base_path + Drupal_language + '/node/' + nid + '/simple" width="670" height="360"></iframe>';
+        GlobalMap.openInfoWindowHtml(point, html.responseText,
+        {maxContent: maxContentDiv,
+        maxTitle: ''});
+        Drupal.settings.group_map.autoBubbleNID = 0;
+      }
+    }
+  }
 
   GEvent.addListener(object, "click", function() {
 
@@ -218,13 +236,9 @@ function createMarker(point, opts,nid) {
         {maxContent: maxContentDiv,
         maxTitle: ''});
 
-        // java script code for the stars rating
-        // jQuery(function(){jQuery('input.fivestar-submit').hide();});
-        // jQuery(function(){jQuery('form.fivestar-widget').rating();}); // removing for now - not working in Webkit-based sites - chrome & safari - breaks other stuff too
         jQuery(function(){
           jQuery('.maximize').click(function() {
             var rel = jQuery(this).attr('rel');
-            // maxContentDiv.firstChild.src = Drupal_base_path + 'node/'+nid+'/simple#tabs-tabs-' + rel; // removing for now - not working in Webkit-based sites - chrome & safari - breaks other stuff too
             GlobalMap.getInfoWindow().maximize();
           })
         });
