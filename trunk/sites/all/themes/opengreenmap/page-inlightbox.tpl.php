@@ -248,8 +248,9 @@ $location = $node->locations[0];
 if(count($node->og_groups_both) > 0) {
     list($group_nid) = array_keys($node->og_groups_both);
     $group_title = $node->og_groups_both[$group_nid];
-    print 'to ' . l($group_title, 'node/'. $group_nid .'&autoBubbleNID='. $node->nid,
+    print 'to ' . l($group_title, 'node/'. $group_nid,
                     array(
+                      'query' => array('autoBubbleNID' => $node->nid),
                       'attributes' => array(
                         'target' => '_top',
                         'title' => t('View this Open Green Map'))));
