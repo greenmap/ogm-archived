@@ -786,11 +786,12 @@ display: none;
 }
 
 #block-block-13 {
-padding-top: -10px;
+margin-top: -12px;
 }
 
 #block-block-13 iframe{
 overflow-x: hidden;
+margin-top: -6px;
 }
 
 #block-search-0 {
@@ -851,4 +852,17 @@ margin-top: -10px;
 
 #advsearch a:hover{
 text-decoration: underline;
+}
+
+#proxor {
+background:none repeat scroll 0 0 white;
+color:#F89938;
+font-family:lucida grande;
+font-size:10px;
+font-weight:600;
+letter-spacing:1px;
+margin:-22px auto auto;
+text-align:center;
+text-transform:lowercase;
+width:30px;
 }
