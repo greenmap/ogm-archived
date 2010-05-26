@@ -1,0 +1,49 @@
+<?php
+
+/**
+ *  hook_menu()
+ */
+function icon_description_menu() {
+  $items = array();
+  $items['icon/description/%'] = array(
+    'title'            => 'Icon Description',
+    'page callback'    => 'icon_description_desc',
+    'page arguments'   => array(2),
+    'access callback'  => TRUE,
+    'type'             => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
+ *  hook_gmap()
+ *
+ *  Unused at the moment.
+ */
+function icon_description_gmap($op, $map=NULL) {
+  switch ($op) {
+    case 'pre_theme_map':
+      // do this only for the global map
+      if ((arg(0) == 'node' && is_numeric(arg(1))) || (arg(0) == 'greenmap')) {
+        drupal_add_js(drupal_get_path('module', 'icon_description') .'/icon_description.js', 'module', 'footer');
+        drupal_add_js(drupal_get_path('module', 'icon_description') .'/jquery.hoverIntent.minified.js', 'module', 'footer');
+        drupal_add_css(drupal_get_path('module', 'icon_description') .'/icon_description.css');
+      }
+    break;
+  }
+}
+
+/**
+ *  Callback function for icon/description/tid.
+ *
+ *  @param $tid   term ID
+ */
+function icon_description_desc($tid = NULL) {
+  if (is_numeric($tid)) {
+    $result = db_query('SELECT description FROM {term_data} WHERE vid = 1 AND tid = %d', $tid);
+    if ($ret = db_fetch_object($result)) {
+      print $ret->description;
+    }
+  }
+  exit(0);
+}

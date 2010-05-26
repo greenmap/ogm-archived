@@ -1,0 +1,13 @@
+/* $Id$ */
+
+/* hide this form input */
+
+div#edit-field-site-0-nid-nid-wrapper,
+div#edit-field-site-1-nid-nid-wrapper,
+div#edit-field-site-2-nid-nid-wrapper {
+  display: none;
+}
+
+form#node-form div.standard div#edit-field-document-0-embed-wrapper div.description {
+  font-size: 1.2em;
+}
