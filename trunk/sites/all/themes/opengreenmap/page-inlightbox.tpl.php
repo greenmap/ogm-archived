@@ -1,16 +1,6 @@
-  <?php print $head; ?>
-   <?php print $styles; ?>
-
-<script type="text/javascript">
-function alltargettop(){
- for (i=0;i<document.links.length;i++){
-document.links[i].setAttribute("target","_top");
-}
-}
-</script>
-
 <style type="text/css">
 body {
+font-family: Arial;
 background: #ffffff !important;
 }
 
@@ -38,6 +28,7 @@ max-height:1.3em;
 overflow:hidden;
 width:400px;
 padding-bottom: 5px;
+font-size: 30px;
 }
 
 .subinfo {
@@ -72,6 +63,7 @@ text-align: center;
 
 .submittedadded {
 border-bottom:1px solid #8CC63F;
+color: #666;
 }
 
 .thumbnail {
@@ -91,8 +83,12 @@ margin-top:2px !important;
 width:17px;
 }
 
-div.fivestar-widget-static, .fivestar-static-form-item, .fivestar-submit {
+div.fivestar-widget-static, .fivestar-static-form-item, .fivestar-submit, .fivestar-form-item, .fivestar-widget {
 display: none !important;
+}
+
+.field-field-details {
+font-size: 14px;
 }
 
 #viewonmap a{
@@ -101,6 +97,7 @@ font-size:13px;
 font-weight:600;
 letter-spacing:4px;
 text-transform:uppercase;
+text-decoration: none;
 }
 
 #viewonmap a:hover {
@@ -173,7 +170,7 @@ foreach ($node->taxonomy as $tid => $tax) {
 ?>
 
 
-<body onLoad="alltargettop();">
+<body>
 <div class="taximage">
 <center>
   <?php print $primary_icon .  $secondary_icons; ?>
