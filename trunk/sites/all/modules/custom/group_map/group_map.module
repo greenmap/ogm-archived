@@ -735,6 +735,9 @@ function group_map_gmap_macro($gid) {
 
 function group_map_nearbymap_proximity_view($view, $latitude, $longitude, $uid) {
   $view = views_get_view($view);
+  if ( !$view ) {
+    return "No Data.";
+  }
   $view->set_display('block_1');
   $view->is_cacheable = FALSE;
 
@@ -784,6 +787,11 @@ function group_map_custom_search_form_submit($form, &$form_state) {
 function group_map_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   if ( 'green_map' == $node->type ) {
     switch ($op) {
+      case 'view':
+          if ( is_numeric($_GET['autoBubbleNID']) ) {
+            drupal_add_js(array('group_map' => array('autoBubbleNID' => $_GET['autoBubbleNID'] )), 'setting');
+          }
+        break;
       case 'presave':
           if ( !$node->og_description) {
             $node->og_description = $node->title;
