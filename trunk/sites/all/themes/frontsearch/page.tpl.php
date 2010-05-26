@@ -105,8 +105,6 @@ document.links[i].setAttribute("href","javascript:void(0)");
 
   <title><?php print $head_title; ?></title>
 
-  <?php // print $styles; // suppressing Drupal's default styles because this is the minimal version of the mobile theme with no css ?>
-
 
   <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
   <style>
