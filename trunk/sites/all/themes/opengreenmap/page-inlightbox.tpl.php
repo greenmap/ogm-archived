@@ -41,7 +41,7 @@ padding-bottom: 5px;
 }
 
 .subinfo {
-height: 80px;
+height: 86px;
 border-bottom:1px solid #8CC63F;
 padding-bottom:5px;
 padding-left: 100px;
@@ -91,9 +91,37 @@ margin-top:2px !important;
 width:17px;
 }
 
-div.fivestar-widget-static, #fivestar-form-vote-3502 {
+div.fivestar-widget-static, .fivestar-static-form-item, .fivestar-submit {
 display: none !important;
 }
+
+#viewonmap a{
+color:#C6006F;
+font-size:13px;
+font-weight:600;
+letter-spacing:4px;
+text-transform:uppercase;
+}
+
+#viewonmap a:hover {
+text-decoration: none;
+}
+
+#viewonmap a:hover:after {
+text-decoration: none;
+content: ">";
+}
+
+#viewonmap a:hover:before {
+text-decoration: none;
+content: "<";
+}
+
+#viewonmap {
+padding-top: 5px;
+text-align: center;
+}
+
 </style>
 
 <?php
@@ -154,7 +182,9 @@ foreach ($node->taxonomy as $tid => $tax) {
 
 <h2 class="icontitle"><center><?php print $title; ?></center></h2>
 <center>
-<div class="subinfo"
+<div class="subinfo">
+
+
 <?php
 // prepare content for MAIN tab
 if($node->field_image[0]['value'] > '') {
@@ -218,6 +248,20 @@ $location = $node->locations[0];
 
                      <?php } ?>
 </center>
+<div id="viewonmap">
+<?php
+if(count($node->og_groups_both) > 0) {
+    list($group_nid) = array_keys($node->og_groups_both);
+    $group_title = $node->og_groups_both[$group_nid];
+    print l('View on the Map', 'node/'. $group_nid,
+                    array(
+                      'query' => array('autoBubbleNID' => $node->nid),
+                      'attributes' => array(
+                        'target' => '_top',
+                        'title' => t('View this Open Green Map'))));
+  }?>
+
+</div>
 </div>
 
 <?php print($node->body); ?>
