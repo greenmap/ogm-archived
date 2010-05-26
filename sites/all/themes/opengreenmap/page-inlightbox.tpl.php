@@ -91,7 +91,7 @@ margin-top:2px !important;
 width:17px;
 }
 
-div.fivestar-widget-static {
+div.fivestar-widget-static, #fivestar-form-vote-3502 {
 display: none !important;
 }
 </style>
