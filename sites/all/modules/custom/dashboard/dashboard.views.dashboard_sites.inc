@@ -222,7 +222,7 @@ function dashboard_sites_views_default_views() {
     'type' => 'none',
   ));
   $handler->override_option('title', 'Published Sites');
-  $handler->override_option('header', 'These are the sites that can be seen on your map. Scroll on the left to see more, or click Site, Added By or Last Edited to arrange them conveniently. Click edit to edit or delete');
+  $handler->override_option('header', 'These are the sites that can be seen on your map');
   $handler->override_option('header_format', '1');
   $handler->override_option('header_empty', 0);
   $handler->override_option('footer_format', '1');
@@ -339,7 +339,7 @@ function dashboard_sites_views_default_views() {
     ),
   ));
   $handler->override_option('title', 'Suggested Green Sites');
-  $handler->override_option('header', 'These sites have been suggested - click to read, and from there, click edit to approve, edit or delete them');
+  $handler->override_option('header', 'These sites have been suggested - click on them to read, and from there click edit to approve, edit or delete them');
   $handler->override_option('empty', 'No one has suggested any new sites for this map');
   $handler->override_option('path', 'dashboard/suggestedsites/%');
   $handler->override_option('menu', array(
