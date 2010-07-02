@@ -1,5 +1,5 @@
 <?php
-// $Id: install.php,v 1.113.2.8 2009/02/25 11:47:36 goba Exp $
+// $Id: install.php,v 1.113.2.12 2010/05/09 14:13:31 dries Exp $
 
 require_once './includes/install.inc';
 
@@ -40,6 +40,13 @@ function install_main() {
   drupal_load('module', 'system');
   drupal_load('module', 'filter');
 
+  // Install profile chosen, set the global immediately.
+  // This needs to be done before the theme cache gets 
+  // initialized in drupal_maintenance_theme().
+  if (!empty($_GET['profile'])) {
+    $profile = preg_replace('/[^a-zA-Z_0-9]/', '', $_GET['profile']);
+  }
+
   // Set up theme system for the maintenance page.
   drupal_maintenance_theme();
 
@@ -74,15 +81,14 @@ function install_main() {
     $task = NULL;
   }
 
-  // Decide which profile to use.
-  if (!empty($_GET['profile'])) {
-    $profile = preg_replace('/[^a-zA-Z_0-9]/', '', $_GET['profile']);
-  }
-  elseif ($profile = install_select_profile()) {
-    install_goto("install.php?profile=$profile");
-  }
-  else {
-    install_no_profile_error();
+  // No profile was passed in GET, ask the user.
+  if (empty($_GET['profile'])) {
+    if ($profile = install_select_profile()) {
+      install_goto("install.php?profile=$profile");
+    }
+    else {
+      install_no_profile_error();
+    }
   }
 
   // Load the profile.
@@ -257,7 +263,6 @@ function install_settings_form(&$form_state, $profile, $install_locale, $setting
       '#title' => st('Database name'),
       '#default_value' => $db_path,
       '#size' => 45,
-      '#maxlength' => 45,
       '#required' => TRUE,
       '#description' => $db_path_description
     );
@@ -268,7 +273,6 @@ function install_settings_form(&$form_state, $profile, $install_locale, $setting
       '#title' => st('Database username'),
       '#default_value' => $db_user,
       '#size' => 45,
-      '#maxlength' => 45,
       '#required' => TRUE,
     );
 
@@ -278,7 +282,6 @@ function install_settings_form(&$form_state, $profile, $install_locale, $setting
       '#title' => st('Database password'),
       '#default_value' => $db_pass,
       '#size' => 45,
-      '#maxlength' => 45,
     );
 
     $form['advanced_options'] = array(
@@ -295,7 +298,8 @@ function install_settings_form(&$form_state, $profile, $install_locale, $setting
       '#title' => st('Database host'),
       '#default_value' => $db_host,
       '#size' => 45,
-      '#maxlength' => 45,
+      // Hostnames can be 255 characters long.
+      '#maxlength' => 255,
       '#required' => TRUE,
       '#description' => st('If your database is located on a different server, change this.'),
     );
@@ -306,7 +310,8 @@ function install_settings_form(&$form_state, $profile, $install_locale, $setting
       '#title' => st('Database port'),
       '#default_value' => $db_port,
       '#size' => 45,
-      '#maxlength' => 45,
+      // The maximum port number is 65536, 5 digits.
+      '#maxlength' => 5,
       '#description' => st('If your database server is listening to a non-standard port, enter its number.'),
     );
 
@@ -317,7 +322,6 @@ function install_settings_form(&$form_state, $profile, $install_locale, $setting
       '#title' => st('Table prefix'),
       '#default_value' => $db_prefix,
       '#size' => 45,
-      '#maxlength' => 45,
       '#description' => st('If more than one application will be sharing this database, enter a table prefix such as %prefix for your @drupal site here.', array('@drupal' => drupal_install_profile_name(), '%prefix' => $prefix)),
     );
 

@@ -1,5 +1,5 @@
 <?php
-// $Id: locale.inc,v 1.174.2.7 2009/01/06 15:36:51 goba Exp $
+// $Id: locale.inc,v 1.174.2.13 2010/05/28 13:07:27 goba Exp $
 
 /**
  * @file
@@ -866,8 +866,10 @@ function locale_string_is_safe($string) {
  * Validate string editing form submissions.
  */
 function locale_translate_edit_form_validate($form, &$form_state) {
+  // Locale string check is needed for default textgroup only.
+  $safe_check_needed = $form_state['values']['textgroup'] == 'default';
   foreach ($form_state['values']['translations'] as $key => $value) {
-    if (!locale_string_is_safe($value)) {
+    if ($safe_check_needed && !locale_string_is_safe($value)) {
       form_set_error('translations', t('The submitted string contains disallowed HTML: %string', array('%string' => $value)));
       watchdog('locale', 'Attempted submission of a translation string with disallowed HTML: %string', array('%string' => $value), WATCHDOG_WARNING);
     }
@@ -1035,9 +1037,9 @@ function locale_add_language($langcode, $name = NULL, $native = NULL, $direction
  *   Text group to import PO file into (eg. 'default' for interface translations)
  */
 function _locale_import_po($file, $langcode, $mode, $group = NULL) {
-  // If not in 'safe mode', increase the maximum execution time.
-  if (!ini_get('safe_mode')) {
-    set_time_limit(240);
+  // Try to allocate enough time to parse and import the data.
+  if (function_exists('set_time_limit')) {
+    @set_time_limit(240);
   }
 
   // Check if we have the language already in the database.
@@ -1285,15 +1287,21 @@ function _locale_import_one_string($op, $value = NULL, $mode = NULL, $lang = NUL
     case 'db-store':
       // We got header information.
       if ($value['msgid'] == '') {
-        $header = _locale_import_parse_header($value['msgstr']);
+        $languages = language_list();
+        if (($mode != LOCALE_IMPORT_KEEP) || empty($languages[$lang]->plurals)) {
+          // Since we only need to parse the header if we ought to update the
+          // plural formula, only run this if we don't need to keep existing 
+          // data untouched or if we don't have an existing plural formula.
+          $header = _locale_import_parse_header($value['msgstr']);
 
-        // Get the plural formula and update in database.
-        if (isset($header["Plural-Forms"]) && $p = _locale_import_parse_plural_forms($header["Plural-Forms"], $file->filename)) {
-          list($nplurals, $plural) = $p;
-          db_query("UPDATE {languages} SET plurals = %d, formula = '%s' WHERE language = '%s'", $nplurals, $plural, $lang);
-        }
-        else {
-          db_query("UPDATE {languages} SET plurals = %d, formula = '%s' WHERE language = '%s'", 0, '', $lang);
+          // Get the plural formula and update in database.
+          if (isset($header["Plural-Forms"]) && $p = _locale_import_parse_plural_forms($header["Plural-Forms"], $file->filename)) {
+            list($nplurals, $plural) = $p;
+            db_query("UPDATE {languages} SET plurals = %d, formula = '%s' WHERE language = '%s'", $nplurals, $plural, $lang);
+          }
+          else {
+            db_query("UPDATE {languages} SET plurals = %d, formula = '%s' WHERE language = '%s'", 0, '', $lang);
+          }
         }
         $headerdone = TRUE;
       }
@@ -1359,7 +1367,9 @@ function _locale_import_one_string_db(&$report, $langcode, $source, $translation
 
   if (!empty($translation)) {
      // Skip this string unless it passes a check for dangerous code.
-     if (!locale_string_is_safe($translation)) {
+     // Text groups other than default still can contain HTML tags
+     // (i.e. translatable blocks).
+     if ($textgroup == "default" && !locale_string_is_safe($translation)) {
        $report['skips']++;
        $lid = 0;
      }
@@ -1662,7 +1672,7 @@ function _locale_import_shorten_comments($comment) {
       break;
     }
   }
-  return trim(substr($comm, 0, -2));
+  return substr($comm, 0, -2);
 }
 
 /**
@@ -2181,6 +2191,7 @@ function _locale_rebuild_js($langcode = NULL) {
   }
 
   // Construct the JavaScript file, if there are translations.
+  $data_hash = NULL;
   $data = $status = '';
   if (!empty($translations)) {
 
@@ -2199,22 +2210,38 @@ function _locale_rebuild_js($langcode = NULL) {
   $dir = file_create_path(variable_get('locale_js_directory', 'languages'));
 
   // Delete old file, if we have no translations anymore, or a different file to be saved.
-  if (!empty($language->javascript) && (!$data || $language->javascript != $data_hash)) {
+  $changed_hash = $language->javascript != $data_hash;
+  if (!empty($language->javascript) && (!$data || $changed_hash)) {
     file_delete(file_create_path($dir .'/'. $language->language .'_'. $language->javascript .'.js'));
     $language->javascript = '';
     $status = 'deleted';
   }
 
-  // Only create a new file if the content has changed.
-  if ($data && $language->javascript != $data_hash) {
+  // Only create a new file if the content has changed or the original file got
+  // lost.
+  $dest = $dir .'/'. $language->language .'_'. $data_hash .'.js';
+  if ($data && ($changed_hash || !file_exists($dest))) {
     // Ensure that the directory exists and is writable, if possible.
     file_check_directory($dir, TRUE);
 
     // Save the file.
-    $dest = $dir .'/'. $language->language .'_'. $data_hash .'.js';
     if (file_save_data($data, $dest)) {
       $language->javascript = $data_hash;
-      $status = ($status == 'deleted') ? 'updated' : 'created';
+      // If we deleted a previous version of the file and we replace it with a
+      // new one we have an update.
+      if ($status == 'deleted') {
+        $status = 'updated';
+      }
+      // If the file did not exist previously and the data has changed we have
+      // a fresh creation.
+      elseif ($changed_hash) {
+        $status = 'created';
+      }
+      // If the data hash is unchanged the translation was lost and has to be
+      // rebuilt.
+      else {
+        $status = 'rebuilt';
+      }
     }
     else {
       $language->javascript = '';
@@ -2222,9 +2249,10 @@ function _locale_rebuild_js($langcode = NULL) {
     }
   }
 
-  // Save the new JavaScript hash (or an empty value if the file
-  // just got deleted). Act only if some operation was executed.
-  if ($status) {
+  // Save the new JavaScript hash (or an empty value if the file just got
+  // deleted). Act only if some operation was executed that changed the hash
+  // code.
+  if ($status && $changed_hash) {
     db_query("UPDATE {languages} SET javascript = '%s' WHERE language = '%s'", $language->javascript, $language->language);
 
     // Update the default language variable if the default language has been altered.
@@ -2242,6 +2270,10 @@ function _locale_rebuild_js($langcode = NULL) {
     case 'updated':
       watchdog('locale', 'Updated JavaScript translation file for the language %language.', array('%language' => t($language->name)));
       return TRUE;
+    case 'rebuilt':
+      watchdog('locale', 'JavaScript translation file %file.js was lost.', array('%file' => $language->javascript), WATCHDOG_WARNING);
+      // Proceed to the 'created' case as the JavaScript translation file has
+      // been created again.
     case 'created':
       watchdog('locale', 'Created JavaScript translation file for the language %language.', array('%language' => t($language->name)));
       return TRUE;
@@ -2452,7 +2484,7 @@ function _locale_get_predefined_list() {
     "se" => array("Northern Sami"),
     "sg" => array("Sango"),
     "sh" => array("Serbo-Croatian"),
-    "si" => array("Singhalese"),
+    "si" => array("Sinhala", "සිංහල"),
     "sk" => array("Slovak", "Slovenčina"),
     "sl" => array("Slovenian", "Slovenščina"),
     "sm" => array("Samoan"),
