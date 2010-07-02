@@ -3,7 +3,7 @@
 #
 
 # Protect files and directories from prying eyes.
-<FilesMatch "\.(engine|inc|info|install|module|profile|test|po|sh|.*sql|theme|tpl(\.php)?|xtmpl|svn-base)$|^(code-style\.pl|Entries.*|Repository|Root|Tag|Template|all-wcprops|entries|format)$">
+<FilesMatch "\.(engine|inc|info|install|make|module|profile|test|po|sh|.*sql|theme|tpl(\.php)?|xtmpl|svn-base)$|^(code-style\.pl|Entries.*|Repository|Root|Tag|Template|all-wcprops|entries|format)$">
   Order allow,deny
 </FilesMatch>
 
@@ -56,11 +56,6 @@ DirectoryIndex index.php
   php_value mbstring.http_input             pass
   php_value mbstring.http_output            pass
   php_value mbstring.encoding_translation   0
-  php_value memory_limit	128M
-# 2009-06-02 - greg - This supposedly fixes some taxonomy_image errors.
-# May not be needed if taxonomy_image cleans up its act.
-# http://drupal.org/node/454414
-  php_flag allow_url_fopen on
 </IfModule>
 
 # Requires mod_expires to be enabled.
@@ -71,8 +66,14 @@ DirectoryIndex index.php
   # Cache all files for 2 weeks after access (A).
   ExpiresDefault A1209600
 
-  # Do not cache dynamically generated pages.
-  ExpiresByType text/html A1
+  <FilesMatch \.php$>
+    # Do not allow PHP scripts to be cached unless they explicitly send cache
+    # headers themselves. Otherwise all scripts would have to overwrite the
+    # headers set by mod_expires if they want another caching behavior. This may
+    # fail if an error occurs early in the bootstrap process, and it may cause
+    # problems if a non-Drupal PHP file is installed in a subdirectory.
+    ExpiresActive Off
+  </FilesMatch>
 </IfModule>
 
 # Various rewrite rules.
@@ -88,11 +89,7 @@ DirectoryIndex index.php
   # adapt and uncomment the following:
   # RewriteCond %{HTTP_HOST} ^example\.com$ [NC]
   # RewriteRule ^(.*)$ http://www.example.com/$1 [L,R=301]
-
-  RewriteCond %{HTTP_HOST} ^opengreenmap\.org$ [NC]
-  RewriteRule ^(.*)$ http://www.opengreenmap.org/$1 [L,R=301]
-
-
+  #
   # To redirect all users to access the site WITHOUT the 'www.' prefix,
   # (http://www.example.com/... will be redirected to http://example.com/...)
   # uncomment and adapt the following:
@@ -116,4 +113,4 @@ DirectoryIndex index.php
   RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
 </IfModule>
 
-# $Id: .htaccess,v 1.90.2.3 2008/12/10 20:04:08 goba Exp $
+# $Id: .htaccess,v 1.90.2.5 2010/02/02 07:25:22 dries Exp $
