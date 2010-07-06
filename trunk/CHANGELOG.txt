@@ -1,4 +1,8 @@
 // $Id: CHANGELOG.txt,v 1.253.2.39 2010/06/02 18:52:32 goba Exp $
+LOCAL CHANGES
+-------------
+- Patched path.module as per http://drupal.org/node/269877 comment #85 to fix
+  issue #1407 -- mvc
 
 Drupal 6.17, 2010-06-02
 ----------------------
