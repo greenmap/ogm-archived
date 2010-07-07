@@ -94,39 +94,6 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
 
   $contents .= content_format('field_details', $field_details[0], 'default', $node);
 
-/* // RM moved all this up so as sit in right side ///////
-if($node->field_accessible_by_public_tran[0]['value'] == 1) {
-  $siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/accessible.png" alt="' . t('accessible') . '"  title="' . t('accessible') . '">' . '</li>';
-}
-if($node->field_child_friendly[0]['value'] == 1) {
-  $siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/youth.png" alt="' . t('youth friendly') . '" title="' . t('youth friendly') . '">' . '</li>';
-}
-if($node->field_appointment_needed[0]['value'] == 1) {
-  $siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/appointment.png" alt="' . t('appointment necessary - call first') . '" title="' . t('appointment necessary - call first') . '">' . '</li>';
-}
-if($node->field_accessible_by_public_tran[0]['value'] == 1) {
-  $siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/transport.png" alt="' . t('accessible by public transport') . '" title="' . t('accessible by public transport') . '">' . '</li>';
-}
-if($node->field_free_entry[0]['value'] == 1) {
-  $siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/free.png" alt="' . t('free entry') . '" title="' . t('free entry') . '">' . '</li>';
-}
-if($node->field_involved[0]['value'] == 'yes') {
-  $siteicons .= '<li>' . '<img src="' . base_path() . path_to_subtheme() . '/images/insider_icon.gif" alt="' . t('the person who mapped this is involved in this site') . '" title="' . t('the person who mapped this is involved in this site') . '">' . '</li>';
-}
-
-  $contents .= '<div id="iconsandstars">';
-  if($siteicons > '') {
-    $contents .= '<div class="siteicons">';
-      $contents .= '<ul class="links">';
-        $contents .= $siteicons;
-      $contents .= '</ul>';
-    $contents .= '</div>';
-  }
-    $contents .= '<div class="fivestar">';
-      $contents .= fivestar_widget_form($node);
-    $contents .= '</div>';
-  $contents .= '</div>'; // */
-
     if ($field_phone[0] > '') {
       $contents .= '<div class="fieldphone">'. content_format('field_phone', $field_phone[0]) .'</div>';
     }
@@ -322,34 +289,6 @@ if($node->field_involved[0]['value'] == 'yes') {
     if (!$embed_code) {
       continue;
     }
-
-    /*
-    the slideshare api doesn't provide much control, in particular the
-    document height, width, and thumbnail sizes are fixed.  currently (02 june
-    2009) the API returns a flash object 477 pixels wide and 510 pixels high,
-    plus two JPEG thumbnails (170x220 and 120x155).
-    to make this fit in the infowindow, we change the size of the returned
-    object and drop the link to other documents by this slideshare user.
-    (we retain the title link above the document so users can go directly to
-    slideshare.net if desired.)
-    for reference, sample embed code from the API is shown here (with newlines
-    added):
-
-    <div style="width:477px;text-align:left" id="__ss_1523145">
-      <a style="font:14px Helvetica,Arial,Sans-serif;display:block;margin:12px 0 3px 0;text-decoration:underline;" href="http://www.slideshare.net/matt_openflows/lorem-ipsum-title?type=document" title="Lorem Ipsum title">Lorem Ipsum title</a>
-      <object style="margin:0px" width="477" height="510">
-        <param name="movie" value="http://static.slidesharecdn.com/swf/ssplayerd.swf?doc=loremipsum-090602133056-phpapp02&stripped_title=lorem-ipsum-title" />
-        <param name="allowFullScreen" value="true" />
-        <param name="allowScriptAccess" value="always" />
-        <embed src="http://static.slidesharecdn.com/swf/ssplayerd.swf?doc=loremipsum-090602133056-phpapp02&stripped_title=lorem-ipsum-title" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="477" height="510"></embed>
-      </object>
-      <div style="font-size:11px;font-family:tahoma,arial;height:26px;padding-top:2px;">View more
-        <a style="text-decoration:underline;" href="http://www.slideshare.net/">PDF documents</a>
-        from
-        <a style="text-decoration:underline;" href="http://www.slideshare.net/matt_openflows">matt_openflows</a>.
-      </div>
-    </div>
-    */
 
     $embed_code = str_replace('<a href=', '<a target="_blank" href=', $embed_code);
     $embed_code = preg_replace('@width:\d+px@', 'width:320px', $embed_code);
