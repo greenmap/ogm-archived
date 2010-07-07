@@ -1,8 +1,5 @@
 <?php
 
-drupal_add_js('sites/all/js/popupjs.js');
-
-
   $marker_label = '';
   $marker_label .= '<div class="gmappopup">';
   // name, title, latitude, longitude, comment_count, value, nid, field_image_embed
