@@ -6,7 +6,6 @@
   foreach ($view->field as $field) {
   	if($field['field']== 'nid')  {
  		$nid = views_theme_field('views_handle_field', $field['queryname'], $fields, $field, $entry, $view);
-//		$node = node_load($nid); // far too heavy!
 		$terms = taxonomy_node_get_terms($nid);
 		foreach($terms as $key => $value) {
 			$tid = $key;
@@ -21,7 +20,6 @@
 				}
 			}
 		}
-		// $marker_label .= var_dump($terms);
  	}
 	
 	if($field['field']== 'name')  {
@@ -29,7 +27,6 @@
 	}
 	elseif($field['field']== 'title')  {
 		$marker_label .= '<div class="gmapstyle-'. $field['field'] . ' ' . $genre_name_lc .'">'. views_theme_field('views_handle_field', $field['queryname'], $fields, $field, $entry, $view)  . '</div>';
-		// $marker_label .= '<hr class="gmapstyle-hr" ></hr>';
 	}
 	elseif($field['field']== 'field_image_embed')  {
 		$image_html = views_theme_field('views_handle_field', $field['queryname'], $fields, $field, $entry, $view);
@@ -39,9 +36,6 @@
 	}
 	elseif($field['field']== 'value')  {
 		$marker_label .= '<div class="gmapstyle-'. $field['field'] .'">'. views_theme_field('views_handle_field', $field['queryname'], $fields, $field, $entry, $view) . '</div>';
-		// $marker_label .= '<div class="gmapstyle-more">' . l(t('more info') . ' >','node/' . $nid) . '</div>'; // eventually change link to be big info window
-		// $marker_label .= '<a href="#" onClick="maxme()">link</a>';
-		// need to add map.getInfoWindow().maximize() 
 		$marker_label .= '<div class="gmapstyle-email">' . l(t('email this'),'forward/' . $nid) .'</div>';
 		$marker_label .= '<div class="gmapstyle-link" id="linkthis" style="display: none"><a href="" onClick="mypopup()" >link this</a></div>'; // hide this until get js to work
 		$marker_label .= '<div class="gmapstyle-linkbox" id="linkbox" style="display: none"><input name="textfield" type="text" value="http://www.greenmap.org' . base_path() . 'node/' . $nid . '"></div>';	
@@ -58,10 +52,6 @@
 		}
 		
 	}
-    // $marker_label .= '<div class="gmapstyle-'. $field['field'] .'">'. views_theme_field('views_handle_field', $field['queryname'], $fields, $field, $entry, $view)  . '</div>';
   }
-  // $view->field$field['field']== 'nid'
-  //echo arg(1);
-//  print_r($view->field);
 
   print $marker_label;
