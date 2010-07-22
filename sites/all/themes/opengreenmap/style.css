@@ -764,6 +764,11 @@ body.simple #admin-menu, body.simple #closure-blocks {
     display: none;
 }
 
+
+#Share_and_Promote ul.menu{
+right: 315px !important;
+}
+
 /* infowindow connections tab */
 div#connections_content div.view-maps-proximity-search div.item-list div.views-field-distance,
 div#connections_content div.view-maps-proximity-search div.item-list div.views-field-distance-1,
