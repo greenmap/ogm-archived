@@ -765,8 +765,14 @@ body.simple #admin-menu, body.simple #closure-blocks {
 }
 
 
-#Share_and_Promote ul.menu{
+#dhtml_menu-3290-1_menuitem ul.menu{
 right: 315px !important;
+width: 100px  !important;
+}
+
+#dhtml_menu-130-1_menuitem ul.menu{
+right: 428px !important;
+width: 100px  !important;
 }
 
 /* infowindow connections tab */
