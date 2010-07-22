@@ -250,3 +250,25 @@ function opengreenmap_openlayers_cck_map($field = array(), $map = array()) {
   ';
   return $output;
 }
+
+function phptemplate_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
+  $class = ($menu ? 'expanded' : ($has_children ? 'collapsed' : 'leaf'));
+  if (!empty($extra_class)) {
+    $class .= ' '. $extra_class;
+  }
+  if ($in_active_trail) {
+    $class .= ' active-trail';
+  }
+  
+#New line added to get unique ID:s for each menu item (id attribute also added to last line):
+  $css_id = str_replace(' ', '_', strip_tags($link));
+  // ADDED
+  $start = strpos($link, 'id="');
+  if ($start !== false) {
+  	$end = strpos($link, '"', $start+4);
+  	if ($end !== false && 0 < $end-$start) {
+  	  $css_id = substr($link, $start+4, $end-$start-4).'_menuitem';
+  	}
+  }
+  return '<li class="'. $class .'" id="'. $css_id .'">'. $link . $menu ."</li>\n";
+}
