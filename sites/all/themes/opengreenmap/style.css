@@ -878,3 +878,20 @@ text-transform:lowercase;
 width:30px;
 margin-bottom: -12px;
 }
+
+#navbar li{
+float: right !important;
+}
+
+#navbar {
+float:right;
+height:0;
+overflow:visible;
+position:absolute;
+text-align:right;
+top:43px;
+}
+
+.breadcrumb {
+width: 500px;
+}
