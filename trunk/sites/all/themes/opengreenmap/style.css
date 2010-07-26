@@ -771,7 +771,7 @@ width: 100px  !important;
 }
 
 #dhtml_menu-130-1_menuitem ul.menu{
-right: 355px !important;
+right: 350px !important;
 width: 100px  !important;
 }
 
@@ -894,4 +894,8 @@ top:43px;
 
 .breadcrumb {
 width: 500px;
+}
+
+#navbar #secondary {
+margin-right:215px;
 }
