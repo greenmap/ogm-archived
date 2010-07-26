@@ -775,6 +775,15 @@ right: 350px !important;
 width: 100px  !important;
 }
 
+#dhtml_menu-135-1_menuitem ul.menu{
+right: 397px !important;
+width: 100px  !important;
+}
+
+.block-lang_dropdown .title {
+display: none;
+}
+
 /* infowindow connections tab */
 div#connections_content div.view-maps-proximity-search div.item-list div.views-field-distance,
 div#connections_content div.view-maps-proximity-search div.item-list div.views-field-distance-1,
