@@ -781,7 +781,12 @@ width: 100px  !important;
 }
 
 .block-lang_dropdown .title {
-display: none;
+color:#77777D;
+float:left;
+font-size:11px !important;
+font-weight:200;
+padding-right:5px;
+padding-top:6px;
 }
 
 /* infowindow connections tab */
@@ -907,4 +912,46 @@ width: 500px;
 
 #navbar #secondary {
 margin-right:215px;
+}
+
+#sidebar-right {
+margin:54px 20px 0 0 !important;
+}
+
+div#custom-login {
+border: none !important;
+margin-right:20px !important;
+text-align:right !important;
+min-width: 0px !important;
+font-size:11px !important;
+position:relative !important;
+right:-8px !important;
+top:-21px !important;
+}
+
+div#custom-login .name {
+color:#2e68b2 !important;
+}
+
+div#custom-login .additional:after {
+content: " |";
+}
+
+div#custom-login .uaction a {
+color:#2e68b2 !important;
+text-transform: lowercase;
+}
+
+div#custom-login .uaction {
+background: none !important;
+padding:3px 0 !important;
+}
+
+div#custom-login .additional {
+background: none  !important;
+padding:3px 3px !important;
+}
+
+#logo-title .maptitle {
+margin-top:25px;
 }
