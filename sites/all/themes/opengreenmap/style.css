@@ -766,17 +766,14 @@ body.simple #admin-menu, body.simple #closure-blocks {
 
 
 #dhtml_menu-3290-1_menuitem ul.menu{
-right: 240px !important;
 width: 100px  !important;
 }
 
 #dhtml_menu-130-1_menuitem ul.menu{
-right: 350px !important;
 width: 100px  !important;
 }
 
 #dhtml_menu-135-1_menuitem ul.menu{
-right: 397px !important;
 width: 100px  !important;
 }
 
@@ -903,7 +900,7 @@ height:0;
 overflow:visible;
 position:absolute;
 text-align:right;
-top:43px;
+top:158px;
 }
 
 .breadcrumb {
@@ -954,4 +951,92 @@ padding:3px 3px !important;
 
 #logo-title .maptitle {
 margin-top:25px;
+}
+
+.dhtml-menu a {
+display:block;
+height:21px;
+padding-top:2px;
+}
+
+.dhtml-menu a:hover {
+background: #8cc63f;
+text-decoration: none !important;
+color: white !important;
+}
+
+.dhtml-menu .menu a {
+float: none;
+margin-right:0px !important;
+}
+
+.dhtml-menu .menu li {
+width: 100px;
+}
+
+div#block-menu-primary-links ul.menu li ul.menu {
+float:right;
+margin-top:0 !important;
+position:relative !important;
+right:0px !important;
+top:0;
+width:auto !important;
+background: none;
+border:1px solid #99CC33 !important;
+}
+
+#main {
+top: 30px;
+}
+
+#header {
+float:left;
+height:44px;
+width:100%;
+}
+
+#block-menu-primary-links li{
+float: left;
+}
+
+div#block-menu-primary-links ul.menu li ul.menu li {
+display:block;
+height:auto;
+padding-right:4px;
+text-align:right;
+width:82px;
+}
+
+#block-menu-primary-links li {
+border-left:1px solid #8cc63f;
+display:inline;
+padding:0 !important;
+text-align:center !important;
+width:85px;
+}
+
+div#block-menu-primary-links ul.menu li ul.menu li {
+display:block;
+text-align:right;
+border-bottom:1px solid #8cc63f;
+text-align: center !important;
+}
+
+div#block-menu-primary-links ul.menu li ul.menu li:hover {
+display:block;
+margin-left:-24px;
+background: #8cc63f;
+}
+
+div#block-menu-primary-links ul li:last-child {
+border-right:1px solid #8cc63f;
+}
+
+div#block-menu-primary-links ul li ul li:last-child {
+border-right:none;
+border-bottom: none;
+}
+
+div#block-menu-primary-links ul li ul li {
+border-left: none;
 }
