@@ -67,7 +67,7 @@ if ($_GET['lightboxtheme']) {
           <?php print $header; ?>
         </div> <!-- /#header-blocks -->
       <?php endif; ?>
-
+    </div></div> <!-- /#header-inner, /#header -->
 
       <?php if ($logo || $site_name || $site_slogan || $title): ?>
         <div id="logo-title">
@@ -112,7 +112,7 @@ if ($_GET['lightboxtheme']) {
         </div> <!-- /#logo-title -->
       <?php endif; ?>
 
-    </div></div> <!-- /#header-inner, /#header -->
+
 
     <div id="main" class="clear-block"><div id="main-inner" class="clear-block<?php if ($secondary_links || $navbar) { print ' with-navbar'; } ?>">
       <div id="content"><div id="content-inner">
