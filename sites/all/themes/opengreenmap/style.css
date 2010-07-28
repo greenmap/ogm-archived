@@ -955,7 +955,7 @@ margin-top:25px;
 
 .dhtml-menu a {
 display:block;
-height:21px;
+height:auto;
 padding-top:2px;
 }
 
@@ -983,16 +983,6 @@ top:0;
 width:auto !important;
 background: none;
 border:1px solid #99CC33 !important;
-}
-
-#main {
-top: 30px;
-}
-
-#header {
-float:left;
-height:44px;
-width:100%;
 }
 
 #block-menu-primary-links li{
@@ -1039,4 +1029,9 @@ border-bottom: none;
 
 div#block-menu-primary-links ul li ul li {
 border-left: none;
+}
+
+div#block-menu-primary-links ul li ul li ul{
+border-left: none;
+margin-right: 85px;
 }
