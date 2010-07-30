@@ -968,6 +968,8 @@ color: white !important;
 .dhtml-menu .menu a {
 float: none;
 margin-right:0px !important;
+line-height:14px;
+padding:5px;
 }
 
 .dhtml-menu .menu li {
@@ -979,10 +981,23 @@ float:right;
 margin-top:0 !important;
 position:relative !important;
 right:0px !important;
-top:0;
+top:1px;
+left: 1px;
 width:auto !important;
 background: none;
-border:1px solid #99CC33 !important;
+height: 0;
+overflow: visible;
+border: none !important;
+}
+
+#main {
+top: 30px;
+}
+
+#header {
+float:left;
+height:44px;
+width:100%;
 }
 
 #block-menu-primary-links li{
@@ -994,7 +1009,20 @@ display:block;
 height:auto;
 padding-right:4px;
 text-align:right;
-width:82px;
+width:85px;
+background: #ffffff;
+border-top:1px solid #99CC33 !important;
+border-left:1px solid #99CC33 !important;
+border-right:1px solid #99CC33 !important;
+}
+
+div#block-menu-primary-links ul.menu li ul.menu li.last {
+border-bottom: 1px solid #99CC33 !important;
+}
+
+div#block-menu-primary-links ul.menu li ul.menu ul.menu {
+top: -25px;
+left: 0px;
 }
 
 #block-menu-primary-links li {
@@ -1008,7 +1036,6 @@ width:85px;
 div#block-menu-primary-links ul.menu li ul.menu li {
 display:block;
 text-align:right;
-border-bottom:1px solid #8cc63f;
 text-align: center !important;
 }
 
