@@ -1076,3 +1076,7 @@ background: white !important;
 opacity: .7 !important;
 text-decoration: none !important;
 }
+
+#logo-title {
+height: 100px;
+}
