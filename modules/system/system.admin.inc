@@ -1,5 +1,5 @@
 <?php
-// $Id: system.admin.inc,v 1.63.2.14 2010/03/01 10:20:28 goba Exp $
+// $Id: system.admin.inc,v 1.63.2.7 2009/02/25 11:38:41 goba Exp $
 
 /**
  * @file
@@ -187,6 +187,7 @@ function system_admin_theme_settings() {
  */
 function system_themes_form() {
 
+  drupal_clear_css_cache();
   $themes = system_theme_data();
 
   uasort($themes, 'system_sort_modules_by_info_name');
@@ -197,20 +198,13 @@ function system_themes_form() {
 
   foreach ($themes as $theme) {
     $screenshot = NULL;
-    // Create a list which includes the current theme and all its base themes.
-    if (isset($themes[$theme->name]->base_themes)) {
-      $theme_keys = array_keys($themes[$theme->name]->base_themes);
-      $theme_keys[] = $theme->name;
-    }
-    else {
-      $theme_keys = array($theme->name);
-    }
-    // Look for a screenshot in the current theme or in its closest ancestor.
-    foreach (array_reverse($theme_keys) as $theme_key) {
-      if (isset($themes[$theme_key]) && file_exists($themes[$theme_key]->info['screenshot'])) {
+    $theme_key = $theme->name;
+    while ($theme_key) {
+      if (file_exists($themes[$theme_key]->info['screenshot'])) {
         $screenshot = $themes[$theme_key]->info['screenshot'];
         break;
       }
+      $theme_key = isset($themes[$theme_key]->info['base theme']) ? $themes[$theme_key]->info['base theme'] : NULL;
     }
     $screenshot = $screenshot ? theme('image', $screenshot, t('Screenshot for %theme theme', array('%theme' => $theme->info['name'])), '', array('class' => 'screenshot'), FALSE) : t('no screenshot');
 
@@ -269,7 +263,6 @@ function system_themes_form() {
  * Process system_themes_form form submissions.
  */
 function system_themes_form_submit($form, &$form_state) {
-  drupal_clear_css_cache();
 
   // Store list of previously enabled themes and disable all themes
   $old_theme_list = $new_theme_list = array();
@@ -625,6 +618,10 @@ function _system_is_incompatible(&$incompatible, $files, $file) {
  *   The form array.
  */
 function system_modules($form_state = array()) {
+  drupal_rebuild_theme_registry();
+  node_types_rebuild();
+  menu_rebuild();
+  cache_clear_all('schema', 'cache');
   // Get current list of modules.
   $files = module_rebuild_cache();
 
@@ -936,10 +933,6 @@ function system_modules_submit($form, &$form_state) {
     drupal_set_message(t('The configuration options have been saved.'));
   }
 
-  drupal_rebuild_theme_registry();
-  node_types_rebuild();
-  menu_rebuild();
-  cache_clear_all('schema', 'cache');
   drupal_clear_css_cache();
   drupal_clear_js_cache();
 
@@ -1364,7 +1357,7 @@ function system_performance_settings() {
  *
  * @ingroup forms
  */
-function system_clear_cache_submit($form, &$form_state) {
+function system_clear_cache_submit(&$form_state, $form) {
   drupal_flush_all_caches();
   drupal_set_message(t('Caches cleared.'));
 }
@@ -1626,7 +1619,8 @@ function system_date_time_settings_submit($form, &$form_state) {
  */
 function system_date_time_lookup() {
   $result = format_date(time(), 'custom', $_GET['format']);
-  drupal_json($result);
+  echo drupal_to_js($result);
+  exit;
 }
 
 /**
@@ -1849,7 +1843,7 @@ EOT;
 /**
  * This function formats the content of an administrative block.
  *
- * @param $content
+ * @param $block
  *   An array containing information about the block. It should
  *   include a 'title', a 'description' and a formatted 'content'.
  * @ingroup themeable
@@ -1977,7 +1971,7 @@ function theme_system_admin_by_module($menu_items) {
  *   An array of requirements.
  * @ingroup themeable
  */
-function theme_status_report($requirements) {
+function theme_status_report(&$requirements) {
   $i = 0;
   $output = '<table class="system-status-report">';
   foreach ($requirements as $requirement) {
