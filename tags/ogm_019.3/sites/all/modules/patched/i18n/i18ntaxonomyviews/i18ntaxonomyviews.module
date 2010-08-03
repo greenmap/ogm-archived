@@ -1,0 +1,13 @@
+<?php
+// $Id$
+/**
+ * @file
+ * Translate taxonomy terms in views.
+ */
+
+/**
+ * Implementation of hook_views_api().
+ */
+function i18ntaxonomyviews_views_api() {
+  return array('api' => 2.0);
+}

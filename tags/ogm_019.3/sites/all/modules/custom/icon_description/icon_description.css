@@ -1,0 +1,29 @@
+.icon_description_tooltip {
+  /* tooltip container div */
+  background-color: #fff;   
+  font-family: Arial,Verdana,Helvetica,"Bitstream Vera Sans",sans-serif;
+  font-size: 0.75em;
+  margin: 0px;
+  overflow: hidden;
+  padding: 5px;
+  position: absolute;
+  right: 225px;       /* we could determine this dynamically */
+  width: 200px;
+  z-order: 100;
+  opacity:.80;
+  filter: alpha(opacity=80);
+  -moz-opacity: 0.8;
+}
+
+.icon_description_tooltip_title {
+  /* icon title */
+  margin: 0px;
+  padding: 0px;
+}
+
+.icon_description_tooltip_full {
+  /* full icon description */
+  display: none;
+  margin: 0px;
+  padding: 0px;
+}
