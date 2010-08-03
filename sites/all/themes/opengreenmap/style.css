@@ -1082,7 +1082,7 @@ color: #ffffff !important;
 color: #8cc63f !important;
 }
 
-#header-blocks a:hover, #header-blocks a:link {
+#header-blocks a:hover{
 color:#8cc63f !important;
 background: white;
 opacity: .7;
@@ -1097,4 +1097,10 @@ background: none;
 
 #logo-title {
 height: 100px;
+}
+
+#block-menu-primary-links li, #block-menu-menu-footer li {
+display:block;
+float:left;
+padding:0 1em 0 0;
 }
