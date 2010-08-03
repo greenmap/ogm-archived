@@ -33,7 +33,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
         coords.push(latlon);
       }
       // create the line instance
-      var polyline = new GPolyline(coords, color, 5, line_opacity);
+      var polyline = new GPolyline(coords, color, 2, line_opacity);
       allPolygons.push([tid,polyline]);
 
       // single left click on the line
