@@ -926,7 +926,6 @@ margin:54px 20px 0 0 !important;
 div#custom-login {
 border: none !important;
 margin-right:20px !important;
-text-align:right !important;
 min-width: 0px !important;
 font-size:11px !important;
 position:relative !important;
@@ -936,6 +935,7 @@ top:-21px !important;
 
 div#custom-login .name {
 color:#2e68b2 !important;
+text-align:right !important;
 }
 
 div#custom-login .additional:after {
@@ -950,6 +950,8 @@ text-transform: lowercase;
 div#custom-login .uaction {
 background: none !important;
 padding:3px 0 !important;
+text-align:left !important;
+float: left !important;
 }
 
 div#custom-login .additional {
