@@ -777,8 +777,16 @@ width: 100px  !important;
 width: 100px  !important;
 }
 
+.block-lang_dropdown {
+width: 250px;
+}
+
+.block-lang_dropdown .content{
+opacity: .6;
+}
+
 .block-lang_dropdown .title {
-color:#77777D;
+color:#F0FFDF;
 float:left;
 font-size:11px !important;
 font-weight:200;
@@ -956,7 +964,8 @@ margin-top:25px;
 .dhtml-menu a {
 display:block;
 height:auto;
-padding-top:2px;
+padding-top:4px;
+padding-bottom:3px;
 }
 
 .dhtml-menu .menu a {
@@ -975,13 +984,15 @@ float:right;
 margin-top:0 !important;
 position:relative !important;
 right:0px !important;
-top:3px;
-left: 1px;
 width:auto !important;
 background: none;
 height: 0;
+top: -4px;
 overflow: visible;
 border: none !important;
+border-top:3px solid #C2FF8F !important;
+left: 1px;
+padding: 0 !important;
 }
 
 #main {
@@ -1008,6 +1019,7 @@ background: #ffffff;
 border-bottom:1px solid #99CC33 !important;
 border-left:1px solid #99CC33 !important;
 border-right:1px solid #99CC33 !important;
+margin-left: 0px !important;
 }
 
 div#block-menu-primary-links ul.menu li ul.menu li ul.menu li.first {
@@ -1017,6 +1029,8 @@ border-top: 1px solid #99CC33 !important;
 div#block-menu-primary-links ul.menu li ul.menu ul.menu {
 top: -25px;
 left: 0px;
+border: none !important;
+border-top: none !important;
 }
 
 #block-menu-primary-links li {
@@ -1035,9 +1049,7 @@ text-align: center !important;
 }
 
 div#block-menu-primary-links ul.menu li ul.menu li:hover {
-display:block;
-margin-left:-24px;
-background: #8cc63f;
+background: #E6F6D3 !important;
 }
 
 div#block-menu-primary-links ul li:last-child {
@@ -1072,10 +1084,16 @@ color: #8cc63f !important;
 
 #header-blocks a:hover, #header-blocks a:link {
 color:#8cc63f !important;
-background: white !important;
-opacity: .7 !important;
+background: white;
+opacity: .7;
 text-decoration: none !important;
 }
+
+div#block-menu-primary-links ul.menu li ul.menu a {
+opacity: 1;
+background: none;
+}
+
 
 #logo-title {
 height: 100px;
