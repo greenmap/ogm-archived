@@ -113,6 +113,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
   if ( $suggest_nid ) {
     if (!user_access('suggest a site')) {
       drupal_access_denied();
+      exit;
     }
     $map = node_load($suggest_nid);
     if ($map->og_private > 0) {
@@ -120,6 +121,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
         t('Sorry, this map is private and not accepting suggestions yet.'),
         'error');
       drupal_access_denied();
+      exit;
     }
   }
 
@@ -137,6 +139,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
           array( '@link' => url('greenmap/recent'))),
         'error');
       drupal_access_denied();
+      exit;
     }
   }
   // we are logged in
