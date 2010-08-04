@@ -1,0 +1,37 @@
+<?php
+
+
+function ogm_api_service() {
+  return array(
+    // ogm_api.num_sites
+    array(
+	  '#method' => 'ogm_api.num_sites',
+      '#callback' => 'ogm_api_num_sites',
+      '#return' => 'int',
+      '#args' => array(),
+	  '#access arguments' => array('access services'),		// TODO: evaluate
+	  '#access callback' => 'ogm_api_ac_dummy',				// TODO: evaluate
+      '#help' => t('Returns the number of green sites in the database.')),
+	  '#auth' => false,					// session id required? TODO: evaluate
+	  '#key' => false					// api key required? TODO: evaluate
+  );
+}
+
+
+function ogm_api_num_sites() {
+  $q = db_query("SELECT COUNT(*) AS count FROM {node} WHERE type='green_site'");
+  $r = db_fetch_object($q);
+  if ($r !== false) {
+    return $r->count;
+  } else {
+    return 0;
+  }
+}
+
+
+function ogm_api_ac_dummy() {
+  return true;
+}
+
+
+?>
