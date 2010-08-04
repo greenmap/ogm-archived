@@ -899,7 +899,7 @@ margin-bottom: -12px;
 }
 
 #navbar li{
-float: right !important;
+float: left !important;
 }
 
 #navbar {
@@ -916,7 +916,10 @@ width: 500px;
 }
 
 #navbar #secondary {
-margin-right:215px;
+margin-right:217px;
+position:absolute;
+right:0;
+top:-100px;
 }
 
 #sidebar-right {
@@ -925,7 +928,7 @@ margin:54px 20px 0 0 !important;
 
 div#custom-login {
 border: none !important;
-margin-right:20px !important;
+margin-right:13px !important;
 min-width: 0px !important;
 font-size:11px !important;
 position:relative !important;
@@ -992,7 +995,7 @@ height: 0;
 top: -4px;
 overflow: visible;
 border: none !important;
-border-top:3px solid #C2FF8F !important;
+border-top:3px solid #ABE282 !important;
 left: 1px;
 padding: 0 !important;
 }
@@ -1109,4 +1112,38 @@ padding:0 1em 0 0;
 
 #closure-region {
 z-index: 100000;
+}
+
+div#block-menu-primary-links ul li:last-child {
+background:url("images/bluetop.png") repeat scroll 0 0 transparent;
+}
+
+#dhtml_menu-3315-1_menuitem {
+background:url("images/bluetop.png") repeat scroll 0 0 transparent;
+}
+
+#dhtml_menu-3315-1_menuitem a:hover{
+color: #2e68b2 !important;
+}
+
+#dhtml_menu-3315-1_menuitem ul li a:hover{
+color: #8cc63f !important;
+}
+
+#dhtml_menu-3315-1_menuitem ul{
+border-top:3px solid #bed0e7 !important;
+border-color: #bed0e7 !important;
+}
+
+div#block-menu-primary-links ul li:last-child a:hover{
+color: #2e68b2 !important;
+}
+
+/*div#block-menu-primary-links ul li ul li:last-child {
+background:url("images/pinktop.png") repeat scroll 0 0 transparent;
+}*/
+
+div#block-menu-primary-links ul li ul li:last-child a:hover{
+color: #8cc63f !important;
+opacity: 1;
 }
