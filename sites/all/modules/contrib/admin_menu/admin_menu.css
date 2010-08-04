@@ -1,4 +1,4 @@
-/* $Id: admin_menu.css,v 1.25.2.4.2.8 2010/03/06 01:19:53 sun Exp $ */
+/* $Id: admin_menu.css,v 1.25.2.4.2.3 2009/04/04 15:23:18 sun Exp $ */
 
 /**
  * @file
@@ -13,14 +13,11 @@
   background: #101010 url(images/bkg.png) bottom left repeat-x;
   font-size: 9px;
   font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
-  left: 0;
+  left: 0px;
   position: absolute;
   text-align: left;
-  top: 0;
+  top: 0px;
   width: 100%;
-}
-#admin-menu-wrapper {
-  overflow: hidden;
 }
 #admin-menu li.admin-menu-icon a {
   padding: 1px 8px 4px;
@@ -59,7 +56,6 @@ body.admin-menu {
   position: static;
 }
 #admin-menu ul a {
-  background: transparent none;
   border-bottom: none;
   border-right: 1px solid #323232;
   color: #EEE;
@@ -96,10 +92,6 @@ body.admin-menu {
   filter: Alpha(opacity=88);
   opacity: 0.88;
   width: 160px; /* Required for Opera */
-}
-#admin-menu li li li {
-  filter: Alpha(opacity=100);
-  opacity: 1;
 }
 
 /* Second-level lists */
@@ -197,27 +189,3 @@ html.js fieldset.collapsible div.fieldset-wrapper {
     margin-top: 0 !important;
   }
 }
-
-/**
- * Tweaks permissions, if enabled.
- */
-tr.admin-menu-tweak-permissions-processed {
-  cursor: pointer;
-  cursor: hand;
-}
-tr.admin-menu-tweak-permissions-processed td.module {
-  border-top: 0;
-}
-
-/**
- * Hide elements from all users. (D7 backport)
- *
- * Used for elements which should not be immediately displayed to any user. An
- * example would be a collapsible fieldset that will be expanded with a click
- * from a user. The effect of this class can be toggled with the jQuery show()
- * and hide() functions.
- */
-.element-hidden {
-  display: none;
-}
-
