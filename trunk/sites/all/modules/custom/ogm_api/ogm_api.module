@@ -11,9 +11,21 @@ function ogm_api_service() {
       '#args' => array(),
 	  '#access arguments' => array('access services'),		// TODO: evaluate
 	  '#access callback' => 'ogm_api_ac_dummy',				// TODO: evaluate
-      '#help' => t('Returns the number of green sites in the database.')),
+      '#help' => t('Returns the number of green sites in the database.'),
 	  '#auth' => false,					// session id required? TODO: evaluate
 	  '#key' => false					// api key required? TODO: evaluate
+	),
+	array(
+	  '#method' => 'ogm_api.icons',
+      '#callback' => 'ogm_api_icons',
+      '#return' => 'array',
+      '#args' => array(),
+	  '#access arguments' => array('access services'),		// TODO: evaluate
+	  '#access callback' => 'ogm_api_ac_dummy',				// TODO: evaluate
+      '#help' => t('TODO'),
+	  '#auth' => false,					// session id required? TODO: evaluate
+	  '#key' => false					// api key required? TODO: evaluate
+	)
   );
 }
 
@@ -26,6 +38,79 @@ function ogm_api_num_sites() {
   } else {
     return 0;
   }
+}
+
+
+// global variable holding all enabled languages (speedup)
+$ogm_api_langs = array();
+
+
+function _ogm_api_setup_icon(&$icon) {
+	global $ogm_api_langs;
+	
+	if (0 < count($ogm_api_langs)) {
+		// add icon
+		$q = db_query("SELECT path FROM {term_image} WHERE tid = ".$icon['id']);
+		if (($r = db_fetch_object($q)) && !empty($r->path)) {
+			$icon['icon_small'] = url('sites/default/files/taxonomy_image/'.$r->path, array('absolute'=>true));
+		}
+		// add translations
+		$icon['translations'] = array();
+		foreach (array_keys($ogm_api_langs) as $l) {
+			$s = t($icon['name'], array(), $l);
+			// only include the translation if it's different than the original
+			if ($s != $icon['name']) {
+				$icon['translations'][$l]['name'] = $s;
+			}
+			$s = t($icon['description'], array(), $l);
+			if ($s != $icon['description']) {
+				$icon['translations'][$l]['description'] = $s;
+			}
+		}
+	}
+}
+
+
+function ogm_api_icons() {
+  $ret = array();
+  
+  // get list of languages
+  global $ogm_api_langs;
+  $ogm_api_langs = locale_language_list('name', false);
+  
+  // get all categories
+  $q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.vid=1 AND a.tid = b.tid AND b.parent = 0 ORDER BY weight ASC");
+  while (($r = db_fetch_object($q))) {
+    $ret[] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid, 'children'=>array());
+  }
+  
+  // get genres and icons
+  for ($i=0; $i<count($ret); $i++) {
+	$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = ".$ret[$i]['id']." ORDER BY weight ASC");
+	while (($r = db_fetch_object($q))) {
+		$ret[$i]['children'][] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid, 'children'=>array());
+	}
+	http://www.opengreenmap.org/sites/default/files/taxonomy_image/museum.gif
+	for ($j=0; $j<count($ret[$i]['children']); $j++) {
+		$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = ".$ret[$i]['children'][$j]['id']." ORDER BY weight ASC");
+		while (($r = db_fetch_object($q))) {
+			$ret[$i]['children'][$j]['children'][] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid);
+		}
+	}
+  }
+  
+  // go through all terms and add icons and translations
+  foreach ($ret as &$category) {
+	foreach ($category['children'] as &$genre) {
+	  foreach($genre['children'] as &$icon) {
+		_ogm_api_setup_icon($icon);
+	  }
+	  _ogm_api_setup_icon($genre);
+	}
+	_ogm_api_setup_icon($category);
+  }
+
+  return $ret;
 }
 
 
