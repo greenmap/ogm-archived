@@ -1,5 +1,5 @@
 <?php
-// $Id: flag.inc,v 1.1.2.32 2010/01/08 05:00:45 quicksketch Exp $
+// $Id: flag.inc,v 1.1.2.30 2009/03/14 06:13:54 quicksketch Exp $
 
 /**
  * @file
@@ -477,14 +477,9 @@ class flag_flag {
    */
   function _update_count($content_id) {
     $count = db_result(db_query("SELECT COUNT(*) FROM {flag_content} WHERE fid = %d AND content_id = %d", $this->fid, $content_id));
-    if ($count == 0) {
-      db_query("DELETE FROM {flag_counts} WHERE fid = %d AND content_id = %d", $this->fid, $content_id);
-    }
-    else {
-      db_query("UPDATE {flag_counts} SET count = %d WHERE fid = %d AND content_id = %d", $count, $this->fid, $content_id);
-      if (!db_affected_rows()) {
-        db_query("INSERT INTO {flag_counts} (fid, content_type, content_id, count) VALUES (%d, '%s', %d, %d)", $this->fid, $this->content_type, $content_id, $count);
-      }
+    $result = db_query("UPDATE {flag_counts} SET count = %d WHERE fid = %d AND content_id = %d", $count, $this->fid, $content_id);
+    if (!db_affected_rows()) {
+      db_query("INSERT INTO {flag_counts} (fid, content_type, content_id, count) VALUES (%d, '%s', %d, %d)", $this->fid, $this->content_type, $content_id, $count);
     }
   }
 
@@ -588,7 +583,7 @@ class flag_flag {
   }
 
   /**
-   * @addtogroup actions
+   * @defgroup actions Actions integration
    * @{
    * Methods that can be overridden to support Actions.
    */
@@ -624,14 +619,13 @@ class flag_flag {
   }
 
   /**
-   * @} End of "addtogroup actions".
+   * @} End of "defgroup actions".
    */
 
   /**
-   * Methods that can be overridden to support the Rules module.
-   *
-   * @addtogroup rules
+   * @defgroup rules Rules integration
    * @{
+   * Methods that can be overridden to support the Rules module.
    */
 
   /**
@@ -649,11 +643,11 @@ class flag_flag {
   }
   
   /**
-   * @} End of "addtogroup rules".
+   * @} End of "defgroup rules".
    */
 
   /**
-   * @addtogroup views
+   * @defgroup views Views 2 integration
    * @{
    * Methods that can be overridden to support the Views module.
    */
@@ -681,7 +675,7 @@ class flag_flag {
   }
 
   /**
-   * @} End of "addtogroup views".
+   * @} End of "defgroup views".
    */
 
   /**

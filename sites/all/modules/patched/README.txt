@@ -76,6 +76,3 @@ openlayers module
 gmap module
   - patch to the view handler to allow for passing of custom macro stuff to the view on page views.
     the actual patch file is in the module directory.
-
-services module
-  - patch to the admin browser for php 5.3 compatibility: http://drupal.org/node/809226
