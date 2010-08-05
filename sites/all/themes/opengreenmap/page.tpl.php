@@ -48,6 +48,14 @@ if ($_GET['lightboxtheme']) {
       <link rel="stylesheet" href="<?php print $base_path . $subtheme_directory; ?>/ie8.css" type="text/css">
     <?php endif; ?>
   <![endif]-->
+ <!--[if IE 7]>
+    <link rel="stylesheet" href="<?php print base_path() . path_to_theme(); ?>/ie7.css" type="text/css">
+    <?php if ($subtheme_directory && file_exists($subtheme_directory .'/ie.css')): ?>
+      <link rel=" stylesheet" href="<?php print $base_path . $subtheme_directory; ?>/ie.css" type="text/css">
+    <?php endif; ?>
+  <![endif]-->
+
+
 
   <?php print $scripts; ?>
 </head>
@@ -67,7 +75,7 @@ if ($_GET['lightboxtheme']) {
           <?php print $header; ?>
         </div> <!-- /#header-blocks -->
       <?php endif; ?>
-
+    </div></div> <!-- /#header-inner, /#header -->
 
       <?php if ($logo || $site_name || $site_slogan || $title): ?>
         <div id="logo-title">
@@ -112,7 +120,7 @@ if ($_GET['lightboxtheme']) {
         </div> <!-- /#logo-title -->
       <?php endif; ?>
 
-    </div></div> <!-- /#header-inner, /#header -->
+
 
     <div id="main" class="clear-block"><div id="main-inner" class="clear-block<?php if ($secondary_links || $navbar) { print ' with-navbar'; } ?>">
       <div id="content"><div id="content-inner">
