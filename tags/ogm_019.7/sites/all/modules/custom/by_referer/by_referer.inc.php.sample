@@ -1,0 +1,26 @@
+<?php
+
+/*
+ *   the key to the array must be '#pattern#' where pattern is the string to
+ *   match. See the manual for preg_replace for details. 
+ *
+ *   You can also use '/pattern/'
+ */
+$by_referer_config = array(
+  // key is a pattern to match in a drupal path
+  '#^front_page$#' => array(
+    // string 'referers' is always the key here
+    'referers' => array(
+      // key is pattern for referer, value is name of theme
+      '#ogm\.localhost#' => 'bluemarine',
+    ),
+  ),
+  '#^node/1540$#' => array(
+    // string 'referers' is always the key here
+    'referers' => array(
+      // key is pattern for referer, value is name of theme
+      '#ogm\.localhost#' => 'bluemarine',
+    ),
+  ),
+  'DEBUG' => FALSE,
+);
