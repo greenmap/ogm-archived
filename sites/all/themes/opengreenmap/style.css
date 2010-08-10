@@ -1147,3 +1147,11 @@ div#block-menu-primary-links ul li ul li:last-child a:hover{
 color: #8cc63f !important;
 opacity: 1;
 }
+
+#keys_help_button {
+top:141px !important;
+}
+
+#instruction_bubble {
+top:118px !important;
+}
