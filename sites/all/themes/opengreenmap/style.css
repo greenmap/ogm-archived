@@ -1027,7 +1027,7 @@ border-right:1px solid #99CC33 !important;
 margin-left: 0px !important;
 }
 
-div#block-menu-primary-links ul.menu li ul.menu li ul.menu li.first {
+div#block-menu-primary-links ul.menu li ul.menu li ul.menu li:first-child  {
 border-top: 1px solid #99CC33 !important;
 }
 
