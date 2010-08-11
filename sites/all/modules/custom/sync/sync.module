@@ -48,8 +48,7 @@ function sync_user($op, &$edit, &$account, $category = NULL) {
       $mail = (trim($edit['mail'])) ? trim($edit['mail']) : $account->mail;
 
       // set database variables
-	  // sync.inc.php is not in the svn and it's only used for production sites
-      include_once('sync.inc.php');
+      require_once('sync.inc.php');
 
       // if name, pass and email are still the same, do nothing
       if ((trim($edit['name']) == $account->name) &&

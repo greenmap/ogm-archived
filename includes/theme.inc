@@ -1,5 +1,5 @@
 <?php
-// $Id: theme.inc,v 1.415.2.27 2010/03/01 10:02:01 goba Exp $
+// $Id: theme.inc,v 1.415.2.19 2009/02/25 21:02:16 goba Exp $
 
 /**
  * @file
@@ -273,40 +273,18 @@ function _theme_process_registry(&$cache, $name, $type, $theme, $path) {
       if (!isset($info['template']) && !isset($info['function'])) {
         $result[$hook]['function'] = ($type == 'module' ? 'theme_' : $name .'_') . $hook;
       }
-
-      // Make sure include files is set so we don't generate notices later.
-      if (!isset($info['include files'])) {
-        $result[$hook]['include files'] = array();
-      }
-
       // If a path is set in the info, use what was set. Otherwise use the
       // default path. This is mostly so system.module can declare theme
       // functions on behalf of core .include files.
       // All files are included to be safe. Conditionally included
       // files can prevent them from getting registered.
       if (isset($info['file']) && !isset($info['path'])) {
-        // First, check to see if the fully qualified file exists.
-        $filename = './'. $path .'/'. $info['file'];
-        if (file_exists($filename)) {
-          require_once $filename;
-          $result[$hook]['include files'][] = $filename;
-        }
-        else {
-          $filename = './'. $info['file'];
-          if (file_exists($filename)) {
-            require_once $filename;
-            $result[$hook]['include files'][] = $filename;
-          }
-        }
+        $result[$hook]['file'] = $path .'/'. $info['file'];
+        include_once($result[$hook]['file']);
       }
       elseif (isset($info['file']) && isset($info['path'])) {
-        $filename = './'. $info['path'] .'/'. $info['file'];
-        if (file_exists($filename)) {
-          require_once $filename;
-          $result[$hook]['include files'][] = $filename;
-        }
+        include_once($info['path'] .'/'. $info['file']);
       }
-
 
       if (isset($info['template']) && !isset($info['path'])) {
         $result[$hook]['template'] = $path .'/'. $info['template'];
@@ -627,30 +605,13 @@ function theme() {
   $theme_path = $hooks[$hook]['theme path'];
 
   // Include a file if the theme function or preprocess function is held elsewhere.
-  if (!empty($info['include files'])) {
-    foreach ($info['include files'] as $include_file) {
-      include_once($include_file);
-    }
-  }
-
-  // Handle compatibility with theme_registry_alters to prevent failures.
   if (!empty($info['file'])) {
-    static $included_files = array();
     $include_file = $info['file'];
-    if (!empty($info['path'])) {
+    if (isset($info['path'])) {
       $include_file = $info['path'] .'/'. $include_file;
     }
-
-    if (empty($included_files[$include_file])) {
-      // Statically cache files we've already tried to include so we don't
-      // run unnecessary file_exists calls.
-      $included_files[$include_file] = TRUE;
-      if (file_exists('./'. $include_file)) {
-        include_once('./'. $include_file);
-      }
-    }
+    include_once($include_file);
   }
-
   if (isset($info['function'])) {
     // The theme call is a function.
     $output = call_user_func_array($info['function'], $args);
@@ -741,16 +702,11 @@ function theme() {
 function drupal_discover_template($paths, $suggestions, $extension = '.tpl.php') {
   global $theme_engine;
 
-  // Remove slashes or null to prevent files from being included from
-  // an unexpected location (especially on Windows servers).
-  $extension = str_replace(array("/", "\\", "\0"), '', $extension);
-
   // Loop through all paths and suggestions in FIFO order.
   $suggestions = array_reverse($suggestions);
   $paths = array_reverse($paths);
   foreach ($suggestions as $suggestion) {
     if (!empty($suggestion)) {
-      $suggestion = str_replace(array("/", "\\", "\0"), '', $suggestion);
       foreach ($paths as $path) {
         if (file_exists($file = $path .'/'. $suggestion . $extension)) {
           return $file;
@@ -807,16 +763,13 @@ function drupal_find_theme_functions($cache, $prefixes) {
               'function' => $match,
               'arguments' => $info['arguments'],
               'original hook' => $hook,
-              'include files' => $info['include files'],
             );
           }
         }
       }
-
       if (function_exists($prefix .'_'. $hook)) {
         $templates[$hook] = array(
           'function' => $prefix .'_'. $hook,
-          'include files' => $info['include files'],
         );
         // Ensure that the pattern is maintained from base themes to its sub-themes.
         // Each sub-theme will have their functions scanned so the pattern must be
@@ -824,8 +777,6 @@ function drupal_find_theme_functions($cache, $prefixes) {
         if (isset($info['pattern'])) {
           $templates[$hook]['pattern'] = $info['pattern'];
         }
-        // Also ensure that the 'file' property is maintained, because it probably
-        // contains the preprocess.
       }
     }
   }
@@ -889,7 +840,6 @@ function drupal_find_theme_templates($cache, $extension, $path) {
       $templates[$hook] = array(
         'template' => $template,
         'path' => dirname($file->filename),
-        'include files' => $cache[$hook]['include files'],
       );
     }
     // Ensure that the pattern is maintained from base themes to its sub-themes.
@@ -918,7 +868,6 @@ function drupal_find_theme_templates($cache, $extension, $path) {
             'path' => dirname($files[$match]->filename),
             'arguments' => $info['arguments'],
             'original hook' => $hook,
-            'include files' => $info['include files'],
           );
         }
       }
@@ -1320,7 +1269,7 @@ function theme_submenu($links) {
  *   - Any HTML attributes, such as "colspan", to apply to the table cell.
  *
  *   Here's an example for $rows:
- *   @code
+ *   @verbatim
  *   $rows = array(
  *     // Simple row
  *     array(
@@ -1331,7 +1280,7 @@ function theme_submenu($links) {
  *       'data' => array('Cell 1', array('data' => 'Cell 2', 'colspan' => 2)), 'class' => 'funky'
  *     )
  *   );
- *   @endcode
+ *   @endverbatim
  *
  * @param $attributes
  *   An array of HTML attributes to apply to the table tag.
@@ -1359,7 +1308,7 @@ function theme_table($header, $rows, $attributes = array(), $caption = NULL) {
   // Format the table header:
   if (count($header)) {
     $ts = tablesort_init($header);
-    // HTML requires that the thead tag has tr tags in it followed by tbody
+    // HTML requires that the thead tag has tr tags in it follwed by tbody
     // tags. Using ternary operator to check and see if we have any rows.
     $output .= (count($rows) ? ' <thead><tr>' : ' <tr>');
     foreach ($header as $cell) {
@@ -1678,7 +1627,7 @@ function theme_username($object) {
     $output .= ' ('. t('not verified') .')';
   }
   else {
-    $output = check_plain(variable_get('anonymous', t('Anonymous')));
+    $output = variable_get('anonymous', t('Anonymous'));
   }
 
   return $output;
@@ -1866,8 +1815,8 @@ function template_preprocess_page(&$variables) {
   $variables['primary_links']     = theme_get_setting('toggle_primary_links') ? menu_primary_links() : array();
   $variables['secondary_links']   = theme_get_setting('toggle_secondary_links') ? menu_secondary_links() : array();
   $variables['search_box']        = (theme_get_setting('toggle_search') ? drupal_get_form('search_theme_form') : '');
-  $variables['site_name']         = (theme_get_setting('toggle_name') ? filter_xss_admin(variable_get('site_name', 'Drupal')) : '');
-  $variables['site_slogan']       = (theme_get_setting('toggle_slogan') ? filter_xss_admin(variable_get('site_slogan', '')) : '');
+  $variables['site_name']         = (theme_get_setting('toggle_name') ? variable_get('site_name', 'Drupal') : '');
+  $variables['site_slogan']       = (theme_get_setting('toggle_slogan') ? variable_get('site_slogan', '') : '');
   $variables['css']               = drupal_add_css();
   $variables['styles']            = drupal_get_css();
   $variables['scripts']           = drupal_get_js();
@@ -1923,7 +1872,7 @@ function template_preprocess_page(&$variables) {
   $suggestion = 'page';
   $suggestions = array();
   while ($arg = arg($i++)) {
-    $arg = str_replace(array("/", "\\", "\0"), '', $arg);
+    $arg = str_replace(array('/', '\\', '\0'), '', $arg);
     $suggestions[] = $suggestion .'-'. $arg;
     if (!is_numeric($arg)) {
       $suggestion .= '-'. $arg;
