@@ -1027,7 +1027,7 @@ border-right:1px solid #99CC33 !important;
 margin-left: 0px !important;
 }
 
-div#block-menu-primary-links ul.menu li ul.menu li ul.menu li.first {
+div#block-menu-primary-links ul.menu li ul.menu li ul.menu li:first-child  {
 border-top: 1px solid #99CC33 !important;
 }
 
@@ -1146,4 +1146,12 @@ background:url("images/pinktop.png") repeat scroll 0 0 transparent;
 div#block-menu-primary-links ul li ul li:last-child a:hover{
 color: #8cc63f !important;
 opacity: 1;
+}
+
+#keys_help_button {
+top:141px !important;
+}
+
+#instruction_bubble {
+top:118px !important;
 }
