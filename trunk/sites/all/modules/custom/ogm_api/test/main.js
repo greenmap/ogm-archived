@@ -69,7 +69,7 @@ $(document).ready(function() {
 				$('body').append('<div class="error">'+data['#data']['#message']+'</div>');
 			} else {
 				// TODO: change to your host
-				$('body').append('<div class="success"><a href="http://localhost/opengreenmap/node/'+data['#data']+'">Node '+data['#data']+' created, click to view</a></div>');
+				$('body').append('<div class="success"><a href="http://staging.opengreenmap.org/node/'+data['#data']+'">Node '+data['#data']+' created, click to view</a></div>');
 			}
 		}, 'json');
 		return false;
