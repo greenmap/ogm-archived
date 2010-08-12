@@ -1111,7 +1111,7 @@ padding:0 1em 0 0;
 }
 
 #closure-region {
-z-index: 100000;
+z-index: 10000;
 }
 
 div#block-menu-primary-links ul li:last-child {
