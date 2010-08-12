@@ -120,7 +120,7 @@ function _ogm_api_setup_icon(&$icon)
 	
 	if (0 < count($ogm_api_langs)) {
 		// add icon
-		$q = db_query("SELECT path FROM {term_image} WHERE tid = ".$icon['id']);
+		$q = db_query("SELECT path FROM {term_image} WHERE tid = %d", $icon['id']);
 		if (($r = db_fetch_object($q)) !== false && !empty($r->path)) {
 			$icon['icon_small'] = url('sites/default/files/taxonomy_image/'.$r->path, array('absolute'=>true));
 		}
@@ -163,12 +163,12 @@ function ogm_api_icons()
 
 	// get genres and icons
 	for ($i=0; $i<count($ret); $i++) {
-		$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = ".$ret[$i]['id']." ORDER BY weight ASC");
+		$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = %d ORDER BY weight ASC", $ret[$i]['id']);
 		while (($r = db_fetch_object($q)) !== false) {
 			$ret[$i]['children'][] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid, 'children'=>array());
 		}
 		for ($j=0; $j<count($ret[$i]['children']); $j++) {
-			$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = ".$ret[$i]['children'][$j]['id']." ORDER BY weight ASC");
+			$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = %d ORDER BY weight ASC", $ret[$i]['children'][$j]['id']);
 			while (($r = db_fetch_object($q)) !== false) {
 				$ret[$i]['children'][$j]['children'][] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid);
 			}
@@ -324,6 +324,20 @@ function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 	
 	// lazy check if there is already a similar entry on the map
 	// that's a long SQL statement here, but it performs reasonably fast
+	// normalize latitude and longitude first
+	// see _location_geo_logic() in location.module
+	while ((float)$site->latitude > 90) {
+		(float)$site->latitude -= 180;
+	}
+	while ((float)$site->latitude < -90) {
+		(float)$site->latitude += 180;
+	}
+	while ((float)$site->longitude > 180) {
+		(float)$site->longitude -= 360;
+	}
+	while ((float)$site->longitude < -180) {
+		(float)$site->longitude += 360;
+	}
 	$q = db_query("SELECT COUNT(*) AS count FROM {og_ancestry}, {node}, {location_instance}, {location} WHERE group_nid = %d and {og_ancestry}.nid = {node}.nid AND {node}.type = 'green_site' AND {node}.title = '%s' AND {node}.nid = {location_instance}.nid AND {location_instance}.lid = {location}.lid AND {location}.latitude = %f AND {location}.longitude = %f", $map_nid, $site->name, (float)$site->latitude, (float)$site->longitude);
 	if (($r = db_fetch_object($q)) === false) {
 		return services_error(t('Database error'), 503);
@@ -356,12 +370,12 @@ function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 	// these are the secondary icons
 	foreach ($site->secondary_icons as $si) {
 		// the correct way would be to probe if the icon is really not a category or genre
+		// we could also probe if the icon is unique - i.e. not already set as primary or 
+		// secondary icon
 		$q = db_query("SELECT tid from {term_data} WHERE vid=1 AND name = '%s'", $si);
-		// TODO: check all db_query()
 		if (($r = db_fetch_object($q)) === false) {
 			return services_error(t('Invalid secondary_icon "'.$si.'"'), 403);
 		}
-		// TODO: TEST
 		if (empty($fv['taxonomy'])) {
 			$fv['taxonomy'] = array(1=>array());		
 		}
@@ -386,6 +400,7 @@ function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 		return services_error(t('Missing or empty object member "country" (required)'), 403);
 	}
 	// we could check the validity of the country here
+	// see the location module
 	$fv['locations'] = array(array('locpick'=>array('user_latitude'=>(string)$site->latitude, 'user_longitude'=>(string)$site->longitude), 'country'=>(string)$site->country));
 	$fv['og_initial_groups'] = array((string)$map_nid);
 	$fv['og_groups'] = array($map_nid=>(string)$map_nid);
@@ -396,17 +411,22 @@ function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 	} else {
 		$fv['field_free_entry'] = array(array('value'=>'Free entry'));
 	}
+	// TODO: add support for more fields
 	
-	// TODO: drupal_execute only has two arguments?
-	$ret = drupal_execute('green_site_node_form', $f, (object)$n);
+	drupal_execute('green_site_node_form', $f, (object)$n);
 	
-	// BUG: not getting nid back
-	// TODO: need to load some other stuff?
-	// TODO: reference nid?
-	// BUG: duplicate detection
-	// TODO: check watchdog
-	
-	return 'drupal_execute returned "'.print_r($ret, true).'"<br><br>form_get_errors returns "'.print_r(form_get_errors(), true).'"<br><br>field: '.print_r($f, true);
+	if (empty($f['nid']) || !intval($f['nid'])) {
+		$err = '';
+		foreach (form_get_errors() as $val) {
+			if ($err != '') {
+				$err .= ' ';
+			}
+			$err .= $val;
+		}
+		return services_error(t('Backend returned the following error: ').'"'.$err.'"', 403);
+	} else {
+		return intval($f['nid']);
+	}
 }
 
 
