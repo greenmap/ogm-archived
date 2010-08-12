@@ -76,6 +76,7 @@ openlayers module
 gmap module
   - patch to the view handler to allow for passing of custom macro stuff to the view on page views.
     the actual patch file is in the module directory.
-
+dhtml_menu
+	- added a line to open parent li on single click rather than double.
 services module
   - patch to the admin browser for php 5.3 compatibility: http://drupal.org/node/809226
