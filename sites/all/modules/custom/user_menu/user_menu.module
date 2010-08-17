@@ -211,7 +211,7 @@ function user_menu_my_ogm() {
 
 function user_menu_user($op, &$edit, &$account, $category = NULL) {
   switch ($op) {
-    case 'login':
+    case login:
       global $user;
       if ((count($user->og_groups) == 0) && user_access('create green_map content')) {
         $message = t('You have not added any maps yet. To add your first map !link. You use the link in the "My maps" menu on the bottom right to add a map at any time.', array('!link' => l(t('click here'), 'node/add/green-map')));

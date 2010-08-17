@@ -1,5 +1,5 @@
 <?php
-// $Id: common.inc,v 1.756.2.88 2010/06/02 18:52:32 goba Exp $
+// $Id: common.inc,v 1.756.2.47 2009/02/25 21:02:36 goba Exp $
 
 /**
  * @file
@@ -25,13 +25,6 @@ define('SAVED_UPDATED', 2);
 define('SAVED_DELETED', 3);
 
 /**
- * Create E_DEPRECATED constant for older PHP versions (<5.3).
- */
-if (!defined('E_DEPRECATED')) {
-  define('E_DEPRECATED', 8192);
-}
-
-/**
  * Set content for a specified region.
  *
  * @param $region
@@ -55,7 +48,7 @@ function drupal_set_content($region = NULL, $data = NULL) {
  *   A specified region to fetch content for. If NULL, all regions will be
  *   returned.
  * @param $delimiter
- *   Content to be inserted between imploded array elements.
+ *   Content to be inserted between exploded array elements.
  */
 function drupal_get_content($region = NULL, $delimiter = ' ') {
   $content = drupal_set_content();
@@ -223,7 +216,7 @@ function drupal_query_string_encode($query, $exclude = array(), $parent = '') {
   $params = array();
 
   foreach ($query as $key => $value) {
-    $key = rawurlencode($key);
+    $key = drupal_urlencode($key);
     if ($parent) {
       $key = $parent .'['. $key .']';
     }
@@ -236,7 +229,7 @@ function drupal_query_string_encode($query, $exclude = array(), $parent = '') {
       $params[] = drupal_query_string_encode($value, $exclude, $key);
     }
     else {
-      $params[] = $key .'='. rawurlencode($value);
+      $params[] = $key .'='. drupal_urlencode($value);
     }
   }
 
@@ -369,7 +362,7 @@ function drupal_not_found() {
 
   watchdog('page not found', check_plain($_GET['q']), NULL, WATCHDOG_WARNING);
 
-  // Keep old path for reference, and to allow forms to redirect to it.
+  // Keep old path for reference.
   if (!isset($_REQUEST['destination'])) {
     $_REQUEST['destination'] = $_GET['q'];
   }
@@ -396,10 +389,9 @@ function drupal_not_found() {
  */
 function drupal_access_denied() {
   drupal_set_header('HTTP/1.1 403 Forbidden');
-
   watchdog('access denied', check_plain($_GET['q']), NULL, WATCHDOG_WARNING);
 
-  // Keep old path for reference, and to allow forms to redirect to it.
+  // Keep old path for reference.
   if (!isset($_REQUEST['destination'])) {
     $_REQUEST['destination'] = $_GET['q'];
   }
@@ -437,12 +429,10 @@ function drupal_access_denied() {
  *   An integer representing how many times to retry the request in case of a
  *   redirect.
  * @return
- *   An object containing the HTTP request headers, response code, protocol,
- *   status message, headers, data and redirect status.
+ *   An object containing the HTTP request headers, response code, headers,
+ *   data and redirect status.
  */
 function drupal_http_request($url, $headers = array(), $method = 'GET', $data = NULL, $retry = 3) {
-  global $db_prefix;
-
   $result = new stdClass();
 
   // Parse the URL and make sure we can handle the schema.
@@ -450,19 +440,16 @@ function drupal_http_request($url, $headers = array(), $method = 'GET', $data = 
 
   if ($uri == FALSE) {
     $result->error = 'unable to parse URL';
-    $result->code = -1001;
     return $result;
   }
 
   if (!isset($uri['scheme'])) {
     $result->error = 'missing schema';
-    $result->code = -1002;
     return $result;
   }
 
   switch ($uri['scheme']) {
     case 'http':
-    case 'feed':
       $port = isset($uri['port']) ? $uri['port'] : 80;
       $host = $uri['host'] . ($port != 80 ? ':'. $port : '');
       $fp = @fsockopen($uri['host'], $port, $errno, $errstr, 15);
@@ -475,7 +462,6 @@ function drupal_http_request($url, $headers = array(), $method = 'GET', $data = 
       break;
     default:
       $result->error = 'invalid schema '. $uri['scheme'];
-      $result->code = -1003;
       return $result;
   }
 
@@ -508,30 +494,12 @@ function drupal_http_request($url, $headers = array(), $method = 'GET', $data = 
     // host that do not take into account the port number.
     'Host' => "Host: $host",
     'User-Agent' => 'User-Agent: Drupal (+http://drupal.org/)',
+    'Content-Length' => 'Content-Length: '. strlen($data)
   );
-
-  // Only add Content-Length if we actually have any content or if it is a POST
-  // or PUT request. Some non-standard servers get confused by Content-Length in
-  // at least HEAD/GET requests, and Squid always requires Content-Length in
-  // POST/PUT requests.
-  $content_length = strlen($data);
-  if ($content_length > 0 || $method == 'POST' || $method == 'PUT') {
-    $defaults['Content-Length'] = 'Content-Length: '. $content_length;
-  }
 
   // If the server url has a user then attempt to use basic authentication
   if (isset($uri['user'])) {
     $defaults['Authorization'] = 'Authorization: Basic '. base64_encode($uri['user'] . (!empty($uri['pass']) ? ":". $uri['pass'] : ''));
-  }
-
-  // If the database prefix is being used by SimpleTest to run the tests in a copied
-  // database then set the user-agent header to the database prefix so that any
-  // calls to other Drupal pages will run the SimpleTest prefixed database. The
-  // user-agent is used to ensure that multiple testing sessions running at the
-  // same time won't interfere with each other as they would if the database
-  // prefix were stored statically in a file or database variable.
-  if (is_string($db_prefix) && preg_match("/^simpletest\d+$/", $db_prefix, $matches)) {
-    $defaults['User-Agent'] = 'User-Agent: ' . $matches[0];
   }
 
   foreach ($headers as $header => $value) {
@@ -558,10 +526,7 @@ function drupal_http_request($url, $headers = array(), $method = 'GET', $data = 
   list($split, $result->data) = explode("\r\n\r\n", $response, 2);
   $split = preg_split("/\r\n|\n|\r/", $split);
 
-  list($protocol, $code, $status_message) = explode(' ', trim(array_shift($split)), 3);
-  $result->protocol = $protocol;
-  $result->status_message = $status_message;
-
+  list($protocol, $code, $text) = explode(' ', trim(array_shift($split)), 3);
   $result->headers = array();
 
   // Parse headers.
@@ -607,7 +572,7 @@ function drupal_http_request($url, $headers = array(), $method = 'GET', $data = 
 
       break;
     default:
-      $result->error = $status_message;
+      $result->error = $text;
   }
 
   $result->code = $code;
@@ -631,7 +596,7 @@ function drupal_error_handler($errno, $message, $filename, $line, $context) {
     return;
   }
 
-  if ($errno & (E_ALL ^ E_DEPRECATED ^ E_NOTICE)) {
+  if ($errno & (E_ALL ^ E_NOTICE)) {
     $types = array(1 => 'error', 2 => 'warning', 4 => 'parse error', 8 => 'notice', 16 => 'core error', 32 => 'core warning', 64 => 'compile error', 128 => 'compile warning', 256 => 'user error', 512 => 'user warning', 1024 => 'user notice', 2048 => 'strict warning', 4096 => 'recoverable fatal error');
 
     // For database errors, we want the line number/file name of the place that
@@ -989,7 +954,7 @@ function valid_url($url, $absolute = FALSE) {
   if ($absolute) {
     return (bool)preg_match("
       /^                                                      # Start at the beginning of the text
-      (?:ftp|https?|feed):\/\/                                # Look for ftp, http, https or feed schemes
+      (?:ftp|https?):\/\/                                     # Look for ftp, http, or https schemes
       (?:                                                     # Userinfo (optional) which is typically
         (?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*      # a username or a username and password
         (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@          # combination
@@ -1032,7 +997,7 @@ function flood_register_event($name) {
  *
  * @param $name
  *   The name of the event.
- * @param $threshold
+ * @param $number
  *   The maximum number of the specified event per hour (per visitor).
  * @return
  *   True if the user did not exceed the hourly threshold. False otherwise.
@@ -1124,7 +1089,7 @@ function format_xml_elements($array) {
           $output .= drupal_attributes($value['attributes']);
         }
 
-        if (isset($value['value']) && $value['value'] != '') {
+        if ($value['value'] != '') {
           $output .= '>'. (is_array($value['value']) ? format_xml_elements($value['value']) : check_plain($value['value'])) .'</'. $value['key'] .">\n";
         }
         else {
@@ -1391,8 +1356,8 @@ function format_date($timestamp, $type = 'medium', $format = '', $timezone = NUL
  * @param $options
  *   An associative array of additional options, with the following keys:
  *   - 'query'
- *       A URL-encoded query string to append to the link, or an array of query
- *       key/value-pairs without any URL-encoding.
+ *       A query string to append to the link, or an array of query key/value
+ *       properties.
  *   - 'fragment'
  *       A fragment identifier (or named anchor) to append to the link.
  *       Do not include the '#' character.
@@ -1740,7 +1705,7 @@ function drupal_clone($object) {
  * Add a <link> tag to the page's HEAD.
  */
 function drupal_add_link($attributes) {
-  drupal_set_html_head('<link'. drupal_attributes($attributes) .' />');
+  drupal_set_html_head('<link'. drupal_attributes($attributes) ." />\n");
 }
 
 /**
@@ -1900,9 +1865,7 @@ function drupal_get_css($css = NULL) {
     }
 
     if ($is_writable && $preprocess_css) {
-      // Prefix filename to prevent blocking by firewalls which reject files
-      // starting with "ad*".
-      $filename = 'css_'. md5(serialize($types) . $query_string) .'.css';
+      $filename = md5(serialize($types) . $query_string) .'.css';
       $preprocess_file = drupal_build_css_cache($types, $filename);
       $output .= '<link type="text/css" rel="stylesheet" media="'. $media .'" href="'. base_path() . $preprocess_file .'" />'."\n";
     }
@@ -2023,7 +1986,8 @@ function drupal_load_stylesheet($file, $optimize = NULL) {
       // Perform some safe CSS optimizations.
       $contents = preg_replace('<
         \s*([@{}:;,]|\)\s|\s\()\s* |  # Remove whitespace around separators, but keep space around parentheses.
-        /\*([^*\\\\]|\*(?!/))+\*/     # Remove comments that are not CSS hacks.
+        /\*([^*\\\\]|\*(?!/))+\*/ |   # Remove comments that are not CSS hacks.
+        [\n\r]                        # Remove line breaks.
         >x', '\1', $contents);
     }
 
@@ -2044,16 +2008,8 @@ function _drupal_load_stylesheet($matches) {
   $filename = $matches[1];
   // Load the imported stylesheet and replace @import commands in there as well.
   $file = drupal_load_stylesheet($filename);
-  // Determine the file's directory.
-  $directory = dirname($filename);
-  // If the file is in the current directory, make sure '.' doesn't appear in
-  // the url() path.
-  $directory = $directory == '.' ? '' : $directory .'/';
-
-  // Alter all internal url() paths. Leave external paths alone. We don't need
-  // to normalize absolute paths here (i.e. remove folder/... segments) because
-  // that will be done later.
-  return preg_replace('/url\s*\(([\'"]?)(?![a-z]+:|\/+)/i', 'url(\1'. $directory, $file);
+  // Alter all url() paths, but not external.
+  return preg_replace('/url\(([\'"]?)(?![a-z]+:)([^\'")]+)[\'"]?\)?;/i', 'url(\1'. dirname($filename) .'/', $file);
 }
 
 /**
@@ -2257,9 +2213,7 @@ function drupal_get_js($scope = 'header', $javascript = NULL) {
 
   // Aggregate any remaining JS files that haven't already been output.
   if ($is_writable && $preprocess_js && count($files) > 0) {
-    // Prefix filename to prevent blocking by firewalls which reject files
-    // starting with "ad*".
-    $filename = 'js_'. md5(serialize($files) . $query_string) .'.js';
+    $filename = md5(serialize($files) . $query_string) .'.js';
     $preprocess_file = drupal_build_js_cache($files, $filename);
     $preprocessed .= '<script type="text/javascript" src="'. base_path() . $preprocess_file .'"></script>'."\n";
   }
@@ -2420,8 +2374,8 @@ function drupal_build_js_cache($files, $filename) {
     // Build aggregate JS file.
     foreach ($files as $path => $info) {
       if ($info['preprocess']) {
-        // Append a ';' and a newline after each JS file to prevent them from running together.
-        $contents .= file_get_contents($path) .";\n";
+        // Append a ';' after each JS file to prevent them from running together.
+        $contents .= file_get_contents($path) .';';
       }
     }
 
@@ -2454,26 +2408,9 @@ function drupal_to_js($var) {
       return $var;
     case 'resource':
     case 'string':
-      static $replace_pairs;
-
-      if (!isset($replace_pairs)) {
-        $replace_pairs = array(
-          '\\' => '\u005c',
-          '<' => '\u003c',
-          '>' => '\u003e',
-          '&' => '\u0026',
-          '"' => '\u0022',
-          '/' => '\u002f',
-          "'" => '\u0027',
-          "\xe2\x80\xa8" => '\u2028', // Line Separator
-          "\xe2\x80\xa9" => '\u2029', // Paragraph Separator
-        );
-        // Remaining unicode replacements.
-        for ($i = 0; $i < 32; $i++) {
-          $replace_pairs[chr($i)] = '\u00' . sprintf("%02s", dechex($i));
-        }
-      }
-      return '"'. strtr($var, $replace_pairs) .'"';
+      return '"'. str_replace(array("\r", "\n", "<", ">", "&"),
+                              array('\r', '\n', '\x3c', '\x3e', '\x26'),
+                              addslashes($var)) .'"';
     case 'array':
       // Arrays in JSON can't be associative. If the array is empty or if it
       // has sequential whole number keys starting with 0, it's not associative
@@ -2530,8 +2467,6 @@ function drupal_json($var = NULL) {
  *   characters are double escaped so PHP will still see the encoded version.
  * - With clean URLs, Apache changes '//' to '/', so every second slash is
  *   double escaped.
- * - This function should only be used on paths, not on query string arguments,
- *   otherwise unwanted double encoding will occur.
  *
  * @param $text
  *   String to encode
@@ -2655,13 +2590,13 @@ function _drupal_bootstrap_full() {
 /**
  * Store the current page in the cache.
  *
- * If page_compression is enabled, a gzipped version of the page is stored in
- * the cache to avoid compressing the output on each request. The cache entry
- * is unzipped in the relatively rare event that the page is requested by a
- * client without gzip support.
- *
- * Page compression requires the PHP zlib extension
- * (http://php.net/manual/en/ref.zlib.php).
+ * We try to store a gzipped version of the cache. This requires the
+ * PHP zlib extension (http://php.net/manual/en/ref.zlib.php).
+ * Presence of the extension is checked by testing for the function
+ * gzencode. There are two compression algorithms: gzip and deflate.
+ * The majority of all modern browsers support gzip or both of them.
+ * We thus only deal with the gzip variant and unzip the cache in case
+ * the browser does not accept gzip encoding.
  *
  * @see drupal_page_header
  */
@@ -2671,11 +2606,23 @@ function page_set_cache() {
   if (!$user->uid && $_SERVER['REQUEST_METHOD'] == 'GET' && page_get_cache(TRUE)) {
     // This will fail in some cases, see page_get_cache() for the explanation.
     if ($data = ob_get_contents()) {
-      if (variable_get('page_compression', TRUE) && extension_loaded('zlib')) {
-        $data = gzencode($data, 9, FORCE_GZIP);
+      $cache = TRUE;
+      if (variable_get('page_compression', TRUE) && function_exists('gzencode')) {
+        // We do not store the data in case the zlib mode is deflate.
+        // This should be rarely happening.
+        if (zlib_get_coding_type() == 'deflate') {
+          $cache = FALSE;
+        }
+        else if (zlib_get_coding_type() == FALSE) {
+          $data = gzencode($data, 9, FORCE_GZIP);
+        }
+        // The remaining case is 'gzip' which means the data is
+        // already compressed and nothing left to do but to store it.
       }
       ob_end_flush();
-      cache_set($base_root . request_uri(), $data, 'cache_page', CACHE_TEMPORARY, drupal_get_headers());
+      if ($cache && $data) {
+        cache_set($base_root . request_uri(), $data, 'cache_page', CACHE_TEMPORARY, drupal_get_headers());
+      }
     }
   }
 }
@@ -2686,9 +2633,9 @@ function page_set_cache() {
  * Returns TRUE if ran successfully
  */
 function drupal_cron_run() {
-  // Try to allocate enough time to run all the hook_cron implementations.
-  if (function_exists('set_time_limit')) {
-    @set_time_limit(240);
+  // If not in 'safe mode', increase the maximum execution time:
+  if (!ini_get('safe_mode')) {
+    set_time_limit(240);
   }
 
   // Fetch the cron semaphore
@@ -2785,6 +2732,9 @@ function drupal_system_listing($mask, $directory, $key = 'name', $min_depth = 1)
   $searchdir = array($directory);
   $files = array();
 
+  // Always search sites/all/* as well as the global directories
+  $searchdir[] = 'sites/all/'. $directory;
+
   // The 'profiles' directory contains pristine collections of modules and
   // themes as organized by a distribution.  It is pristine in the same way
   // that /modules is pristine for core; users should avoid changing anything
@@ -2792,9 +2742,6 @@ function drupal_system_listing($mask, $directory, $key = 'name', $min_depth = 1)
   if (file_exists("profiles/$profile/$directory")) {
     $searchdir[] = "profiles/$profile/$directory";
   }
-
-  // Always search sites/all/* as well as the global directories
-  $searchdir[] = 'sites/all/'. $directory;
 
   if (file_exists("$config/$directory")) {
     $searchdir[] = "$config/$directory";
@@ -3522,7 +3469,7 @@ function drupal_write_record($table, &$object, $update = array()) {
  * White-space generally doesn't matter, except inside values.
  * e.g.
  *
- * @code
+ * @verbatim
  *   key = value
  *   key = "value"
  *   key = 'value'
@@ -3535,16 +3482,16 @@ function drupal_write_record($table, &$object, $update = array()) {
  *   key
  *   =
  *   'value'
- * @endcode
+ * @endverbatim
  *
  * Arrays are created using a GET-like syntax:
  *
- * @code
+ * @verbatim
  *   key[] = "numeric array"
  *   key[index] = "associative array"
  *   key[index][] = "nested numeric array"
  *   key[index][index] = "nested associative array"
- * @endcode
+ * @endverbatim
  *
  * PHP constants are substituted in, but only when used as the entire value:
  *
@@ -3560,14 +3507,14 @@ function drupal_write_record($table, &$object, $update = array()) {
  * - package: The name of the package of modules this module belongs to.
  *
  * Example of .info file:
- * @code
+ * @verbatim
  *   name = Forum
  *   description = Enables threaded discussions about general topics.
  *   dependencies[] = taxonomy
  *   dependencies[] = comment
  *   package = Core - optional
  *   version = VERSION
- * @endcode
+ * @endverbatim
  *
  * @param $filename
  *   The file we are parsing. Accepts file with relative or absolute path.
@@ -3576,7 +3523,6 @@ function drupal_write_record($table, &$object, $update = array()) {
  */
 function drupal_parse_info_file($filename) {
   $info = array();
-  $constants = get_defined_constants();
 
   if (!file_exists($filename)) {
     return $info;
@@ -3620,9 +3566,9 @@ function drupal_parse_info_file($filename) {
         $parent = &$parent[$key];
       }
 
-      // Handle PHP constants.
-      if (isset($constants[$value])) {
-        $value = $constants[$value];
+      // Handle PHP constants
+      if (defined($value)) {
+        $value = constant($value);
       }
 
       // Insert actual value
@@ -3742,8 +3688,7 @@ function drupal_flush_all_caches() {
 function _drupal_flush_css_js() {
   $string_history = variable_get('css_js_query_string', '00000000000000000000');
   $new_character = $string_history[0];
-  // Not including 'q' to allow certain JavaScripts to re-use query string.
-  $characters = 'abcdefghijklmnoprstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   while (strpos($string_history, $new_character) !== FALSE) {
     $new_character = $characters[mt_rand(0, strlen($characters) - 1)];
   }
