@@ -479,14 +479,6 @@ function ogm_permissions_user_default_permissions() {
     ),
   );
 
-  // Exported permission: administer unit tests
-  $permissions['administer unit tests'] = array(
-    'name' => 'administer unit tests',
-    'roles' => array(
-      '0' => 'admin',
-    ),
-  );
-
   // Exported permission: administer url aliases
   $permissions['administer url aliases'] = array(
     'name' => 'administer url aliases',
