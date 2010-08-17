@@ -367,6 +367,13 @@ function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 	// there is really no excuse why we need to pass the username here to make it work
 	$fv['name'] = $user->name;
 	$fv['op'] = t('Save');
+	// get the maximum number of secondary icons
+	$a = variable_get('taxonomy_limit_green_site'. $type, NULL);
+	if (is_array($a) && is_array($a[1]) && !empty($a[1]['max'])) {
+		$max_icons = intval($a[1]['max']);
+	} else {
+		$max_icons = 0;
+	}
 	// these are the secondary icons
 	foreach ($site->secondary_icons as $si) {
 		// the correct way would be to probe if the icon is really not a category or genre
@@ -380,6 +387,10 @@ function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 			$fv['taxonomy'] = array(1=>array());		
 		}
 		$fv['taxonomy'][1][$r->tid] = (string)$r->tid;
+		
+		if (0 < $max_icons && $max_icons <= count($fv['taxonomy'][1])) {
+			return services_error(t('Only up to '.($max_icons-1).' secondary icons supported'), 403);
+		}
 	}
 	// this is the primary icon
 	if (empty($site->icon)) {
