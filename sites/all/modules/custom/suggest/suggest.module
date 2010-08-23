@@ -20,13 +20,23 @@ function suggest_perm() {
 * create 'suggest' tabs for appropriate users
 */
 function suggest_menu() {
-  $items['node/%suggest_node/suggest'] = array(
+  $items['node/%suggest_node/suggest-green-site'] = array(
     'title' => 'Suggest a site',
-    'access callback' => 'suggest_access_member_callback',
+    'access callback' => 'suggest_green_site_access_member_callback',
     'access arguments' => array(1),
     'page callback' => 'suggest_add',
     'page arguments'=> array(1),
     'type' => MENU_LOCAL_TASK,
+    'weight' => 8,
+  );
+
+  $items['node/%suggest_node/suggest-photo'] = array(
+    'title' => 'Suggest a site',
+    'access callback' => 'suggest_photo_access_member_callback',
+    'access arguments' => array(1),
+    'page callback' => 'suggest_add',
+    'page arguments'=> array(1),
+    'type' => MENU_CALLBACK,
     'weight' => 8,
   );
   return $items;
@@ -43,7 +53,17 @@ function suggest_node_load($nid) {
   }
 }
 
-function suggest_access_member_callback($nid) {
+function suggest_green_site_access_member_callback($nid) {
+  return suggest_access_member_callback($nid, 'green-site');
+}
+
+function suggest_photo_access_member_callback($nid) {
+  return suggest_access_member_callback($nid, 'photo');
+}
+
+function suggest_access_member_callback($nid, $type = 'green-site') {
+// FIXME: can this use the standard node access API instead of looking for
+// specific permission strings?
   global $user;
   $group = node_load($nid);
   if ( og_is_group_member($nid) ) {
@@ -53,6 +73,20 @@ function suggest_access_member_callback($nid) {
     return FALSE;
   }
   else {
+    switch ( $type ) {
+      case 'green-site':
+          return user_access('access content') &&
+            user_access('create green_site content') &&
+            user_access('suggest a site');
+        break;
+      case 'photo':
+          return user_access('access content') &&
+            user_access('create photo content');
+        break;
+      default:
+          return FALSE;
+        break;
+    }
     return user_access('access content') &&
       user_access('create green_site content') &&
       user_access('suggest a site');
@@ -70,29 +104,52 @@ function suggest_add($gid) {
 *
 */
 function suggest_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
-  if ( 'green_site' == $node->type ) {
-    switch ($op) {
-      case 'presave':
-        if ( ($node->field_awaiting_approval[0]['value'] > 0) &&
-             suggest_is_public($node) ) {
-          $node->field_awaiting_approval[0]['value'] = 0;
+  switch ( $node->type ) {
+    case 'green_site': 
+        switch ($op) {
+          case 'presave':
+            if ( ($node->field_awaiting_approval[0]['value'] > 0) &&
+                 suggest_is_public($node) ) {
+              $node->field_awaiting_approval[0]['value'] = 0;
+            }
+            break;
+          case 'insert' : // fall through to 'update'
+          case 'update' :
+            if ($node->field_awaiting_approval[0]["value"] > 0) {
+              // tell the suggester that this has been submitted
+              drupal_set_message(t('This suggestion has been submitted and is awaiting approval from the mapmaker'));
+            }
+            // if we're making a suggested site public, remove the suggested map field
+            break;
+          case 'view' :
+            if ($node->field_awaiting_approval[0]["value"] > 0) {
+              drupal_set_message(t('This suggestion is awaiting approval from the mapmaker'));
+            }
+            break;
         }
-        break;
-      case 'insert' :
-        // fall through to 'update'
-      case 'update' :
-        if ($node->field_awaiting_approval[0]["value"] > 0) {
-          // tell the suggester that this has been submitted
-          drupal_set_message(t('This suggestion has been submitted and is awaiting approval from the mapmaker'));
+      break;
+    case 'photo':
+        switch ($op) {
+          case 'presave':
+            if ( ($node->field_awaiting_approval[0]['value'] > 0) &&
+                 suggest_is_public($node) ) {
+              $node->field_awaiting_approval[0]['value'] = 0;
+            }
+            break;
+          case 'insert' : // fall through to 'update'
+          case 'update' :
+            if ($node->field_awaiting_approval[0]["value"] > 0) {
+              // tell the suggester that this has been submitted
+              drupal_set_message(t('This photo has been submitted and is awaiting approval from the mapmaker'));
+            }
+            break;
+          case 'view' :
+            if ($node->field_awaiting_approval[0]["value"] > 0) {
+              drupal_set_message(t('This photo is awaiting approval from the mapmaker'));
+            }
+            break;
         }
-        // if we're making a suggested site public, remove the suggested map field
-        break;
-      case 'view' :
-        if ($node->field_awaiting_approval[0]["value"] > 0) {
-          drupal_set_message(t('This suggestion is awaiting approval from the mapmaker'));
-        }
-        break;
-    }
+      break;
   }
 }
 
@@ -100,9 +157,16 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
   global $user;
   // only alter green_site forms
   // FIXME: this is not right, should move non-suggest changes to some other hook_form_alter()
-  if ( ! in_array( $form_id, array('green_site_node_form', 'green_route_node_form', 'green_area_node_form')) ) {
+  if ( ! in_array( $form_id, array('green_site_node_form', 'green_route_node_form', 'green_area_node_form', 'photo_node_form')) ) {
     return;
   }
+  $typenames = array(
+    'green_site_node_form' => 'green site',
+    'green_route_node_form' => 'green route',
+    'green_area_node_form' => 'green area',
+    'photo_node_form' => 'photo',
+  );
+  $typename = $typenames[$form_id] ? $typenames[$form_id] : 'site';
   $should_suggest = FALSE;
   // determine what kind of user we are, which will determine what the form looks like:
   $suggest_nid = NULL;
@@ -135,8 +199,8 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     // we got here by error
     else {
       drupal_set_message(
-        t('You must <a href="@link">choose a map</a> to suggest your site to.',
-          array( '@link' => url('greenmap/recent'))),
+        t('You must <a href="@link">choose a map</a> to suggest your @type to.',
+          array( '@link' => url('greenmap/recent'), '@type' => ucwords($typename))),
         'error');
       drupal_access_denied();
       exit;
@@ -177,10 +241,10 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     if ( $form['#node']->field_awaiting_approval[0]['value'] ) {
       if ( empty($form_state['post']) ) {
         drupal_set_message(
-          t('This site has been suggested as an addition to your map.
+          t('This @type has been suggested as an addition to your map.
              Please review it carefully and then press the Submit button to
              add it to your map. If you wish to reject it you can untick your
-             map in the "Maps" section below.'));
+             map in the "Maps" section below, or click the "Delete" button.', array('@type' => ucwords($typename))));
       }
     }
     //FIXME: This is general purpose and should be in group_map not here
@@ -188,7 +252,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
       '#type' => 'checkbox',
       '#title' => t('Public'),
       '#default_value' => $node->nid ? $node->og_public : 1,
-      '#description' => t('Show this site to everyone. If not checked, this site will be private and only team members of the maps selected above can see it. Sites that do not have any maps selected above are always public on the World View Map.'),
+      '#description' => t('Show this @type to everyone. If not checked, this @type will be private and only team members of the maps selected above can see it.', array('@type' => ucwords($typename))),
       '#weight' => 2,
     );
   }
