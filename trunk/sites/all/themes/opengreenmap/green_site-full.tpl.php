@@ -305,9 +305,10 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
   if (empty($media)) {
     $multimedia .= '<div id="multimedia_main_na">';
     if (user_access('create video content') && user_access('create document content') && user_access('create photo content')) {
+      $gid = reset($node->og_groups);
       $multimedia .= t('Be the first to add a <a target="_parent" href="@photo_link">photo</a>, <a target="_parent" href="@video_link">video</a>, or <a target="_parent" href="@document_link">PDF</a> about this site! Each expresses a personal perspective.',
           array(
-            '@photo_link' => base_path().'node/add/photo?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
+            '@photo_link' => base_path().'node/add/photo?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title) .'&suggest='. $gid,
             '@video_link' => base_path().'node/add/video?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
             '@document_link' => base_path().'node/add/document?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
             ));
@@ -330,10 +331,11 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
     $multimedia .= multimedia_content_media_description($media[0], $name);
     $multimedia .= '</div>';
     if (user_access('create video content') && user_access('create document content') && user_access('create photo content')) {
+      $gid = reset($node->og_groups);
       $multimedia .= '<p id="multimedia_selector_title">';
       $multimedia .= t('add <a target="_parent" href="@photo_link">photo</a>, <a target="_parent" href="@video_link">video</a>, <a target="_parent" href="@document_link">PDF</a>',
           array(
-            '@photo_link' => base_path().'node/add/photo?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
+            '@photo_link' => base_path().'node/add/photo?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title) .'&suggest='. $gid,
             '@video_link' => base_path().'node/add/video?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
             '@document_link' => base_path().'node/add/document?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
             )).
