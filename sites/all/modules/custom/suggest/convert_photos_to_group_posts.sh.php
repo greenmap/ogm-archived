@@ -4,6 +4,7 @@
 //   drush php-script <name of this file>
 
 // get every photo
+
 $sql = "SELECT nid FROM node WHERE type = '%s'";
 $type = 'photo';
 if ( ! og_is_group_post_type($type) ) {
@@ -31,13 +32,9 @@ while ( $ph = db_fetch_object($res) ) {
     trigger_error("Found a photo with with nid ". $photo->nid ." having no values for $f");
   }
   foreach ( $sites as $site ) {
-
-    //FIXME:
-
-    // check if the group post is going to be public. Make sure to preserve state, and default to public if one or more sites are also public!!
-
-    //END FIXME:
-
+    if ( isset($site->og_public) ) {
+      $photo->og_public = $site->og_public;
+    }
     if ( !is_array($site->og_groups) ) {
       trigger_error("Found a site with no group, ignoring it.");
     } else {
@@ -48,5 +45,4 @@ while ( $ph = db_fetch_object($res) ) {
   }
 }
 
-// if things don't change could try this:
-// node_access_rebuild();
+node_access_rebuild();
