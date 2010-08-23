@@ -26,6 +26,11 @@ function ogm_permissions_user_default_roles() {
     'name' => 'authenticated user',
   );
 
+  // Exported role: map creator
+  $roles['map creator'] = array(
+    'name' => 'map creator',
+  );
+
   // Exported role: moderator
   $roles['moderator'] = array(
     'name' => 'moderator',

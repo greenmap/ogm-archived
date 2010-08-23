@@ -660,7 +660,7 @@ function ogm_permissions_user_default_permissions() {
     'name' => 'create green_map content',
     'roles' => array(
       '0' => 'admin',
-      '1' => 'team leader',
+      '1' => 'map creator',
     ),
   );
 
