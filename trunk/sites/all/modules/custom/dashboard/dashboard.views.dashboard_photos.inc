@@ -24,12 +24,13 @@ $handler->override_option('relationships', array(
 ));
 $handler->override_option('fields', array(
   'title' => array(
-    'label' => 'Site',
+    'label' => 'Photo Title',
     'alter' => array(
       'alter_text' => 0,
       'text' => '',
       'make_link' => 0,
       'path' => '',
+      'link_class' => '',
       'alt' => '',
       'prefix' => '',
       'suffix' => '',
@@ -161,7 +162,7 @@ $handler->override_option('fields', array(
     'relationship' => 'field_site_1_nid',
   ),
   'title_1' => array(
-    'label' => 'Title',
+    'label' => 'Posted To Site',
     'alter' => array(
       'alter_text' => 0,
       'text' => '',
@@ -848,43 +849,6 @@ $handler->override_option('fields', array(
     'table' => 'node',
     'field' => 'changed',
     'relationship' => 'none',
-  ),
-  'field_image_caption_value' => array(
-    'label' => 'Image caption or credit',
-    'alter' => array(
-      'alter_text' => 0,
-      'text' => '',
-      'make_link' => 0,
-      'path' => '',
-      'link_class' => '',
-      'alt' => '',
-      'prefix' => '',
-      'suffix' => '',
-      'help' => '',
-      'trim' => 0,
-      'max_length' => '',
-      'word_boundary' => 1,
-      'ellipsis' => 1,
-      'strip_tags' => 0,
-      'html' => 0,
-    ),
-    'link_to_node' => 0,
-    'label_type' => 'widget',
-    'format' => 'trimmed',
-    'multiple' => array(
-      'group' => TRUE,
-      'multiple_number' => '',
-      'multiple_from' => '',
-      'multiple_reversed' => FALSE,
-    ),
-    'exclude' => 0,
-    'id' => 'field_image_caption_value',
-    'table' => 'node_data_field_image_caption',
-    'field' => 'field_image_caption_value',
-    'relationship' => 'none',
-    'override' => array(
-      'button' => 'Use default',
-    ),
   ),
   'tid_1' => array(
     'label' => 'Primary Term',
