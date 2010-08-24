@@ -238,6 +238,11 @@ function dashboard_leadmapmaker($nid){
     ),
     array(
       'view' => 'dashboard_photos',
+      'title' => t('Photos Awaiting Approval') .': ',
+      'display' => 'page_2',
+    ),
+    array(
+      'view' => 'dashboard_photos',
       'title' => t('Photos') .': ',
       'display' => 'page_1',
     ),
