@@ -240,11 +240,25 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
   else {
     if ( $form['#node']->field_awaiting_approval[0]['value'] ) {
       if ( empty($form_state['post']) ) {
-        drupal_set_message(
-          t('This @type has been suggested as an addition to your map.
+        $warnings = array(
+          'green_site_node_form' => 'This @type has been suggested as an addition to your map.
              Please review it carefully and then press the Submit button to
              add it to your map. If you wish to reject it you can untick your
-             map in the "Maps" section below, or click the "Delete" button.', array('@type' => ucwords($typename))));
+             map in the "Maps" section below, or click the "Delete" button.',
+          'green_route_node_form' => 'This @type has been suggested as an addition to your map.
+             Please review it carefully and then press the Submit button to
+             add it to your map. If you wish to reject it you can untick your
+             map in the "Maps" section below, or click the "Delete" button.',
+          'green_area_node_form' => 'This @type has been suggested as an addition to your map.
+             Please review it carefully and then press the Submit button to
+             add it to your map. If you wish to reject it you can untick your
+             map in the "Maps" section below, or click the "Delete" button.',
+          'photo_node_form' => 'This @type has been suggested as an addition to one of the sites on your map.
+             Please review it carefully and then press the Submit button to
+             allow it on your site and map. If you wish to reject it, click the "Delete" button below.',
+        );
+        drupal_set_message(
+          t($warnings[$form_id], array('@type' => ucwords($typename))));
       }
     }
     //FIXME: This is general purpose and should be in group_map not here
