@@ -48,6 +48,11 @@ $sql = "SELECT u.uid, u.name, r.name as role, r.rid
 
 $res = db_query($sql);
 
+$map_creator_rid = db_result(db_query("SELECT rid FROM {role} WHERE name = 'map creator'"));
+
+if ( ! $map_creator_rid ) {
+  trigger_error("Failed to find a role called 'map creator'. Exiting.\n");
+}
 
 // not really full users, just the selected fields above
 $users = array();
@@ -62,6 +67,12 @@ foreach ( $users as $u ) {
     print "skipping uid $u->uid \n";
     $skipped[] = $u;
     continue;
+  }
+  //if leader, insert this user into the role 'map creator'
+  if ( $u->role === 'team leader' ) {
+    // delete first in case this is redundant
+    db_query('DELETE FROM {users_roles} WHERE uid = %d AND rid = %d', $u->uid, $map_creator_rid);
+    db_query('INSERT INTO {users_roles} (uid, rid) VALUES (%d, %d)', $u->uid, $map_creator_rid);
   }
   // get all that user's maps 
   $sql = "
