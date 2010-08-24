@@ -45,4 +45,5 @@ while ( $ph = db_fetch_object($res) ) {
   }
 }
 
+print "Rebuilding node access table(s). This will take a long time...\n";
 node_access_rebuild();
