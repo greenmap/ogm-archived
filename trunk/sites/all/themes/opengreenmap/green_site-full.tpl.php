@@ -236,7 +236,16 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
     }
   }
   // add contributed photos
-  $result = db_query('SELECT a.nid FROM {content_type_photo} AS a, {node} AS b WHERE field_site_1_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
+  $photos_sql = 'SELECT n.nid
+                 FROM {content_type_photo} ctp
+                   INNER JOIN {node} n
+                     ON n.vid = ctp.vid
+                   INNER JOIN {content_field_awaiting_approval} cfaa
+                     ON ctp.vid = cfaa.vid
+                 WHERE ctp.field_site_1_nid = %d
+                   AND cfaa.field_awaiting_approval_value != 1
+                   AND n.status = 1';
+  $result = db_query($photos_sql, $node->nid);
   while ($line = db_fetch_object($result)) {
     $medianode = node_load(array('nid' => $line->nid));
     // make sure this is a valid image
