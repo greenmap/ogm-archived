@@ -6,19 +6,8 @@
 // usage:
 //   drush php-script <name of this file>
 
-// some special cases:
 // run this query to see who has more than one role:
-
-/* 
-
-SELECT users.name, inner1.* FROM (SELECT u.uid, COUNT(u.uid) roles, ur.rid
-   FROM users u INNER JOIN users_roles ur ON u.uid = ur.uid GROUP BY u.uid HAVING
-   roles > 1 ) inner1 INNER JOIN users ON inner1.uid = users.uid ;
-
-*/
 // these users will probably need to be manually dealt with
-
-
 $sql = "
   SELECT users.name, inner1.* 
     FROM 
@@ -26,6 +15,7 @@ $sql = "
           FROM {users} u 
             INNER JOIN {users_roles} ur 
               ON u.uid = ur.uid 
+          WHERE ur.rid NOT IN ( 6,7,8,3 )
           GROUP BY u.uid HAVING nroles > 1 
       ) inner1 
       INNER JOIN {users}
