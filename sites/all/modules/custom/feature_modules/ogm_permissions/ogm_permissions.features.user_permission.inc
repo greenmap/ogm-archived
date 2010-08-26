@@ -593,7 +593,7 @@ function ogm_permissions_user_default_permissions() {
     'name' => 'configure member roles',
     'roles' => array(
       '0' => 'admin',
-      '1' => 'team leader',
+      '1' => 'map creator',
     ),
   );
 
