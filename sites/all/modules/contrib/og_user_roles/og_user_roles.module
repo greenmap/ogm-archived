@@ -966,8 +966,10 @@ function theme_og_user_roles_page_form($form) {
  *   TRUE if this group type allows roles to be assigned, otherwise FALSE
  */
 function og_user_roles_is_allowed($nid) {
+  global $user;
+
   $node = node_load($nid);
-  if (in_array($node->type, og_get_types('group')) && variable_get("og_user_roles_roles_$node->type", NULL) && user_access('configure member roles')) {
+  if (in_array($node->type, og_get_types('group')) && variable_get("og_user_roles_roles_$node->type", NULL) && og_user_roles_user_access('configure member roles', $nid, $user->uid)) {
     return TRUE;
   }
   else {
