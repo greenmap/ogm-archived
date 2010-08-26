@@ -89,6 +89,15 @@ function dashboard_menu(){
     'type' => MENU_LOCAL_TASK,
     'weight' => 10,
   );
+  $items['node/%dashboard_map/member_roles'] = array(
+    'title' => 'Team Roles',
+    'access callback' => 'dashboard_access_admin_callback',
+    'access arguments' => array(1),
+    'page callback' => 'dashboard_members_roles',
+    'page arguments'=> array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 11,
+  );
   $items['node/%dashboard_map/add_site'] = array(
     'title' => 'Add a Site',
     'access callback' => 'dashboard_access_member_callback',
@@ -270,6 +279,14 @@ function dashboard_leadmapmaker($nid){
 function dashboard_members($gid){
   return views_embed_view('dashboard_team', 'page', $gid);
 }
+
+/*
+ * Redirect admins to the member admin page
+ */
+function dashboard_members_roles($gid){
+  drupal_goto("og/users/$gid/roles");
+}
+
 
 /*
  * TODO: check these for correctness
