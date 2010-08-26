@@ -3,6 +3,10 @@ The following changes have been made to third-party modules for this site.
 Patches have also been applied to Drupal core for this site.  See
 CHANGELOG.txt in the site document root for details.
 
+og_user_roles module:
+  - this module just doesn't work right. to get it closer, a patch was applied
+    from http://drupal.org/node/495062
+
 gmap module:
   - small patch to views handler which allows passing macro settings from the
     og node so that map has correct centre & zoom level; see
