@@ -1,0 +1,444 @@
+<?php
+
+
+function ogm_api_service()
+{
+	return array(
+		// ogm_api.num_sites
+		array(
+			'#method' => 'ogm_api.num_sites',
+			'#callback' => 'ogm_api_num_sites',
+			'#return' => 'int',
+			'#args' => array(),
+			// GH: access services seems to be the default, yet the permission does not exist atm
+			'#access arguments' => array('access services'),
+			// GH: but we're using a dummy ac callback anyway for the time being
+			'#access callback' => 'ogm_api_ac_dummy',
+
+			'#help' => t('Return the number of green sites stored in the database.'),
+			// GH: if true, a session id is required (not sure if this one overwrites the 
+			// module setting or the other way 'round)
+			'#auth' => false,
+			// GH: if true, a API key is required (not sure if this one overwrites the 
+			// module setting or the other way 'round)
+			'#key' => false
+		),
+		// ogm_api.icons
+		array(
+			'#method' => 'ogm_api.icons',
+			'#callback' => 'ogm_api_icons',
+			'#return' => 'int',
+			'#args' => array(),
+			'#access arguments' => array('access services'),
+			'#access callback' => 'ogm_api_ac_dummy',
+			'#help' => t('Return an array of all Green Map(tm) icons.'),
+			'#auth' => false,
+			'#key' => false
+		),
+		// ogm_api.maps
+		array(
+			'#method' => 'ogm_api.maps',
+			'#callback' => 'ogm_api_maps',
+			'#return' => 'int',
+			'#args' => array(),
+			'#access arguments' => array('access services'),
+			'#access callback' => 'ogm_api_ac_dummy',
+			'#help' => t('Return an array of all green maps stored in the database.'),
+			'#auth' => false,
+			'#key' => false
+		),
+		// ogm_api.submit_site
+		array(
+			'#method' => 'ogm_api.submit_site',
+			'#callback' => 'ogm_api_submit_site',
+			'#return' => 'int',
+			'#args' => array(
+				array(
+					'#name' => 'map',
+					'#type' => 'string',
+					'#description' => t('name of map (see ogm_api.maps)'),
+					'#optional' => false
+				),
+				array(
+					'#name' => 'site',
+					'#type' => 'object',
+					'#description' => t('site object (see documentation)'),
+					'#optional' => false
+				),
+				array(
+					'#name' => 'username',
+					'#type' => 'string',
+					'#description' => t('username (for calling this method from a remote system)'),
+					'#optional' => true
+				),
+				array(
+					'#name' => 'password',
+					'#type' => 'string',
+					'#description' => t('password (for calling this method from a remote system)'),
+					'#optional' => true
+				)
+			),
+			'#access arguments' => array('access services'),
+			'#access callback' => 'ogm_api_ac_dummy',
+			'#help' => t('Add a green site to a map the user has access to.'),
+			'#auth' => false,
+			'#key' => false
+		)
+	);
+}
+
+
+/**
+ *	service  for returning the number of green sites in the database
+ *
+ *	@return int
+ */
+function ogm_api_num_sites()
+{
+	$q = db_query("SELECT COUNT(*) AS count FROM {node} WHERE type='green_site' AND status=1");
+	$r = db_fetch_object($q);
+	if ($r === false) {
+		return services_error(t('Database error'), 503);
+	} else {
+		return $r->count;
+	}
+}
+
+
+/// global variable holding all enabled languages (that's a speedup for _ogm_api_setup_icon())
+$ogm_api_langs = array();
+
+
+/**
+ *	helper function for ogm_api_icons
+ *
+ *	@param &$icon icon array to modify
+ */
+function _ogm_api_setup_icon(&$icon)
+{
+	global $ogm_api_langs;
+	
+	if (0 < count($ogm_api_langs)) {
+		// add icon
+		$q = db_query("SELECT path FROM {term_image} WHERE tid = %d", $icon['id']);
+		if (($r = db_fetch_object($q)) !== false && !empty($r->path)) {
+			$icon['icon_small'] = url('sites/default/files/taxonomy_image/'.$r->path, array('absolute'=>true));
+		}
+		// add translations
+		$icon['translations'] = array();
+		foreach (array_keys($ogm_api_langs) as $l) {
+			$s = t($icon['name'], array(), $l);
+			// only include the translation if it's different than the original
+			if ($s != $icon['name']) {
+				$icon['translations'][$l]['name'] = $s;
+			}
+			$s = t($icon['description'], array(), $l);
+			if ($s != $icon['description']) {
+				$icon['translations'][$l]['description'] = $s;
+			}
+		}
+	}
+}
+
+
+/**
+ *	service for returning an array of green map(tm) icons
+ *
+ *	@return array
+ */
+function ogm_api_icons()
+{
+	$ret = array();
+	
+	// get list of languages
+	global $ogm_api_langs;
+	$ogm_api_langs = locale_language_list('name', false);
+	
+	// get all categories
+	$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.vid=1 AND a.tid = b.tid AND b.parent = 0 ORDER BY weight ASC");
+	
+	while (($r = db_fetch_object($q)) !== false) {
+		$ret[] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid, 'children'=>array());
+	}
+
+	// get genres and icons
+	for ($i=0; $i<count($ret); $i++) {
+		$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = %d ORDER BY weight ASC", $ret[$i]['id']);
+		while (($r = db_fetch_object($q)) !== false) {
+			$ret[$i]['children'][] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid, 'children'=>array());
+		}
+		for ($j=0; $j<count($ret[$i]['children']); $j++) {
+			$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = %d ORDER BY weight ASC", $ret[$i]['children'][$j]['id']);
+			while (($r = db_fetch_object($q)) !== false) {
+				$ret[$i]['children'][$j]['children'][] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid);
+			}
+		}
+	}
+	
+	// go through all terms and add icons and translations
+	foreach ($ret as &$category) {
+		foreach ($category['children'] as &$genre) {
+			foreach($genre['children'] as &$icon) {
+				_ogm_api_setup_icon($icon);
+			}
+			_ogm_api_setup_icon($genre);
+		}
+		_ogm_api_setup_icon($category);
+	}
+	
+	return $ret;
+}
+
+
+/**
+ *	dummy access control function (used instead of user_access())
+ */
+function ogm_api_ac_dummy()
+{
+	return true;
+}
+
+
+/**
+ *	service for returning an array of all green maps stored in the database
+ *
+ *	@return array
+ */
+function ogm_api_maps()
+{
+	$ret = array();
+	
+	$q = db_query("SELECT nid, title FROM {node} WHERE type='green_map' AND status=1 ORDER BY title ASC");
+	// we might join this information with more information in content_type_green_map, but maybe not
+	// all of it should be freely available to the public
+	
+	while (($r = db_fetch_object($q)) !== false) {
+		$ret[] = array('name'=>$r->title, 'id'=>$r->nid);
+	}
+	
+	return $ret;
+}
+
+
+/**
+ *	this is a dump of a green_site node array when we create it
+ */
+/*
+array(51) {
+	["nid"]=> NULL
+	["vid"]=> NULL
+	["uid"]=> string(1) "1"
+	["created"]=> int(1281461813)
+	["type"]=> string(10) "green_site"
+	["language"]=> string(0) ""
+	["changed"]=> string(0) ""
+.	["title"]=> string(20) "GH: NAME OF THE SITE"
+	["revision"]=> int(0)
+	["log"]=> string(0) ""
+	["name"]=> string(5) "admin"
+	["date"]=> string(0) ""
+	["status"]=> int(1)
+	["promote"]=> int(0)
+	["sticky"]=> int(0)
+	["op"]=> string(4) "Save"
+	["submit"]=> string(4) "Save"
+	["form_build_id"]=> string(37) "form-dc86a006668d9b4274add96a411af7a3"
+	["form_token"]=> string(32) "21fefd6de5a3569aa7228459743770cf"
+	["form_id"]=> string(20) "green_site_node_form"
+	["comment"]=> string(1) "2"
+	["menu"]=> array(13) { ["mlid"]=> int(0) ["module"]=> string(4) "menu" ["hidden"]=> int(0) ["has_children"]=> int(0) ["customized"]=> int(0) ["options"]=> array(0) { } ["expanded"]=> int(0) ["parent_depth_limit"]=> int(8) ["link_title"]=> string(0) "" ["parent"]=> string(12) "navigation:0" ["weight"]=> string(1) "0" ["plid"]=> string(1) "0" ["menu_name"]=> string(10) "navigation" }
+	["path"]=> string(0) ""
+	["pathauto_perform_alias"]=> int(1)
+	["taxonomy"]=> array(2) { [1]=> array(2) { [12]=> string(2) "12" [138]=> string(3) "138" } ["tags"]=> array(1) { [4]=> string(26) "GH: A TAG, GH: ANOTHER TAG" } }
+	["primaryterm"]=> string(2) "25"
+	["field_details"]=> array(1) { [0]=> array(3) { ["value"]=> string(11) "GH: DETAILS" ["format"]=> string(1) "1" ["_error_element"]=> string(23) "field_details][0][value" } } 
+	["field_involved"]=> array(1) { [0]=> array(1) { ["value"]=> string(2) "no" } }
+	["field_name_involved"]=> array(1) { [0]=> array(2) { ["value"]=> string(20) "GH: CONTRIBUTOR NAME" ["_error_element"]=> string(29) "field_name_involved][0][value" } } 
+	["field_email_involved"]=> array(1) { [0]=> array(1) { ["email"]=> string(18) "GH@CONTRIBUTOR.EML" } } 
+	["field_awaiting_approval"]=> array(1) { [0]=> array(1) { ["value"]=> NULL } } 
+	["locations"]=> array(1) { [0]=> array(8) { ["locpick"]=> array(2) { ["user_latitude"]=> string(17) "40.77112701462794" ["user_longitude"]=> string(16) "-73.974190056324" } ["street"]=> string(12) "GH: A STREET" ["additional"]=> string(21) "GH: A ADDITIONAL INFO" ["city"]=> string(10) "GH: A CITY" ["postal_code"]=> string(14) "GH: A POSTCODE" ["province"]=> string(2) "NY" ["country"]=> string(2) "us" ["location_settings"]=> array(4) { ["multiple"]=> array(3) { ["min"]=> string(1) "1" ["max"]=> string(1) "1" ["add"]=> string(1) "1" } ["form"]=> array(4) { ["weight"]=> string(1) "9" ["collapsible"]=> int(1) ["collapsed"]=> int(0) ["fields"]=> array(16) { ["name"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "0" ["weight"]=> string(4) "-100" } ["locpick"]=> array(4) { ["default"]=> bool(false) ["collect"]=> string(1) "2" ["weight"]=> string(3) "-99" ["nodiff"]=> bool(true) } ["street"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "1" ["weight"]=> string(3) "-98" } ["additional"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "1" ["weight"]=> string(3) "-97" } ["city"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "1" ["weight"]=> string(3) "-96" } ["postal_code"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "1" ["weight"]=> string(3) "-95" } ["province"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "1" ["weight"]=> string(3) "-94" } ["country"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "2" ["weight"]=> string(3) "-93" } ["phone"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "0" ["weight"]=> string(3) "-92" } ["fax"]=> array(3) { ["default"]=> string(0) "" ["collect"]=> string(1) "0" ["weight"]=> string(3) "-91" } ["lid"]=> array(1) { ["default"]=> bool(false) } ["latitude"]=> array(1) { ["default"]=> int(0) } ["longitude"]=> array(1) { ["default"]=> int(0) } ["source"]=> array(1) { ["default"]=> int(0) } ["is_primary"]=> array(1) { ["default"]=> int(0) } ["delete_location"]=> array(2) { ["default"]=> bool(false) ["nodiff"]=> bool(true) } } } ["display"]=> array(4) { ["weight"]=> string(1) "0" ["hide"]=> array(14) { ["name"]=> int(0) ["street"]=> int(0) ["additional"]=> int(0) ["city"]=> int(0) ["province"]=> int(0) ["postal_code"]=> int(0) ["country"]=> int(0) ["locpick"]=> int(0) ["fax"]=> int(0) ["phone"]=> int(0) ["province_name"]=> int(0) ["country_name"]=> int(0) ["map_link"]=> int(0) ["coords"]=> int(0) } ["teaser"]=> int(1) ["full"]=> int(1) } ["rss"]=> array(1) { ["mode"]=> string(6) "simple" } } } } 
+	["og_initial_groups"]=> array(1) { [0]=> string(4) "1561" } 
+	["og_groups"]=> array(1) { [1561]=> string(4) "1561" } 
+	["og_public"]=> int(1) 
+	["field_web"]=> array(1) { [0]=> array(1) { ["url"]=> string(18) "http://www.GH.com/" } } 
+	["field_email"]=> array(1) { [0]=> array(1) { ["email"]=> string(11) "GH@SITE.COM" } } 
+	["field_phone"]=> array(1) { [0]=> array(2) { ["value"]=> string(12) "123-456-7890" ["_error_element"]=> string(21) "field_phone][0][value" } } 
+	["field_child_friendly"]=> array(1) { [0]=> array(1) { ["value"]=> int(1) } } 
+	["field_wheelchair_accessible"]=> array(1) { [0]=> array(1) { ["value"]=> int(1) } } 
+	["field_appointment_needed"]=> array(1) { [0]=> array(1) { ["value"]=> int(1) } } 
+	["field_accessible_by_public_tran"]=> array(1) { [0]=> array(1) { ["value"]=> int(1) } } 
+	["field_public_transport_directio"]=> array(1) { [0]=> array(2) { ["value"]=> string(14) "GH: DIRECTIONS" ["_error_element"]=> string(41) "field_public_transport_directio][0][value" } } 
+	["field_free_entry"]=> array(1) { [0]=> array(1) { ["value"]=> int(0) } } 
+	["field_entry_cost"]=> array(1) { [0]=> array(2) { ["value"]=> string(14) "GH: ENTRY COST" ["_error_element"]=> string(26) "field_entry_cost][0][value" } } 
+	["field_volunteer_opportunities_a"]=> array(1) { [0]=> array(1) { ["value"]=> int(0) } } 
+	["field_volunteer_details"]=> array(1) { [0]=> array(2) { ["value"]=> string(0) "" ["_error_element"]=> string(33) "field_volunteer_details][0][value" } } 
+	["field_image"]=> array(1) { [0]=> array(2) { ["embed"]=> string(0) "" ["value"]=> string(0) "" } } 
+	["field_image_caption"]=> array(1) { [0]=> array(2) { ["value"]=> string(0) "" ["_error_element"]=> string(29) "field_image_caption][0][value" } } 
+	["field_video"]=> array(1) { [0]=> array(2) { ["embed"]=> string(0) "" ["value"]=> string(0) "" } } 
+	["field_video_caption"]=> array(1) { [0]=> array(2) { ["value"]=> string(0) "" ["_error_element"]=> string(29) "field_video_caption][0][value" } } 
+}
+*/
+
+
+function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
+{
+	global $user;
+	
+	// try to log in if done so already
+	if (!$user->uid) {
+		if ($username === NULL || $password === NULL) {
+			return services_error(t('Not logged in and no username/password given'), 401);
+		}
+		
+		$user = user_authenticate(array('name'=>$username, 'pass'=>$password));
+		if (!$user->uid) {
+			session_destroy();
+			return services_error(t('Wrong username or password'), 401);
+		}
+		sess_regenerate();
+		module_invoke_all('user', 'login', NULL, $user);
+	}
+	
+	// get the map we want to manipulate
+	$q = db_query("SELECT nid FROM {node} WHERE type='green_map' AND title='%s' ORDER BY vid DESC LIMIT 1", $map);
+	if (($r = db_fetch_object($q)) === false) {
+		return services_error(t('Unknown map: '.$map), 404);
+	}
+	$map_nid = $r->nid;
+
+	// check if the user is member of the map's organic group
+	if (!og_is_group_member($map_nid, true)) {
+		return services_error(t('Not allowed to edit this map'), 403);
+	}
+	
+	// check for required fields
+	if (empty($site->name) || !is_string($site->name)) {
+		return services_error(t('Missing or invalid object member "name" (required)'), 403);
+	}
+	if (empty($site->latitude) || !is_numeric($site->latitude)) {
+		return services_error(t('Missing or invalid object member "latitude" (required)'), 403);
+	}
+	if (empty($site->longitude) || !is_numeric($site->longitude)) {
+		return services_error(t('Missing or invalid object member "longitude" (required)'), 403);
+	}
+	
+	// lazy check if there is already a similar entry on the map
+	// that's a long SQL statement here, but it performs reasonably fast
+	// normalize latitude and longitude first
+	// see _location_geo_logic() in location.module
+	while ((float)$site->latitude > 90) {
+		(float)$site->latitude -= 180;
+	}
+	while ((float)$site->latitude < -90) {
+		(float)$site->latitude += 180;
+	}
+	while ((float)$site->longitude > 180) {
+		(float)$site->longitude -= 360;
+	}
+	while ((float)$site->longitude < -180) {
+		(float)$site->longitude += 360;
+	}
+	$q = db_query("SELECT COUNT(*) AS count FROM {og_ancestry}, {node}, {location_instance}, {location} WHERE group_nid = %d and {og_ancestry}.nid = {node}.nid AND {node}.type = 'green_site' AND {node}.title = '%s' AND {node}.nid = {location_instance}.nid AND {location_instance}.lid = {location}.lid AND {location}.latitude = %f AND {location}.longitude = %f", $map_nid, $site->name, (float)$site->latitude, (float)$site->longitude);
+	if (($r = db_fetch_object($q)) === false) {
+		return services_error(t('Database error'), 503);
+	} elseif (0 < $r->count) {
+		return services_error(t('Site already on map'), 400);
+	}
+	
+	// start creating a new node
+	// this include is required
+	module_load_include('inc', 'node', 'node.pages');
+	$n = array();
+	$n['type'] = 'green_site';
+	// $f is the form we're editing
+	$f = array();
+	$f['values'] = array();
+	// $fv is a shortcut to $f['values']
+	$fv = &$f['values'];
+	
+	/**
+     *	set field values
+	 *
+	 *	that's the hairy part..
+	 *	fields are being handled in the same order as the dummy node above
+	 */
+	$fv['uid'] = (string)$user->uid;
+	$fv['title'] = $site->name;
+	// there is really no excuse why we need to pass the username here to make it work
+	$fv['name'] = $user->name;
+	$fv['op'] = t('Save');
+	// get the maximum number of secondary icons
+	$a = variable_get('taxonomy_limit_green_site'. $type, NULL);
+	if (is_array($a) && is_array($a[1]) && !empty($a[1]['max'])) {
+		$max_icons = intval($a[1]['max']);
+	} else {
+		$max_icons = 0;
+	}
+	// these are the secondary icons
+	foreach ($site->secondary_icons as $si) {
+		// the correct way would be to probe if the icon is really not a category or genre
+		// we could also probe if the icon is unique - i.e. not already set as primary or 
+		// secondary icon
+		$q = db_query("SELECT tid from {term_data} WHERE vid=1 AND name = '%s'", $si);
+		if (($r = db_fetch_object($q)) === false) {
+			return services_error(t('Invalid secondary_icon "'.$si.'"'), 403);
+		}
+		if (empty($fv['taxonomy'])) {
+			$fv['taxonomy'] = array(1=>array());		
+		}
+		$fv['taxonomy'][1][$r->tid] = (string)$r->tid;
+		
+		if (0 < $max_icons && $max_icons <= count($fv['taxonomy'][1])) {
+			return services_error(t('Only up to '.($max_icons-1).' secondary icons supported'), 403);
+		}
+	}
+	// this is the primary icon
+	if (empty($site->icon)) {
+		return services_error(t('Missing or empty object member "icon" (required)'), 403);
+	}
+	$q = db_query("SELECT tid from {term_data} WHERE vid=1 AND name = '%s'", $site->icon);
+	if (($r = db_fetch_object($q)) === false) {
+		return services_error(t('Invalid icon "'.$si.'"'), 403);
+	}
+	// we could check here if the icon is already set as secondary_icon
+	$fv['primaryterm'] = (string)$r->tid;
+	if (empty($site->details)) {
+		return services_error(t('Missing or empty object member "details" (required)'), 403);
+	}
+	// format 1 means html
+	$fv['field_details'] = array(array('value'=>(string)$site->details, 'format'=>1));
+	if (empty($site->country)) {
+		return services_error(t('Missing or empty object member "country" (required)'), 403);
+	}
+	// we could check the validity of the country here
+	// see the location module
+	$fv['locations'] = array(array('locpick'=>array('user_latitude'=>(string)$site->latitude, 'user_longitude'=>(string)$site->longitude), 'country'=>(string)$site->country));
+	$fv['og_initial_groups'] = array((string)$map_nid);
+	$fv['og_groups'] = array($map_nid=>(string)$map_nid);
+	// i am not entirely sure why exactly we need to set field_free_entry here
+	// but Drupal gives "Free entry: illegal value." instead
+	if (!empty($site->free_entry) && !$site->free_entry) {
+		$fv['field_free_entry'] = array(array('value'=>'Not free'));
+	} else {
+		$fv['field_free_entry'] = array(array('value'=>'Free entry'));
+	}
+	// TODO: add support for more fields
+	
+	drupal_execute('green_site_node_form', $f, (object)$n);
+	
+	if (empty($f['nid']) || !intval($f['nid'])) {
+		$err = '';
+		foreach (form_get_errors() as $val) {
+			if ($err != '') {
+				$err .= ' ';
+			}
+			$err .= $val;
+		}
+		return services_error(t('Backend returned the following error: ').'"'.$err.'"', 403);
+	} else {
+		return intval($f['nid']);
+	}
+}
+
+
+?>

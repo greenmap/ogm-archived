@@ -1,0 +1,1 @@
+make sure you change main.js and proxy.php to point to your OGM installation (search for TODO)
