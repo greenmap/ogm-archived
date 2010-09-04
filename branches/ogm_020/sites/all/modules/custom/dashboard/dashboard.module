@@ -89,15 +89,16 @@ function dashboard_menu(){
     'type' => MENU_LOCAL_TASK,
     'weight' => 10,
   );
-  $items['node/%dashboard_map/member_roles'] = array(
-    'title' => 'Team Roles',
-    'access callback' => 'dashboard_access_admin_callback',
-    'access arguments' => array(1),
-    'page callback' => 'dashboard_members_roles',
-    'page arguments'=> array(1),
-    'type' => MENU_LOCAL_TASK,
-    'weight' => 11,
-  );
+  // add a Team Roles tab for og_user_roles management
+//  $items['node/%dashboard_map/member_roles'] = array(
+//    'title' => 'Team Roles',
+//    'access callback' => 'dashboard_access_admin_callback',
+//    'access arguments' => array(1),
+//    'page callback' => 'dashboard_members_roles',
+//    'page arguments'=> array(1),
+//    'type' => MENU_LOCAL_TASK,
+//    'weight' => 11,
+//  );
   $items['node/%dashboard_map/add_site'] = array(
     'title' => 'Add a Site',
     'access callback' => 'dashboard_access_member_callback',
