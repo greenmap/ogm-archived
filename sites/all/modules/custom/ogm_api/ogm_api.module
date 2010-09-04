@@ -13,7 +13,7 @@ function ogm_api_service()
 			// GH: access services seems to be the default, yet the permission does not exist atm
 			'#access arguments' => array('access services'),
 			// GH: but we're using a dummy ac callback anyway for the time being
-			'#access callback' => '_ogm_api_ac_dummy',
+			'#access callback' => 'ogm_api_ac_dummy',
 
 			'#help' => t('Return the number of green sites stored in the database.'),
 			// GH: if true, a session id is required (not sure if this one overwrites the 
@@ -27,10 +27,10 @@ function ogm_api_service()
 		array(
 			'#method' => 'ogm_api.icons',
 			'#callback' => 'ogm_api_icons',
-			'#return' => 'array',
+			'#return' => 'int',
 			'#args' => array(),
 			'#access arguments' => array('access services'),
-			'#access callback' => '_ogm_api_ac_dummy',
+			'#access callback' => 'ogm_api_ac_dummy',
 			'#help' => t('Return an array of all Green Map(tm) icons.'),
 			'#auth' => false,
 			'#key' => false
@@ -39,48 +39,11 @@ function ogm_api_service()
 		array(
 			'#method' => 'ogm_api.maps',
 			'#callback' => 'ogm_api_maps',
-			'#return' => 'array',
+			'#return' => 'int',
 			'#args' => array(),
 			'#access arguments' => array('access services'),
-			'#access callback' => '_ogm_api_ac_dummy',
+			'#access callback' => 'ogm_api_ac_dummy',
 			'#help' => t('Return an array of all green maps stored in the database.'),
-			'#auth' => false,
-			'#key' => false
-		),
-		// ogm_api.user_maps
-		array(
-			'#method' => 'ogm_api.user_maps',
-			'#callback' => 'ogm_api_user_maps',
-			'#return' => 'array',
-			'#args' => array(
-				array(
-					'#name' => 'username',
-					'#type' => 'string',
-					'#description' => t('username (for calling this method from a remote system)'),
-					'#optional' => true
-				),
-				array(
-					'#name' => 'password',
-					'#type' => 'string',
-					'#description' => t('password (for calling this method from a remote system)'),
-					'#optional' => true
-				)
-			),
-			'#access arguments' => array('access services'),
-			'#access callback' => '_ogm_api_ac_dummy',
-			'#help' => t('Return an array of maps the user has access to.'),
-			'#auth' => false,
-			'#key' => false
-		),
-		// ogm_api.countries
-		array(
-			'#method' => 'ogm_api.countries',
-			'#callback' => 'ogm_api_countries',
-			'#return' => 'array',
-			'#args' => array(),
-			'#access arguments' => array('access services'),
-			'#access callback' => '_ogm_api_ac_dummy',
-			'#help' => t('Return an array of all countries (to be used with ogm_api.submit_site)'),
 			'#auth' => false,
 			'#key' => false
 		),
@@ -116,7 +79,7 @@ function ogm_api_service()
 				)
 			),
 			'#access arguments' => array('access services'),
-			'#access callback' => '_ogm_api_ac_dummy',
+			'#access callback' => 'ogm_api_ac_dummy',
 			'#help' => t('Add a green site to a map the user has access to.'),
 			'#auth' => false,
 			'#key' => false
@@ -230,7 +193,7 @@ function ogm_api_icons()
 /**
  *	dummy access control function (used instead of user_access())
  */
-function _ogm_api_ac_dummy()
+function ogm_api_ac_dummy()
 {
 	return true;
 }
@@ -253,84 +216,6 @@ function ogm_api_maps()
 		$ret[] = array('name'=>$r->title, 'id'=>$r->nid);
 	}
 	
-	return $ret;
-}
-
-
-/**
- *	helper function for logging a remote user in
- *
- *	@param string $username the current user is used if null
- *	@param string $password the current user is used if null
- *	@return true or an services_error()
- */
-function _ogm_api_login($username = NULL, $password = NULL)
-{
-	global $user;
-	
-	// try to log in if done so already
-	if (!$user->uid) {
-		if ($username === NULL || $password === NULL) {
-			return services_error(t('Not logged in and no username/password given'), 401);
-		}
-		
-		$user = user_authenticate(array('name'=>$username, 'pass'=>$password));
-		if (!$user->uid) {
-			session_destroy();
-			return services_error(t('Wrong username or password'), 401);
-		}
-		sess_regenerate();
-		module_invoke_all('user', 'login', NULL, $user);
-		return true;
-	} else {
-		return true;
-	}
-}
-
-
-/**
- *	return an array of maps the user has access to
- *
- *	@param string username the current user is used if null
- *	@param string password the current user is used if null
- *	@return array of maps (with key 'name' and 'id')
- */
-function ogm_api_user_maps($username = NULL, $password = NULL)
-{
-	global $user;
-	
-	$ret = _ogm_api_login($username, $password);
-	if ($ret !== true) {
-		return $ret;
-	}
-	
-	$subscr = og_get_subscriptions($user->uid);
-	if (!is_array($subscr)) {
-		return array();
-	}
-	$ret = array();
-	foreach ($subscr as $s) {
-		$ret[] = array('name'=>$s['title'], 'id'=>$s['nid']);
-	}
-	return $ret;
-}
-
-
-/**
- *	return an array of all countries
- *
- *	@return array of countries (with key 'name' and 'code')
- */
-function ogm_api_countries()
-{
-	// this is quite a hack and uses the location module's internal 
-	// function to pull this off, but I found no more elegant way to 
-	// solve this
-	$countries = _location_supported_countries();
-	$ret = array();
-	foreach ($countries as $key=>$val) {
-		$ret[] = array('name'=>$val, 'code'=>$key);
-	}
 	return $ret;
 }
 
@@ -395,22 +280,23 @@ array(51) {
 */
 
 
-/**
- *	add a green site to the map the user has access to
- *
- *	@param string $map name of map
- *	@param object $site site object (see documentation)
- *	@param string username the current user is used if null
- *	@param string password the current user is used if null
- *	@return int node if of new site (or services_error())
- */
 function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 {
 	global $user;
 	
-	$ret = _ogm_api_login($username, $password);
-	if ($ret !== true) {
-		return $ret;
+	// try to log in if done so already
+	if (!$user->uid) {
+		if ($username === NULL || $password === NULL) {
+			return services_error(t('Not logged in and no username/password given'), 401);
+		}
+		
+		$user = user_authenticate(array('name'=>$username, 'pass'=>$password));
+		if (!$user->uid) {
+			session_destroy();
+			return services_error(t('Wrong username or password'), 401);
+		}
+		sess_regenerate();
+		module_invoke_all('user', 'login', NULL, $user);
 	}
 	
 	// get the map we want to manipulate
@@ -539,7 +425,7 @@ function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 	// TODO: add support for more fields
 	
 	drupal_execute('green_site_node_form', $f, (object)$n);
-		
+	
 	if (empty($f['nid']) || !intval($f['nid'])) {
 		$err = '';
 		foreach (form_get_errors() as $val) {
