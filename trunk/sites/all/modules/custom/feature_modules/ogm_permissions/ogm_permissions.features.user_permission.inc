@@ -55,6 +55,8 @@ function ogm_permissions_user_default_permissions() {
     'name' => 'access devel information',
     'roles' => array(
       '0' => 'admin',
+      '1' => 'anonymous user',
+      '2' => 'authenticated user',
     ),
   );
 
@@ -1468,7 +1470,8 @@ function ogm_permissions_user_default_permissions() {
     'roles' => array(
       '0' => 'Team Coordinator',
       '1' => 'admin',
-      '2' => 'team leader',
+      '2' => 'map creator',
+      '3' => 'team leader',
     ),
   );
 
@@ -1504,7 +1507,8 @@ function ogm_permissions_user_default_permissions() {
     'roles' => array(
       '0' => 'Team Coordinator',
       '1' => 'admin',
-      '2' => 'team leader',
+      '2' => 'map creator',
+      '3' => 'team leader',
     ),
   );
 
