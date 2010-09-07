@@ -180,10 +180,20 @@ function dashboard_add($nid, $type='green_site'){
   drupal_goto("node/add/$type", 'gids[]=' . $nid);
 }
 
+function dashboard_ogur_access($string, $gid, $uid) {
+  $f = 'og_user_roles_user_access';
+  if ( function_exists($f) ) {
+    return call_user_func_array($f, array($string, $gid, $uid));
+  } else {
+    return FALSE;
+  }
+}
+
 function dashboard_import_export($nid) {
+  global $user;
   $content = '';
 
-  if (user_access('export sites')) {
+  if ( user_access('export sites') || dashboard_ogur_access('export sites', $nid, $user->uid) ) {
     $content .= "<p><strong>". t("Data Export") ."</strong></p>";
     $content .= "<p>". t("From this page, Mapmakers and Team Coordinators can export all Green Sites on this map as a <abbr title='Comma Separated Variable'>CSV</abbr> file, for use with spreadsheet and database software, or as a <abbr title='Keyhole Markup Language'>KML</abbr> file, for use with mapping applications.  The <abbr title='Comma Separated Variable'>CSV</abbr> file contains the complete data from each site, and the <abbr title='Keyhole Markup Language'>KML</abbr> file contains each site's name, location, a brief description, and a link to this website for users who would like to read the site's full description.  User-contributed information such as photos, videos, comments, and impact statements are not exported.") ."</p>";
     $content .= "<ul><li>".
@@ -193,13 +203,15 @@ function dashboard_import_export($nid) {
       ."</li></ul>";
   }
 
-  if (user_access('import sites')) {
+  if ( user_access('import sites') || dashboard_ogur_access('import sites', $nid, $user->uid) ) {
     $content .= "<p><strong>". t("Data Import") ."</strong></p>";
     $content .= "<p>". t("<abbr title='Comma Separated Variable'>CSV</abbr> files having the same format as those produced by the site export feature can be imported in bulk into this map.  If the <strong>Site ID</strong> field is blank, the record will be imported as a new Green Site.  If the <strong>Site ID</strong> field is present and corresponds to a Green Site on this map, that site will be updated with the data from the <abbr title='Comma Separated Variable'>CSV</abbr> file.  Fields left blank in the <abbr title='Comma Separated Variable'>CSV</abbr> file will not be updated.  When importing site data, specify the site location in decimal notation in the fields labelled <strong>Latitude</strong> and <strong>Longitude</strong>. The coordinates are also exported using degrees, minutes, and seconds for your convenience, but these fields are ignored during the import process.") ."</p>";
     $content .= "<p>". t("To import new Green Sites or update existing ones, you should start by exporting your sites using the link above so that you have a file to use as an example.  Prepare your <abbr title='Comma Separated Variable'>CSV</abbr> file using a spreadsheet program, then email the file to Cip - <a href='mailto:cip@greenmap.org'>cip@greenmap.org</a> and also CC info@greenmap.org for review and processing.") ."</p>";
   }
 
-  if (user_access('export sites') || user_access('import sites')) {
+  if ( (user_access('export sites') || dashboard_ogur_access('export sites', $nid, $user->uid)) ||
+       (user_access('import sites') || dashboard_ogur_access('import sites', $nid, $user->uid)) ) 
+  {
     $content .= "<p><strong>". t("Character Encoding Notes") ."</strong></p>";
     $content .= "<p>". t('Text in these files is encoded using the Unicode character set UTF-8.  In particular, you may need to set your spreadsheet or GIS software to open the <abbr title="Comma Separated Variable">CSV</abbr> file using UTF-8.  Please make sure the CSV file you wish to import also uses the character set UTF-8.') ."</p>";
     $content .= "<p><strong>". t("Tutorial") ."</strong></p>";
@@ -308,11 +320,7 @@ function dashboard_access_admin_callback($group_nid = 0, $import_export = FALSE)
     return FALSE;
   }
   else {
-    if ($import_export && !user_access('export sites')) {
-      return FALSE;
-    }
-    $node = node_load($group_nid);
-    return og_is_group_admin($node);
+    return user_access('export sites') || dashboard_ogur_access('export sites', $group_nid, $user->uid);
   }
 }
 
