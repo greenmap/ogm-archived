@@ -1605,8 +1605,7 @@ $handler->override_option('access', array(
   'type' => 'role',
   'role' => array(
     '3' => 3,
-    '9' => 9,
-    '4' => 4,
+    '11' => 11,
   ),
 ));
 $handler->override_option('header', '');
@@ -1824,8 +1823,7 @@ $handler->override_option('access', array(
   'type' => 'role',
   'role' => array(
     '3' => 3,
-    '9' => 9,
-    '4' => 4,
+    '11' => 11,
   ),
 ));
 $handler->override_option('items_per_page', 0);
@@ -2041,8 +2039,7 @@ $handler->override_option('access', array(
   'type' => 'role',
   'role' => array(
     '3' => 3,
-    '9' => 9,
-    '4' => 4,
+    '11' => 11,
   ),
 ));
 $handler->override_option('items_per_page', 0);
@@ -2100,7 +2097,6 @@ $handler->override_option('sitename_title', FALSE);
 ///
 // END PASTE
 ///
-
   $views[$view->name] = $view;
   return $views;
 }
