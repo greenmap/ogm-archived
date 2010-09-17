@@ -4,6 +4,9 @@ LOCAL CHANGES
 -------------
 - Patched path.module as per http://drupal.org/node/269877 comment #85 to fix
   issue #1407 -- mvc
+- Patched includes/common.inc as per http://drupal.org/node/479368#comment-3410892 
+  to make the json output work with recent versions of jQuery (as needed for many 
+  frontends using the services module and its json server)
 
 Drupal 6.19, 2010-08-11
 ----------------------
