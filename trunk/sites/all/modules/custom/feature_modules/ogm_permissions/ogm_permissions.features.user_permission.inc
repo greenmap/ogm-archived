@@ -50,14 +50,6 @@ function ogm_permissions_user_default_permissions() {
     ),
   );
 
-  // Exported permission: access devel information
-  $permissions['access devel information'] = array(
-    'name' => 'access devel information',
-    'roles' => array(
-      '0' => 'admin',
-    ),
-  );
-
   // Exported permission: access epostcard
   $permissions['access epostcard'] = array(
     'name' => 'access epostcard',
