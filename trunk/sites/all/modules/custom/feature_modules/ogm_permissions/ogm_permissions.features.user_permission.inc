@@ -55,8 +55,6 @@ function ogm_permissions_user_default_permissions() {
     'name' => 'access devel information',
     'roles' => array(
       '0' => 'admin',
-      '1' => 'anonymous user',
-      '2' => 'authenticated user',
     ),
   );
 
