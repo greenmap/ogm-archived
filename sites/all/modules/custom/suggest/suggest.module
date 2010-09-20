@@ -180,7 +180,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
       exit;
     }
     $map = node_load($suggest_nid);
-    if ($map->og_private > 0) {
+    if ($map->og_private > 0 && !(og_is_group_member($suggest_nid, TRUE, $user->uid)) ) {
       drupal_set_message(
         t('Sorry, this map is private and not accepting suggestions yet.'),
         'error');
