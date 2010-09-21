@@ -227,7 +227,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     if ( $suggest_nid ) {
       // we're adding a site to our map
       if ( og_is_group_member($suggest_nid, FALSE, $user->uid) ) {
-        trigger_error('Error in request.');
+        $should_suggest = FALSE;
       }
       else {
         $should_suggest = TRUE;
@@ -289,6 +289,10 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     );
   }
   // Change "Audience" to "Select Additional Maps"
+  if ( $suggest_nid ) {
+    $form["og_nodeapi"]['visible']['og_groups']['#default_value'] = array($suggest_nid);
+  }
+  dsm($form["og_nodeapi"]['visible']['og_groups']);
   $form["og_nodeapi"]['visible']['og_groups']['#title'] = t('Select Additional Maps');
   $form["og_nodeapi"]['visible']['og_groups']['#description'] =
     t('If you are a member of any other maps you can add this site to these maps too. Use the Control key on a PC or the Apple/Command key on a Mac to select multiple maps.');
