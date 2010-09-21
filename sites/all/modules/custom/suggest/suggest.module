@@ -238,7 +238,6 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
   // make the appropriate form changes for the type of form we've determined we
   //   need
   if ( $should_suggest ) {
-    dsm('should suggest');
     // hide "Public"
     $form['og_nodeapi']['visible']['og_public']['#type'] = 'value';
     $form['og_nodeapi']['visible']['og_public']['#value'] = $node->nid ? $node->og_public : 0;
