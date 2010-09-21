@@ -240,10 +240,10 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
                  FROM {content_type_photo} ctp
                    INNER JOIN {node} n
                      ON n.vid = ctp.vid
-                   INNER JOIN {content_field_awaiting_approval} cfaa
+                   LEFT JOIN {content_field_awaiting_approval} cfaa
                      ON ctp.vid = cfaa.vid
                  WHERE ctp.field_site_1_nid = %d
-                   AND cfaa.field_awaiting_approval_value != 1
+                   AND cfaa.field_awaiting_approval_value IS NULL
                    AND n.status = 1';
   $result = db_query($photos_sql, $node->nid);
   while ($line = db_fetch_object($result)) {
@@ -317,9 +317,9 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
       $gid = reset($node->og_groups);
       $multimedia .= t('Be the first to add a <a target="_parent" href="@photo_link">photo</a>, <a target="_parent" href="@video_link">video</a>, or <a target="_parent" href="@document_link">PDF</a> about this site! Each expresses a personal perspective.',
           array(
-            '@photo_link' => base_path().'node/add/photo?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title) .'&suggest='. $gid,
-            '@video_link' => base_path().'node/add/video?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
-            '@document_link' => base_path().'node/add/document?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
+            '@photo_link' => base_path().'node/add/photo?destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title) .'&suggest='. $gid,
+            '@video_link' => base_path().'node/add/video?destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
+            '@document_link' => base_path().'node/add/document?destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
             ));
     }
     else {
@@ -344,9 +344,9 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
       $multimedia .= '<p id="multimedia_selector_title">';
       $multimedia .= t('add <a target="_parent" href="@photo_link">photo</a>, <a target="_parent" href="@video_link">video</a>, <a target="_parent" href="@document_link">PDF</a>',
           array(
-            '@photo_link' => base_path().'node/add/photo?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title) .'&suggest='. $gid,
-            '@video_link' => base_path().'node/add/video?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
-            '@document_link' => base_path().'node/add/document?isSimple=true&destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
+            '@photo_link' => base_path().'node/add/photo?destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title) .'&suggest='. $gid,
+            '@video_link' => base_path().'node/add/video?destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
+            '@document_link' => base_path().'node/add/document?destination=node/'.$node->nid.'/simple&nid='.$node->nid.'&node_title='.htmlspecialchars($node->title),
             )).
           '</p>';
     }
