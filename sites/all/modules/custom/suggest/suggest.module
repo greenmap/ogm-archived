@@ -110,7 +110,7 @@ function suggest_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           case 'presave':
             if ( ($node->field_awaiting_approval[0]['value'] > 0) &&
                  suggest_is_public($node) ) {
-              $node->field_awaiting_approval[0]['value'] = 0;
+              $node->field_awaiting_approval[0]['value'] = NULL;
             }
             break;
           case 'insert' : // fall through to 'update'
@@ -133,7 +133,7 @@ function suggest_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           case 'presave':
             if ( ($node->field_awaiting_approval[0]['value'] > 0) &&
                  suggest_is_public($node) ) {
-              $node->field_awaiting_approval[0]['value'] = 0;
+              $node->field_awaiting_approval[0]['value'] = NULL;
             }
             break;
           case 'insert' : // fall through to 'update'
@@ -166,13 +166,28 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     'green_area_node_form' => 'green area',
     'photo_node_form' => 'photo',
   );
-  $typename = $typenames[$form_id] ? $typenames[$form_id] : 'site';
-  $should_suggest = FALSE;
+
   // determine what kind of user we are, which will determine what the form looks like:
   $suggest_nid = NULL;
   if (isset($_GET['suggest']) && is_numeric($_GET['suggest'])) {
     $suggest_nid = (int) $_GET['suggest'];
   }
+
+  if ( $form['field_photo'] ) {
+    $form['field_photo']['#weight'] = -1;
+  }
+
+  $user_is_member = og_is_group_member($suggest_nid, TRUE, $user->uid);
+
+  //if ( $form_id == 'photo_node_form' && $user_is_member ) {
+  //  $form['field_photo']['#weight'] = -1;
+  //  suggest_hide_awaiting($form, NULL);
+  //  return;
+  //}
+
+
+  $typename = $typenames[$form_id] ? $typenames[$form_id] : 'site';
+  $should_suggest = FALSE;
   //check for permissions/sanity
   if ( $suggest_nid ) {
     if (!user_access('suggest a site')) {
@@ -180,7 +195,8 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
       exit;
     }
     $map = node_load($suggest_nid);
-    if ($map->og_private > 0) {
+    // FIXME: check for membership here is redundant
+    if ($map->og_private > 0 && !$user_is_member ) {
       drupal_set_message(
         t('Sorry, this map is private and not accepting suggestions yet.'),
         'error');
@@ -211,7 +227,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     if ( $suggest_nid ) {
       // we're adding a site to our map
       if ( og_is_group_member($suggest_nid, FALSE, $user->uid) ) {
-        trigger_error('Error in request.');
+        $should_suggest = FALSE;
       }
       else {
         $should_suggest = TRUE;
@@ -231,10 +247,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
         $suggest_nid => $map->title,
       ),
     );
-    $form['field_awaiting_approval'] = array(
-      '#type' => 'value',
-      '#value' => array(array('value' => 1)),
-    );
+    suggest_hide_awaiting($form);
   }
   //otherwise we are a group member or admin, so we get this checkbox
   else {
@@ -275,9 +288,19 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     );
   }
   // Change "Audience" to "Select Additional Maps"
+  if ( $suggest_nid ) {
+    $form["og_nodeapi"]['visible']['og_groups']['#default_value'] = array($suggest_nid);
+  }
   $form["og_nodeapi"]['visible']['og_groups']['#title'] = t('Select Additional Maps');
   $form["og_nodeapi"]['visible']['og_groups']['#description'] =
     t('If you are a member of any other maps you can add this site to these maps too. Use the Control key on a PC or the Apple/Command key on a Mac to select multiple maps.');
+}
+
+function suggest_hide_awaiting(&$form, $value = 1) {
+  $form['field_awaiting_approval'] = array(
+    '#type' => 'value',
+    '#value' => array(array('value' => $value)),
+  );
 }
 
 function suggest_is_public($node) {
