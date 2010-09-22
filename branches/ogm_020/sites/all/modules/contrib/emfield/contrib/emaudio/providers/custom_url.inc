@@ -1,5 +1,5 @@
 <?php
-// $Id: custom_url.inc,v 1.1.2.1 2009/02/12 21:07:17 robloach Exp $
+// $Id: custom_url.inc,v 1.1.2.2 2009/06/26 18:31:00 aaron Exp $
 
 /**
  * @file
@@ -115,7 +115,7 @@ function theme_emaudio_custom_url_flash($url = NULL, $width = 0, $height = 0, $f
     $config = array(
       'clip' => array(
         'autoPlay' => $autoplay,
-        'url' => $url,
+        'url' => url($url, array('absolute' => TRUE)),
       ),
     );
     $attributes = array(
