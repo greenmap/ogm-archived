@@ -94,8 +94,7 @@ function suggest_access_member_callback($nid, $type = 'green-site') {
 }
 
 function suggest_add($gid) {
-  $dest = drupal_get_path_alias("node/$gid");
-  drupal_goto('node/add/green-site', 'suggest='. $gid .'&destination='. $dest);
+  drupal_goto('node/add/green-site', 'suggest='. $gid);
 }
 
 
