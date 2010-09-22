@@ -1,0 +1,47 @@
+<?php
+
+function by_referer_init() {
+  include_once('by_referer.inc.php');
+  global $custom_theme;
+  $http_referer = $_SERVER["HTTP_REFERER"];
+  if ( is_array($by_referer_config) ) {
+    by_referer_debug('found config');
+    //match the path
+    foreach ( $by_referer_config as $path => $r ) {
+
+      if (!is_array($r) ) { continue; } // allow config vars in same array
+
+      by_referer_debug('found path: '. $path);
+      if ( preg_match($path, by_referer_path_to_here()) ) {
+        by_referer_debug('matched path: '. $path);
+        foreach ( $r['referers'] as $referer => $theme ) {
+          by_referer_debug('found referer: '. $referer);
+          if ( preg_match($referer, $http_referer) ) {
+            by_referer_debug('matched referer: '. $referer);
+             // FIXME: replace this assignment with a call to a function that
+             //   is a session-storage mechanism for the custom_theme
+            $custom_theme = $theme ? $theme : $custom_theme ;
+            by_referer_debug('theme set to '. $custom_theme ? $custom_theme : '<nothing>' . '.');
+          }
+        }
+      }
+    }
+  }
+}
+
+function by_referer_path_to_here() {
+  by_referer_debug('real path is: '. $_GET['q']);
+  return $_GET['q'];
+}
+
+function by_referer_set_custom_theme($name) {
+  // IMPLEMENT ME
+}
+
+function by_referer_debug($msg) {
+  global $by_referer_config;
+  if ( $by_referer_config['DEBUG'] ) {
+    drupal_set_message($msg);
+  }
+}
+
