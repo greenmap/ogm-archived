@@ -1,5 +1,5 @@
 <?php
-// $Id: emaudio.module,v 1.1.4.20 2008/12/16 16:27:58 aaron Exp $
+// $Id: emaudio.module,v 1.1.4.23.2.2 2010/07/19 16:25:59 aaron Exp $
 
 /**
  * @file
@@ -18,10 +18,7 @@ define('EMAUDIO_DEFAULT_THUMBNAIL_PATH', '');
  * Implementation of hook_menu().
  */
 function emaudio_menu() {
-  $items = array();
-  
-  $items += module_invoke('emfield', 'provider_menus', 'emaudio');
-  
+  $items = module_invoke('emfield', 'provider_menus', 'emaudio');
   return $items;
 }
 
@@ -32,6 +29,7 @@ function emaudio_emfield_info() {
   $name = t('Embedded Audio Field');
   return array(
     '#name' => $name,
+    '#settings_title' => t('Audio'),
     '#settings_description' => t('The following settings configure content with any fields controlled by @name.', array('@name' => $name)),
   );
 }
@@ -107,15 +105,15 @@ function emaudio_field_formatter_info() {
       'label' => t('Full Size Audio Player'),
       'field types' => $types,
     ),
-    'emaudio_preview' => array(
+    'audio_preview' => array(
       'label' => t('Preview Size Audio Player'),
       'field types' => $types,
     ),
-    'emaudio_thumbnail' => array(
+    'audio_thumbnail' => array(
       'label' => t('Image Thumbnail'),
       'field types' => $types,
     ),
-    'emaudio_embed' => array(
+    'audio_embed' => array(
       'label' => t('Embed Code'),
       'field types' => $types,
     ),
@@ -237,15 +235,18 @@ function emaudio_widget_settings($op, $widget) {
           '#required' => TRUE,
           '#description' => t('The height of the thumbnail. It defaults to @height.', array('@height' => $height)),
         );
+        // Construct the description of the default path, hinting about the
+        // Embedded Media Thumbnail module if it's not enabled.
+        $description = t("Path to a local default thumbnail image for cases when a thumbnail can't be found. For example, you might have a default thumbnail at %files.", array('%files' => 'files/thumbnail.png'));
         if (!module_exists('emthumb')) {
-          $tn_desc = ' '. t('You may be interested in activating the Embedded Media Thumbnails module as well, which will allow you to specify custom thumbnails on a per-node basis.');
+          $description = ' '. t('You may be interested in activating the Embedded Media Thumbnails module as well, which will allow you to specify custom thumbnails on a per-node basis.');
         }
-		$default_path = variable_get('emaudio_default_thumbnail_path', EMAUDIO_DEFAULT_THUMBNAIL_PATH);
+        $default_path = variable_get('emaudio_default_thumbnail_path', EMAUDIO_DEFAULT_THUMBNAIL_PATH);
         $form['tn']['thumbnail_default_path'] = array(
           '#type' => 'textfield',
           '#title' => t('Default thumbnail path'),
           '#default_value' => empty($widget['thumbnail_default_path']) ? $default_path : $widget['thumbnail_default_path'],
-          '#description' => t("Path to a local default thumbnail image for cases when a thumbnail can't be found. For example, you might have a default thumbnail at %files.", array('%files' => 'files/thumbnail.png')) . $tn_desc,
+          '#description' => $description,
         );
       }
 
@@ -385,7 +386,7 @@ function emaudio_theme() {
       'file' => 'emaudio.theme.inc'
     ),
   );
-  $themes += module_invoke('emfield', 'provider_themes', 'emaudio');
+  $themes += emfield_provider_themes('emaudio');
 
   return $themes;
 }
