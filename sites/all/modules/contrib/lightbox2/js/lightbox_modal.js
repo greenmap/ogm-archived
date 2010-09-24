@@ -1,4 +1,4 @@
-// $Id: lightbox_modal.js,v 1.1.2.5 2010/06/07 17:22:03 snpower Exp $
+// $Id: lightbox_modal.js,v 1.1.2.4 2009/05/02 01:29:09 snpower Exp $
 
 function lightbox2_login() {
   $("a[href*='/user/login'], a[href*='?q=user/login']").each(function() {
@@ -6,7 +6,6 @@ function lightbox2_login() {
       href: this.href.replace(/user\/login?/,"user/login/lightbox2"),
       rel: 'lightmodal[|width:250px; height:210px;]'
     });
-    $(this).addClass('lightmodal-login');
   });
 }
 
@@ -17,7 +16,6 @@ function lightbox2_contact() {
         href: this.href.replace(/contact?/,"contact/lightbox2"),
         rel: 'lightmodal[|width:450px; height:450px;]'
       });
-      $(this).addClass('lightmodal-contact');
     }
   });
 }

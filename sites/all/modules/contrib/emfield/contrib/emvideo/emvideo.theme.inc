@@ -1,5 +1,5 @@
 <?php
-// $Id: emvideo.theme.inc,v 1.1.2.38.2.6 2010/07/19 17:12:14 aaron Exp $
+// $Id: emvideo.theme.inc,v 1.1.2.19 2009/03/05 16:45:36 aaron Exp $
 
 /**
  * @file
@@ -22,38 +22,11 @@ function theme_emvideo_video_embed($field, $item, $formatter, $node, $options = 
 
     or you can set $field to NULL and just use the options array
    */
-  $output = '';
-  if (isset($item['value']) && isset($item['provider'])) {
-    $output .= drupal_get_form('emvideo_embed_form', $field, $item, $formatter, $node, $options);
+  if ($item['value'] && $item['provider']) {
+    $output = drupal_get_form('emvideo_embed_form', $field, $item, $formatter, $node, $options);
   }
 
   return $output;
-}
-
-function theme_emvideo_video_thumbnail_no_link($field, $item, $formatter, $node, $options = array()) {
-  return theme('emvideo_video_thumbnail', $field, $item, $formatter, $node, TRUE, $options);
-}
-function theme_emvideo_video_thumbnail_provider_link($field, $item, $formatter, $node, $options = array()) {
-  $options['link_url'] = isset($options['link_url']) ? $options['link_url'] : emfield_include_invoke('emvideo', $item['provider'], 'embedded_link', $item['value'], $item['data']);
-  return theme('emvideo_video_thumbnail', $field, $item, $formatter, $node, FALSE, $options);
-}
-
-/**
- * Returns the relative path to the video thumbnail.
- */
-function theme_emvideo_video_thumbnail_path($field, $item, $formatter, $node, $options = array()) {
-  $options['return_url'] = TRUE;
-  return theme('emvideo_video_thumbnail', $field, $item, $formatter, $node, TRUE, $options);
-}
-
-/**
- * Returns the absolute URL to the video thumbnail.
- */
-function theme_emvideo_video_thumbnail_url($field, $item, $formatter, $node, $options = array()) {
-  $options['return_url'] = TRUE;
-  $options['raw'] = TRUE;
-  $path = theme('emvideo_video_thumbnail', $field, $item, $formatter, $node, TRUE, $options);
-  return url($path, array('absolute' => TRUE));
 }
 
 /**
@@ -82,15 +55,12 @@ function theme_emvideo_video_thumbnail_url($field, $item, $formatter, $node, $op
  *     $options['image_alt'], if provided, will set the alt attribute of the href link, defaulting to $options['link_title'].
  *     $options['thumbnail_url'], if provided, will completely override the thumbnail image entirely.
  *     $options['attributes'], if provided, sets the attributes for the displayed image.
- *     $options['return_url'], if provided, simply returns the URL to the thumbnail.
- *     $options['raw'], if TRUE, will return the raw URL, assuming $options['return_url'] is also true.
  * @return
  *   The thumbnail output.
  */
 function theme_emvideo_video_thumbnail($field, $item, $formatter, $node, $no_link = FALSE, $options = array()) {
   // Thickbox requires some output, so make sure we have at least a blank string.
   $output = '';
-  $options['node'] = $node;
   $width = isset($options['width']) ? $options['width'] : ($field['widget']['thumbnail_width'] ? $field['widget']['thumbnail_width'] : variable_get('emvideo_default_video_width', EMVIDEO_DEFAULT_THUMBNAIL_WIDTH));
   $height = isset($options['height']) ? $options['height'] : ($field['widget']['thumbnail_height'] ? $field['widget']['thumbnail_height'] : variable_get('emvideo_default_video_height', EMVIDEO_DEFAULT_THUMBNAIL_HEIGHT));
 
@@ -101,8 +71,8 @@ function theme_emvideo_video_thumbnail($field, $item, $formatter, $node, $no_lin
     $thumbnail_url = isset($options['thumbnail_url']) ? $options['thumbnail_url'] : '';
 
     // Otherwise, if we have emthumb installed, then give it a chance to override our thumbnail.
-    if (empty($thumbnail_url) && function_exists('emthumb_thumbnail_path')) {
-      $thumbnail_url = emthumb_thumbnail_path($item);
+    if (empty($thumbnail_url) && function_exists('emthumb_thumbnail_url')) {
+      $thumbnail_url = emthumb_thumbnail_url($item);
     }
 
     // If we don't have a custom thumbnail, then see if the provider gives us a thumbnail.
@@ -115,7 +85,7 @@ function theme_emvideo_video_thumbnail($field, $item, $formatter, $node, $no_lin
   if (empty($thumbnail_url)) {
     $default_thumbnail_url = $field['widget']['thumbnail_default_path'] ? $field['widget']['thumbnail_default_path'] : variable_get('emvideo_default_thumbnail_path', NULL);
     if ($default_thumbnail_url) {
-      $thumbnail_url = $default_thumbnail_url;
+      $thumbnail_url = base_path() . $default_thumbnail_url;
     }
   }
 
@@ -131,13 +101,7 @@ function theme_emvideo_video_thumbnail($field, $item, $formatter, $node, $no_lin
   $image_title = isset($options['image_title']) ? $options['image_title'] : $link_title;
   $image_alt = isset($options['image_alt']) ? $options['image_alt'] : $link_title;
 
-  if (isset($thumbnail_url)) {
-    if ($options['absolute']) {
-      $thumbnail_url = url($thumbnail_url, array('absolute' => $options['absolute']));
-    }
-    if (isset($options['return_url'])) {
-      return $options['raw'] ? $thumbnail_url : url($thumbnail_url);
-    }
+  if ($thumbnail_url) {
     $width = isset($options['width']) ? $options['width'] : NULL;
     $width = isset($width) ? $width : ($field['widget']['thumbnail_width'] ? $field['widget']['thumbnail_width'] : variable_get('emvideo_default_thumbnail_width', EMVIDEO_DEFAULT_THUMBNAIL_WIDTH));
     $height = isset($options['height']) ? $options['height'] : NULL;
@@ -155,10 +119,6 @@ function theme_emvideo_video_thumbnail($field, $item, $formatter, $node, $no_lin
     }
   }
   else {
-    if ($options['return_url']) {
-      return $options['raw'] ? $thumbnail_url : url($link_url);
-    }
-
     // If all else fails, then just print a 'see video' type link.
     if (!$no_link) {
       $output = l($link_title, $link_url);
@@ -169,16 +129,12 @@ function theme_emvideo_video_thumbnail($field, $item, $formatter, $node, $no_lin
 }
 
 function theme_emvideo_video_video($field, $item, $formatter, $node, $options = array()) {
-  $output = '';
-
-  if (isset($item['value']) && isset($item['provider'])) {
+  if ($item['value'] && $item['provider']) {
     $embed = $item['value'];
     $width = isset($options['width']) ? $options['width'] : ($field['widget']['video_width'] ? $field['widget']['video_width'] : variable_get('emvideo_default_video_width', EMVIDEO_DEFAULT_VIDEO_WIDTH));
     $height = isset($options['height']) ? $options['height'] : ($field['widget']['video_height'] ? $field['widget']['video_height'] : variable_get('emvideo_default_video_height', EMVIDEO_DEFAULT_VIDEO_HEIGHT));
     $autoplay = isset($options['autoplay']) ? $options['autoplay'] : $field['widget']['video_autoplay'];
-    $options['node'] = $node;
-    $output = emfield_include_invoke('emvideo', $item['provider'], 'video', $embed, $width, $height, $field, $item, $node, $autoplay, $options);
-    $output = '<div class="emvideo emvideo-video emvideo-'. check_plain($item['provider']) .'">'. $output .'</div>';
+    $output = module_invoke('emfield', 'include_invoke', 'emvideo', $item['provider'], 'video', $embed, $width, $height, $field, $item, $node, $autoplay, $options);
   }
 
   return $output;
@@ -188,110 +144,57 @@ function theme_emvideo_default($field, $item, $formatter, $node, $options = arra
   return theme('emvideo_video_video', $field, $item, $formatter, $node, $options);
 }
 
-function theme_emvideo_video_link($field, $item, $formatter, $node, $options = array()) {
-  $title = isset($options['link_title']) ? $options['link_title'] : (isset($options['title']) ? $options['title'] : (isset($field['widget']['thumbnail_link_title']) ? $field['widget']['thumbnail_link_title'] : variable_get('emvideo_default_thumbnail_link_title', t('See video'))));
-  $url = emfield_include_invoke('emvideo', $item['provider'], 'embedded_link', $item['value'], $item['data']);
-  return l($title, $url);
-}
-function theme_emvideo_video_url($field, $item, $formatter, $node, $options = array()) {
-  $url = emfield_include_invoke('emvideo', $item['provider'], 'embedded_link', $item['value'], $item['data']);
-  return url($url);
-}
-function theme_emvideo_video_duration($field, $item, $formatter, $node, $options = array()) {
-  return '<div class="emvideo-duration">'. _emvideo_seconds_to_time($item['duration']) .'</div>';
-}
-
 function theme_emvideo_video_preview($field, $item, $formatter, $node, $options = array()) {
-  $output = '';
   if ($item['value'] && $item['provider']) {
     $embed = $item['value'];
-    $width = isset($options['width']) ? $options['width'] : (isset($field['widget']['preview_width']) ? $field['widget']['preview_width'] : variable_get('emvideo_default_preview_width', EMVIDEO_DEFAULT_PREVIEW_WIDTH));
-    $height = isset($options['height']) ? $options['height'] : (isset($field['widget']['preview_height']) ? $field['widget']['preview_height'] : variable_get('emvideo_default_preview_height', EMVIDEO_DEFAULT_PREVIEW_HEIGHT));
-    $autoplay = isset($options['autoplay']) ? $options['autoplay'] : (isset($field['widget']['preview_autoplay']) ? $field['widget']['preview_autoplay'] : FALSE);
-    $options['node'] = $node;
-    $output = emfield_include_invoke('emvideo', $item['provider'], 'preview', $embed, $width, $height, $field, $item, $node, $autoplay, $options);
-    $output = '<div class="emvideo emvideo-preview emvideo-'. check_plain($item['provider']) .'">'. $output .'</div>';
+    $width = $options['width'] ? $options['width'] : ($field['widget']['preview_width'] ? $field['widget']['preview_width'] : variable_get('emvideo_default_preview_width', EMVIDEO_DEFAULT_PREVIEW_WIDTH));
+    $height = $options['height'] ? $options['height'] : ($field['widget']['preview_height'] ? $field['widget']['preview_height'] : variable_get('emvideo_default_preview_height', EMVIDEO_DEFAULT_PREVIEW_HEIGHT));
+    $autoplay = $options['autoplay'] ? $options['autoplay'] : $field['widget']['preview_autoplay'];
+    $output = module_invoke('emfield', 'include_invoke', 'emvideo', $item['provider'], 'preview', $embed, $width, $height, $field, $item, $node, $autoplay, $options);
   }
 
   return $output;
 }
 
-function theme_emvideo_modal_generic($field, $item, $formatter, $node, $options = array()) {
+function theme_emvideo_thickbox($field, $item, $formatter, $node, $options = array()) {
   $title = isset($options['title']) ? $options['title'] : (isset($node->title) ? $node->title : (isset($node->node_title) ? $node->node_title : (isset($field['widget']['thumbnail_link_title']) ? $field['widget']['thumbnail_link_title'] : variable_get('emvideo_default_thumbnail_link_title', t('See video')))));
-  $thumbnail = isset($options['thumbnail']) ? $options['thumbnail'] : theme('emvideo_video_thumbnail', $field, $item, 'video_thumbnail', $node, TRUE, $options);
+  $thumbnail = theme('emvideo_video_thumbnail', $field, $item, 'video_thumbnail', $node, TRUE, $options);
   $width = ($formatter == 'video_replace_preview') ? $field['widget']['preview_width'] : $field['widget']['video_width'];
   $height = ($formatter == 'video_replace_preview') ? $field['widget']['preview_height'] : $field['widget']['video_height'];
-  $destination = 'emvideo/modal/'. $node->nid .'/'. $width .'/'. $height .'/'. $field['field_name'] .'/'. $item['provider'] .'/'. $item['value'];
-  $link_class = 'emvideo-thumbnail-replacement emvideo-modal-' . $options['modal'] .' '. $options['modal'];
+  $destination = 'emvideo/thickbox/'. $node->nid .'/'. $width .'/'. $height .'/'. $field['field_name'] .'/'. $item['provider'] .'/'. $item['value'];
   $attributes = array(
     'attributes' => array(
       'title' => $title,
-      'class' => $link_class,
+      'class' => (!isset($options['modal']) || $options['modal'] == 'thickbox') ? 'thickbox' : 'emvideo-thumbnail-replacement',
+      'rel' => ((!isset($options['modal']) || $options['modal'] == 'thickbox') && module_exists('lightbox2')) ? 'lightframe['. $field['type_name'] .'|width:'. ($width + 16) .'; height:'. ($height) .';]' : $field['type_name'],
     ),
     'query' => NULL,
     'fragment' => NULL,
     'absolute' => FALSE,
     'html' => TRUE,
   );
-  if ($options['modal'] == 'lightbox2') {
-    $attributes['attributes']['rel'] = 'lightframe['. $field['type_name'] .'|width:'. ($width + 16) .'; height:'. ($height + 16) .';]';
-  }
-  else if ($options['modal'] == 'shadowbox') {
-    $attributes['attributes']['rel'] = 'shadowbox['. $field['type_name'] .'];width='. ($width + 5) .';height='. ($height + 5);
-    // Shadowbox needs a .php extension so it knows to open as an iFrame.
-    $destination .= '/index.php';
-  }
 
-  if (($options['modal'] == 'lightbox2') && function_exists('lightbox2_add_files')) {
+  if ((!isset($options['modal']) || $options['modal'] == 'lightbox2') && function_exists('lightbox2_add_files')) {
     lightbox2_add_files();
   }
+  else if ($options['modal'] == 'emvideo' || (!module_exists('lightbox2') && !module_exists('thickbox'))) {
+    static $called;
 
-  static $added_js;
-  if (!isset($added_js)) {
-    // Add the play button image overlay.
-    drupal_add_js(array('emvideo' => array('thumbnail_overlay' => variable_get('emfield_thumbnail_overlay', TRUE))), 'setting');
-    drupal_add_js(drupal_get_path('module', 'emvideo') . '/emvideo.thumbnail-replacement.js');
-    drupal_add_css(drupal_get_path('module', 'emvideo') . '/emvideo.thumbnail-replacement.css');
-    $added_js = TRUE;
+    // Add JS settings for the overlay, if they haven't already been added.
+    if (!$called) {
+      $called = TRUE;
+      drupal_add_js(array('emvideo' => array('thumbnail_overlay' => variable_get('emvideo_thumbnail_overlay', TRUE))), 'setting');
+      drupal_add_js(drupal_get_path('module', 'emvideo') . '/emvideo.thumbnail-replacement.js');
+      drupal_add_css(drupal_get_path('module', 'emvideo') . '/emvideo.thumbnail-replacement.css');
+    }
   }
-  $class = 'emvideo-modal emvideo-'. $options['modal'];
+  $class = 'emvideo-thickbox';
   if ($options['wrapper-class']) {
     $class .= ' '. $options['wrapper-class'];
   }
-  $output = '<div class="'. $class .'">'. l($thumbnail, $destination, $attributes) .'</div>';
+  $output .= '<div class="'. $class .'">'. l($thumbnail, $destination, $attributes) .'</div>';
+
   return $output;
-}
-
-/**
- *  Display the video as a Thickbox modal popup. Requires the Thickbox module.
- */
-function theme_emvideo_thickbox($field, $item, $formatter, $node, $options = array()) {
-  $options['modal'] = 'thickbox';
-  return theme('emvideo_modal_generic', $field, $item, $formatter, $node, $options);
-}
-
-/**
- *  Display the video as a Colorbox modal popup. Requires the Colorbox module.
- */
-function theme_emvideo_colorbox($field, $item, $formatter, $node, $options = array()) {
-  $options['modal'] = 'colorbox';
-  return theme('emvideo_modal_generic', $field, $item, $formatter, $node, $options);
-}
-
-/**
- *  Display the video as a Lightbox2 modal popup. Requires the Lightbox2 module.
- */
-function theme_emvideo_lightbox2($field, $item, $formatter, $node, $options = array()) {
-  $options['modal'] = 'lightbox2';
-  return theme('emvideo_modal_generic', $field, $item, $formatter, $node, $options);
-}
-
-/**
- *  Display the video as a Shadowbox modal popup. Requires the Shadowbox module.
- */
-function theme_emvideo_shadowbox($field, $item, $formatter, $node, $options = array()) {
-  $options['modal'] = 'shadowbox';
-  return theme('emvideo_modal_generic', $field, $item, $formatter, $node, $options);
 }
 
 function theme_emvideo_video_replace($field, $item, $formatter, $node, $options = array()) {
@@ -299,178 +202,63 @@ function theme_emvideo_video_replace($field, $item, $formatter, $node, $options 
   $options['width'] = isset($options['width']) ? $options['width'] : $field['widget']['video_width'];
   $options['height'] = isset($options['height']) ? $options['height'] : $field['widget']['video_height'];
   $options['wrapper-class'] = isset($options['wrapper-class']) ? $options['wrapper-class'] . ' emvideo-thumbnail-replace-full' : 'emvideo-thumbnail-replace-full';
-  return theme('emvideo_modal_generic', $field, $item, $formatter, $node, $options);
+  return theme('emvideo_thickbox', $field, $item, $formatter, $node, $options);
 }
 function theme_emvideo_video_replace_preview($field, $item, $formatter, $node, $options = array()) {
   $options['modal'] = 'emvideo';
   $options['width'] = isset($options['width']) ? $options['width'] : $field['widget']['preview_width'];
   $options['height'] = isset($options['height']) ? $options['height'] : $field['widget']['preview_height'];
   $options['wrapper-class'] = isset($options['wrapper-class']) ? $options['wrapper-class'] . ' emvideo-thumbnail-replace-preview' : 'emvideo-thumbnail-replace-preview';
-  return theme('emvideo_modal_generic', $field, $item, $formatter, $node, $options);
+  return theme('emvideo_thickbox', $field, $item, $formatter, $node, $options);
 }
 
-/**
- *  Formatter theme functions.
- */
+function theme_emvideo_video_link($field, $item, $formatter, $node, $options = array()) {
+  return module_invoke('emvideo', $item['provider'] .'_embedded_link', $item['value']);
+}
+
 function theme_emvideo_formatter_video_video($element) {
-  return _emvideo_formatter_theme_helper($element);
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
+
 function theme_emvideo_formatter_video_embed($element) {
-  return _emvideo_formatter_theme_helper($element);
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
-function theme_emvideo_formatter_video_link($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_video_url($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_video_duration($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
+
 function theme_emvideo_formatter_default($element) {
-  return _emvideo_formatter_theme_helper($element);
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
+
 function theme_emvideo_formatter_video_preview($element) {
-  return _emvideo_formatter_theme_helper($element);
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
+
 function theme_emvideo_formatter_video_thumbnail($element) {
-  return _emvideo_formatter_theme_helper($element);
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
+
+function theme_emvideo_formatter_video_link($element) {
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
+}
+
 function theme_emvideo_formatter_video_flash($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_colorbox($element) {
-  return _emvideo_formatter_theme_helper($element);
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
 function theme_emvideo_formatter_thickbox($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_lightbox2($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_shadowbox($element) {
-  return _emvideo_formatter_theme_helper($element);
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
 function theme_emvideo_formatter_video_replace($element) {
-  return _emvideo_formatter_theme_helper($element);
+  $field = content_fields($element['#field_name'], $element['#type_name']);
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
 function theme_emvideo_formatter_video_replace_preview($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_video_thumbnail_no_link($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_video_thumbnail_provider_link($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_video_thumbnail_path($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-function theme_emvideo_formatter_video_thumbnail_url($element) {
-  return _emvideo_formatter_theme_helper($element);
-}
-
-/**
- *  This ultimately calls theme('emvideo_[formatter]').
- */
-function _emvideo_formatter_theme_helper($element) {
   $field = content_fields($element['#field_name'], $element['#type_name']);
-  return emvideo_field_formatter($field, $element['#item'], $element['#formatter'], $element['#node']);
-}
-
-/**
- * Convert time from field into seconds.
- *
- * @param $time
- *    Raw timemarker input from field.
- */
-function _emvideo_convert_to_seconds($time) {
-  $time_in_seconds = 0;
-  $time_split = split(':', $time);
-  $count = count($time_split);
-
-  // If it is already in seconds then don't do anything.
-  if ($count == 1) return intval($time);
-
-  foreach ($time_split as $unit) {
-    $count--;
-    // If hours or minutes multiply by appropriate amount.
-    if ($count > 0) {
-      // If it is hours multiply by 36000 if minutes multiply by 60.
-      $time_in_seconds += $unit*(pow(60, $count));
-    }
-    else {
-      // If we are on the seconds unit then we do not need to do anything.
-      $time_in_seconds += $unit;
-    }
-  }
-
-  return $time_in_seconds;
-}
-
-/**
- *  Display seconds as HH:MM:SS, with leading 0's.
- *
- *  @param $seconds
- *    The number of seconds to display.
- */
-function _emvideo_seconds_to_time($seconds) {
-  // Number of seconds in an hour.
-  $unith =3600;
-  // Number of seconds in a minute.
-  $unitm =60;
-
-  // '/' given value by num sec in hour... output = HOURS
-  $hh = intval($seconds / $unith);
-
-  // Multiply number of hours by seconds, then subtract from given value.
-  // Output = REMAINING seconds.
-  $ss_remaining = ($seconds - ($hh * 3600));
-
-  // Take remaining seconds and divide by seconds in a min... output = MINS.
-  $mm = intval($ss_remaining / $unitm);
-  // Multiply number of mins by seconds, then subtract from remaining seconds.
-  // Output = REMAINING seconds.
-  $ss = ($ss_remaining - ($mm * 60));
-
-  $output = '';
-
-  // If we have any hours, then prepend that to our output.
-  if ($hh) {
-    $output .= "$hh:";
-  }
-
-  // Create a safe-for-output MM:SS.
-  $output .= check_plain(sprintf($hh ? "%02d:%02d" : "%d:%02d", $mm, $ss));
-
-  return $output;
-}
-
-/**
- *  Display the video in an iFrame.
- *
- *  @param $content
- *    The video to display.
- *  @return
- *    The output to print directly, including HTML/Head/Body tags.
- */
-function template_preprocess_emvideo_modal_iframe(&$variables) {
-  $variables['language']          = $GLOBALS['language'];
-  $variables['language']->dir     = $GLOBALS['language']->direction ? 'rtl' : 'ltr';
-  // Construct page title
-  if (drupal_get_title()) {
-    $variables['head_title'] = array(strip_tags(drupal_get_title()), variable_get('site_name', 'Drupal'));
-  }
-  else {
-    $variables['head_title'] = array(variable_get('site_name', 'Drupal'));
-    if (variable_get('site_slogan', '')) {
-      $variables['head_title'][] = variable_get('site_slogan', '');
-    }
-  }
-  $variables['head_title']        = implode(' | ', $variables['head_title']);
-  $variables['head']              = drupal_get_html_head();
-  $variables['css']               = drupal_add_css();
-  $variables['styles']            = drupal_get_css();
-  $variables['scripts']           = drupal_get_js();
-  $variables['closure']           = theme('closure');
+  return module_invoke('emvideo', 'field_formatter', $field, $element['#item'], $element['#formatter'], $element['#node']);
 }
