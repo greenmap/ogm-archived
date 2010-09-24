@@ -1,5 +1,5 @@
 <?php
-// $Id: livevideo.inc,v 1.1.2.9 2008/12/19 18:17:14 aaron Exp $
+// $Id: livevideo.inc,v 1.1.2.12 2009/10/29 13:29:51 aaron Exp $
 
 /**
  * @file
@@ -8,7 +8,6 @@
 
 define('EMVIDEO_LIVEVIDEO_MAIN_URL', 'http://www.livevideo.com/');
 define('EMVIDEO_LIVEVIDEO_API_INFO', 'http://www.livevideo.com/api/default.aspx');
-define('EMVIDEO_LIVEVIDEO_API_APPLICATION_URL', 'http://www.livevideo.com/profile/admin/editdeveloperprofile.aspx');
 define('EMVIDEO_LIVEVIDEO_REST_ENDPOINT', 'http://www.livevideo.com/api/');
 
 /**
@@ -48,7 +47,7 @@ function emvideo_livevideo_settings() {
   $form['livevideo']['api'] = array(
     '#type' => 'fieldset',
     '#title' => t('Live Video API'),
-    '#description' => t('If you wish to be able to display Live Video thumbnails automatically, you will first need to apply for an API Developer Key from the <a href="@livevideo" target="_blank">Live Video Developer Profile page</a>. Note that you do not need this key to display Live Video videos themselves.', array('@livevideo' => EMVIDEO_LIVEVIDEO_API_APPLICATION_URL)),
+    '#description' => t('If you wish to be able to display Live Video thumbnails automatically, you will first need to apply for an API Developer Key from the <a href="@livevideo" target="_blank">Live Video Developer Profile page</a>. Note that you do not need this key to display Live Video videos themselves.', array('@livevideo' => EMVIDEO_LIVEVIDEO_API_INFO)),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
@@ -156,7 +155,7 @@ function emvideo_livevideo_thumbnail($field, $item, $formatter, $node, $width, $
  *  @return
  *    the html of the embedded video
  */
-function emvideo_livevideo_video($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_livevideo_video($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_livevideo_flash', $embed, $width, $height, $autoplay);
 
   return $output;
@@ -178,7 +177,7 @@ function emvideo_livevideo_video($embed, $width, $height, $field, $item, &$node,
  *  @return
  *    the html of the embedded video
  */
-function emvideo_livevideo_preview($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_livevideo_preview($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_livevideo_flash', $embed, $width, $height, $autoplay);
 
   return $output;

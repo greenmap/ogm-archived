@@ -1,5 +1,5 @@
 <?php
-// $Id: dailymotion.inc,v 1.1.2.9 2008/12/19 18:17:14 aaron Exp $
+// $Id: dailymotion.inc,v 1.1.2.13 2009/10/29 13:29:51 aaron Exp $
 
 /**
  * @file
@@ -23,7 +23,7 @@ function emvideo_dailymotion_info() {
   $features = array(
     array(t('Autoplay'), t('Yes'), ''),
     array(t('RSS Attachment'), t('No'), ''),
-    array(t('Thumbnails'), t('No'), t('')),
+    array(t('Thumbnails'), t('Yes'), t('Although thumbnails are generated, they are restricted to a size of 160x120.')),
   );
   return array(
     'provider' => 'dailymotion',
@@ -93,19 +93,18 @@ function emvideo_dailymotion_embedded_link($video_code) {
  * the embedded flash displaying the dailymotion video
  */
 function theme_emvideo_dailymotion_flash($embed, $width, $height, $autoplay) {
+  $output = '';
   if ($embed) {
-    if ($autoplay) {
-      $autoplay_value = '&amp;autoStart=1';
-    }
-    $output .= "    <object type=\"application/x-shockwave-flash\" height=\"$height\" width=\"$width\" data=\"http://www.dailymotion.com/swf/$embed". $autoplay_value ."\" id=\"VideoPlayback\">
-      <param name=\"movie\" value=\"http://www.dailymotion.com/swf/$embed". $autoplay_value ."\" />
+    $autoplay = $autoplay ? '&amp;autoStart=1' : '';
+    $output = "    <object type=\"application/x-shockwave-flash\" height=\"$height\" width=\"$width\" data=\"http://www.dailymotion.com/swf/$embed$autoplay\" id=\"VideoPlayback\">
+      <param name=\"movie\" value=\"http://www.dailymotion.com/swf/$embed$autoplay\" />
       <param name=\"allowScriptAcess\" value=\"always\" />
       <param name=\"allowFullScreen\" value=\"true\" />
       <param name=\"quality\" value=\"best\" />
       <param name=\"bgcolor\" value=\"#FFFFFF\" />
       <param name=\"scale\" value=\"noScale\" />
       <param name=\"salign\" value=\"TL\" />
-      <param name=\"FlashVars\" value=\"playerMode=embedded$autoplay_value\" />
+      <param name=\"FlashVars\" value=\"playerMode=embedded$autoplay\" />
       <param name=\"wmode\" value=\"transparent\" />
     </object>\n";
   }
@@ -143,7 +142,7 @@ function emvideo_dailymotion_thumbnail($field, $item, $formatter, $node, $width,
  *  @return
  *    the html of the embedded video
  */
-function emvideo_dailymotion_video($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_dailymotion_video($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_dailymotion_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
@@ -164,7 +163,7 @@ function emvideo_dailymotion_video($embed, $width, $height, $field, $item, &$nod
  *  @return
  *    the html of the embedded video
  */
-function emvideo_dailymotion_preview($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_dailymotion_preview($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_dailymotion_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
@@ -178,5 +177,16 @@ function emvideo_dailymotion_emfield_subtheme() {
       'arguments' => array('embed' => NULL, 'width' => NULL, 'height' => NULL, 'autoplay' => NULL),
       'file' => 'providers/dailymotion.inc'
     )
+  );
+}
+
+/**
+ *  Implement hook_emvideo_PROVIDER_content_generate().
+ */
+function emvideo_dailymotion_content_generate() {
+  return array(
+    'http://www.dailymotion.com/relevance/search/drupal/video/x4gfqu_introduction-to-drupal_tech',
+    'http://www.dailymotion.com/relevance/search/drupal/video/x57pyj_drupal-6-hot-new-themes_tech',
+    'http://www.dailymotion.com/relevance/search/drupal/video/x76hya_host-color-we-like-drupal_tech',
   );
 }

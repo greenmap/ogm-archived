@@ -1,5 +1,5 @@
 <?php
-// $Id: imageshack.inc,v 1.1.2.4 2008/10/08 17:39:09 alexua Exp $
+// $Id: imageshack.inc,v 1.1.2.7 2010/07/19 15:57:58 aaron Exp $
 
 /**
  * @file
@@ -7,6 +7,7 @@
  */
 
 define('EMIMAGE_IMAGESHACK_MAIN_URL', 'http://www.imageshack.us/');
+define('EMIMAGE_IMAGESHACK_DATA_VERSION', 1);
 
 /**
  * hook emimage_PROVIDER_info
@@ -31,6 +32,13 @@ function emimage_imageshack_info() {
   );
 }
 
+/**
+ *  Implement hook emvideo_PROVIDER_data_version().
+ */
+function emimage_imageshack_data_version() {
+  return EMIMAGE_IMAGESHACK_DATA_VERSION;
+}
+
 function emimage_imageshack_data($field, $item) {
   $data = array();
 
@@ -43,6 +51,7 @@ function emimage_imageshack_data($field, $item) {
       'file' => $matches[4],
       'title' => '',
     );
+    $data['emimage_data_version'] = EMIMAGE_IMAGESHACK_DATA_VERSION;
   }
   return $data;
 }
@@ -116,8 +125,14 @@ function _emimage_imageshack_scrape_image_url($url) {
     return $urls[$url];
   }
 
-  $html = file_get_contents($url);
-  if (preg_match('!<img id="thepic" .+? src="(.+?)"!is', $html, $matches)) {
-    return $urls[$url] = $matches[1];
+  $request = drupal_http_request($url);
+  if ($html = $request->data) {
+    if (preg_match('!<img id="thepic" .+? src="(.+?)"!is', $html, $matches)) {
+      return $urls[$url] = $matches[1];
+    }
   }
+}
+
+function emimage_imageshack_thumbnail($field, $item, $formatter, $node, $width, $height) {
+  return emimage_imageshack_image_url($item['value'], $item['data']);
 }

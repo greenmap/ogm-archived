@@ -1,5 +1,5 @@
 <?php
-// $Id: vimeo.inc,v 1.1.2.8 2009/04/19 22:01:06 alexua Exp $
+// $Id: vimeo.inc,v 1.1.2.12 2010/07/19 16:48:58 aaron Exp $
 
 /**
  * @file
@@ -115,10 +115,11 @@ function emvideo_vimeo_settings() {
 function emvideo_vimeo_extract($embed = '') {
   // http://vimeo.com/123456
   // http://www.vimeo.com/123456
+  // http://vimeo.com/channels/hd#6912147
   //<object width="400" height="270"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://vimeo.com/moogaloop.swf?clip_id=4106135&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" /><embed src="http://vimeo.com/moogaloop.swf?clip_id=4106135&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="400" height="270"></embed></object><br /><a href="http://vimeo.com/4106135">Two Knives One Motive</a> from <a href="http://vimeo.com/x351">Tyler Capehart</a> on <a href="http://vimeo.com">Vimeo</a>.
   return array(
     '@vimeo\.com/moogaloop\.swf\?clip_id\=([^\"\&]+)@i',
-    '@vimeo\.com/([^\"\&]+)@i',
+    '@vimeo\.com/[^\"\&\d]*([^\"\&]+)@i',
   );
 }
 
@@ -155,12 +156,12 @@ function theme_emvideo_vimeo_flash($embed, $width, $height, $autoplay) {
     if (variable_get('emvideo_vimeo_color_override', FALSE)) {
       $color = emvideo_vimeo_convert_color(variable_get('emvideo_vimeo_color', EMVIDEO_VIMEO_COLOR_DEFAULT));
     }
-    $output = '<object type="application/x-shockwave-flash" width="'. $width .'" height="'. $height .'" data="http://www.vimeo.com/moogaloop.swf?clip_id='. $embed .'&amp;server=www.vimeo.com&amp;fullscreen='. $fullscreen .'&amp;show_title='. $show_title .'&amp;show_byline='. $show_byline .'&amp;show_portrait='. $show_portrait .'&amp;color='. $color .'">';
+    $output = '<object type="application/x-shockwave-flash" width="'. $width .'" height="'. $height .'" data="http://www.vimeo.com/moogaloop.swf?clip_id='. $embed .'&amp;server=www.vimeo.com&amp;fullscreen='. $fullscreen .'&amp;show_title='. $show_title .'&amp;show_byline='. $show_byline .'&amp;show_portrait='. $show_portrait .'&amp;color='. $color .'&autoplay='. $autoplay .'">';
     $output .= '<param name="quality" value="best" />';
     $output .= '<param name="wmode" value="transparent" />';
     $output .= '<param name="allowfullscreen" value="'. ($fullscreen ? 'true' : 'false') .'" />';
     $output .= '<param name="scale" value="showAll" />';
-    $output .= '<param name="movie" value="http://www.vimeo.com/moogaloop.swf?clip_id='. $embed .'&amp;server=www.vimeo.com&amp;fullscreen='. $fullscreen .'&amp;show_title='. $show_title .'&amp;show_byline='. $show_byline .'&amp;show_portrait='. $show_portrait .'&amp;color='. $color .'" /></object>';
+    $output .= '<param name="movie" value="http://www.vimeo.com/moogaloop.swf?clip_id='. $embed .'&amp;server=www.vimeo.com&amp;fullscreen='. $fullscreen .'&amp;show_title='. $show_title .'&amp;show_byline='. $show_byline .'&amp;show_portrait='. $show_portrait .'&amp;color='. $color .'&autoplay='. $autoplay .'" /></object>';
   }
   return $output;
 }
@@ -181,7 +182,7 @@ function theme_emvideo_vimeo_flash($embed, $width, $height, $autoplay) {
  *  @return
  *    the html of the embedded video
  */
-function emvideo_vimeo_video($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_vimeo_video($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_vimeo_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
@@ -202,7 +203,7 @@ function emvideo_vimeo_video($embed, $width, $height, $field, $item, &$node, $au
  *  @return
  *    the html of the embedded video
  */
-function emvideo_vimeo_preview($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_vimeo_preview($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_vimeo_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
@@ -232,3 +233,16 @@ function emvideo_vimeo_emfield_subtheme() {
     ),
   );
 }
+
+/**
+ *  Implement hook_emvideo_PROVIDER_content_generate().
+ */
+function emvideo_vimeo_content_generate() {
+  return array(
+    'http://vimeo.com/1408463',
+    'http://vimeo.com/1040532',
+    'http://vimeo.com/709081',
+    'http://vimeo.com/5565562',
+  );
+}
+
