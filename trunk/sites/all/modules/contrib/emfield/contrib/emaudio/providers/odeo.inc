@@ -1,5 +1,5 @@
 <?php
-// $Id: odeo.inc,v 1.1.4.8 2009/04/15 16:31:40 kleinmp Exp $
+// $Id: odeo.inc,v 1.1.4.10 2009/10/29 13:32:55 aaron Exp $
 
 /**
  * @file
@@ -105,7 +105,7 @@ function theme_emaudio_odeo_flash($embed, $width, $height, $autoplay) {
  *   A URL pointing to the thumbnail.
  */
 function emaudio_odeo_thumbnail($field, $item, $formatter, $node, $width, $height) {
-  return $tn;
+  return '';
 }
 
 /**
@@ -126,7 +126,7 @@ function emaudio_odeo_thumbnail($field, $item, $formatter, $node, $width, $heigh
  * @return
  *   The html of the embedded audio.
  */
-function emaudio_odeo_audio($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emaudio_odeo_audio($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emaudio_odeo_flash', $embed, $width, $height, $autoplay);
 
   return $output;
@@ -150,7 +150,7 @@ function emaudio_odeo_audio($embed, $width, $height, $field, $item, &$node, $aut
  * @return
  *   The html of the embedded audio.
  */
-function emaudio_odeo_preview($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emaudio_odeo_preview($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emaudio_odeo_flash', $embed, $width, $height, $autoplay);
 
   return $output;

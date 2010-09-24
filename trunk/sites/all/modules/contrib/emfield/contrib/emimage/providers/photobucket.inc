@@ -1,5 +1,5 @@
 <?php
-// $Id: photobucket.inc,v 1.1.2.4 2008/10/08 17:39:09 alexua Exp $
+// $Id: photobucket.inc,v 1.1.2.7 2010/07/19 15:57:58 aaron Exp $
 
 /**
  * @file
@@ -7,6 +7,7 @@
  */
 
 define('EMIMAGE_PHOTOBUCKET_MAIN_URL', 'http://www.photobucket.com/');
+define('EMIMAGE_PHOTOBUCKET_DATA_VERSION', 1);
 
 /**
  * hook emimage_PROVIDER_info
@@ -31,6 +32,13 @@ function emimage_photobucket_info() {
   );
 }
 
+/**
+ *  Implement hook emvideo_PROVIDER_data_version().
+ */
+function emimage_photobucket_data_version() {
+  return EMIMAGE_PHOTOBUCKET_DATA_VERSION;
+}
+
 function emimage_photobucket_data($field, $item) {
   $data = array();
 
@@ -42,6 +50,7 @@ function emimage_photobucket_data($field, $item) {
       'file' => $matches[5],
     );
     $data['title'] = emimage_photobucket_image_title($data['file'], $data);
+    $data['emimage_data_version'] = EMIMAGE_PHOTOBUCKET_DATA_VERSION;
   }
   return $data;
 }
@@ -119,6 +128,12 @@ function _emimage_photobucket_scrape_image_title($url) {
     return $title[$url];
   }
 
-  $html = file_get_contents($url);
+  $rs = drupal_http_request($url);
+  $html = $rs->data;
   return $title[$url] = preg_match('@<span id="photoTitle">(.+?)</span>@is', $html, $matches)? $matches[1] : '';
 }
+
+function emimage_photobucket_thumbnail($field, $item, $formatter, $node, $width, $height) {
+  return emimage_photobucket_image_url($item['value'], $item['data']);
+}
+

@@ -1,5 +1,5 @@
 <?php
-// $Id: metacafe.inc,v 1.1.2.8 2008/12/19 18:17:14 aaron Exp $
+// $Id: metacafe.inc,v 1.1.2.11 2010/01/06 14:43:13 aaron Exp $
 
 /**
  * @file
@@ -47,11 +47,20 @@ function emvideo_metacafe_extract($embed) {
   return FALSE;
 }
 
-function emvideo_metacafe_video_link($video_code) {
+/**
+ * hook emvideo_PROVIDER_embedded_link($video_code)
+ * returns a link to view the video at the provider's site.
+ *  @param $video_code
+ *    The string containing the video to watch.
+ *  @return
+ *    A string containing the URL to view the video at the original provider's site.
+ */
+function emvideo_metacafe_embedded_link($video_code) {
   return 'http://www.metacafe.com/watch/'. $video_code .'/';
 }
 
 function theme_emvideo_metacafe_flash($embed, $width, $height, $autoplay) {
+  $output = '';
   if ($embed) {
     $autoplay = $autoplay ? '?playerVars=autoPlay=yes' : '';
     $output .= '<embed src="http://www.metacafe.com/fplayer/'. $embed .'.swf'. $autoplay .'" width="'. $width .'" height="'. $height .'" wmode="transparent" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"></embed>';
@@ -60,16 +69,17 @@ function theme_emvideo_metacafe_flash($embed, $width, $height, $autoplay) {
 }
 
 function emvideo_metacafe_thumbnail($field, $item, $formatter, $node, $width, $height) {
-  $picturelink=substr($item['value'], 0, 6);
-  return 'http://www.metacafe.com/thumb/'. $picturelink .'.jpg';
+  // http://www.metacafe.com/thumb/[VIDEOID].jpg
+  $values = explode('/', $item['value'], 2);
+  return 'http://www.metacafe.com/thumb/'. $values[0] .'.jpg';
 }
 
-function emvideo_metacafe_video($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_metacafe_video($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_metacafe_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
 
-function emvideo_metacafe_preview($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_metacafe_preview($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_metacafe_flash', $embed, $width, $height, $autoplay);
   return $output;
 }

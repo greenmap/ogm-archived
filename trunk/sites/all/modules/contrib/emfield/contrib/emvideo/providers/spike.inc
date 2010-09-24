@@ -1,5 +1,5 @@
 <?php
-// $Id: spike.inc,v 1.1.2.8 2008/12/19 18:17:14 aaron Exp $
+// $Id: spike.inc,v 1.1.2.11 2010/01/06 16:53:47 aaron Exp $
 
 /**
  * @file
@@ -29,11 +29,14 @@ function emvideo_spike_settings() {
 }
 
 function emvideo_spike_extract($embed) {
+  // <embed width="320" height="240" src="http://www.spike.com/efp" quality="high" bgcolor="000000" name="efp" align="middle" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="flvbaseclip=2796729" allowfullscreen="true"> </embed> <div style="font-family: arial,helvetica,sans-serif;font-size:12px; background-color: #000; width: 448px; padding: 3px 0; color: #fff;"><a href="http://www.spike.com/video/simpsons-movie/2796729" style="color: #ffcc35; margin-left: 5px;">The Simpsons Movie - Trailer </a> | <a href="http://www.spike.com/channel/movies" style="color: #ffcc35">Movies & TV</a> | <a href="http://www.spike.com/" style="color: #ffcc35">SPIKE.com</a></div>
+  // http://www.spike.com/video/simpsons-movie/2796729
   return array(
     // http://www.spike.com/video/2836119/collection/19459/channel/comedy
     // <embed width="448" height="365" src="http://www.spike.com/efp" quality="high" bgcolor="000000" name="efp" align="middle" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="flvbaseclip=2836119&"> </embed> <h1><a href="http://www.spike.com/video/2836119">"I Lost It" with Tom Cruize and Jesus</a></h1><span>Posted Mar 25, 2007</span><p>What happens when Jesus, Abe Lincoln, Tom Cruise, Dustin Hoffman, Buddha and Einstein play a friendly game of poker?</p>
-    '@spike\.com/efp"(?:.*)flvbaseclip=([^&]+)@i',
-    '@spike\.com/video/([^/&"\?]*)@i',
+    '@spike\.com/efp"(?:.*)flvbaseclip=([^/&"\?]+)@i',
+    '@spike\.com/video/[^/&"\?]+/([^/&"\?]+)@i',
+    '@spike\.com/video/([^/&"\?]+)@i',
   );
 }
 
@@ -41,7 +44,15 @@ function emvideo_spike_request($embed, $cacheable = TRUE) {
   return NULL;
 }
 
-function emvideo_spike_video_link($video_code) {
+/**
+ * hook emvideo_PROVIDER_embedded_link($video_code)
+ * returns a link to view the video at the provider's site.
+ *  @param $video_code
+ *    The string containing the video to watch.
+ *  @return
+ *    A string containing the URL to view the video at the original provider's site.
+ */
+function emvideo_spike_embedded_link($video_code) {
   return 'http://www.spike.com/video/'. $video_code;
 }
 
@@ -65,12 +76,12 @@ function emvideo_spike_thumbnail($field, $item, $formatter, $node, $width, $heig
   return 'http://img1.ifilmpro.com/resize/image/stills/films/resize/istd/'. $picturelink .'.jpg?width='. $width;
 }
 
-function emvideo_spike_video($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_spike_video($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_spike_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
 
-function emvideo_spike_preview($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_spike_preview($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_spike_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
