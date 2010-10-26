@@ -95,7 +95,7 @@ padding: 0;
 }
 
 fieldset {
-background: #8cc63f;
+background: #8cc63f !important;
 }
 
 .row a, .row span{
@@ -129,7 +129,7 @@ letter-spacing:3px;
 
 #footer {
 font-size:0.75em;
-margin-top:245px;
+margin-top:200px;
 text-align:center;
 }
 
@@ -146,12 +146,12 @@ text-align:center;
 <fieldset>
 <a href="/sites/default/files/app/findsites/index.html">
 <div class="row">
-<span>Find Sites</span>
+Find Sites
 </div>
 </a>
 <a href="/sites/default/files/app/addsites/index.html">
 <div class="row">
-<span>Add Sites</span>
+Add Sites
 </div>
 </a>
 
