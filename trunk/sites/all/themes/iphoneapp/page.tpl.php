@@ -110,16 +110,17 @@ Find Sites
 Add Sites
 </div>
 </a>
-</fieldset>
-</form>
-
-
         <div id="footer"><?php if ($footer_message): ?>
           &copy; Green Map&reg; System, 2009<br/>
           Visit GreenMap.org on your desktop
           
           
         </div>
+</fieldset>
+</form>
+
+
+
         <?php endif; ?>
         </div>
     </div>
