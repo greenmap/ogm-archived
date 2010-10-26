@@ -22,14 +22,14 @@ body > *[selected="true"] {
 
 a[selected], a:active {
     background-color: #099848 !important;
-    background-image: url(listArrowSel.png), url(selection.png) !important;
+    background-image: url(img/listArrowSel.png), url(img/selection.png) !important;
     background-repeat: no-repeat, repeat-x;
     background-position: right center, left top;
     color: #FFFFFF !important;
 }
 
 a[selected="progress"] {
-    background-image: url(loading.gif), url(selection.png) !important;
+    background-image: url(img/loading.gif), url(img/selection.png) !important;
 }
 
 /************************************************************************************************/
@@ -86,11 +86,11 @@ body[orient="landscape"] > .toolbar > h1 {
     text-decoration: none;
     white-space: nowrap;
     background: none;
-    -webkit-border-image: url(toolButton.png) 0 5 0 5;
+    -webkit-border-image: url(img/toolButton.png) 0 5 0 5;
 }
 
 .blueButton {
-    -webkit-border-image: url(blueButton.png) 0 5 0 5;
+    -webkit-border-image: url(img/blueButton.png) 0 5 0 5;
     border-width: 0 5px;
 }
 
@@ -112,7 +112,7 @@ margin-right: 1px;
     padding: 0;
     max-width: 76px;
     border-width: 0 8px 0 14px;
-    -webkit-border-image: url(backButton.png) 0 8 0 14;
+    -webkit-border-image: url(img/backButton.png) 0 8 0 14;
 }
 
 .whiteButton,
@@ -128,12 +128,12 @@ margin-right: 1px;
 }
 
 .whiteButton {
-    -webkit-border-image: url(whiteButton.png) 0 12 0 12;
+    -webkit-border-image: url(img/whiteButton.png) 0 12 0 12;
     text-shadow: rgba(255, 255, 255, 0.7) 0 1px 0;
 }
 
 .grayButton {
-    -webkit-border-image: url(grayButton.png) 0 12 0 12;
+    -webkit-border-image: url(img/grayButton.png) 0 12 0 12;
     color: #FFFFFF;
 }
 
@@ -156,7 +156,7 @@ body > ul > li.group {
     border-top: 1px solid #7d7d7d;
     border-bottom: 1px solid #999999;
     padding: 1px 10px;
-    background: url(listGroup.png) repeat-x;
+    background: url(img/listGroup.png) repeat-x;
     font-size: 17px;
     font-weight: bold;
     text-shadow: rgba(0, 0, 0, 0.4) 0 1px 0;
@@ -174,7 +174,7 @@ body > ul > li > a {
     padding: 8px 32px 8px 10px;
     text-decoration: none;
     color: inherit;
-    background: url(listArrow.png) no-repeat right center;
+    background: url(img/listArrow.png) no-repeat right center;
 }
 
 a[target="_replace"] {
@@ -208,7 +208,7 @@ body > .dialog {
     border: none;
     border-top: 1px solid #6d84a2;
     padding: 10px 6px;
-    background: url(toolbar.png) #7388a5 repeat-x;
+    background: url(img/toolbar.png) #7388a5 repeat-x;
 }
 
 .dialog > fieldset > h1 {
@@ -324,7 +324,7 @@ padding: 5px 10px;
 .toggle {
     border: 1px solid #888888;
     -webkit-border-radius: 6px;
-    background: #FFFFFF url(toggle.png) repeat-x;
+    background: #FFFFFF url(img/toggle.png) repeat-x;
     font-size: 19px;
     font-weight: bold;
     line-height: 30px;
@@ -332,7 +332,7 @@ padding: 5px 10px;
 
 .toggle[toggled="true"] {
     border: 1px solid #143fae;
-    background: #099848 url(toggleOn.png) repeat-x;
+    background: #099848 url(img/toggleOn.png) repeat-x;
 }
 
 .toggleOn {
@@ -371,7 +371,7 @@ padding: 5px 10px;
     height: 28px;    
     border: 1px solid #888888;
     -webkit-border-radius: 6px;
-    background: #ffffff url(thumb.png) repeat-x;
+    background: #ffffff url(img/thumb.png) repeat-x;
 }
 
 .toggle[toggled="true"] > .thumb {
@@ -391,27 +391,35 @@ padding: 5px 10px;
 
 #preloader {
     display: none;
-    background-image: url(loading.gif), url(selection.png),
-        url(blueButton.png), url(listArrowSel.png), url(listGroup.png);
+    background-image: url(img/loading.gif), url(img/selection.png),
+        url(img/blueButton.png), url(img/listArrowSel.png), url(img/listGroup.png);
 }
 
 #ogm_submit_success {
 background:url("img/pinstripes.png") repeat scroll 0 0 transparent;
 padding-top: 20px;
 text-align: center;
-color: #ffffff;
-letter-spacing: 1px;
-text-transform: capitalize;
 }
 
 #ogm_submit_title {
-margin: 0;
-text-align: center;
+color:#2E68B2;
+font-size:20px;
+letter-spacing:2px;
+margin:0;
+text-align:center;
+text-transform:uppercase;
 }
 
 #ogm_submit_success a {
-color: #8cc63f;
-text-decoration: none;
-font-weight: bold;
-letter-spacing: 1px;
+color:#8CC63F;
+font-size:20px;
+font-weight:bold;
+letter-spacing:2px;
+margin:auto;
+text-decoration:none;
+text-transform:lowercase;
+}
+
+#ogm_submit_success .row{
+text-align: center;
 }
