@@ -122,10 +122,6 @@ z-index:5;
 text-decoration: none;
 }
 
-h1 {
-margin-bottom: 40px !important;
-}
-
 #footer {
 font-size:0.75em;
 margin-top:100px;
