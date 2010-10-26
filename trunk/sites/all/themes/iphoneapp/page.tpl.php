@@ -83,13 +83,18 @@
 <head>
   <title><?php print $head_title; ?></title>
   <?php print $head; ?>
-
+  <?php print $styles; // suppressing Drupal's default styles because this is the minimal version of the mobile theme with no css ?>
   <?php // print $scripts; // suppressing Drupal's default js because this is the minimal version of the mobile theme ?>
   <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
   <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
 <style type="text/css">
+body {
+padding: 0;
+height: 450px;
+}
+
 .row {
 border-bottom:1px solid #999999;
 color:#8CC63F;
