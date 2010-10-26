@@ -89,85 +89,27 @@
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
   <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
-<style type="text/css">
-body {
-padding: 0;
-}
-
-fieldset {
-background: #8cc63f !important;
-}
-
-.row a {
-text-decoration: none;
-color:#ffffff;
-font-family:arial;
-font-size:20px;
-font-weight:bold;
-letter-spacing:3px;
-text-transform:uppercase;
-}
-
-.first {
-border-bottom:1px solid #ffffff;
-}
-
-.row {
-min-height:33px;
-padding-top:13px;
-position:relative;
-text-align:center;
-width:300px;
-z-index:5;
-text-decoration: none;
-}
-
-h1 {
-font-size:25px;
-margin-top: 10px !important;
-font-family:arial;
-font-weight:bold;
-letter-spacing:3px;
-margin-bottom: 40px !important;
-}
-
-#footer {
-font-size:0.75em;
-margin-top:100px;
-text-align:center;
-}
-
-</style>
 
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
 
-    <div class="toolbar">
+         <div class="toolbar">
+        <a id="backButton" class="button" href="index.html" style="display:block !important;">Back</a>
     </div>
-<form class="panel">
-           <h1 class="title">What's Green Nearby</h1>
-
-<fieldset>
-<a href="/sites/default/files/app/findsites/index.html">
-<div class="row first">
-<a href="/sites/default/files/app/findsites/index.html">Find Sites</a>
-</div>
-</a>
-<a href="/sites/default/files/app/addsites/index.html">
-<div class="row last">
-<a href="/sites/default/files/app/addsites/index.html">Add Sites</a>
-</div>
-</a>
-
-</fieldset>
+           <h1 class="title"><?php print $title; ?></h1>
+    
+    <?php print $breadcrumb; ?>        
+            
+		    <?php print $messages; ?>      
+    		<?php print $pre_content; ?>       
+            <?php print $content; ?>
+            <?php print $mobile_bottom; ?>
         <div id="footer"><?php if ($footer_message): ?>
           &copy; Green Map&reg; System, 2009<br/>
           Visit GreenMap.org on your desktop
-          </div>
-</form>
-
-
-
+          
+          
+        </div>
         <?php endif; ?>
         </div>
     </div>
