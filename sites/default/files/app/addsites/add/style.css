@@ -7,7 +7,7 @@ body {
     overflow-x: hidden;
     -webkit-user-select: none;
     -webkit-text-size-adjust: none;
-    height: 100%
+    height: 480px;
 }
 
 
@@ -97,12 +97,6 @@ body[orient="landscape"] > .toolbar > h1 {
 .leftButton {
     left: 6px;
     right: auto;
-}
-
-#backButton:before {
-content: "<";
-font-size: 16px;
-margin-right: 1px;
 }
 
 #backButton {
@@ -316,7 +310,6 @@ fieldset > .row:last-child {
 
 .row textarea{
 height:200px;
-width: 100%;
 border: none;
 padding: 5px 10px;
 }
@@ -426,5 +419,5 @@ text-align: center;
 
 .row select {
 margin-top:11px;
-width:200px;
+width:170px;
 }
