@@ -83,7 +83,7 @@
 <head>
   <title><?php print $head_title; ?></title>
   <?php print $head; ?>
-  <?php print $styles; // suppressing Drupal's default styles because this is the minimal version of the mobile theme with no css ?>
+
   <?php // print $scripts; // suppressing Drupal's default js because this is the minimal version of the mobile theme ?>
   <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
@@ -105,6 +105,15 @@ text-transform:uppercase;
 width:300px;
 z-index:5;
 }
+
+h1 {
+font-size:25px;
+margin: 10px;
+font-family:arial;
+font-weight:bold;
+letter-spacing:3px;
+}
+
 </style>
 
 </head>
