@@ -1,21 +1,37 @@
 <!DOCTYPE html>
-<html style="background-color: #8cc63f;">
+<html style="background:url(img/pinstripes.png);">
 <head>
-<title>Open Green Map Mobile Submit</title>
+<title>Add a Site</title>
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-<meta name="viewport" content="width=device-width">
-<link rel="stylesheet" type="text/css" href="mobile.css" media="only screen and (max-width: 480px)">
-<link rel="stylesheet" type="text/css" href="desktop.css" media="screen and (min-width: 481px)"> 
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+<link rel="apple-touch-icon" href="../iui/iui-logo-touch-icon.png" />
+<meta name="apple-touch-fullscreen" content="YES" />
+<link rel="stylesheet" type="text/css" href="style.css">
 <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="jquery.cookie.js"></script>
 <script type="text/javascript" src="main.js"></script>
+
 </head>
-<body>
-<form id="ogm_submit_login">
-	<input id="username" type="text" name="username" value="username here"><br>
-	<input id="password" type="password" value=""><br>
-	<input id="ogm_submit_login_submit" type="submit" value="login">
+<body onLoad="setTimeout(scrollTo, 100, 0, 1);">
+    <div class="toolbar">
+        <a id="backButton" class="button" href="../index.html"></a>
+    </div>
+<form id="ogm_submit_login" class="panel">
+<fieldset>
+
+	<div class="row">
+            <label>Username</label>
+	<input id="username" type="text" name="username" value="username here" class="form-text" onfocus="this.value=''">
+	</div>
+
+	<div class="row">
+	<label>Password</label>
+	<input id="password" type="password" name="password" value="password here" class="form-text" onfocus="this.value=''"> 
+	</div>
+</fieldset>	
+	<input class="whitebuton"  id="ogm_submit_login_submit" type="submit" value="login">
+
 </form>
 <form id="ogm_submit_site" style="display: none;">
 	<p>Select the map to add the site to</p>
@@ -29,8 +45,8 @@
 		<option>Retrieving countries..</option>
 	</select>
 	<p id="location">Waiting to retrieve current location</p>
-	<input id="name" type="text" value="name of site here"><br>
-	<input id="details" type="text" value="put some details here"><br>
+	<input id="name" type="text" value="name of site here" onfocus="this.value=''"><br>
+	<input id="details" type="text" value="additonal Information" onfocus="this.value=''"><br>
 	<input id="ogm_submit_site_submit" type="submit" value="submit site">
 </form>
 <div id="ogm_submit_success" style="display:none;">
