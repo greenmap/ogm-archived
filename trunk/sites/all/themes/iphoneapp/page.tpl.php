@@ -112,10 +112,11 @@ z-index:5;
 
 h1 {
 font-size:25px;
-margin: 10px;
+margin: 10px !important;
 font-family:arial;
 font-weight:bold;
 letter-spacing:3px;
+background: url(img/pinstripes.png);
 }
 
 #footer {
