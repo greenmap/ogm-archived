@@ -1,3 +1,7 @@
+<?php if(arg(1)); ?>
+<?php include('page.tpl.php') ?>
+<?php else; ?>
+
 <?php
 // $Id: page.tpl.php,v 1.14.2.6 2009/02/13 16:28:33 johnalbin Exp $
 
@@ -93,27 +97,71 @@
 body {
 padding: 0;
 }
+
+fieldset {
+background: #8cc63f !important;
+}
+
+.row a {
+text-decoration: none;
+color:#ffffff;
+font-family:arial;
+font-size:20px;
+font-weight:bold;
+letter-spacing:3px;
+text-transform:uppercase;
+}
+
+.first {
+border-bottom:1px solid #ffffff;
+}
+
+.row {
+min-height:33px;
+padding-top:13px;
+position:relative;
+text-align:center;
+width:300px;
+z-index:5;
+text-decoration: none;
+}
+
+#footer {
+font-size:0.75em;
+margin-top:100px;
+text-align:center;
+}
+
 </style>
+
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
 
-         <div class="toolbar">
-        <a id="backButton" class="button" href="/sites/default/files/findsites" style="display:block !important;">Back</a>
+    <div class="toolbar">
     </div>
-           <h1 class="title"><?php print $title; ?></h1>
-    
-    <?php print $breadcrumb; ?>        
-            
-		    <?php print $messages; ?>      
-    		<?php print $pre_content; ?>       
-            <?php print $content; ?>
-            <?php print $mobile_bottom; ?>
+              <h1 class="title">What's Green Nearby</h1>
+<form class="panel">
+<fieldset>
+<a href="/sites/default/files/app/findsites/index.html">
+<div class="row first">
+<a href="/sites/default/files/app/findsites/index.html">Find Sites</a>
+</div>
+</a>
+<a href="/sites/default/files/app/addsites/index.html">
+<div class="row last">
+<a href="/sites/default/files/app/addsites/index.html">Add Sites</a>
+</div>
+</a>
+
+</fieldset>
         <div id="footer"><?php if ($footer_message): ?>
           &copy; Green Map&reg; System, 2009<br/>
           Visit GreenMap.org on your desktop
-          
-          
-        </div>
+          </div>
+</form>
+
+
+
         <?php endif; ?>
         </div>
     </div>
@@ -121,3 +169,4 @@ padding: 0;
    
 </body>
 </html>
+<?php endif; ?>
