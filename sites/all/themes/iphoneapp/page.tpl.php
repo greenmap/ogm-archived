@@ -129,8 +129,7 @@ text-align:center;
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
 
-         <div class="toolbar">
-        <a id="backButton" class="button" href="index.html" style="display:block !important;">Back</a>
+    <div class="toolbar">
     </div>
 <form class="panel">
            <h1 class="title">What's Green Nearby</h1>
