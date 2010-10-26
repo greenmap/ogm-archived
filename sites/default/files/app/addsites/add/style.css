@@ -2,12 +2,12 @@
 body {
     margin: 0;
     font-family: Helvetica;
-    background: #FFFFFF;
     color: #000000;
     overflow-x: hidden;
     -webkit-user-select: none;
     -webkit-text-size-adjust: none;
     height: 120%;
+    max-width: 322px;
 }
 
 
@@ -261,6 +261,7 @@ body > .panel {
     -webkit-border-radius: 0;
     text-align: right;
     z-index: 5;
+    width: 300px;
 }
 
 .row input {
@@ -316,7 +317,7 @@ font-size:16px;
 height:200px;
 letter-spacing:1px;
 margin:5px 10px;
-width:292px;
+width:290px;
 }
 
 .row center {
