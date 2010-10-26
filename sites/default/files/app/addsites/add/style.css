@@ -394,3 +394,21 @@ padding: 5px 10px;
     background-image: url(loading.gif), url(selection.png),
         url(blueButton.png), url(listArrowSel.png), url(listGroup.png);
 }
+
+#ogm_submit_success {
+background:url("img/pinstripes.png") repeat scroll 0 0 transparent;
+padding-top: 20px;
+text-align: center;
+}
+
+#ogm_submit_title {
+margin: 0;
+text-align: center;
+}
+
+#ogm_submit_success a {
+color: #8cc63f;
+text-decoration: none;
+font-weight: bold;
+letter-spacing: 1px;
+}
