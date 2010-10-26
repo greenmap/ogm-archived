@@ -1,3 +1,14 @@
+body {
+    margin: 0;
+    font-family: Helvetica;
+    color: #000000;
+    overflow-x: hidden;
+    -webkit-user-select: none;
+    -webkit-text-size-adjust: none;
+    height: 120%;
+    max-width: 322px;
+}
+
 body > *[selected="true"] {
     display: block;
 }
