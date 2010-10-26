@@ -527,12 +527,17 @@ margin-right: 3px;
   h1{
 color:#8CC63F;
 font-family:arial;
-font-size:20px;
 letter-spacing:1px;
-padding-top:10px;
+padding-top:20px;
 text-transform:uppercase;
 text-align:center;
-  }
+font-size:25px;
+font-family:arial;
+font-weight:bold;
+letter-spacing:3px;
+padding-bottom: 20px;
+background: url(img/pinstripes.png);
+}
   
   h3{
   	font-size: 0.9em;
