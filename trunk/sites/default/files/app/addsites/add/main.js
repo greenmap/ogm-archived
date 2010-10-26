@@ -68,9 +68,9 @@ $(document).ready(function() {
 					// we have a position
 					ogm_submit_lat = position.coords.latitude;
 					ogm_submit_long = position.coords.longitude;
-					$('#location').html('<div id="currentlocation"><center><b>Current location:</b><br> Lat&nbsp;'+ogm_submit_lat.toFixed(6)+' Lon&nbsp;'+ogm_submit_long.toFixed(6)+'</center></div>');
+					$('#location').html('<div id="currentlocation"><center><b>Current location:</b><br> Lat&nbsp;'+ogm_submit_lat.toFixed(6)+' Lon&nbsp;'+ogm_submit_long.toFixed(6));
 					if (position.coords.accuracy !== null) {
-						$('#location').html($('#location').html()+' Accuracy&nbsp;'+position.coords.accuracy.toFixed(0)+'m');
+						$('#location').html($('#location').html()+' <br><span style="display:none;" >Accuracy&nbsp;'+position.coords.accuracy.toFixed(0)+'m</span></center></div>');
 					}
 				}, function () {
 					$('#location').html('Error retrieving current location');
