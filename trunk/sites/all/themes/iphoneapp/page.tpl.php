@@ -96,7 +96,8 @@ padding: 0;
 
 .row {
 border-bottom:1px solid #999999;
-color:#8CC63F;
+background: #8cc63f;
+color:#ffffff;
 font-family:arial;
 font-size:20px;
 font-weight:bold;
@@ -108,6 +109,7 @@ text-align:center;
 text-transform:uppercase;
 width:300px;
 z-index:5;
+text-decoration: none;
 }
 
 h1 {
