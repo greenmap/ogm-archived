@@ -1,6 +1,6 @@
-<?php if(arg(1)); ?>
+<?php if(arg(1)) { ?>
 <?php include('page.tpl.php'); ?>
-<?php else; ?>
+<?php } else { ?>
 
 <?php
 // $Id: page.tpl.php,v 1.14.2.6 2009/02/13 16:28:33 johnalbin Exp $
@@ -169,4 +169,4 @@ text-align:center;
    
 </body>
 </html>
-<?php endif; ?>
+<?php } ?>
