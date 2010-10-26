@@ -211,7 +211,7 @@ $(document).ready(function() {
 			}
 			
 			// add link to success div
-			$('#ogm_submit_success').append('<form class="panel"><div class="row"><p><a href="'+base_url+'node/'+data['#data']+'">View your your site</p></div></form>');
+			$('#ogm_submit_success').append('<form class="panel"><fieldset><div class="row"><p><a href="'+base_url+'node/'+data['#data']+'">View your your site</p></div></fieldset></form>');
 			
 			// hide site form, show success div
 			$('#ogm_submit_site').css('display', 'none');
