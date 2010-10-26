@@ -98,22 +98,25 @@ fieldset {
 background: #8cc63f !important;
 }
 
-.row a, .row span{
+.row a {
 text-decoration: none;
-}
-
-.row {
-border-bottom:1px solid #ffffff;
 color:#ffffff;
 font-family:arial;
 font-size:20px;
 font-weight:bold;
 letter-spacing:3px;
+text-transform:uppercase;
+}
+
+.first {
+border-bottom:1px solid #ffffff;
+}
+
+.row {
 min-height:33px;
 padding-top:13px;
 position:relative;
 text-align:center;
-text-transform:uppercase;
 width:300px;
 z-index:5;
 text-decoration: none;
@@ -121,15 +124,16 @@ text-decoration: none;
 
 h1 {
 font-size:25px;
-margin: 10px !important;
+margin-top: 10px !important;
 font-family:arial;
 font-weight:bold;
 letter-spacing:3px;
+margin-bottom: 40px !important;
 }
 
 #footer {
 font-size:0.75em;
-margin-top:200px;
+margin-top:100px;
 text-align:center;
 }
 
@@ -145,13 +149,13 @@ text-align:center;
 
 <fieldset>
 <a href="/sites/default/files/app/findsites/index.html">
-<div class="row">
-Find Sites
+<div class="row first">
+<a href="/sites/default/files/app/findsites/index.html">Find Sites</a>
 </div>
 </a>
 <a href="/sites/default/files/app/addsites/index.html">
-<div class="row">
-Add Sites
+<div class="row last">
+<a href="/sites/default/files/app/addsites/index.html">Add Sites</a>
 </div>
 </a>
 
