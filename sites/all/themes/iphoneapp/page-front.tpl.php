@@ -123,11 +123,6 @@ text-decoration: none;
 }
 
 h1 {
-font-size:25px;
-margin-top: 10px !important;
-font-family:arial;
-font-weight:bold;
-letter-spacing:3px;
 margin-bottom: 40px !important;
 }
 
@@ -144,9 +139,8 @@ text-align:center;
 
     <div class="toolbar">
     </div>
+              <h1 class="title">What's Green Nearby</h1>
 <form class="panel">
-           <h1 class="title">What's Green Nearby</h1>
-
 <fieldset>
 <a href="/sites/default/files/app/findsites/index.html">
 <div class="row first">
