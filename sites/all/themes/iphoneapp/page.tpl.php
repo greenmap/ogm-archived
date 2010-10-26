@@ -116,7 +116,6 @@ margin: 10px !important;
 font-family:arial;
 font-weight:bold;
 letter-spacing:3px;
-background: url(img/pinstripes.png);
 }
 
 #footer {
@@ -133,9 +132,9 @@ text-align:center;
          <div class="toolbar">
         <a id="backButton" class="button" href="index.html" style="display:block !important;">Back</a>
     </div>
-           <h1 class="title">What's Green Nearby</h1>
-    
 <form class="panel">
+           <h1 class="title">What's Green Nearby</h1>
+
 <fieldset>
 <a href="/sites/default/files/app/findsites/index.html">
 <div class="row">
