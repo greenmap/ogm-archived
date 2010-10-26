@@ -92,7 +92,6 @@
 <style type="text/css">
 body {
 padding: 0;
-height: 450px;
 }
 
 .row {
@@ -117,6 +116,12 @@ margin: 10px;
 font-family:arial;
 font-weight:bold;
 letter-spacing:3px;
+}
+
+#footer {
+font-size:0.75em;
+margin-top:245px;
+text-align:center;
 }
 
 </style>
