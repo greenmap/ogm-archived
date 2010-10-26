@@ -89,6 +89,23 @@
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
   <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
+<style type="text/css">
+.row {
+border-bottom:1px solid #999999;
+color:#8CC63F;
+font-family:arial;
+font-size:20px;
+font-weight:bold;
+letter-spacing:3px;
+min-height:33px;
+padding-top:13px;
+position:relative;
+text-align:center;
+text-transform:uppercase;
+width:300px;
+z-index:5;
+}
+</style>
 
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
@@ -110,13 +127,12 @@ Find Sites
 Add Sites
 </div>
 </a>
+
+</fieldset>
         <div id="footer"><?php if ($footer_message): ?>
           &copy; Green Map&reg; System, 2009<br/>
           Visit GreenMap.org on your desktop
-          
-          
-        </div>
-</fieldset>
+          </div>
 </form>
 
 
