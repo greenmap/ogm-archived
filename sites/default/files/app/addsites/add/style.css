@@ -429,5 +429,6 @@ text-align: center;
 
 .row select {
 margin-top:11px;
-width:170px;
+width:160px;
+margin-right: 10px;
 }
