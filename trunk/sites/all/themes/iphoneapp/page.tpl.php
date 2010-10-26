@@ -96,14 +96,24 @@
          <div class="toolbar">
         <a id="backButton" class="button" href="index.html" style="display:block !important;">Back</a>
     </div>
-           <h1 class="title"><?php print $title; ?></h1>
+           <h1 class="title">What's Green Nearby</h1>
     
-    <?php print $breadcrumb; ?>        
-            
-		    <?php print $messages; ?>      
-    		<?php print $pre_content; ?>       
-            <?php print $content; ?>
-            <?php print $mobile_bottom; ?>
+<form class="panel">
+<fieldset>
+<a href="/sites/default/files/app/findsites/index.html">
+<div class="row">
+Find Sites
+</div>
+</a>
+<a href="/sites/default/files/app/addsites/index.html">
+<div class="row">
+Add Sites
+</div>
+</a>
+</fieldset>
+</form>
+
+
         <div id="footer"><?php if ($footer_message): ?>
           &copy; Green Map&reg; System, 2009<br/>
           Visit GreenMap.org on your desktop
