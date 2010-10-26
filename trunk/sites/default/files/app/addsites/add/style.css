@@ -423,3 +423,8 @@ text-transform:lowercase;
 #ogm_submit_success .row{
 text-align: center;
 }
+
+.row select {
+margin-top:11px;
+width:200px;
+}
