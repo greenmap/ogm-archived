@@ -34,20 +34,42 @@
 
 </form>
 <form id="ogm_submit_site" style="display: none;">
-	<p>Select the map to add the site to</p>
+<fieldset>
+	<div class="row">
+            <label>Select the map to add the site to</label><br>
 	<select id="map"></select>
-	<p>Select the site's primary icon</p>
+	</div>
+	
+	<div class="row">
+	<label>Name of the site</label><br>
+	<input id="name" type="text" value="name of site here" onfocus="this.value=''"><br>
+	</div>
+	
+	<div class="row">
+	<label>Select the site's primary icon</label><br>
 	<select id="icon" disabled="disabled">
 		<option>Retrieving icons..</option>
 	</select>
-	<p>Select the country</p>
+	</div>
+	
+	<div class="row">
+	<label>Select the country</label><br>
 	<select id="country" disabled="disabled">
 		<option>Retrieving countries..</option>
 	</select>
+	</div>
+	
+	<div class="row">
 	<p id="location">Waiting to retrieve current location</p>
-	<input id="name" type="text" value="name of site here" onfocus="this.value=''"><br>
-	<input id="details" type="text" value="additonal Information" onfocus="this.value=''"><br>
-	<input id="ogm_submit_site_submit" type="submit" value="submit site">
+	</div>
+	
+	<div class="row">
+	<center><label>Details</label></center>
+	<textarea id="details" type="text" value="additonal Information" onfocus="this.value=''"></textarea><br>
+	</div>
+	
+	</fieldset>
+	<input id="ogm_submit_site_submit" type="submit" value="submit site" class="whitebuton">
 </form>
 <div id="ogm_submit_success" style="display:none;">
 	<h2 id="ogm_submit_title">Thank you for submitting!</h2>
