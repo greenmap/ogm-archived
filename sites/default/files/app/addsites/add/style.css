@@ -399,6 +399,9 @@ padding: 5px 10px;
 background:url("img/pinstripes.png") repeat scroll 0 0 transparent;
 padding-top: 20px;
 text-align: center;
+color: #ffffff;
+letter-spacing: 1px;
+text-transform: capitalize;
 }
 
 #ogm_submit_title {
