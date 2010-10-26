@@ -94,13 +94,16 @@ body {
 padding: 0;
 }
 
-.row a{
+fieldset {
+background: #8cc63f;
+}
+
+.row a, .row span{
 text-decoration: none;
 }
 
 .row {
 border-bottom:1px solid #ffffff;
-background: #8cc63f;
 color:#ffffff;
 font-family:arial;
 font-size:20px;
@@ -143,12 +146,12 @@ text-align:center;
 <fieldset>
 <a href="/sites/default/files/app/findsites/index.html">
 <div class="row">
-Find Sites
+<span>Find Sites</span>
 </div>
 </a>
 <a href="/sites/default/files/app/addsites/index.html">
 <div class="row">
-Add Sites
+<span>Add Sites</span>
 </div>
 </a>
 
