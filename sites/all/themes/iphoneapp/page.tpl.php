@@ -94,8 +94,12 @@ body {
 padding: 0;
 }
 
+.row a{
+text-decoration: none;
+}
+
 .row {
-border-bottom:1px solid #999999;
+border-bottom:1px solid #ffffff;
 background: #8cc63f;
 color:#ffffff;
 font-family:arial;
