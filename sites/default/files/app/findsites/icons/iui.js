@@ -15,6 +15,7 @@ var currentWidth = 0;
 var currentHash = location.hash;
 var hashPrefix = "#_";
 var pageHistory = [];
+var pageScrollHistory = {};
 var newPageCount = 0;
 var checkTimer;
 var hasOrientationEvent = false;
@@ -180,6 +181,16 @@ addEventListener("click", function(event)
     var link = findParent(event.target, "a");
     if (link)
     {
+    var page = iui.getSelectedPage();
+        if (page)
+        {
+            pageScrollHistory[page.id] = {
+                orientation: document.body.getAttribute("orient"),
+               top: window.pageYOffset,
+               element: link
+           };
+        }
+    
         function unselect() { link.removeAttribute("selected"); }
         
         if (link.href && link.hash && link.hash != "#")
@@ -328,7 +339,17 @@ function updatePage(page, fromPage)
         }
         else
             backButton.style.display = "none";
-    }    
+    }   
+    var pageScroll = pageScrollHistory[page.id];
+   if (pageScroll)
+   {
+        if (pageScroll.orientation == document.body.getAttribute("orient")) {
+            window.scrollTo(0, pageScroll.top);
+        } else {
+            pageScroll.element.scrollIntoView(true);
+        }
+    }
+ } 
 }
 
 function slidePages(fromPage, toPage, backwards)
