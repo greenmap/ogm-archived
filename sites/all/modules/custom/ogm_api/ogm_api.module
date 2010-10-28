@@ -489,6 +489,9 @@ function ogm_api_submit_site($map, $site, $username = NULL, $password = NULL)
 		$max_icons = 0;
 	}
 	// these are the secondary icons
+	if (!@is_array($site->secondary_icons)) {
+		$site->secondary_icons = array();
+	}
 	foreach ($site->secondary_icons as $si) {
 		// the correct way would be to probe if the icon is really not a category or genre
 		// we could also probe if the icon is unique - i.e. not already set as primary or 
