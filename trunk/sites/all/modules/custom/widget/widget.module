@@ -81,6 +81,7 @@ function widget_create_widget_page(){
        $user->og_groups[arg(1)]['is_admin']) )
   {
     drupal_access_denied();
+    exit;
   }
 
 	$path = drupal_get_path('module', 'widget');
