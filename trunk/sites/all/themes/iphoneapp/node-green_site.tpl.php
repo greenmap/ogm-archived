@@ -63,13 +63,14 @@ foreach ($node->taxonomy as $tid => $tax) {
 
 // phone
 if ($node->field_phone[0]['value']) {
-  $phone = '<a href="tel:' . check_plain($node->field_phone[0]['value']) . '">' . check_plain($node->field_phone[0]['value']) . '</a>';
+  $phone = '<a class="phone" href="tel:' . check_plain($node->field_phone[0]['value']) . '"><img class="phoneit" src="/sites/all/themes/iphoneapp/img/phoneit.gif">' . check_plain($node->field_phone[0]['value']) . '</a>';
 }
 
 // address
 $address = '';
 if ($node->locations[0]['street']) {
-  $address = check_plain($node->locations[0]['street']) . '<br />';
+  $address = '<img class="mapit" src="/sites/all/themes/iphoneapp/img/mapit.gif">';
+  $address .= check_plain($node->locations[0]['street']) . '<br />';
 }
 if ($node->locations[0]['city']) {
   $address .= check_plain($node->locations[0]['city']) . ', ';
@@ -94,9 +95,7 @@ if ($node->field_details[0]['value']) {
 
 
   <div class="title-icons">
-    <h1 class="title">
-      <?php print $title; ?>
-    </h1>  
+
     <div class="icons">
       <?php print $primary_icon . $secondary_icons; ?>
     </div>
@@ -105,12 +104,13 @@ if ($node->field_details[0]['value']) {
   
   <div class="details">
     <div class="contact">
-      <span class="phone">
+      <span class="phone" <?php if (!($address == '')){echo 'style="width:40%"';}?>>
         <?php print $phone; ?>
       </span>
-      <span class="address">
+      <span class="address" <?php if (!($phone == '')){echo 'style="width:40%;border-left:1px #999999 solid;"';}?>>
         <?php print $address; ?>
       </span>
+      <div class="clear"></div>
     </div>
     <div class="description">
       <?php print $description_full; ?>
