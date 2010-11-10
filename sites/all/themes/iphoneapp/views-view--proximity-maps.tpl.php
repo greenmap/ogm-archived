@@ -31,7 +31,6 @@
 $lat = $_GET['distance']['latitude'];
 $lon = $_GET['distance']['longitude'];
 $_SESSION['ogmmobilelocation'] = array('lat' => $lat, 'lon' => $lon);
-echo $lat; echo $lon;
 ?>
 
 <div class="view view-<?php print $css_name; ?> view-id-<?php print $name; ?> view-display-id-<?php print $display_id; ?> view-dom-id-<?php print $dom_id; ?>">
@@ -43,7 +42,6 @@ echo $lat; echo $lon;
   <?php if ($header): ?>
     <div class="view-header">
       <?php print $header; ?>
-      Please select which map you would like to suggest your site to. It will then be reviewed by the mapmaker 
     </div>
   <?php endif; ?>
 
@@ -60,7 +58,7 @@ echo $lat; echo $lon;
   <?php endif; ?>
  
  <style type="text/css">
-.tabs {
+.tabs, .standard p a {
 display: none;
 }
 </style>
