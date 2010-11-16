@@ -22,11 +22,12 @@ function widget_menu(){
     'type' => MENU_NORMAL_ITEM,
     'access arguments' => array('make widget'),
   );
-	$items['node/widget/onmapchange'] = array(
+	$items['node/widget/onmapchange/%'] = array(
     'title' => 'OnMapChange',
     'page callback' => 'widget_onMapChange',
     'type' => MENU_CALLBACK,
-    'access arguments' => array('make widget'),
+    'access arguments' => array(3),
+    'access callback' => 'widget_admin_access_callback',
   );
   $items['node/%/widget'] = array(
     'title' => 'Widget',
@@ -58,20 +59,8 @@ function widget_admin_access_callback() {
   if ( ! ('green_map' == $node->type) ) {
     return FALSE;
   }
-  if ( 'widget' == arg(2) ) {
-    // menu permissions don't really work the way I was thinking, so let the
-    // user in, and then in the function that builds the page, check again if
-    // they are the group admin
-    return TRUE;
-  }
-  if ( user_access('administer widget') ||
-       $user->og_groups[array_shift($args)]['is_admin'] )
-  {
-    return TRUE;
-  }
-  else {
-    return FALSE;
-  }
+
+  return user_access('administer widget') || og_user_roles_user_access('make widget', $nid, $user->uid);
 }
 
 function widget_create_widget_page(){
@@ -309,7 +298,8 @@ function widget_http_get_args(&$view, $nid) {
       }
     }
   }
-  $view->display_handler->options['style_options']['macro'] = "[gmap |center=$lat,$lon|zoom=$zoom |type=$type]";
+  $macro = "[gmap zoom=$zoom |center=$lat,$lon |type=$type]";
+  $view->display_handler->options['style_options']['macro'] = $macro;
   return array($lat, $lon);
 }
 
