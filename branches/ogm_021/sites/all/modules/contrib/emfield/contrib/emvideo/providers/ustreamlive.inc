@@ -1,12 +1,10 @@
 <?php
-// $Id: ustreamlive.inc,v 1.1.2.1 2009/02/04 23:29:49 aaron Exp $
+// $Id: ustreamlive.inc,v 1.1.2.4 2010/07/19 16:11:47 aaron Exp $
 
 define('EMVIDEO_USTREAMLIVE_MAIN_URL', 'http://www.ustream.tv/');
 define('EMVIDEO_USTREAMLIVE_API_INFO', 'http://developer.ustream.tv/');
 define('EMVIDEO_USTREAMLIVE_API_APPLICATION_URL', 'http://developer.ustream.tv/apps/register');
-// define('EMVIDEO_USTREAMLIVE_REST_ENDPOINT', 'http://www.ustream.tv/api2_rest');
-// define('EMVIDEO_USTREAMLIVE_COLOR1_DEFAULT', '#FFFFFF');
-// define('EMVIDEO_USTREAMLIVE_COLOR2_DEFAULT', '#CCCCCC');
+define('EMVIDEO_USTREAMLIVE_DATA_VERSION', 1);
 
 /**
  * hook emvideo_PROVIDER_info
@@ -69,13 +67,20 @@ function emvideo_ustreamlive_request($code = '', $cached = TRUE) {
 }
 
 /**
+ *  Implement hook emvideo_PROVIDER_data_version().
+ */
+function emvideo_ustreamlive_data_version() {
+  return EMVIDEO_USTREAMLIVE_DATA_VERSION;
+}
+
+/**
  * hook emfield_PROVIDER_data
  *
  * provides an array to be serialised and made available with $item elsewhere
  */
 function emvideo_ustreamlive_data($field, $item) {
   $data = emvideo_ustreamlive_request($item['value']);
-  $data['ustreamlive_api_version'] = 1;
+  $data['ustreamlive_api_version'] = $data['emvideo_data_version'] = EMVIDEO_USTREAMLIVE_DATA_VERSION;;
   return $data;
 }
 
@@ -146,13 +151,13 @@ function emvideo_ustreamlive_thumbnail($field, $item, $formatter, $node, $width,
 //   $tn = $request['THUMBNAIL_URL'][0];
 
   // if we have a large thumbnail size, then get the larger version available.
-  if ($width > 130 || $height > 97) {
-    $tn = "http://img.ustreamlive.tv/vi/$ustreamlive_id/0.jpg";
-  } else {
-    // ustreamlive offers 3 thumbnails. select one randomly.
-    $rand = rand(0, 2) + 1;
-    $tn = "http://img.ustreamlive.tv/vi/$ustreamlive_id/$rand.jpg";
-  }
+//   if ($width > 130 || $height > 97) {
+//     $tn = "http://img.ustreamlive.tv/vi/$ustreamlive_id/0.jpg";
+//   } else {
+//     // ustreamlive offers 3 thumbnails. select one randomly.
+//     $rand = rand(0, 2) + 1;
+//     $tn = "http://img.ustreamlive.tv/vi/$ustreamlive_id/$rand.jpg";
+//   }
   return $tn;
 }
 
@@ -172,7 +177,7 @@ function emvideo_ustreamlive_thumbnail($field, $item, $formatter, $node, $width,
  *  @return
  *    the html of the embedded video
  */
-function emvideo_ustreamlive_video($embed, $width, $height, $field, $item, $autoplay, $options = array()) {
+function emvideo_ustreamlive_video($embed, $width, $height, $field, $item, $node, $autoplay, $options = array()) {
 // print_r($item);
   $output = theme('emvideo_ustreamlive_flash', $embed, $width, $height, $autoplay, $options);
   return $output;
@@ -194,7 +199,7 @@ function emvideo_ustreamlive_video($embed, $width, $height, $field, $item, $auto
  *  @return
  *    the html of the embedded video
  */
-function emvideo_ustreamlive_preview($embed, $width, $height, $field, $item, $autoplay, $options = array()) {
+function emvideo_ustreamlive_preview($embed, $width, $height, $field, $item, $node, $autoplay, $options = array()) {
   $output = theme('emvideo_ustreamlive_flash', $embed, $width, $height, $autoplay, $options);
   return $output;
 }

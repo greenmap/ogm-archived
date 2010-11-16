@@ -1,5 +1,5 @@
 <?php
-// $Id: tudou.inc,v 1.1.2.5 2008/12/19 18:17:14 aaron Exp $
+// $Id: tudou.inc,v 1.1.2.7 2009/11/19 16:34:58 aaron Exp $
 
 /**
  * @file
@@ -60,7 +60,7 @@ function emvideo_tudou_extract($embed = '') {
   // <object width="400" height="300"><param name="movie" value="http://www.tudou.com/v/uprLNXyEGpc"></param><param name="allowScriptAccess" value="always"></param><param name="wmode" value="transparent"></param><embed src="http://www.tudou.com/v/uprLNXyEGpc" type="application/x-shockwave-flash" width="400" height="300" allowFullScreen="true" wmode="transparent" allowScriptAccess="always"></embed></object>
   return array(
     '@tudou\.com/programs/view/([^"\&/]+)@i',
-    '@value="http\://www\.tudou\.com/v/([^"\&/]+)@i'
+    '@tudou\.com/v/([^"\&/]+)@i',
   );
 }
 
@@ -123,7 +123,7 @@ function emvideo_tudou_thumbnail($field, $item, $formatter, $node, $width, $heig
  *  @return
  *    the html of the embedded video
  */
-function emvideo_tudou_video($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_tudou_video($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_tudou_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
@@ -144,7 +144,7 @@ function emvideo_tudou_video($embed, $width, $height, $field, $item, &$node, $au
  *  @return
  *    the html of the embedded video
  */
-function emvideo_tudou_preview($embed, $width, $height, $field, $item, &$node, $autoplay) {
+function emvideo_tudou_preview($embed, $width, $height, $field, $item, $node, $autoplay) {
   $output = theme('emvideo_tudou_flash', $embed, $width, $height, $autoplay);
   return $output;
 }
