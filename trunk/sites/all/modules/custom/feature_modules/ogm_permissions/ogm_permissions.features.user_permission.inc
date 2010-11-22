@@ -820,8 +820,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any green_area content'] = array(
     'name' => 'delete any green_area content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -829,8 +830,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any green_map content'] = array(
     'name' => 'delete any green_map content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -838,8 +840,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any green_route content'] = array(
     'name' => 'delete any green_route content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -847,8 +850,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any green_site content'] = array(
     'name' => 'delete any green_site content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -856,8 +860,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any impact content'] = array(
     'name' => 'delete any impact content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -889,8 +894,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any photo content'] = array(
     'name' => 'delete any photo content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -923,8 +929,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any testimonial content'] = array(
     'name' => 'delete any testimonial content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -932,8 +939,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any transport_direction content'] = array(
     'name' => 'delete any transport_direction content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -941,8 +949,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete any video content'] = array(
     'name' => 'delete any video content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -968,9 +977,10 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete own green_area content'] = array(
     'name' => 'delete own green_area content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'authenticated user',
-      '2' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'authenticated user',
+      '3' => 'team leader',
     ),
   );
 
@@ -988,9 +998,10 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete own green_route content'] = array(
     'name' => 'delete own green_route content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'authenticated user',
-      '2' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'authenticated user',
+      '3' => 'team leader',
     ),
   );
 
@@ -998,9 +1009,10 @@ function ogm_permissions_user_default_permissions() {
   $permissions['delete own green_site content'] = array(
     'name' => 'delete own green_site content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'authenticated user',
-      '2' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'authenticated user',
+      '3' => 'team leader',
     ),
   );
 
@@ -1110,14 +1122,6 @@ function ogm_permissions_user_default_permissions() {
     ),
   );
 
-  // Exported permission: display source code
-  $permissions['display source code'] = array(
-    'name' => 'display source code',
-    'roles' => array(
-      '0' => 'admin',
-    ),
-  );
-
   // Exported permission: download original image
   $permissions['download original image'] = array(
     'name' => 'download original image',
@@ -1154,8 +1158,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['edit any green_area content'] = array(
     'name' => 'edit any green_area content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -1172,8 +1177,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['edit any green_route content'] = array(
     'name' => 'edit any green_route content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -1181,9 +1187,10 @@ function ogm_permissions_user_default_permissions() {
   $permissions['edit any green_site content'] = array(
     'name' => 'edit any green_site content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'moderator',
-      '2' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'moderator',
+      '3' => 'team leader',
     ),
   );
 
@@ -1191,8 +1198,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['edit any impact content'] = array(
     'name' => 'edit any impact content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -1224,8 +1232,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['edit any photo content'] = array(
     'name' => 'edit any photo content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -1275,8 +1284,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['edit any video content'] = array(
     'name' => 'edit any video content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -1344,8 +1354,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['edit own green_site content'] = array(
     'name' => 'edit own green_site content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -1387,8 +1398,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['edit own photo content'] = array(
     'name' => 'edit own photo content',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -1441,14 +1453,6 @@ function ogm_permissions_user_default_permissions() {
   // Exported permission: edit own video content
   $permissions['edit own video content'] = array(
     'name' => 'edit own video content',
-    'roles' => array(
-      '0' => 'admin',
-    ),
-  );
-
-  // Exported permission: execute php code
-  $permissions['execute php code'] = array(
-    'name' => 'execute php code',
     'roles' => array(
       '0' => 'admin',
     ),
@@ -1524,8 +1528,9 @@ function ogm_permissions_user_default_permissions() {
   $permissions['make widget'] = array(
     'name' => 'make widget',
     'roles' => array(
-      '0' => 'admin',
-      '1' => 'team leader',
+      '0' => 'Team Coordinator',
+      '1' => 'admin',
+      '2' => 'team leader',
     ),
   );
 
@@ -1930,14 +1935,6 @@ function ogm_permissions_user_default_permissions() {
       '0' => 'admin',
       '1' => 'anonymous user',
       '2' => 'authenticated user',
-    ),
-  );
-
-  // Exported permission: switch users
-  $permissions['switch users'] = array(
-    'name' => 'switch users',
-    'roles' => array(
-      '0' => 'admin',
     ),
   );
 
