@@ -1,5 +1,0 @@
-; $Id$
-name = geocoding_validation
-description = geocoding test for adding the site
-package = GreenMap
-core= 6.x

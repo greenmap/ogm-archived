@@ -1,8 +1,0 @@
-; $Id: taxonomy_limit.info,v 1.1 2007/01/04 05:46:47 codexmas Exp $
-name = Taxonomy Limit
-description = Allows the restriction of the number of terms selected in a vocabulary.
-dependencies[] = taxonomy
-core = 6.x
-version = 6.x-0.1
-project = taxonomy_limit
-package = Taxonomy Limit

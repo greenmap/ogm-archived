@@ -1,7 +1,0 @@
-; $Id$
-name = Sync
-project = "sync"
-description = Synchronize user logins for Open GreenMaps and greenmap.org
-package = GreenMap
-core= 6.x
-version = "6.x-0.1"
