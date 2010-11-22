@@ -1,0 +1,5 @@
+; $Id$
+name = OGM Form Tweaks
+description = Various tweaks to form descriptions and titles not related to other custom modules
+package = GreenMap
+core = 6.x
