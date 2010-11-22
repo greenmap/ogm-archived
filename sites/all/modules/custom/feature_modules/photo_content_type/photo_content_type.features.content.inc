@@ -105,7 +105,7 @@ function photo_content_type_content_default_fields() {
       'preview_height' => '0',
       'preview_link' => '0',
       'thumbnail_width' => '100',
-      'thumbnail_height' => '0',
+      'thumbnail_height' => '180',
       'thumbnail_link' => 'node',
       'providers' => array(
         'flickr' => 'flickr',
@@ -116,7 +116,7 @@ function photo_content_type_content_default_fields() {
       'emimport' => 0,
       'label' => 'photo',
       'weight' => 0,
-      'description' => 'Your image needs to be online in a photo-sharing service. Enter the URL or Embed Code here. The photo will be displayed appropriately from this link.',
+      'description' => 'Your image needs to be online in a photo-sharing service. The following services are provided: Flickr.com (enter the URL above image) or Photobucket.com (enter the Direct Link on left). The photo will be displayed appropriately from this link. If it did not work, make sure your Flickr or Photobucket account is set in Public mode.',
       'type' => 'emimage_textfields',
       'module' => 'emimage',
     ),
