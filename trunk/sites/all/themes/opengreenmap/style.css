@@ -1155,3 +1155,7 @@ top:141px !important;
 #instruction_bubble {
 top:118px !important;
 }
+
+.view-proximity ul {
+list-style: none;
+}
