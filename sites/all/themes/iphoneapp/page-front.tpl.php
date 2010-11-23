@@ -135,7 +135,7 @@ text-align:center;
 
     <div class="toolbar">
     </div>
-              <h1 class="title">What's Green Nearby</h1>
+              <h1 class="title">What's Green Nearby?</h1>
 <form class="panel">
 <fieldset>
 <a href="/sites/default/files/app/findsites/index.html">
