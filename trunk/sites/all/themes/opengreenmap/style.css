@@ -1159,3 +1159,23 @@ top:118px !important;
 .view-proximity ul {
 list-style: none;
 }
+
+.view-proximity .views-field-vid {
+margin-right: 20px;
+}
+
+.view-proximity ul li {
+list-style: none;
+margin-bottom: 15px;
+}
+
+.view-proximity .views-field-distance {
+font-size: 13px;
+margin-left: 20px;
+color: #555555;
+}
+
+.view-proximity .views-field-title {
+padding-top: -5px;
+font-size: 18px;
+}
