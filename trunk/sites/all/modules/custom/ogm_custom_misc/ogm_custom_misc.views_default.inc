@@ -10,6 +10,7 @@ function ogm_custom_misc_views_default_views() {
       'ogm_custom_misc.views.sites_advanced_management.inc' => 'sites_advanced_management_views_default_views',
       'ogm_custom_misc.views.support_forum.inc' => 'support_forum_views_default_views',
       'ogm_custom_misc.views.testimonials.inc' => 'testimonials_views_default_views',
+      'ogm_custom_misc.views.maps_proximity.inc' => 'maps_proximity_views_default_views',
       );
 
   $views = array();
