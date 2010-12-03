@@ -51,11 +51,15 @@ body > .toolbar {
     margin: auto;
 }
 
+body .toolbar {
+    background: url(img/header.png) #6FC22A no-repeat center;
+    }
+
 body[orient="portrait"] > .toolbar {
     background: url(img/header.png) #6FC22A no-repeat;
     }
 
-body[orient="landscape"] > .toolbar {
+body[orient="landscape"] >.toolbar {
     background: url(img/header-wide.png) #6FC22A no-repeat;
     }
 
@@ -496,7 +500,7 @@ fieldset > .row:last-child, fieldset > .form-item:last-child {
 .row {
     position: relative;
     min-height: 42px;
-    border-bottom: 1px solid #ffffff;
+    border-bottom: 1px solid #999999;
     -webkit-border-radius: 0;
     text-align: right;
     z-index: 5;
