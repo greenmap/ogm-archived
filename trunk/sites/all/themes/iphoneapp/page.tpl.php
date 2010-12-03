@@ -106,6 +106,9 @@ setInterval(updateLayout, 500);
 body {
 padding: 0;
 }
+body .toolbar {
+    background: url(/sites/all/themes/iphoneapp/img/header.png) #6FC22A no-repeat;
+}
 </style>
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
