@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
 <link rel="apple-touch-icon" href="../iui/iui-logo-touch-icon.png" />
 <meta name="apple-touch-fullscreen" content="YES" />
-<link rel="stylesheet" type="text/css" href="../style.css">
 <script type="text/javascript" src="jquery-1.4.2.min.js"></script>
 <script type="text/javascript" src="json2.js"></script>
 <script type="text/javascript" src="jquery.cookie.js"></script>
@@ -15,7 +14,7 @@
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);">
     <div class="toolbar">
-        <a id="backButton" class="button" style="display:block"href="../index.html">Back</a>
+         <span id="backButton" class="button" ONCLICK="history.go(-1)" style="display:block !important;">Back</span>
     </div>
 <form id="ogm_submit_login" class="panel">
 <fieldset>
