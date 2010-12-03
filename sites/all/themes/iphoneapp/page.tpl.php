@@ -111,7 +111,7 @@ padding: 0;
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
 
          <div class="toolbar">
-        <a id="backButton" class="button" href="/sites/default/files/app/findsites/index.html" style="display:block !important;">Back</a>
+        <span id="backButton" class="button" ONCLICK="history.go(-1)" style="display:block !important;">Back</span>
     </div>
            <h1 class="title"><?php print $title; ?></h1>
     
