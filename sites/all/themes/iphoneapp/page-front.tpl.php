@@ -88,7 +88,22 @@
   <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
-  <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
+  <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script>
+  <link rel="stylesheet" media="all and (orientation:portrait)" href="portrait.css">
+<link rel="stylesheet" media="all and (orientation:landscape)" href="landscape.css">
+  <script type="text/javascript">
+ var updateLayout = function() {
+  if (window.innerWidth != currentWidth) {
+    currentWidth = window.innerWidth;
+    var orient = (currentWidth == 320) ? "profile" : "landscape";
+    document.body.setAttribute("orient", orient);
+    window.scrollTo(0, 1);
+  }
+};
+
+iPhone.DomLoad(updateLayout);
+setInterval(updateLayout, 500);
+</script>
 <style type="text/css">
 body {
 padding: 0;
@@ -118,9 +133,10 @@ min-height:33px;
 padding-top:13px;
 position:relative;
 text-align:center;
-width:300px;
+width:100% !important;
 z-index:5;
 text-decoration: none;
+background: url(img/buttonbg.png) repeat-x;
 }
 
 #footer {
