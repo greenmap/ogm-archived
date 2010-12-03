@@ -93,13 +93,27 @@
   <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
   <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
+  <script type="text/javascript" >
+ var updateLayout = function() {
+  if (window.innerWidth != currentWidth) {
+    currentWidth = window.innerWidth;
+    var orient = (currentWidth == 320) ? "portrait" : "landscape";
+    document.body.setAttribute("orient", orient);
+    window.scrollTo(0, 1);
+  }
+};
+
+iPhone.DomLoad(updateLayout);
+setInterval(updateLayout, 500);
+</script>
 <style type="text/css">
 body {
 padding: 0;
 }
 
 fieldset {
-background: #8cc63f !important;
+margin:auto;
+background: url(/sites/all/themes/iphoneapp/img/buttonbg.png) repeat #8cc63f !important;
 }
 
 .row a {
@@ -121,7 +135,7 @@ min-height:33px;
 padding-top:13px;
 position:relative;
 text-align:center;
-width:300px;
+width:100% !important;
 z-index:5;
 text-decoration: none;
 }
