@@ -49,6 +49,7 @@ body > .toolbar {
 	width: 100%;
     height: 45px;
     margin: auto;
+    background: url(img/header.png) #6FC22A no-repeat center;
 }
 
 body .toolbar {
