@@ -46,8 +46,21 @@
  *
  * @see template_preprocess()
  * @see template_preprocess_node()
- */
- 
+ */ ?>
+<script type="text/javascript">
+ var updateLayout = function() {
+  if (window.innerWidth != currentWidth) {
+    currentWidth = window.innerWidth;
+    var orient = (currentWidth == 320) ? "profile" : "landscape";
+    document.body.setAttribute("orient", orient);
+    window.scrollTo(0, 1);
+  }
+};
+
+iPhone.DomLoad(updateLayout);
+setInterval(updateLayout, 500);
+</script>
+ <?php
 $primary_term_tid = $node->primary_term->tid;
 $primary_icon = taxonomy_image_display($primary_term_tid);
 
