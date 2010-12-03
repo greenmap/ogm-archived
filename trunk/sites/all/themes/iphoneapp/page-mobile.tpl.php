@@ -145,7 +145,9 @@ font-size:0.75em;
 margin-top:100px;
 text-align:center;
 }
-
+body .toolbar {
+    background: url(/sites/all/themes/iphoneapp/img/header.png) #6FC22A no-repeat;
+}
 </style>
 
 </head>
