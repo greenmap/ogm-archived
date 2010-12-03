@@ -52,10 +52,6 @@ body > .toolbar {
     background: url(img/header.png) #6FC22A no-repeat;
     }
 
-body .toolbar {
-    background: url(img/header.png) #6FC22A no-repeat;
-}
-
 body[orient="portrait"] > .toolbar {
     background: url(/sites/all/themes/iphoneapp/img/header.png) #6FC22A no-repeat;
     }
