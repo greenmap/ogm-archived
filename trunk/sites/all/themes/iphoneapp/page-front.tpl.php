@@ -152,7 +152,7 @@ text-align:center;
 
     <div class="toolbar">
     </div>
-              <h1 class="title">What's Green Nearby?</h1>
+              <h1 class="title">What's Green Nearby?&trade;</h1>
 <form class="panel">
 <fieldset>
 <a href="/sites/default/files/app/findsites/index.html">
@@ -168,7 +168,7 @@ text-align:center;
 
 </fieldset>
         <div id="footer"><?php if ($footer_message): ?>
-          &copy; Green Map&reg; System, 2009<br/>
+          &copy; Green Map&reg; System, 2010<br/>
           Visit GreenMap.org on your desktop
           </div>
 </form>
