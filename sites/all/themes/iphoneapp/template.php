@@ -253,3 +253,35 @@ case 'green_site_node_form':
 $form['locations']['locpick']['user_latitude']['#value'] = $_SESSION['ogmmobilelocation']['lat'];
 $form['locations']['locpick']['user_longitude']['#value'] = $_SESSION['ogmmobilelocation']['lon'];
 }
+
+function mytheme_preprocess_page(&$vars, $hook) {
+  $body_classes = array();
+  $body_classes[] = 'page-' . _get_page_name($_SERVER['REQUEST_URI']);
+  $vars['body_classes'] = implode(' ', $body_classes);
+}
+
+function _get_page_name($request_uri) {
+  static $numeric_subsection = array(
+    '/node/' => 'node',
+  );
+
+  $preAlias = $request_uri;
+  $alias = substr(strrchr($preAlias, "/"), 1);
+  if (strpos($alias, '?') > -1) {
+    $alias = substr($alias, 0, strpos($alias, '?'));
+  }
+
+  $page_name = $alias;
+  if (empty($alias)) {
+    $page_name = 'start';
+  }
+  else if (is_numeric($alias)) {
+    foreach ($numeric_subsection as $section => $pn) {
+       if (strpos($preAlias, $section) > -1) {
+         $page_name = $pn;
+       }
+    }
+  }
+
+  return $page_name;
+}
