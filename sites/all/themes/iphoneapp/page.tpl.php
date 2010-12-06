@@ -112,9 +112,20 @@ body .toolbar {
 </style>
 </head>
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
-
          <div class="toolbar">
-        <span id="backButton" class="button" ONCLICK="history.go(-1)" style="display:block !important;">Back</span>
+<?php
+echo $body_classes;
+$taxstring = 'page-taxsearch';
+$taxview = strpos($body_classes, $taxstring);
+$sitesstring = 'page-mobile-list';
+$sitesview = strpos($body_classes, $sitesstring);
+$mapstring = 'maplocate';
+$mapsview = strpos($body_classes, $mapstring);
+if($mapsview === false && $sitesview === false && $taxview === false) {?>
+<span id="backButton" class="button false" ONCLICK="history.go(-1)" style="display:block!important;">Back</span>
+        <?php } else { ?>
+<span id="backButton" class="button true" ONCLICK="history.go(-2)" style="display:block!important;">Back</span>
+<?php } ?>        
     </div>
            <h1 class="title"><?php print $title; ?></h1>
     
