@@ -1031,7 +1031,6 @@ margin-bottom: 20px;
     display: block !important;
     font-family: arial;
     font-size: 19px;
-    height: 72px !important;
     letter-spacing: 1px;
     margin: auto;
     padding: 10px;
@@ -1039,8 +1038,4 @@ margin-bottom: 20px;
     top: 100px;
     width: 250px;
     min-height: 0 !important;
-}
-
-#ogm_submit_success {
-display: block !important;
 }
