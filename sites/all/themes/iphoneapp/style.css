@@ -805,6 +805,7 @@ font-weight:bold;
 letter-spacing:3px;
 padding-bottom: 20px;
 background: url(img/pinstripes.png);
+width: 290px;
 }
   
   div.messages, div.status, div.warning, div.error {
@@ -1025,4 +1026,8 @@ width:100%;
 #comments .box {
 width: 98%;
 text-align: center;
+}
+
+.menu-item-form, #edit-field-details-0-format-1-1-wrapper, #edit-field-details-0-format-2-1-wrapper, #edit-field-details-0-format-3-1-wrapper, #edit-field-details-0-format-4-1-wrapper, .collapsible p a, #edit-og-groups-wrapper, #edit-revision-wrapper,  #edit-log-wrapper, #edit-pathauto-perform-alias-wrapper, #edit-path-wrapper, .form-radios, #edit-name-wrapper, #edit-status-wrapper, #edit-promote-wrapper, #edit-sticky-wrapper, .node-form .admin, .node-form p a {
+display: none;
 }
