@@ -194,7 +194,7 @@ $handler->override_option('filters', array(
     'id' => 'private',
     'table' => 'og',
     'field' => 'private',
-    'relationship' => 'group_nid',
+    'relationship' => 'none',
   ),
 ));
 $handler->override_option('access', array(
@@ -228,6 +228,11 @@ $handler->override_option('row_options', array(
 $handler->override_option('exposed_block', TRUE);
 $handler = $view->new_display('page', 'Page', 'page_2');
 $handler->override_option('filters', array(
+  'status_extra' => array(
+    'id' => 'status_extra',
+    'table' => 'node',
+    'field' => 'status_extra',
+  ),
   'distance' => array(
     'operator' => 'mbr',
     'value' => array(
@@ -258,20 +263,6 @@ $handler->override_option('filters', array(
       'button' => 'Use default',
     ),
   ),
-  'status' => array(
-    'operator' => '=',
-    'value' => '1',
-    'group' => '0',
-    'exposed' => FALSE,
-    'expose' => array(
-      'operator' => FALSE,
-      'label' => '',
-    ),
-    'id' => 'status',
-    'table' => 'node',
-    'field' => 'status',
-    'relationship' => 'none',
-  ),
   'type' => array(
     'operator' => 'in',
     'value' => array(
@@ -290,6 +281,23 @@ $handler->override_option('filters', array(
     'override' => array(
       'button' => 'Use default',
     ),
+  ),
+  'private' => array(
+    'operator' => '=',
+    'value' => '0',
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'private',
+    'table' => 'og',
+    'field' => 'private',
+    'override' => array(
+      'button' => 'Use default',
+    ),
+    'relationship' => 'none',
   ),
 ));
 $handler->override_option('path', 'maplocate');
