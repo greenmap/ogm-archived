@@ -618,8 +618,7 @@ padding-top: 10px;
     margin: 0 0 8px 14px;
     font-size: inherit;
     font-weight: bold;
-    color: #065F2B;
-    text-shadow: rgba(255, 255, 255, 0.75) 2px 2px 0;
+    color: color:#8CC63F;
 }
 
 /************************************************************************************************/
@@ -634,15 +633,6 @@ padding-top: 10px;
 background:url("img/pinstripes.png") repeat scroll 0 0 transparent;
 padding-top: 20px;
 text-align: center;
-}
-
-#ogm_submit_title {
-color:#2E68B2;
-font-size:20px;
-letter-spacing:2px;
-margin:0;
-text-align:center;
-text-transform:uppercase;
 }
 
 #ogm_submit_success a {
@@ -801,6 +791,7 @@ font-weight:bold;
 letter-spacing:3px;
 padding-bottom: 20px;
 background: url(img/pinstripes.png);
+margin-bottom: 0;
 }
   
   div.messages, div.status, div.warning, div.error {
@@ -1021,4 +1012,33 @@ width:100%;
 #comments .box {
 width: 98%;
 text-align: center;
+}
+
+#intro-message {
+text-align: center;
+color: #8cc63f;
+margin-bottom: 20px;
+}
+
+#submit-message {
+    -moz-border-radius: 15px 15px 15px 15px;
+    border-radius: 15px;
+    background: none repeat scroll 0 0 #eeeeee;
+    border: 1px solid #888888;
+    color: #666666;
+    display: block !important;
+    font-family: arial;
+    font-size: 19px;
+    height: 72px !important;
+    letter-spacing: 1px;
+    margin: auto;
+    padding: 10px;
+    position: relative;
+    top: 100px;
+    width: 250px;
+    min-height: 0 !important;
+}
+
+#ogm_submit_success {
+display: block !important;
 }
