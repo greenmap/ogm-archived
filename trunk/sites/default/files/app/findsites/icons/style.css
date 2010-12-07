@@ -384,3 +384,22 @@ fieldset > .row:last-child {
     background-image: url(loading.gif), url(selection.png),
         url(blueButton.png), url(listArrowSel.png), url(listGroup.png);
 }
+
+#helptext {
+    -moz-border-radius: 15px 15px 15px 15px;
+    border-radius: 15px 15px 15px 15px;
+    background: none repeat scroll 0 0 #EEEEEE;
+    border: 1px solid #2E68B2;
+    color: #2868B2;
+    display: block !important;
+    font-family: arial;
+    font-size: 19px;
+    height: 72px !important;
+    letter-spacing: 1px;
+    margin: auto;
+    min-height: 0 !important;
+    padding: 10px;
+    position: relative;
+    top: 175px;
+    width: 250px;
+}
