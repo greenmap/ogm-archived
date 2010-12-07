@@ -114,7 +114,6 @@ body .toolbar {
 <body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
          <div class="toolbar">
 <?php
-echo $body_classes;
 $taxstring = 'page-taxsearch';
 $taxview = strpos($body_classes, $taxstring);
 $sitesstring = 'page-mobile-list';
