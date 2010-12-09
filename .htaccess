@@ -61,6 +61,10 @@ DirectoryIndex index.php
 # May not be needed if taxonomy_image cleans up its act.
 # http://drupal.org/node/454414
   php_flag allow_url_fopen on
+
+# mjgoins Thu Dec  2 15:11:25 EST 2010
+# for user-uploaded content:
+  php_flag upload_max_filesize 5M
 </IfModule>
 
 # Requires mod_expires to be enabled.
@@ -84,6 +88,11 @@ DirectoryIndex index.php
 # Various rewrite rules.
 <IfModule mod_rewrite.c>
   RewriteEngine on
+
+
+# mjgoins Thu Dec  2 15:29:22 EST 2010
+# see: http://drupal.org/node/540754
+  RewriteRule ^sites\/default\/files\/(user_upload\/.*)$ index.php?q=system/files/$1 [L,QSA]
 
   # If your site can be accessed both with and without the 'www.' prefix, you
   # can use one of the following settings to redirect users to your preferred
