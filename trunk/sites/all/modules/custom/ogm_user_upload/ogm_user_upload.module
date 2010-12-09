@@ -1,0 +1,16 @@
+<?php
+
+function ogm_user_upload_cron() {
+
+}
+
+function ogm_user_upload_file_download($filepath) {
+  // search for paths like 'user_upload/image.png', no leading slash
+  if ( preg_match('#^user_upload/#', $filepath) ) {
+    $sql = 'SELECT '; 
+    return NULL;
+    return -1;
+  } else {
+    return NULL;
+  }
+}
