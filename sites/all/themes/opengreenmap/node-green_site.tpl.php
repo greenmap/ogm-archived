@@ -87,23 +87,17 @@ if ($teaser) {
     </div>
 
     <div id="bubble_left">
-          <?php 
-            $image_to_show = NULL;
-            if ( $node->field_video[0]['view'] ) {
-              $image_to_show = strip_tags($node->field_video[0]['view'], '<img>'); 
-            } else if ( $node->field_image_local[0]['view'] ) {
-              $image_to_show = theme('imagefield_image', $node->field_image_local[0], '', '', array(width => 60, height => 80), FALSE);
-            } else if ( $node->field_image[0]['view'] ) {
-              $image_to_show = strip_tags($node->field_image[0]['view'], '<img>'); 
-            }
-          ?>
-      <div id="bubble_media<?php if ( ! $image_to_show ) print ' bubble_media_missing';?>">
+      <div id="bubble_media<?php if (empty($node->field_image[0]['view']) && empty($node->field_video[0]['view'])) print ' bubble_media_missing';?>">
         <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()" class="maximize" rel="4">
-          <?php 
-            if ( $image_to_show ) {
-              print $image_to_show;
-            }
-          ?>
+          <?php if (!empty($node->field_image[0]['view'])) { ?>
+            <?php $img = strip_tags($node->field_image[0]['view'], '<img>'); ?>
+            <?php print $img; // TODO better resizing ?>
+          <?php } elseif (!empty($node->field_video[0]['view'])) { ?>
+            <?php $video = strip_tags($node->field_video[0]['view'], '<img>'); ?>
+            <?php print $video; ?>
+          <?php } else {
+            // we don't print "Add your photo" for now
+          }?>
         </a>
       </div>
     </div>
