@@ -807,6 +807,7 @@ letter-spacing:3px;
 padding-bottom: 20px;
 background: url(img/pinstripes.png);
 width: 290px;
+margin: auto;
 }
   
   div.messages, div.status, div.warning, div.error {
