@@ -27,6 +27,32 @@ $handler->override_option('relationships', array(
   ),
 ));
 $handler->override_option('fields', array(
+  'nid' => array(
+    'label' => 'Nid',
+    'alter' => array(
+      'alter_text' => 0,
+      'text' => '',
+      'make_link' => 0,
+      'path' => '',
+      'link_class' => '',
+      'alt' => '',
+      'prefix' => '',
+      'suffix' => '',
+      'help' => '',
+      'trim' => 0,
+      'max_length' => '',
+      'word_boundary' => 1,
+      'ellipsis' => 1,
+      'strip_tags' => 0,
+      'html' => 0,
+    ),
+    'link_to_node' => 0,
+    'exclude' => 1,
+    'id' => 'nid',
+    'table' => 'node',
+    'field' => 'nid',
+    'relationship' => 'none',
+  ),
   'vid' => array(
     'label' => '',
     'alter' => array(
@@ -59,7 +85,7 @@ $handler->override_option('fields', array(
     'label' => '',
     'alter' => array(
       'alter_text' => 1,
-      'text' => '<a href="node/add/green-site?suggest=[vid]" alt="suggest a green site to [title]" title="suggest a green site to [title]">[title]</a>',
+      'text' => '<a href="node/add/green-site?suggest=[nid]" alt="suggest a green site to [title]" title="suggest a green site to [title]">[title]</a>',
       'make_link' => 0,
       'path' => '',
       'link_class' => '',
