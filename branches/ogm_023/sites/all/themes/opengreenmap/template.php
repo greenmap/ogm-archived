@@ -272,17 +272,3 @@ function phptemplate_menu_item($link, $has_children, $menu = '', $in_active_trai
   }
   return '<li class="'. $class .'" id="'. $css_id .'">'. $link . $menu ."</li>\n";
 }
-
-function opengreenmap_imagefield_admin_thumbnail($item = NULL) {
-  global $user;
-  if (is_null($item) || empty($item['filepath'])) {
-    return '<!-- link to default admin thumb -->';
-  } else {
-    if ( $user->uid ) {
-      $thumb_path = imagefield_file_admin_thumb_path($item);
-      return '<img src="'. file_create_url($thumb_path) .'" />';
-    } else {
-      return t('No thumbnail Available');
-    }
-  }
-}
