@@ -38,7 +38,9 @@ if(node_access('update',$node) == true && $_GET['isSimple']){
 
 <?php
 // prepare content for MAIN tab
-if($node->field_image[0]['value'] > '') {
+if ( $node->field_image_local[0]['view'] ) {
+  $media_thumb = theme('imagefield_image', $node->field_image_local[0], '', '', array(width => 100), FALSE);
+} else if($node->field_image[0]['value'] > '') {
   $image = $node->field_image;
   $image['widget']['thumbnail_width'] = '100';
 
@@ -235,6 +237,20 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
       $media = array_merge($media, $tmp);
     }
   }
+  // add user-uploaded photos
+  if ( is_array($node->field_image_local) ) {
+    $user_uploaded_images = array();
+    foreach ( $node->field_image_local as $field_image_local ) {
+      $usr = user_load(array('uid' => $field_image_local['uid']));
+      $field_image_local['author'] = theme_username($usr);
+      $field_image_local['title'] =
+        $field_image_local['data']['description'] ?
+          $field_image_local['data']['description'] :
+          $node->title;
+      $user_uploaded_images[] = $field_image_local;
+    }
+    $media = array_merge($media, $user_uploaded_images);
+  }
   // add contributed photos
   $photos_sql = 'SELECT n.nid
                  FROM {content_type_photo} ctp
@@ -367,9 +383,12 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
           } elseif ($media[$i]['type'] == 'document') {
             //<li class="multimedia_item" id="multimedia_item_1"><img src="http://img.youtube.com/vi/Mv0KCD8zxls/0.jpg" width="60"></li>
             $multimedia .= '<li class="multimedia_item" id="multimedia_item_'.$i.'"><img src="'. $media[$i]['thumb'] .'" width="60"></li>';
+          } else if ( $media[$i]['filepath'] ) { // <---- FIXME, not specific enough, but does that matter? --mjgoins
+            $multimedia .= '<li class="multimedia_item" id="multimedia_item_'.$i.'"><img src="/'. $media[$i]['filepath'] .'" width="60"></li>';
           } else {
             // DEBUG
-            $multimedia .= '<li>Error: unknown media type</li>';
+            // I see no reason to show this error message to the user --mjgoins
+            //$multimedia .= '<li>Error: unknown media type</li>';
           }
         }
       $multimedia .= '</ul>';
