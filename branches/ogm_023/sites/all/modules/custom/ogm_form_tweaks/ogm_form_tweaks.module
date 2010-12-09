@@ -44,18 +44,36 @@ function ogm_form_tweaks_form_alter(&$form, &$form_state, $form_id) {
       break;
 
     case 'green_site_node_form':
+    // dsm($form_state);
       // tweak the help text on the language selection fields for sites & maps
       $form['language']['#title'] = t('Language Settings');
       $form['language']['#description'] = t('You can choose the language for this site. If your language is not on this list, leave this blank.');
       $form['language']['#options'][''] = t('- None -');
       // Add some guidance about clicking on maps for both sites & maps
       $form['locations']['0']['#description'] = t('Click the map to set the location. If you click the wrong location on the map, just click the pin again to relocate it, or drag the pin to the correct location. This will set the latitude-longitude more accurately than entering the address.');
+      $form['locations'][0]['locpick']['user_latitude']['#value'] = $_SESSION['ogmmobilelocation']['lat'];
+      // temporarily store the mobile location and add a custom submit handler in ogm_mobile.module to do something with this
+     
+     $form['#after_build'][] = 'mobile_form_fill_in';
+     	 // dsm($form);
+      
+      $form['#submit'][] = 'ogm_mobile_locationtweak';
       break;
 
     case 'user_profile_form':
       $form['account']['roles']['#description'] = t('To learn more about the different roles, please click <a href="/faq/how-open-green-map-works/what-are-different-roles-inside-green-mapmaking-team">here</a>.');
       break;
   }
+}
+
+/**
+* Modify CCK form elements on the example node form.
+*/
+function mobile_form_fill_in($form, &$form_state) {
+  // TODO: Stuff!
+	$form['locations'][0]['locpick']['user_latitude']['#value'] = $_SESSION['ogmmobilelocation']['lat'];
+	$form['locations'][0]['locpick']['user_longitude']['#value'] = $_SESSION['ogmmobilelocation']['lon'];
+  return $form;
 }
 
 /**
