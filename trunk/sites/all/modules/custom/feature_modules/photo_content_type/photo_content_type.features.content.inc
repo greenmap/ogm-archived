@@ -60,10 +60,76 @@ function photo_content_type_content_default_fields() {
       ),
       'default_value_php' => NULL,
       'label' => 'Awaiting Approval',
-      'weight' => '12',
+      'weight' => '2',
       'description' => '',
       'type' => 'optionwidgets_select',
       'module' => 'optionwidgets',
+    ),
+  );
+
+  // Exported field: field_image_local
+  $fields['photo-field_image_local'] = array(
+    'field_name' => 'field_image_local',
+    'type_name' => 'photo',
+    'display_settings' => array(
+      'label' => array(
+        'format' => 'above',
+        'exclude' => 0,
+      ),
+      'teaser' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+      'full' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+      '4' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+      '2' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+      '3' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+      'token' => array(
+        'format' => 'image_plain',
+        'exclude' => 0,
+      ),
+    ),
+    'widget_active' => '1',
+    'type' => 'filefield',
+    'required' => '0',
+    'multiple' => '0',
+    'module' => 'filefield',
+    'active' => '1',
+    'list_field' => '0',
+    'list_default' => 1,
+    'description_field' => '1',
+    'widget' => array(
+      'file_extensions' => 'jpeg jpg gif png',
+      'file_path' => 'user_upload',
+      'progress_indicator' => 'bar',
+      'max_filesize_per_file' => '5M',
+      'max_filesize_per_node' => '50M',
+      'max_resolution' => '0',
+      'min_resolution' => '0',
+      'alt' => '',
+      'custom_alt' => 0,
+      'title' => '',
+      'custom_title' => 0,
+      'title_type' => 'textfield',
+      'default_image' => NULL,
+      'use_default_image' => 0,
+      'label' => 'User-Uploaded Image',
+      'weight' => '-1',
+      'description' => 'Please only use one of either this field or the 3rd-party image field. If you use both, the User-Uploaded image will be used.',
+      'type' => 'imagefield_widget',
+      'module' => 'imagefield',
     ),
   );
 
@@ -86,7 +152,7 @@ function photo_content_type_content_default_fields() {
     ),
     'widget_active' => '1',
     'type' => 'emimage',
-    'required' => '1',
+    'required' => '0',
     'multiple' => '0',
     'module' => 'emimage',
     'active' => '1',
@@ -111,11 +177,12 @@ function photo_content_type_content_default_fields() {
         'flickr' => 'flickr',
         'photobucket' => 'photobucket',
         'picasa' => 'picasa',
+        'custom_url' => 0,
         'slideshare' => 0,
       ),
       'emimport' => 0,
       'label' => 'photo',
-      'weight' => 0,
+      'weight' => '-2',
       'description' => 'Your image needs to be online in a photo-sharing service. The following services are provided: Flickr.com (enter the URL above image) or Photobucket.com (enter the Direct Link on left). The photo will be displayed appropriately from this link. If it did not work, make sure your Flickr or Photobucket account is set in Public mode.',
       'type' => 'emimage_textfields',
       'module' => 'emimage',
@@ -171,7 +238,7 @@ function photo_content_type_content_default_fields() {
       ),
       'default_value_php' => '',
       'label' => 'site',
-      'weight' => '10',
+      'weight' => '1',
       'description' => 'Your image needs to be online in a photo-sharing service. Enter the URL or Embed Code here. The photo will be displayed appropriately from this link.',
       'type' => 'nodereference_select',
       'module' => 'nodereference',
@@ -181,6 +248,7 @@ function photo_content_type_content_default_fields() {
   // Translatables
   // Included for use with string extractors like potx.
   t('Awaiting Approval');
+  t('User-Uploaded Image');
   t('photo');
   t('site');
 
