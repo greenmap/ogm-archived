@@ -95,7 +95,7 @@ if ($node->locations[0]['postal_code']) {
   $address .= check_plain($node->locations[0]['postal_code']);
 }
 if ($address) {
-  $address = l($address, 'http://maps.google.com/maps?q=' . $node->locations[0]['street'] . ',' . $node->locations[0]['city'] . ',' . $node->locations[0]['province_name'] . ',' . $node->locations[0]['postal_code'] .',' . $node->locations[0]['country_name'] . '&ll=' . $node->locations[0]['latitude'] . ',' . $node->locations[0]['longitude'], array('absolute' => TRUE, 'html' => TRUE));
+  $address = l($address, 'http://192.168.1.104/opengreenmap/sites/all/themes/iphoneapp/mapsframe.php?q=' . $node->locations[0]['street'] . ',' . $node->locations[0]['city'] . ',' . $node->locations[0]['province_name'] . ',' . $node->locations[0]['postal_code'] .',' . $node->locations[0]['country_name'] . '&ll=' . $node->locations[0]['latitude'] . ',' . $node->locations[0]['longitude'], array('absolute' => TRUE, 'html' => TRUE));
 }
 
 // description
