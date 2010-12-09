@@ -93,6 +93,7 @@ DirectoryIndex index.php
 # mjgoins Thu Dec  2 15:29:22 EST 2010
 # see: http://drupal.org/node/540754
   RewriteRule ^sites\/default\/files\/(user_upload\/.*)$ index.php?q=system/files/$1 [L,QSA]
+  RewriteRule ^sites\/default\/files\/(imagefield_thumbs/user_upload\/.*)$ index.php?q=system/files/$1 [L,QSA]
 
   # If your site can be accessed both with and without the 'www.' prefix, you
   # can use one of the following settings to redirect users to your preferred
