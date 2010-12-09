@@ -614,7 +614,7 @@ function green_site_content_type_content_default_fields() {
     'widget_active' => '1',
     'type' => 'filefield',
     'required' => '0',
-    'multiple' => '1',
+    'multiple' => '0',
     'module' => 'filefield',
     'active' => '1',
     'list_field' => '0',
