@@ -264,34 +264,42 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
   $result = db_query($photos_sql, $node->nid);
   while ($line = db_fetch_object($result)) {
     $medianode = node_load(array('nid' => $line->nid));
-    // make sure this is a valid image
-    if (!$medianode->field_photo[0]['provider']) {
-      continue;
+    if ( $medianode->field_image_local[0]['filename'] ) {
+      $medianode->field_image_local[0]['type'] = 'image_local';
+      $medianode->field_image_local[0]['title'] = $medianode->title;
+      $medianode->field_image_local[0]['view'] = theme('imagefield_image', $node->field_image_local[0], '', '', array(width => 100), FALSE);
+      $medianode->field_image_local[0]['view'] = str_replace('<a href=', '<a target="_blank" href=', $medianode->field_image_local[0]['view']);
+      $media = array_merge($media, $medianode->field_image_local);
+    } else {
+      // make sure this is a valid image
+      if (!$medianode->field_photo[0]['provider']) {
+        continue;
+      }
+      // don't add deleted flickr or picasa images
+      if ($medianode->field_photo[0]['provider'] == 'flickr'
+          && !$medianode->field_photo[0]['data']['owner']) {
+        continue;
+      }
+      if ($medianode->field_photo[0]['provider'] == 'picasa'
+          && !$medianode->field_photo[0]['data']['original']) {
+        continue;
+      }
+      $medianode->field_photo[0]['type'] = 'image';
+      $medianode->field_photo[0]['title'] = $medianode->title;
+      $medianode->field_photo[0]['description'] = $medianode->body;
+      if (user_access('edit any photo content')) {
+        $medianode->field_photo[0]['description'] .=
+          sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
+              $medianode->nid, $node->nid);
+      }
+      $medianode->field_photo[0]['nid'] = $medianode->nid;
+      $usr = user_load(array('uid' => $medianode->uid));
+      $medianode->field_photo[0]['author'] = theme_username($usr);
+      // HACKHACK
+      $medianode->field_photo[0]['view'] = theme('emimage_image_full', array_merge($medianode->field_photo, array('widget' => array('full_width' => 320, 'full_height' => 0))), $medianode->field_photo[0], 'image_full', $medianode);
+      $medianode->field_photo[0]['view'] = str_replace('<a href=', '<a target="_blank" href=', $medianode->field_photo[0]['view']);
+      $media = array_merge($media, $medianode->field_photo);
     }
-    // don't add deleted flickr or picasa images
-    if ($medianode->field_photo[0]['provider'] == 'flickr'
-        && !$medianode->field_photo[0]['data']['owner']) {
-      continue;
-    }
-    if ($medianode->field_photo[0]['provider'] == 'picasa'
-        && !$medianode->field_photo[0]['data']['original']) {
-      continue;
-    }
-    $medianode->field_photo[0]['type'] = 'image';
-    $medianode->field_photo[0]['title'] = $medianode->title;
-    $medianode->field_photo[0]['description'] = $medianode->body;
-    if (user_access('edit any photo content')) {
-      $medianode->field_photo[0]['description'] .=
-        sprintf('<div>[<a href="/node/%d/edit?destination=node%%2F%d" target="_blank">edit</a>]</div>',
-            $medianode->nid, $node->nid);
-    }
-    $medianode->field_photo[0]['nid'] = $medianode->nid;
-    $usr = user_load(array('uid' => $medianode->uid));
-    $medianode->field_photo[0]['author'] = theme_username($usr);
-    // HACKHACK
-    $medianode->field_photo[0]['view'] = theme('emimage_image_full', array_merge($medianode->field_photo, array('widget' => array('full_width' => 320, 'full_height' => 0))), $medianode->field_photo[0], 'image_full', $medianode);
-    $medianode->field_photo[0]['view'] = str_replace('<a href=', '<a target="_blank" href=', $medianode->field_photo[0]['view']);
-    $media = array_merge($media, $medianode->field_photo);
   }
   // add contributed documents
   $result = db_query('SELECT a.nid FROM {content_type_document} AS a, {node} AS b WHERE field_site_2_nid = %d AND a.nid = b.nid AND b.status = 1', $node->nid);
@@ -386,9 +394,7 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
           } else if ( $media[$i]['filepath'] ) { // <---- FIXME, not specific enough, but does that matter? --mjgoins
             $multimedia .= '<li class="multimedia_item" id="multimedia_item_'.$i.'"><img src="/'. $media[$i]['filepath'] .'" width="60"></li>';
           } else {
-            // DEBUG
-            // I see no reason to show this error message to the user --mjgoins
-            //$multimedia .= '<li>Error: unknown media type</li>';
+            // FIXME: Deal with this error somehow
           }
         }
       $multimedia .= '</ul>';
