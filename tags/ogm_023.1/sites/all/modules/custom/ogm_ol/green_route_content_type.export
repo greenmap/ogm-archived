@@ -1,0 +1,1823 @@
+$content['type']  = array (
+  'name' => 'Green Route',
+  'type' => 'green_route',
+  'description' => 'A green route or line contour to appear on the map',
+  'title_label' => 'Name of Route or Line',
+  'body_label' => '',
+  'min_word_count' => '0',
+  'help' => '',
+  'node_options' =>
+  array (
+    'status' => true,
+    'promote' => false,
+    'sticky' => false,
+    'revision' => false,
+  ),
+  'language_content_type' => '0',
+  'upload' => '0',
+  'forward_display' => 1,
+  'pt_vocabs' =>
+  array (
+    1 => true,
+    2 => false,
+    7 => false,
+    3 => false,
+    5 => false,
+    6 => false,
+    4 => false,
+  ),
+  'i18n_node' => '2',
+  'i18nsync_nodeapi' =>
+  array (
+    'author' => false,
+    'status' => false,
+    'promote' => false,
+    'moderate' => false,
+    'sticky' => false,
+    'revision' => false,
+    'parent' => false,
+    'taxonomy' => false,
+    'comment' => false,
+    'files' => false,
+    'field_image' => false,
+    'field_web' => false,
+    'field_email' => false,
+    'field_image_caption' => false,
+    'field_phone' => false,
+    'field_child_friendly' => false,
+    'field_line_contour' => false,
+    'field_wheelchair_accessible' => false,
+    'field_details' => false,
+    'field_appointment_needed' => false,
+    'field_video' => false,
+    'field_accessible_by_public_tran' => false,
+    'field_involved' => false,
+    'field_public_transport_directio' => false,
+    'field_name_involved' => false,
+    'field_free_entry' => false,
+    'field_video_caption' => false,
+    'field_email_involved' => false,
+    'field_entry_cost' => false,
+    'field_awaiting_approval' => false,
+    'field_volunteer_opportunities_a' => false,
+    'field_volunteer_details' => false,
+  ),
+  'old_type' => 'green_route',
+  'orig_type' => '',
+  'module' => 'node',
+  'custom' => '1',
+  'modified' => '1',
+  'locked' => '0',
+  'og_content_type_usage' => 'group_post_standard',
+  'fivestar' => 1,
+  'fivestar_stars' => '5',
+  'fivestar_labels_enable' => 1,
+  'fivestar_label_0' => 'Cancel rating',
+  'fivestar_label_1' => 'Poor',
+  'fivestar_label_2' => 'Okay',
+  'fivestar_label_3' => 'Good',
+  'fivestar_label_4' => 'Great',
+  'fivestar_label_5' => 'Awesome',
+  'fivestar_label_6' => 'Give it @star/@count',
+  'fivestar_label_7' => 'Give it @star/@count',
+  'fivestar_label_8' => 'Give it @star/@count',
+  'fivestar_label_9' => 'Give it @star/@count',
+  'fivestar_label_10' => 'Give it @star/@count',
+  'fivestar_style' => 'smart',
+  'fivestar_text' => 'average',
+  'fivestar_title' => 0,
+  'fivestar_feedback' => 1,
+  'fivestar_unvote' => 0,
+  'fivestar_position_teaser' => 'below_static',
+  'fivestar_position' => 'below',
+  'fivestar_comment' => '0',
+  'comment' => '2',
+  'comment_default_mode' => '4',
+  'comment_default_order' => '2',
+  'comment_default_per_page' => '50',
+  'comment_controls' => '3',
+  'comment_anonymous' => '2',
+  'comment_subject_field' => '0',
+  'comment_preview' => '0',
+  'comment_form_location' => '1',
+  'comment_upload' => '0',
+  'comment_upload_images' => 'none',
+);
+$content['groups']  = array (
+  0 =>
+  array (
+    'label' => 'Advanced Details',
+    'group_type' => 'standard',
+    'settings' =>
+    array (
+      'form' =>
+      array (
+        'style' => 'fieldset_collapsed',
+        'description' => 'Add as much detail as possible. Really useful, but optional',
+      ),
+      'display' =>
+      array (
+        'description' => '',
+        'teaser' =>
+        array (
+          'format' => 'f',
+          'exclude' => 'f',
+        ),
+        'full' =>
+        array (
+          'format' => 'f',
+          'exclude' => 'f',
+        ),
+        4 =>
+        array (
+          'format' => 'fieldset',
+          'exclude' => 0,
+        ),
+        2 =>
+        array (
+          'format' => 'fieldset',
+          'exclude' => 0,
+        ),
+        3 =>
+        array (
+          'format' => 'fieldset',
+          'exclude' => 0,
+        ),
+        'token' =>
+        array (
+          'format' => 'fieldset',
+          'exclude' => 0,
+        ),
+        'label' => 'above',
+      ),
+    ),
+    'weight' => '0',
+    'group_name' => 'group_advanced_details',
+  ),
+  1 =>
+  array (
+    'label' => 'Videos and Photos',
+    'group_type' => 'standard',
+    'settings' =>
+    array (
+      'form' =>
+      array (
+        'style' => 'fieldset_collapsed',
+        'description' => 'Share your photo or video of this site or add one you found that is not copyrighted. Give people a visual impression of your site to make them curious about it.
+',
+      ),
+      'display' =>
+      array (
+        'description' => '',
+        'teaser' =>
+        array (
+          'format' => 'f',
+          'exclude' => 'f',
+        ),
+        'full' =>
+        array (
+          'format' => 'f',
+          'exclude' => 'f',
+        ),
+        4 =>
+        array (
+          'format' => 'fieldset',
+          'exclude' => 0,
+        ),
+        2 =>
+        array (
+          'format' => 'fieldset',
+          'exclude' => 0,
+        ),
+        3 =>
+        array (
+          'format' => 'fieldset',
+          'exclude' => 0,
+        ),
+        'token' =>
+        array (
+          'format' => 'fieldset',
+          'exclude' => 0,
+        ),
+        'label' => 'above',
+      ),
+    ),
+    'weight' => '1',
+    'group_name' => 'group_videos_photos__audio',
+  ),
+);
+$content['fields']  = array (
+  0 =>
+  array (
+    'label' => 'Line countour',
+    'field_name' => 'field_line_contour',
+    'type' => 'geo',
+    'widget_type' => 'openlayers_wkt_widget',
+    'change' => 'Change basic information',
+    'weight' => '-3',
+    'openlayers_cck_preset_map' => 'ogm_default',
+    'openlayers_cck_show_empty_map' => 0,
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'geo' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' => NULL,
+    'group' => false,
+    'required' => 1,
+    'multiple' => '0',
+    'geo_type' => 'linestring',
+    'srid' => 4326,
+    'op' => 'Save field settings',
+    'module' => 'geo',
+    'widget_module' => 'openlayers_cck',
+    'columns' =>
+    array (
+      'geo' =>
+      array (
+        'type' => 'blob',
+        'mysql_type' => 'geometry',
+        'pgsql_type' => 'geometry',
+        'gis type' => 'linestring',
+        'description' => 'Geometry field',
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+        'exclude' => 0,
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      4 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      2 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      3 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  1 =>
+  array (
+    'label' => 'Details',
+    'field_name' => 'field_details',
+    'type' => 'text',
+    'widget_type' => 'text_textarea',
+    'change' => 'Change basic information',
+    'weight' => '-2',
+    'rows' => '8',
+    'size' => 60,
+    'description' => 'Provide as much detail as you can about the site\'s green attributes. This is the first thing users will read about the site. The first 100 characters are the most important.
+',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+        'format' => '1',
+        '_error_element' => 'default_value_widget][field_details][0][value',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_details' =>
+      array (
+        0 =>
+        array (
+          'value' => '',
+          'format' => '1',
+          '_error_element' => 'default_value_widget][field_details][0][value',
+        ),
+      ),
+    ),
+    'group' => false,
+    'required' => 1,
+    'multiple' => '0',
+    'text_processing' => '1',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'text',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+      'format' =>
+      array (
+        'type' => 'int',
+        'unsigned' => true,
+        'not null' => false,
+        'views' => false,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  2 =>
+  array (
+    'label' => 'Web Address',
+    'field_name' => 'field_web',
+    'type' => 'link',
+    'widget_type' => 'link',
+    'change' => 'Change basic information',
+    'weight' => '-8',
+    'description' => 'Remember to include "http://" at the start of the url. The link won\'t work if you don\'t include http://
+',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'url' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_web' =>
+      array (
+        0 =>
+        array (
+          'url' => '',
+        ),
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'url' => 0,
+    'title' => 'none',
+    'title_value' => '',
+    'enable_tokens' => 1,
+    'display' =>
+    array (
+      'url_cutoff' => '80',
+    ),
+    'attributes' =>
+    array (
+      'target' => '_blank',
+      'rel' => '',
+      'class' => '',
+    ),
+    'op' => 'Save field settings',
+    'module' => 'link',
+    'widget_module' => 'link',
+    'columns' =>
+    array (
+      'url' =>
+      array (
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => false,
+        'sortable' => true,
+      ),
+      'title' =>
+      array (
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => false,
+        'sortable' => true,
+      ),
+      'attributes' =>
+      array (
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => false,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  3 =>
+  array (
+    'label' => 'Site Email',
+    'field_name' => 'field_email',
+    'type' => 'email',
+    'widget_type' => 'email_textfield',
+    'change' => 'Change basic information',
+    'weight' => '-7',
+    'size' => '80',
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'email' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_email' =>
+      array (
+        0 =>
+        array (
+          'email' => '',
+        ),
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'op' => 'Save field settings',
+    'module' => 'email',
+    'widget_module' => 'email',
+    'columns' =>
+    array (
+      'email' =>
+      array (
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => false,
+        'sortable' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  4 =>
+  array (
+    'label' => 'Telephone',
+    'field_name' => 'field_phone',
+    'type' => 'text',
+    'widget_type' => 'text_textfield',
+    'change' => 'Change basic information',
+    'weight' => '-6',
+    'rows' => '1',
+    'size' => 60,
+    'description' => 'Include area code',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_phone' =>
+      array (
+        0 =>
+        array (
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_phone][0][value',
+        ),
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'text',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  5 =>
+  array (
+    'label' => 'Children Welcome',
+    'field_name' => 'field_child_friendly',
+    'type' => 'text',
+    'widget_type' => 'optionwidgets_onoff',
+    'change' => 'Change basic information',
+    'weight' => '-4',
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => 0,
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_child_friendly' =>
+      array (
+        'value' => false,
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => ' return array(
+   0 => t(\'Not child friendly\'),
+   1 => t(\'Children welcome\'),
+ );',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'optionwidgets',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  6 =>
+  array (
+    'label' => 'Wheelchair Accessible',
+    'field_name' => 'field_wheelchair_accessible',
+    'type' => 'text',
+    'widget_type' => 'optionwidgets_onoff',
+    'change' => 'Change basic information',
+    'weight' => '-3',
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => 0,
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_wheelchair_accessible' =>
+      array (
+        'value' => false,
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => ' return array(
+  0 => t(\'Not accessible\'),
+  1 => t(\'Wheelchair Accessible\'),
+ );',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'optionwidgets',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  7 =>
+  array (
+    'label' => 'Appointment Needed',
+    'field_name' => 'field_appointment_needed',
+    'type' => 'text',
+    'widget_type' => 'optionwidgets_onoff',
+    'change' => 'Change basic information',
+    'weight' => 0,
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => 0,
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_appointment_needed' =>
+      array (
+        'value' => false,
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => ' return array(
+  0 => t(\'Appointment not needed\'),
+  1 => t(\'Appointment needed\'),
+ );',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'optionwidgets',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  8 =>
+  array (
+    'label' => 'Accessible by public transport',
+    'field_name' => 'field_accessible_by_public_tran',
+    'type' => 'text',
+    'widget_type' => 'optionwidgets_onoff',
+    'change' => 'Change basic information',
+    'weight' => '1',
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => 0,
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_accessible_by_public_tran' =>
+      array (
+        'value' => false,
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => ' return array(
+   0 => t(\'Not accessible by public transport\'),
+   1 => t(\'Accessible by public transport\'),
+ );',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'optionwidgets',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  9 =>
+  array (
+    'label' => 'Public Transit Directions',
+    'field_name' => 'field_public_transport_directio',
+    'type' => 'text',
+    'widget_type' => 'text_textarea',
+    'change' => 'Change basic information',
+    'weight' => '2',
+    'rows' => '3',
+    'size' => 60,
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_public_transport_directio' =>
+      array (
+        0 =>
+        array (
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_public_transport_directio][0][value',
+        ),
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'text',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  10 =>
+  array (
+    'label' => 'Free entry',
+    'field_name' => 'field_free_entry',
+    'type' => 'text',
+    'widget_type' => 'optionwidgets_onoff',
+    'change' => 'Change basic information',
+    'weight' => '3',
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => 1,
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_free_entry' =>
+      array (
+        'value' => true,
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => ' return array(
+   0 => t(\'Not free\'),
+   1 => t(\'Free entry\'),
+ );',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'optionwidgets',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  11 =>
+  array (
+    'label' => 'Entry cost',
+    'field_name' => 'field_entry_cost',
+    'type' => 'text',
+    'widget_type' => 'text_textfield',
+    'change' => 'Change basic information',
+    'weight' => '4',
+    'rows' => '1',
+    'size' => 60,
+    'description' => 'If not free',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_entry_cost' =>
+      array (
+        0 =>
+        array (
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_entry_cost][0][value',
+        ),
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'text',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  12 =>
+  array (
+    'label' => 'Volunteer',
+    'field_name' => 'field_volunteer_opportunities_a',
+    'type' => 'text',
+    'widget_type' => 'optionwidgets_onoff',
+    'change' => 'Change basic information',
+    'weight' => '5',
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => 0,
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_volunteer_opportunities_a' =>
+      array (
+        'value' => false,
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => ' return array(
+  0 => t(\'No Volunteer Opportunities\'),
+  1 => t(\'Volunteer Opportunities are Available\'),
+ );',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'optionwidgets',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  13 =>
+  array (
+    'label' => 'Details of Volunteer Opportunities',
+    'field_name' => 'field_volunteer_details',
+    'type' => 'text',
+    'widget_type' => 'text_textarea',
+    'change' => 'Change basic information',
+    'weight' => '6',
+    'rows' => '2',
+    'size' => 60,
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_volunteer_details' =>
+      array (
+        0 =>
+        array (
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_volunteer_details][0][value',
+        ),
+      ),
+    ),
+    'group' => 'group_advanced_details',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'text',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  14 =>
+  array (
+    'label' => 'Image',
+    'field_name' => 'field_image',
+    'type' => 'emimage',
+    'widget_type' => 'emimage_textfields',
+    'change' => 'Change basic information',
+    'weight' => '-8',
+    'providers' =>
+    array (
+      1 => 1,
+      0 => 1,
+      'flickr' => false,
+      'photobucket' => false,
+      'picasa' => false,
+      'slideshare' => false,
+    ),
+    'emimport' => 0,
+    'full_width' => '320',
+    'full_height' => '0',
+    'full_link' => 'provider',
+    'preview_width' => '320',
+    'preview_height' => '0',
+    'preview_link' => 'provider',
+    'thumbnail_width' => '80',
+    'thumbnail_height' => 180,
+    'thumbnail_link' => 'node',
+    'description' => 'Your image needs to be online in a photo-sharing service. Enter the URL or Embed Code here. The photo will be displayed appropriately from this link.',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'embed' => '',
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_image' =>
+      array (
+        0 =>
+        array (
+          'embed' => '',
+          'value' => '',
+        ),
+      ),
+    ),
+    'group' => 'group_videos_photos__audio',
+    'required' => 0,
+    'multiple' => '0',
+    'op' => 'Save field settings',
+    'module' => 'emimage',
+    'widget_module' => 'emimage',
+    'columns' =>
+    array (
+      'embed' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+      ),
+      'value' =>
+      array (
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => false,
+        'sortable' => true,
+      ),
+      'provider' =>
+      array (
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => false,
+        'sortable' => true,
+      ),
+      'data' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => false,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'image_thumbnail',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  15 =>
+  array (
+    'label' => 'Image caption or credit',
+    'field_name' => 'field_image_caption',
+    'type' => 'text',
+    'widget_type' => 'text_textfield',
+    'change' => 'Change basic information',
+    'weight' => '-6',
+    'rows' => '1',
+    'size' => 60,
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_image_caption' =>
+      array (
+        0 =>
+        array (
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_image_caption][0][value',
+        ),
+      ),
+    ),
+    'group' => 'group_videos_photos__audio',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'text',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  16 =>
+  array (
+    'label' => 'Video',
+    'field_name' => 'field_video',
+    'type' => 'emvideo',
+    'widget_type' => 'emvideo_textfields',
+    'change' => 'Change basic information',
+    'weight' => 0,
+    'providers' =>
+    array (
+      1 => 1,
+      0 => 1,
+      'slideshare' => false,
+      'vimeo' => false,
+      'youtube' => false,
+      'zzz_custom_url' => false,
+    ),
+    'emimport' => 1,
+    'video_width' => '320',
+    'video_height' => '240',
+    'video_autoplay' => '',
+    'preview_width' => '320',
+    'preview_height' => '240',
+    'preview_autoplay' => '',
+    'thumbnail_width' => '80',
+    'thumbnail_height' => '60',
+    'thumbnail_default_path' => '',
+    'thumbnail_link_title' => 'See video',
+    'description' => 'Enter the URL or Embed Code here from a video-sharing service. The embedded video will be displayed appropriately from this.
+',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'embed' => '',
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_video' =>
+      array (
+        0 =>
+        array (
+          'embed' => '',
+          'value' => '',
+        ),
+      ),
+    ),
+    'group' => 'group_videos_photos__audio',
+    'required' => 0,
+    'multiple' => '0',
+    'op' => 'Save field settings',
+    'module' => 'emvideo',
+    'widget_module' => 'emvideo',
+    'columns' =>
+    array (
+      'embed' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+      ),
+      'value' =>
+      array (
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => false,
+        'sortable' => true,
+      ),
+      'provider' =>
+      array (
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => false,
+        'sortable' => true,
+      ),
+      'data' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => false,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'video_video',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'video_video',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  17 =>
+  array (
+    'label' => 'Video caption or credit',
+    'field_name' => 'field_video_caption',
+    'type' => 'text',
+    'widget_type' => 'text_textfield',
+    'change' => 'Change basic information',
+    'weight' => '3',
+    'rows' => '1',
+    'size' => 60,
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_video_caption' =>
+      array (
+        0 =>
+        array (
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_video_caption][0][value',
+        ),
+      ),
+    ),
+    'group' => 'group_videos_photos__audio',
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'text',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  18 =>
+  array (
+    'label' => 'Are You Directly Involved in the Site?',
+    'field_name' => 'field_involved',
+    'type' => 'text',
+    'widget_type' => 'optionwidgets_select',
+    'change' => 'Change basic information',
+    'weight' => '2',
+    'description' => 'Please disclose if you are directly involved in this site as a representative or owner',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => 'no',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_involved' =>
+      array (
+        'value' => 'no',
+      ),
+    ),
+    'group' => false,
+    'required' => 1,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => ' return array(
+   \'no\' => t(\'No\'),
+   \'yes\' => t(\'Yes\'),
+ );',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'optionwidgets',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  19 =>
+  array (
+    'label' => 'Contributor Name',
+    'field_name' => 'field_name_involved',
+    'type' => 'text',
+    'widget_type' => 'text_textfield',
+    'change' => 'Change basic information',
+    'weight' => '3',
+    'rows' => '1',
+    'size' => 60,
+    'description' => 'Optional - Please add your name if you are directly involved in this site as owner, coordinator, director, manager, etc. This information will not be visible to the public.',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_name_involved' =>
+      array (
+        0 =>
+        array (
+          'value' => '',
+          '_error_element' => 'default_value_widget][field_name_involved][0][value',
+        ),
+      ),
+    ),
+    'group' => false,
+    'required' => 0,
+    'multiple' => '0',
+    'text_processing' => '0',
+    'max_length' => '',
+    'allowed_values' => '',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'text',
+    'widget_module' => 'text',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => false,
+        'sortable' => true,
+        'views' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  20 =>
+  array (
+    'label' => 'Contributor Email',
+    'field_name' => 'field_email_involved',
+    'type' => 'email',
+    'widget_type' => 'email_textfield',
+    'change' => 'Change basic information',
+    'weight' => '4',
+    'size' => '60',
+    'description' => 'Optional - Please add your email address if you are directly involved in this site as owner, coordinator, director, manager, etc. This information will not be visible to the public.',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'email' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_email_involved' =>
+      array (
+        0 =>
+        array (
+          'email' => '',
+        ),
+      ),
+    ),
+    'group' => false,
+    'required' => 0,
+    'multiple' => '0',
+    'op' => 'Save field settings',
+    'module' => 'email',
+    'widget_module' => 'email',
+    'columns' =>
+    array (
+      'email' =>
+      array (
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => false,
+        'sortable' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+  21 =>
+  array (
+    'label' => 'Awaiting Approval',
+    'field_name' => 'field_awaiting_approval',
+    'type' => 'number_integer',
+    'widget_type' => 'optionwidgets_select',
+    'change' => 'Change basic information',
+    'weight' => '5',
+    'description' => '',
+    'default_value' =>
+    array (
+      0 =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'default_value_php' => '',
+    'default_value_widget' =>
+    array (
+      'field_awaiting_approval' =>
+      array (
+        'value' => '',
+      ),
+    ),
+    'group' => false,
+    'required' => 0,
+    'multiple' => '0',
+    'min' => '1',
+    'max' => '1',
+    'prefix' => '',
+    'suffix' => '',
+    'allowed_values' => '1',
+    'allowed_values_php' => '',
+    'op' => 'Save field settings',
+    'module' => 'number',
+    'widget_module' => 'optionwidgets',
+    'columns' =>
+    array (
+      'value' =>
+      array (
+        'type' => 'int',
+        'not null' => false,
+        'sortable' => true,
+      ),
+    ),
+    'display_settings' =>
+    array (
+      'label' =>
+      array (
+        'format' => 'above',
+        'exclude' => 0,
+      ),
+      'teaser' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      4 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      2 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      3 =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' =>
+      array (
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+  ),
+);
+$content['extra']  = array (
+  'title' => '-5',
+  'menu' => '-4',
+  'og_nodeapi' => '-1',
+);
