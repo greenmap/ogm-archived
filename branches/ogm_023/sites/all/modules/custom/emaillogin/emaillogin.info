@@ -1,7 +1,0 @@
-; $Id$
-name = Email Login
-project = emaillogin
-description = Allows for login with email address or username
-package = GreenMap
-core = 6.x
-version = 6.x-0.1

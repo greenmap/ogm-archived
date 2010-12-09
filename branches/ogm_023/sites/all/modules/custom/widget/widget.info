@@ -1,5 +1,0 @@
-; $Id$
-name = widget
-description = widget
-package = GreenMap
-core = 6.x

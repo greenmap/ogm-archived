@@ -1,6 +1,0 @@
-; $Id$ tom_o_t
-name = impacts
-description = Custom tweaks for the impacts content type in the infowindows
-package = GreenMap
-core= 5.x
-core = 6.x

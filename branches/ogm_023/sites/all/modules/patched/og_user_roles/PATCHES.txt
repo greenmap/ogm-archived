@@ -1,6 +1,0 @@
-
-at Thu Aug 26 14:31:34 EDT 2010
-
-mjgoins applied the patch in comment #1 in http://drupal.org/node/495062
-
-

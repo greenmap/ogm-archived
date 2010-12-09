@@ -1,5 +1,0 @@
-name = transport_direction
-description = Custom tweaks for adding transport directions
-package = GreenMap
-core= 5.x
-core = 6.x

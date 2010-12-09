@@ -1,4 +1,0 @@
-name = OGM User uploads
-description = Helper functionality for dealing with user-uploaded content
-package = GreenMap
-core=6.x
