@@ -1,0 +1,10 @@
+--- sites/all/themes/iphoneapp/style.css
++++ sites/all/themes/iphoneapp/style.css
+@@ -807,7 +807,6 @@
+ padding-bottom: 20px;
+ background: url(img/pinstripes.png);
+ width: 290px;
+-margin: auto;
+ }
+   
+   div.messages, div.status, div.warning, div.error {
