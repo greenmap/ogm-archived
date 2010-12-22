@@ -64,7 +64,7 @@ function multimedia_content_media_description($m, $name) {
   elseif ($m['type'] == 'document') {
     $ret .= '<img src="'. base_path() . path_to_theme() .'/images/pdf.png" alt="document" title="document">';
   }
-  elseif ($m['type'] == 'image' || $m['type'] == 'image_local') {
+  elseif ($m['type'] == 'image') {
     $ret .= '<img src="'. base_path() . path_to_theme() .'/images/camera.png" alt="image" title="image">';
   }
   $m['author'] = str_replace('<a href=', '<a target="_blank" href=', $m['author']);
