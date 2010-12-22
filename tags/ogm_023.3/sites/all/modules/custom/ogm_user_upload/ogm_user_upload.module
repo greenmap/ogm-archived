@@ -1,0 +1,12 @@
+<?php
+
+function ogm_user_upload_file_download($filepath) {
+  global $user;
+  // prevent anonymous users from viewing imagefield thumbnails, to discourage abuse
+  if ( preg_match('#^imagefield_thumbs/user_upload/#', $filepath) ) {
+    if ( ! $user->uid ) {
+      return -1;
+    }
+  }
+}
+
