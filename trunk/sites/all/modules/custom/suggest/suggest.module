@@ -283,10 +283,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('Show this @type to everyone. If not checked, this @type will be private and only team members of the maps selected above can see it.', array('@type' => ucwords($typename))),
       '#weight' => 2,
     );
-    $form['field_awaiting_approval'] = array(
-      '#type' => 'value',
-      '#value' => array(array('value' => 1)),
-    );
+    suggest_hide_awaiting($form, 0);
   }
   // Change "Audience" to "Select Additional Maps"
   if ( $suggest_nid ) {
