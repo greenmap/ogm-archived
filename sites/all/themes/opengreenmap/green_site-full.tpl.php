@@ -276,7 +276,7 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
       $medianode->field_image_local[0]['view'] = theme('imagefield_image', $medianode->field_image_local[0], '', '', array('width' => 300), FALSE);
       $medianode->field_image_local[0]['view'] = str_replace('<a href=', '<a target="_blank" href=', $medianode->field_image_local[0]['view']);
       $usr = user_load(array('uid' => $medianode->uid));
-      $medianode->field_photo[0]['author'] = theme_username($usr);
+      $medianode->field_image_local[0]['author'] = theme_username($usr);
       $media = array_merge($media, $medianode->field_image_local);
     } else {
       // make sure this is a valid image
@@ -400,7 +400,9 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
             //<li class="multimedia_item" id="multimedia_item_1"><img src="http://img.youtube.com/vi/Mv0KCD8zxls/0.jpg" width="60"></li>
             $multimedia .= '<li class="multimedia_item" id="multimedia_item_'.$i.'"><img src="'. $media[$i]['thumb'] .'" width="60"></li>';
           } else if ( $media[$i]['filepath'] ) { // <---- FIXME, not specific enough, but does that matter? --mjgoins
-            $multimedia .= '<li class="multimedia_item" id="multimedia_item_'.$i.'"><img src="/'. $media[$i]['filepath'] .'" width="60"></li>';
+            if ( file_exists($media[$i]['filepath']) ) { 
+              $multimedia .= '<li class="multimedia_item" id="multimedia_item_'.$i.'"><img src="/'. $media[$i]['filepath'] .'" width="60"></li>';
+            }
           } else {
             // FIXME: Deal with this error somehow
           }
