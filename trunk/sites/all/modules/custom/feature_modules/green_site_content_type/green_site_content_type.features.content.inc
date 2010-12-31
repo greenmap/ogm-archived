@@ -619,7 +619,7 @@ function green_site_content_type_content_default_fields() {
     'active' => '1',
     'list_field' => '0',
     'list_default' => 1,
-    'description_field' => '1',
+    'description_field' => '0',
     'widget' => array(
       'file_extensions' => 'jpeg jpg gif png',
       'file_path' => 'user_upload',

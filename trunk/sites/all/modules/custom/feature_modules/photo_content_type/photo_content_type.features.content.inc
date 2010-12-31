@@ -109,7 +109,7 @@ function photo_content_type_content_default_fields() {
     'active' => '1',
     'list_field' => '0',
     'list_default' => 1,
-    'description_field' => '1',
+    'description_field' => '0',
     'widget' => array(
       'file_extensions' => 'jpeg jpg gif png',
       'file_path' => 'user_upload',
@@ -127,7 +127,7 @@ function photo_content_type_content_default_fields() {
       'use_default_image' => 0,
       'label' => 'User-Uploaded Image',
       'weight' => '-1',
-      'description' => 'Please only use one of either this field or the 3rd-party image field. If you use both, the User-Uploaded image will be used.',
+      'description' => 'Add just one photo at a time, then submit. ',
       'type' => 'imagefield_widget',
       'module' => 'imagefield',
     ),
