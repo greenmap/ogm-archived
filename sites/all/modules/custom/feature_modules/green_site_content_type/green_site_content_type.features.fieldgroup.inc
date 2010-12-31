@@ -72,7 +72,9 @@ function green_site_content_type_fieldgroup_default_groups() {
     'settings' => array(
       'form' => array(
         'style' => 'fieldset_collapsed',
-        'description' => 'Share your photo or video of this site or add one you found that is not copyrighted. Give people a visual impression of your site to make them curious about it. The top field is for outside hosted services such as flickr, and below that you may upload your own image files.
+        'description' => 'Your image can be uploaded from your desktop or already online in a photo-sharing service. The following services are provided: Flickr.com (enter the URL above image) or Photobucket.com (enter the Direct Link on left). The photo will be displayed appropriately from this link. If it did not work, make sure your Flickr or Photobucket account is set in Public mode.
+Please enter only one photo on this form and then submit
+
 ',
       ),
       'display' => array(
