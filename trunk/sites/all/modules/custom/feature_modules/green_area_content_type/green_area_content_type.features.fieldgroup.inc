@@ -3,12 +3,12 @@
 /**
  * Implementation of hook_fieldgroup_default_groups().
  */
-function green_site_content_type_fieldgroup_default_groups() {
+function green_area_content_type_fieldgroup_default_groups() {
   $groups = array();
 
   // Exported group: group_advanced_details
-  $groups['green_site-group_advanced_details'] = array(
-    'type_name' => 'green_site',
+  $groups['green_area-group_advanced_details'] = array(
+    'type_name' => 'green_area',
     'group_name' => 'group_advanced_details',
     'label' => 'Advanced Details',
     'settings' => array(
@@ -17,11 +17,6 @@ function green_site_content_type_fieldgroup_default_groups() {
         'description' => 'Add as much detail as possible. Really useful, but optional',
       ),
       'display' => array(
-        'weight' => '4',
-        '4' => array(
-          'format' => 'fieldset',
-          'exclude' => 1,
-        ),
         'description' => '',
         'teaser' => array(
           'format' => 'f',
@@ -30,6 +25,10 @@ function green_site_content_type_fieldgroup_default_groups() {
         'full' => array(
           'format' => 'f',
           'exclude' => 'f',
+        ),
+        '4' => array(
+          'format' => 'fieldset',
+          'exclude' => 0,
         ),
         '2' => array(
           'format' => 'fieldset',
@@ -46,7 +45,7 @@ function green_site_content_type_fieldgroup_default_groups() {
         'label' => 'above',
       ),
     ),
-    'weight' => '4',
+    'weight' => '1',
     'group_type' => 'standard',
     'fields' => array(
       '0' => 'field_web',
@@ -65,8 +64,8 @@ function green_site_content_type_fieldgroup_default_groups() {
   );
 
   // Exported group: group_videos_photos__audio
-  $groups['green_site-group_videos_photos__audio'] = array(
-    'type_name' => 'green_site',
+  $groups['green_area-group_videos_photos__audio'] = array(
+    'type_name' => 'green_area',
     'group_name' => 'group_videos_photos__audio',
     'label' => 'Videos and Photos',
     'settings' => array(
@@ -88,7 +87,7 @@ Please enter only one photo on this form and then submit',
         ),
         '4' => array(
           'format' => 'fieldset',
-          'exclude' => 1,
+          'exclude' => 0,
         ),
         '2' => array(
           'format' => 'fieldset',
@@ -105,14 +104,13 @@ Please enter only one photo on this form and then submit',
         'label' => 'above',
       ),
     ),
-    'weight' => '5',
+    'weight' => '2',
     'group_type' => 'standard',
     'fields' => array(
       '0' => 'field_image',
-      '1' => 'field_image_local',
-      '2' => 'field_image_caption',
-      '3' => 'field_video',
-      '4' => 'field_video_caption',
+      '1' => 'field_image_caption',
+      '2' => 'field_video',
+      '3' => 'field_video_caption',
     ),
   );
 
