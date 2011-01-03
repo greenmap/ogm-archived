@@ -3,20 +3,14 @@
 /**
  * Implementation of hook_content_default_fields().
  */
-function green_site_content_type_content_default_fields() {
+function green_route_content_type_content_default_fields() {
   $fields = array();
 
   // Exported field: field_accessible_by_public_tran
-  $fields['green_site-field_accessible_by_public_tran'] = array(
+  $fields['green_route-field_accessible_by_public_tran'] = array(
     'field_name' => 'field_accessible_by_public_tran',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '1',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -58,16 +52,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_appointment_needed
-  $fields['green_site-field_appointment_needed'] = array(
+  $fields['green_route-field_appointment_needed'] = array(
     'field_name' => 'field_appointment_needed',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => 0,
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -109,16 +97,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_awaiting_approval
-  $fields['green_site-field_awaiting_approval'] = array(
+  $fields['green_route-field_awaiting_approval'] = array(
     'field_name' => 'field_awaiting_approval',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '9',
-      'parent' => '',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
         'exclude' => 0,
@@ -128,6 +110,10 @@ function green_site_content_type_content_default_fields() {
         'exclude' => 0,
       ),
       'full' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '4' => array(
         'format' => 'default',
         'exclude' => 0,
       ),
@@ -164,7 +150,7 @@ function green_site_content_type_content_default_fields() {
       ),
       'default_value_php' => NULL,
       'label' => 'Awaiting Approval',
-      'weight' => '9',
+      'weight' => '5',
       'description' => '',
       'type' => 'optionwidgets_select',
       'module' => 'optionwidgets',
@@ -172,16 +158,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_child_friendly
-  $fields['green_site-field_child_friendly'] = array(
+  $fields['green_route-field_child_friendly'] = array(
     'field_name' => 'field_child_friendly',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '-4',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -223,16 +203,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_details
-  $fields['green_site-field_details'] = array(
+  $fields['green_route-field_details'] = array(
     'field_name' => 'field_details',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => 0,
-      'parent' => '',
-      '4' => array(
-        'format' => 'plain',
-        'exclude' => 0,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -256,6 +230,8 @@ function green_site_content_type_content_default_fields() {
     'allowed_values' => '',
     'allowed_values_php' => '',
     'widget' => array(
+      'rows' => '8',
+      'size' => 60,
       'default_value' => array(
         '0' => array(
           'value' => '',
@@ -264,10 +240,8 @@ function green_site_content_type_content_default_fields() {
         ),
       ),
       'default_value_php' => NULL,
-      'rows' => '8',
-      'size' => 60,
       'label' => 'Details',
-      'weight' => 0,
+      'weight' => '-2',
       'description' => 'Provide as much detail as you can about the site\'s green attributes. This is the first thing users will read about the site. The first 100 characters are the most important. 
 ',
       'type' => 'text_textarea',
@@ -276,16 +250,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_email
-  $fields['green_site-field_email'] = array(
+  $fields['green_route-field_email'] = array(
     'field_name' => 'field_email',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '-7',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -305,13 +273,13 @@ function green_site_content_type_content_default_fields() {
     'module' => 'email',
     'active' => '1',
     'widget' => array(
+      'size' => '80',
       'default_value' => array(
         '0' => array(
           'email' => '',
         ),
       ),
-      'default_value_php' => '',
-      'size' => '80',
+      'default_value_php' => NULL,
       'link_type' => 'mailto_encrypt',
       'label' => 'Site Email',
       'weight' => '-7',
@@ -322,16 +290,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_email_involved
-  $fields['green_site-field_email_involved'] = array(
+  $fields['green_route-field_email_involved'] = array(
     'field_name' => 'field_email_involved',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '8',
-      'parent' => '',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -351,16 +313,16 @@ function green_site_content_type_content_default_fields() {
     'module' => 'email',
     'active' => '1',
     'widget' => array(
+      'size' => '60',
       'default_value' => array(
         '0' => array(
           'email' => '',
         ),
       ),
-      'default_value_php' => '',
-      'size' => '60',
+      'default_value_php' => NULL,
       'link_type' => 'mailto',
       'label' => 'Contributor Email',
-      'weight' => '8',
+      'weight' => '4',
       'description' => 'Optional - Please add your email address if you are directly involved in this site as owner, coordinator, director, manager, etc. This information will not be visible to the public.',
       'type' => 'email_textfield',
       'module' => 'email',
@@ -368,16 +330,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_entry_cost
-  $fields['green_site-field_entry_cost'] = array(
+  $fields['green_route-field_entry_cost'] = array(
     'field_name' => 'field_entry_cost',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '4',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -401,13 +357,14 @@ function green_site_content_type_content_default_fields() {
     'allowed_values' => '',
     'allowed_values_php' => '',
     'widget' => array(
+      'rows' => '1',
+      'size' => 60,
       'default_value' => array(
         '0' => array(
           'value' => '',
         ),
       ),
-      'default_value_php' => '',
-      'rows' => '1',
+      'default_value_php' => NULL,
       'label' => 'Entry cost',
       'weight' => '4',
       'description' => 'If not free',
@@ -417,16 +374,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_free_entry
-  $fields['green_site-field_free_entry'] = array(
+  $fields['green_route-field_free_entry'] = array(
     'field_name' => 'field_free_entry',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '3',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -468,16 +419,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_image
-  $fields['green_site-field_image'] = array(
+  $fields['green_route-field_image'] = array(
     'field_name' => 'field_image',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '-8',
-      'parent' => 'group_videos_photos__audio',
-      '4' => array(
-        'format' => 'image_thumbnail',
-        'exclude' => 0,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -497,13 +442,6 @@ function green_site_content_type_content_default_fields() {
     'module' => 'emimage',
     'active' => '1',
     'widget' => array(
-      'default_value' => array(
-        '0' => array(
-          'embed' => '',
-          'value' => '',
-        ),
-      ),
-      'default_value_php' => NULL,
       'full_width' => '320',
       'full_height' => '0',
       'full_link' => 'provider',
@@ -514,15 +452,22 @@ function green_site_content_type_content_default_fields() {
       'thumbnail_height' => '0',
       'thumbnail_link' => 'node',
       'providers' => array(
-        'flickr' => 'flickr',
-        'photobucket' => 'photobucket',
         'custom_url' => 0,
+        'flickr' => 0,
+        'photobucket' => 0,
         'picasa' => 0,
         'slideshare' => 0,
       ),
       'emimport' => 0,
+      'default_value' => array(
+        '0' => array(
+          'embed' => '',
+          'value' => '',
+        ),
+      ),
+      'default_value_php' => NULL,
       'label' => 'Image',
-      'weight' => '-3',
+      'weight' => '-8',
       'description' => 'Your image needs to be online in a photo-sharing service. Enter the URL or Embed Code here. The photo will be displayed appropriately from this link.',
       'type' => 'emimage_textfields',
       'module' => 'emimage',
@@ -530,16 +475,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_image_caption
-  $fields['green_site-field_image_caption'] = array(
+  $fields['green_route-field_image_caption'] = array(
     'field_name' => 'field_image_caption',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '-6',
-      'parent' => 'group_videos_photos__audio',
-      '4' => array(
-        'format' => 'plain',
-        'exclude' => 0,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -563,15 +502,16 @@ function green_site_content_type_content_default_fields() {
     'allowed_values' => '',
     'allowed_values_php' => '',
     'widget' => array(
+      'rows' => '1',
+      'size' => 60,
       'default_value' => array(
         '0' => array(
           'value' => '',
         ),
       ),
-      'default_value_php' => '',
-      'rows' => '1',
+      'default_value_php' => NULL,
       'label' => 'Image caption or credit',
-      'weight' => '-1',
+      'weight' => '-6',
       'description' => '',
       'type' => 'text_textfield',
       'module' => 'text',
@@ -579,9 +519,9 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_image_local
-  $fields['green_site-field_image_local'] = array(
+  $fields['green_route-field_image_local'] = array(
     'field_name' => 'field_image_local',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
       'label' => array(
         'format' => 'above',
@@ -637,7 +577,7 @@ function green_site_content_type_content_default_fields() {
       'default_image' => NULL,
       'use_default_image' => 0,
       'label' => 'User-Uploaded Image',
-      'weight' => '-2',
+      'weight' => '-7',
       'description' => '',
       'type' => 'imagefield_widget',
       'module' => 'imagefield',
@@ -645,16 +585,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_involved
-  $fields['green_site-field_involved'] = array(
+  $fields['green_route-field_involved'] = array(
     'field_name' => 'field_involved',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '6',
-      'parent' => '',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -688,24 +622,77 @@ function green_site_content_type_content_default_fields() {
       ),
       'default_value_php' => NULL,
       'label' => 'Are You Directly Involved in the Site?',
-      'weight' => '6',
+      'weight' => '2',
       'description' => 'Please disclose if you are directly involved in this site as a representative or owner',
       'type' => 'optionwidgets_select',
       'module' => 'optionwidgets',
     ),
   );
 
-  // Exported field: field_name_involved
-  $fields['green_site-field_name_involved'] = array(
-    'field_name' => 'field_name_involved',
-    'type_name' => 'green_site',
+  // Exported field: field_line_contour
+  $fields['green_route-field_line_contour'] = array(
+    'field_name' => 'field_line_contour',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '7',
-      'parent' => '',
+      'label' => array(
+        'format' => 'above',
+        'exclude' => 0,
+      ),
+      'teaser' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'full' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
       '4' => array(
         'format' => 'default',
         'exclude' => 0,
       ),
+      '2' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      '3' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+      'token' => array(
+        'format' => 'default',
+        'exclude' => 0,
+      ),
+    ),
+    'widget_active' => '1',
+    'type' => 'geo',
+    'required' => '1',
+    'multiple' => '0',
+    'module' => 'geo',
+    'active' => '1',
+    'srid' => 4326,
+    'geo_type' => 'linestring',
+    'widget' => array(
+      'openlayers_cck_preset_map' => 'ogm_default',
+      'openlayers_cck_show_empty_map' => 0,
+      'default_value' => array(
+        '0' => array(
+          'geo' => '',
+        ),
+      ),
+      'default_value_php' => NULL,
+      'label' => 'Line countour',
+      'weight' => '-3',
+      'description' => '',
+      'type' => 'openlayers_wkt_widget',
+      'module' => 'openlayers_cck',
+    ),
+  );
+
+  // Exported field: field_name_involved
+  $fields['green_route-field_name_involved'] = array(
+    'field_name' => 'field_name_involved',
+    'type_name' => 'green_route',
+    'display_settings' => array(
       'label' => array(
         'format' => 'above',
       ),
@@ -729,15 +716,16 @@ function green_site_content_type_content_default_fields() {
     'allowed_values' => '',
     'allowed_values_php' => '',
     'widget' => array(
+      'rows' => '1',
+      'size' => 60,
       'default_value' => array(
         '0' => array(
           'value' => '',
         ),
       ),
-      'default_value_php' => '',
-      'rows' => '1',
+      'default_value_php' => NULL,
       'label' => 'Contributor Name',
-      'weight' => '7',
+      'weight' => '3',
       'description' => 'Optional - Please add your name if you are directly involved in this site as owner, coordinator, director, manager, etc. This information will not be visible to the public.',
       'type' => 'text_textfield',
       'module' => 'text',
@@ -745,16 +733,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_phone
-  $fields['green_site-field_phone'] = array(
+  $fields['green_route-field_phone'] = array(
     'field_name' => 'field_phone',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '-6',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -778,13 +760,14 @@ function green_site_content_type_content_default_fields() {
     'allowed_values' => '',
     'allowed_values_php' => '',
     'widget' => array(
+      'rows' => '1',
+      'size' => 60,
       'default_value' => array(
         '0' => array(
           'value' => '',
         ),
       ),
-      'default_value_php' => '',
-      'rows' => '1',
+      'default_value_php' => NULL,
       'label' => 'Telephone',
       'weight' => '-6',
       'description' => 'Include area code',
@@ -794,16 +777,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_public_transport_directio
-  $fields['green_site-field_public_transport_directio'] = array(
+  $fields['green_route-field_public_transport_directio'] = array(
     'field_name' => 'field_public_transport_directio',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '2',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -827,13 +804,14 @@ function green_site_content_type_content_default_fields() {
     'allowed_values' => '',
     'allowed_values_php' => '',
     'widget' => array(
+      'rows' => '3',
+      'size' => 60,
       'default_value' => array(
         '0' => array(
           'value' => '',
         ),
       ),
-      'default_value_php' => '',
-      'rows' => '3',
+      'default_value_php' => NULL,
       'label' => 'Public Transit Directions',
       'weight' => '2',
       'description' => '',
@@ -843,16 +821,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_video
-  $fields['green_site-field_video'] = array(
+  $fields['green_route-field_video'] = array(
     'field_name' => 'field_video',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => 0,
-      'parent' => 'group_videos_photos__audio',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -872,6 +844,25 @@ function green_site_content_type_content_default_fields() {
     'module' => 'emvideo',
     'active' => '1',
     'widget' => array(
+      'video_width' => '320',
+      'video_height' => '240',
+      'video_autoplay' => '',
+      'preview_width' => '320',
+      'preview_height' => '240',
+      'preview_autoplay' => '',
+      'thumbnail_width' => '80',
+      'thumbnail_height' => '60',
+      'thumbnail_default_path' => '',
+      'thumbnail_link_title' => 'See video',
+      'providers' => array(
+        '1' => 1,
+        '0' => 1,
+        'slideshare' => FALSE,
+        'vimeo' => FALSE,
+        'youtube' => FALSE,
+        'zzz_custom_url' => FALSE,
+      ),
+      'emimport' => 1,
       'default_value' => array(
         '0' => array(
           'embed' => '',
@@ -879,32 +870,8 @@ function green_site_content_type_content_default_fields() {
         ),
       ),
       'default_value_php' => NULL,
-      'video_width' => '320',
-      'video_height' => '240',
-      'video_autoplay' => 0,
-      'preview_width' => '320',
-      'preview_height' => '240',
-      'preview_autoplay' => 0,
-      'thumbnail_width' => '80',
-      'thumbnail_height' => '60',
-      'thumbnail_default_path' => '',
-      'providers' => array(
-        'bliptv' => 'bliptv',
-        'google' => 'google',
-        'jumpcut' => 'jumpcut',
-        'livevideo' => 'livevideo',
-        'metacafe' => 'metacafe',
-        'myspace' => 'myspace',
-        'revver' => 'revver',
-        'sevenload' => 'sevenload',
-        'youtube' => 'youtube',
-        'slideshare' => 0,
-        'zzz_custom_url' => 0,
-      ),
-      'emimport' => 1,
-      'thumbnail_link_title' => 'See video',
       'label' => 'Video',
-      'weight' => 0,
+      'weight' => '-5',
       'description' => 'Enter the URL or Embed Code here from a video-sharing service. The embedded video will be displayed appropriately from this.
 ',
       'type' => 'emvideo_textfields',
@@ -913,16 +880,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_video_caption
-  $fields['green_site-field_video_caption'] = array(
+  $fields['green_route-field_video_caption'] = array(
     'field_name' => 'field_video_caption',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '3',
-      'parent' => 'group_videos_photos__audio',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -946,15 +907,16 @@ function green_site_content_type_content_default_fields() {
     'allowed_values' => '',
     'allowed_values_php' => '',
     'widget' => array(
+      'rows' => '1',
+      'size' => 60,
       'default_value' => array(
         '0' => array(
           'value' => '',
         ),
       ),
-      'default_value_php' => '',
-      'rows' => '1',
+      'default_value_php' => NULL,
       'label' => 'Video caption or credit',
-      'weight' => '1',
+      'weight' => '-4',
       'description' => '',
       'type' => 'text_textfield',
       'module' => 'text',
@@ -962,16 +924,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_volunteer_details
-  $fields['green_site-field_volunteer_details'] = array(
+  $fields['green_route-field_volunteer_details'] = array(
     'field_name' => 'field_volunteer_details',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '6',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -995,13 +951,14 @@ function green_site_content_type_content_default_fields() {
     'allowed_values' => '',
     'allowed_values_php' => '',
     'widget' => array(
+      'rows' => '2',
+      'size' => 60,
       'default_value' => array(
         '0' => array(
           'value' => '',
         ),
       ),
-      'default_value_php' => '',
-      'rows' => '2',
+      'default_value_php' => NULL,
       'label' => 'Details of Volunteer Opportunities',
       'weight' => '6',
       'description' => '',
@@ -1011,16 +968,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_volunteer_opportunities_a
-  $fields['green_site-field_volunteer_opportunities_a'] = array(
+  $fields['green_route-field_volunteer_opportunities_a'] = array(
     'field_name' => 'field_volunteer_opportunities_a',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '5',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -1062,16 +1013,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_web
-  $fields['green_site-field_web'] = array(
+  $fields['green_route-field_web'] = array(
     'field_name' => 'field_web',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '-8',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 0,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -1119,16 +1064,10 @@ function green_site_content_type_content_default_fields() {
   );
 
   // Exported field: field_wheelchair_accessible
-  $fields['green_site-field_wheelchair_accessible'] = array(
+  $fields['green_route-field_wheelchair_accessible'] = array(
     'field_name' => 'field_wheelchair_accessible',
-    'type_name' => 'green_site',
+    'type_name' => 'green_route',
     'display_settings' => array(
-      'weight' => '-3',
-      'parent' => 'group_advanced_details',
-      '4' => array(
-        'format' => 'default',
-        'exclude' => 1,
-      ),
       'label' => array(
         'format' => 'above',
       ),
@@ -1184,6 +1123,7 @@ function green_site_content_type_content_default_fields() {
   t('Free entry');
   t('Image');
   t('Image caption or credit');
+  t('Line countour');
   t('Public Transit Directions');
   t('Site Email');
   t('Telephone');

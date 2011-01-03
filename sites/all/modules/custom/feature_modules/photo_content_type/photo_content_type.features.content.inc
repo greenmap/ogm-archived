@@ -171,18 +171,18 @@ function photo_content_type_content_default_fields() {
       'preview_height' => '0',
       'preview_link' => '0',
       'thumbnail_width' => '100',
-      'thumbnail_height' => '180',
+      'thumbnail_height' => '0',
       'thumbnail_link' => 'node',
       'providers' => array(
         'flickr' => 'flickr',
         'photobucket' => 'photobucket',
-        'picasa' => 'picasa',
         'custom_url' => 0,
+        'picasa' => 0,
         'slideshare' => 0,
       ),
       'emimport' => 0,
-      'label' => 'photo',
-      'weight' => '-2',
+      'label' => '3rd Party-Hosted Photo (e.g. Flickr)',
+      'weight' => 0,
       'description' => 'Your image needs to be online in a photo-sharing service. The following services are provided: Flickr.com (enter the URL above image) or Photobucket.com (enter the Direct Link on left). The photo will be displayed appropriately from this link. If it did not work, make sure your Flickr or Photobucket account is set in Public mode.',
       'type' => 'emimage_textfields',
       'module' => 'emimage',
@@ -213,18 +213,23 @@ function photo_content_type_content_default_fields() {
     'module' => 'nodereference',
     'active' => '1',
     'referenceable_types' => array(
+      'green_area' => 'green_area',
+      'green_route' => 'green_route',
       'green_site' => 'green_site',
       'admin_message' => 0,
+      'document' => 0,
       'faq' => 0,
       'green_map' => 0,
-      'poly' => 0,
       'impact' => 0,
       'mapmaker_profile' => 0,
+      'mass_contact' => 0,
       'page' => 0,
       'photo' => 0,
       'poll' => 0,
       'story' => 0,
+      'support_forum_issue' => 0,
       'testimonial' => 0,
+      'transport_direction' => 0,
       'video' => 0,
     ),
     'advanced_view' => '--',
@@ -232,11 +237,11 @@ function photo_content_type_content_default_fields() {
     'widget' => array(
       'default_value' => array(
         '0' => array(
-          'nid' => '0',
-          'error_field' => 'field_site_1][nids',
+          'nid' => '',
         ),
       ),
-      'default_value_php' => '',
+      'default_value_php' => NULL,
+      'autocomplete_match' => 'contains',
       'label' => 'site',
       'weight' => '1',
       'description' => 'Your image needs to be online in a photo-sharing service. Enter the URL or Embed Code here. The photo will be displayed appropriately from this link.',
@@ -247,9 +252,9 @@ function photo_content_type_content_default_fields() {
 
   // Translatables
   // Included for use with string extractors like potx.
+  t('3rd Party-Hosted Photo (e.g. Flickr)');
   t('Awaiting Approval');
   t('User-Uploaded Image');
-  t('photo');
   t('site');
 
   return $fields;
