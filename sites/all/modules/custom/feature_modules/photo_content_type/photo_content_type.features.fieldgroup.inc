@@ -14,7 +14,8 @@ function photo_content_type_fieldgroup_default_groups() {
     'settings' => array(
       'form' => array(
         'style' => 'fieldset',
-        'description' => 'Your image can be uploaded from your desktop or already online in a photo-sharing service. The following services are provided: Flickr.com (enter the URL above image) or Photobucket.com (enter the Direct Link on left). The photo will be displayed appropriately from this link. If it did not work, make sure your Flickr or Photobucket account is set in Public mode.
+        'description' => 'Your image can be uploaded from your desktop or already online in a photo-sharing service. The following services are provided: Flickr.com (enter the URL above image) or Photobucket.com (enter the Direct Link on left). The photo will be displayed appropriately from this link. If it did not work, make sure your Flickr or Photobucket account is set in Public mode.'
+
       ),
       'display' => array(
         'description' => '',
