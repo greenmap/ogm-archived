@@ -174,8 +174,9 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     $suggest_nid = (int) $_GET['suggest'];
   }
 
-  if ( $form['field_photo'] ) {
+  if ( $form['group_photos']['field_photo'] ) {
     $form['field_photo']['#weight'] = -1;
+    $form['og_nodeapi']['#collapsed'] = TRUE;
   }
 
   $user_is_member = og_is_group_member($suggest_nid, TRUE, $user->uid);
@@ -283,7 +284,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
       '#description' => t('Show this @type to everyone. If not checked, this @type will be private and only team members of the maps selected above can see it.', array('@type' => ucwords($typename))),
       '#weight' => 2,
     );
-    suggest_hide_awaiting($form, 0);
+    suggest_hide_awaiting($form, NULL);
   }
   // Change "Audience" to "Select Additional Maps"
   if ( $suggest_nid ) {
