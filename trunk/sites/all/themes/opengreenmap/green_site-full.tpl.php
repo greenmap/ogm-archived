@@ -361,7 +361,9 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
   }
   else {
     // randomize array
+    $first_media_item = array_shift($media);
     shuffle($media);
+    array_unshift($media, $first_media_item);
     // display first multimedia object
     $multimedia .= $media[0]['view'];
   }
