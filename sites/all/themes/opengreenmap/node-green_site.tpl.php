@@ -89,13 +89,15 @@ if ($teaser) {
     <div id="bubble_left">
           <?php 
             $image_to_show = NULL;
-            if ( $node->field_video[0]['view'] ) {
-              $image_to_show = strip_tags($node->field_video[0]['view'], '<img>'); 
-            } else if ( $node->field_image_local[0]['view'] ) {
+            if ( $node->field_image_local[0]['view'] ) {
               $image_to_show = theme('imagefield_image', $node->field_image_local[0], '', '', array(width => 60, height => 80), FALSE);
             } else if ( $node->field_image[0]['view'] ) {
               $image_to_show = strip_tags($node->field_image[0]['view'], '<img>'); 
-            }
+            } 
+            // this doesn't work, so I'm disabling it:    --mjgoins
+              //else if ( $node->field_video[0]['view'] ) {
+              //$image_to_show = strip_tags($node->field_video[0]['view'], '<img>'); 
+              //}
           ?>
       <div id="bubble_media<?php if ( ! $image_to_show ) print ' bubble_media_missing';?>">
         <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()" class="maximize" rel="4">
