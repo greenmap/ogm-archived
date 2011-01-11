@@ -1,0 +1,314 @@
+<?php
+// $Id: suggest.module,v 0.1 2008/06/23 16:39:43 tom_o_t Exp $
+/**
+ * @file
+ * This module controls the Suggest a site tab on a greenmap
+ */
+
+/**
+* hook_perm
+* permission to suggest a site
+*/
+function suggest_perm() {
+  return array(
+    'suggest a site'
+  );
+}
+
+/**
+* hook_menu
+* create 'suggest' tabs for appropriate users
+*/
+function suggest_menu() {
+  $items['node/%suggest_node/suggest-green-site'] = array(
+    'title' => 'Suggest a site',
+    'access callback' => 'suggest_green_site_access_member_callback',
+    'access arguments' => array(1),
+    'page callback' => 'suggest_add',
+    'page arguments'=> array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 8,
+  );
+
+  $items['node/%suggest_node/suggest-photo'] = array(
+    'title' => 'Suggest a site',
+    'access callback' => 'suggest_photo_access_member_callback',
+    'access arguments' => array(1),
+    'page callback' => 'suggest_add',
+    'page arguments'=> array(1),
+    'type' => MENU_CALLBACK,
+    'weight' => 8,
+  );
+  return $items;
+}
+
+function suggest_node_load($nid) {
+  $map_type = 'green_map';
+  if ( is_numeric($nid) && ($node = node_load($nid)) && $node->type == $map_type )
+  {
+    return $node->nid;
+  }
+  else  {
+    return FALSE;
+  }
+}
+
+function suggest_green_site_access_member_callback($nid) {
+  return suggest_access_member_callback($nid, 'green-site');
+}
+
+function suggest_photo_access_member_callback($nid) {
+  return suggest_access_member_callback($nid, 'photo');
+}
+
+function suggest_access_member_callback($nid, $type = 'green-site') {
+// FIXME: can this use the standard node access API instead of looking for
+// specific permission strings?
+  global $user;
+  $group = node_load($nid);
+  if ( og_is_group_member($nid) ) {
+    return FALSE;
+  }
+  else if ( $group->og_selective > 1 ) {
+    return FALSE;
+  }
+  else {
+    switch ( $type ) {
+      case 'green-site':
+          return user_access('access content') &&
+            user_access('create green_site content') &&
+            user_access('suggest a site');
+        break;
+      case 'photo':
+          return user_access('access content') &&
+            user_access('create photo content');
+        break;
+      default:
+          return FALSE;
+        break;
+    }
+    return user_access('access content') &&
+      user_access('create green_site content') &&
+      user_access('suggest a site');
+  }
+}
+
+function suggest_add($gid) {
+  $dest = drupal_get_path_alias("node/$gid");
+  drupal_goto('node/add/green-site', 'suggest='. $gid .'&destination='. $dest);
+}
+
+
+/**
+*hook_nodeapi
+* use this to do the alerting for map admins
+*
+*/
+function suggest_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  switch ( $node->type ) {
+    case 'green_site': 
+        switch ($op) {
+          case 'presave':
+            if ( ($node->field_awaiting_approval[0]['value'] > 0) &&
+                 suggest_is_public($node) ) {
+              $node->field_awaiting_approval[0]['value'] = NULL;
+            }
+            break;
+          case 'insert' : // fall through to 'update'
+          case 'update' :
+            if ($node->field_awaiting_approval[0]["value"] > 0) {
+              // tell the suggester that this has been submitted
+              drupal_set_message(t('This suggestion has been submitted and is awaiting approval from the mapmaker'));
+            }
+            // if we're making a suggested site public, remove the suggested map field
+            break;
+          case 'view' :
+            if ($node->field_awaiting_approval[0]["value"] > 0) {
+              drupal_set_message(t('This suggestion is awaiting approval from the mapmaker'));
+            }
+            break;
+        }
+      break;
+    case 'photo':
+        switch ($op) {
+          case 'presave':
+            if ( ($node->field_awaiting_approval[0]['value'] > 0) &&
+                 suggest_is_public($node) ) {
+              $node->field_awaiting_approval[0]['value'] = NULL;
+            }
+            break;
+          case 'insert' : // fall through to 'update'
+          case 'update' :
+            if ($node->field_awaiting_approval[0]["value"] > 0) {
+              // tell the suggester that this has been submitted
+              drupal_set_message(t('This photo has been submitted and is awaiting approval from the mapmaker'));
+            }
+            break;
+          case 'view' :
+            if ($node->field_awaiting_approval[0]["value"] > 0) {
+              drupal_set_message(t('This photo is awaiting approval from the mapmaker'));
+            }
+            break;
+        }
+      break;
+  }
+}
+
+function suggest_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+  // only alter green_site forms
+  // FIXME: this is not right, should move non-suggest changes to some other hook_form_alter()
+  if ( ! in_array( $form_id, array('green_site_node_form', 'green_route_node_form', 'green_area_node_form', 'photo_node_form')) ) {
+    return;
+  }
+  $typenames = array(
+    'green_site_node_form' => 'green site',
+    'green_route_node_form' => 'green route',
+    'green_area_node_form' => 'green area',
+    'photo_node_form' => 'photo',
+  );
+
+  // determine what kind of user we are, which will determine what the form looks like:
+  $suggest_nid = NULL;
+  if (isset($_GET['suggest']) && is_numeric($_GET['suggest'])) {
+    $suggest_nid = (int) $_GET['suggest'];
+  }
+
+  if ( $form['group_photos']['field_photo'] ) {
+    $form['field_photo']['#weight'] = -1;
+    $form['og_nodeapi']['#collapsed'] = TRUE;
+  }
+
+  $user_is_member = og_is_group_member($suggest_nid, TRUE, $user->uid);
+
+  //if ( $form_id == 'photo_node_form' && $user_is_member ) {
+  //  $form['field_photo']['#weight'] = -1;
+  //  suggest_hide_awaiting($form, NULL);
+  //  return;
+  //}
+
+
+  $typename = $typenames[$form_id] ? $typenames[$form_id] : 'site';
+  $should_suggest = FALSE;
+  //check for permissions/sanity
+  if ( $suggest_nid ) {
+    if (!user_access('suggest a site')) {
+      drupal_access_denied();
+      exit;
+    }
+    $map = node_load($suggest_nid);
+    // FIXME: check for membership here is redundant
+    if ($map->og_private > 0 && !$user_is_member ) {
+      drupal_set_message(
+        t('Sorry, this map is private and not accepting suggestions yet.'),
+        'error');
+      drupal_access_denied();
+      exit;
+    }
+  }
+
+  //the next section determines what kind of form we need to display
+  // the actual changes to the form come later
+  //we are not logged in
+  if ( !$user->uid ) {
+    if ( $suggest_nid ) {
+      $should_suggest = TRUE;
+    }
+    // we got here by error
+    else {
+      drupal_set_message(
+        t('You must <a href="@link">choose a map</a> to suggest your @type to.',
+          array( '@link' => url('greenmap/recent'), '@type' => ucwords($typename))),
+        'error');
+      drupal_access_denied();
+      exit;
+    }
+  }
+  // we are logged in
+  else {
+    if ( $suggest_nid ) {
+      // we're adding a site to our map
+      if ( og_is_group_member($suggest_nid, FALSE, $user->uid) ) {
+        $should_suggest = FALSE;
+      }
+      else {
+        $should_suggest = TRUE;
+      }
+    }
+  }
+
+  // make the appropriate form changes for the type of form we've determined we
+  //   need
+  if ( $should_suggest ) {
+    // hide "Public"
+    $form['og_nodeapi']['visible']['og_public']['#type'] = 'value';
+    $form['og_nodeapi']['visible']['og_public']['#value'] = $node->nid ? $node->og_public : 0;
+    $form['og_invisible']['og_groups_inaccessible'] = array(
+      '#type' => 'value',
+      '#value' => array(
+        $suggest_nid => $map->title,
+      ),
+    );
+    suggest_hide_awaiting($form);
+  }
+  //otherwise we are a group member or admin, so we get this checkbox
+  else {
+    if ( $form['#node']->field_awaiting_approval[0]['value'] ) {
+      if ( empty($form_state['post']) ) {
+        $warnings = array(
+          'green_site_node_form' => 'This @type has been suggested as an addition to your map.
+             Please review it carefully and then press the Submit button to
+             add it to your map. If you wish to reject it you can untick your
+             map in the "Maps" section below, or click the "Delete" button.',
+          'green_route_node_form' => 'This @type has been suggested as an addition to your map.
+             Please review it carefully and then press the Submit button to
+             add it to your map. If you wish to reject it you can untick your
+             map in the "Maps" section below, or click the "Delete" button.',
+          'green_area_node_form' => 'This @type has been suggested as an addition to your map.
+             Please review it carefully and then press the Submit button to
+             add it to your map. If you wish to reject it you can untick your
+             map in the "Maps" section below, or click the "Delete" button.',
+          'photo_node_form' => 'This @type has been suggested as an addition to one of the sites on your map.
+             Please review it carefully and then press the Submit button to
+             allow it on your site and map. If you wish to reject it, click the "Delete" button below.',
+        );
+        drupal_set_message(
+          t($warnings[$form_id], array('@type' => ucwords($typename))));
+      }
+    }
+    //FIXME: This is general purpose and should be in group_map not here
+    $form['og_nodeapi']['visible']['og_public'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Public'),
+      '#default_value' => $node->nid ? $node->og_public : 1,
+      '#description' => t('Show this @type to everyone. If not checked, this @type will be private and only team members of the maps selected above can see it.', array('@type' => ucwords($typename))),
+      '#weight' => 2,
+    );
+    suggest_hide_awaiting($form, NULL);
+  }
+  // Change "Audience" to "Select Additional Maps"
+  if ( $suggest_nid ) {
+    $form["og_nodeapi"]['visible']['og_groups']['#default_value'] = array($suggest_nid);
+  }
+  $form["og_nodeapi"]['visible']['og_groups']['#title'] = t('Select Additional Maps');
+  $form["og_nodeapi"]['visible']['og_groups']['#description'] =
+    t('If you are a member of any other maps you can add this site to these maps too. Use the Control key on a PC or the Apple/Command key on a Mac to select multiple maps.');
+}
+
+function suggest_hide_awaiting(&$form, $value = 1) {
+  $form['field_awaiting_approval'] = array(
+    '#type' => 'value',
+    '#value' => array(array('value' => $value)),
+  );
+}
+
+function suggest_is_public($node) {
+  if ( $node->og_public ) {
+    return TRUE;
+  }
+  else {
+    $sql = "SELECT is_public FROM {og_ancestry} WHERE nid = %d";
+    $res = db_query($sql, $node->nid);
+    return db_result($res);
+  }
+}
