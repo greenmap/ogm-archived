@@ -1,0 +1,6 @@
+; $Id$
+name = gmap_bubble
+description = Show a informative bubble for the global map
+package = GreenMap
+core= 5.x
+core = 6.x

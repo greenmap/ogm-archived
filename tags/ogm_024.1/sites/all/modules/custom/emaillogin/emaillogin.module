@@ -1,0 +1,36 @@
+<?php
+/**
+ * accept username or email address during login
+ */
+
+// code taken from logintoboggan (which did break the layout for some reason)
+
+/**
+ * add a validation function to the user_login form.
+ */
+function emaillogin_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'user_login':
+    case 'user_login_block':
+      $form['name']['#title'] = t('Username or Email');
+      // this breaks the login popup box
+      //$form['name']['#description'] = t('Enter your username or email address.');
+      // put our validate function at the front of the list or user.module
+      // will throw an error before we get to modify the form values
+      array_unshift($form['#validate'], '_emaillogin_user_login_validate');
+      break;
+  }
+}
+
+/**
+ * custom validation for user login form.
+ *
+ * Changes the name field.
+ */
+function _emaillogin_user_login_validate($form, &$form_state) {
+  if (isset($form_state['values']['name'])) {
+    if ($name = db_result(db_query("SELECT name FROM {users} WHERE LOWER(mail) = LOWER('%s')", $form_state['values']['name']))) {
+      form_set_value($form['name'], $name, $form_state);
+    }
+  }
+}
