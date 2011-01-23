@@ -242,7 +242,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
   if ( $should_suggest ) {
     // hide "Public"
     $form['og_nodeapi']['visible']['og_public']['#type'] = 'value';
-    $form['og_nodeapi']['visible']['og_public']['#value'] = $node->nid ? $node->og_public : 0;
+    $form['og_nodeapi']['visible']['og_public']['#value'] = 0;
     $form['og_invisible']['og_groups_inaccessible'] = array(
       '#type' => 'value',
       '#value' => array(
@@ -280,7 +280,7 @@ function suggest_form_alter(&$form, &$form_state, $form_id) {
     $form['og_nodeapi']['visible']['og_public'] = array(
       '#type' => 'checkbox',
       '#title' => t('Public'),
-      '#default_value' => $node->nid ? $node->og_public : 1,
+      '#default_value' => !$group_node->og_private, 
       '#description' => t('Show this @type to everyone. If not checked, this @type will be private and only team members of the maps selected above can see it.', array('@type' => ucwords($typename))),
       '#weight' => 2,
     );
