@@ -98,6 +98,25 @@ if ($teaser) {
               //else if ( $node->field_video[0]['view'] ) {
               //$image_to_show = strip_tags($node->field_video[0]['view'], '<img>'); 
               //}
+             else {
+               $photos_sql = 'SELECT n.nid
+                              FROM {content_type_photo} ctp
+                                INNER JOIN {node} n
+                                  ON n.vid = ctp.vid
+                                LEFT JOIN {content_field_awaiting_approval} cfaa
+                                  ON ctp.vid = cfaa.vid
+                              WHERE ctp.field_site_1_nid = %d
+                                AND cfaa.field_awaiting_approval_value IS NULL
+                                AND n.status = 1';
+               $result = db_query($photos_sql, $node->nid);
+               if ( $result ) {
+                 $line = db_fetch_object($result);
+                 $medianode = node_load(array('nid' => $line->nid));
+                 if ( $medianode->field_image_local[0]['filename'] ) {
+                   $image_to_show = theme('imagefield_image', $medianode->field_image_local[0], '', '', array('width' => 80), FALSE);
+                 }
+               }
+             }
           ?>
       <div id="bubble_media<?php if ( ! $image_to_show ) print ' bubble_media_missing';?>">
         <a href="javascript:void(0)" onclick="javascript:GlobalMap.getInfoWindow().maximize()" class="maximize" rel="4">

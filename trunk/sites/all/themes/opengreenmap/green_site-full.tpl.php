@@ -47,6 +47,24 @@ if ( $node->field_image_local[0]['view'] ) {
   $media_thumb = theme('emimage_image_thumbnail', $image, $node->field_image[0], 'image_thumbnail', $node);
 } elseif($node->field_video[0]['value'] > '') {
   $media_thumb = theme('emvideo_video_thumbnail', $node->field_video, $node->field_video[0], 'video_thumbnail', $node);
+} else {
+  $photos_sql = 'SELECT n.nid
+                 FROM {content_type_photo} ctp
+                   INNER JOIN {node} n
+                     ON n.vid = ctp.vid
+                   LEFT JOIN {content_field_awaiting_approval} cfaa
+                     ON ctp.vid = cfaa.vid
+                 WHERE ctp.field_site_1_nid = %d
+                   AND cfaa.field_awaiting_approval_value IS NULL
+                   AND n.status = 1';
+  $result = db_query($photos_sql, $node->nid);
+  if ( $result ) {
+    $line = db_fetch_object($result);
+    $medianode = node_load(array('nid' => $line->nid));
+    if ( $medianode->field_image_local[0]['filename'] ) {
+      $media_thumb = theme('imagefield_image', $medianode->field_image_local[0], '', '', array('width' => 100), FALSE);
+    }
+  }
 }
 $media_thumb = preg_replace('/<a href="[^"]+"/', '<a href="#multimedia"', $media_thumb);
 
