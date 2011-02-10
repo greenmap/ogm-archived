@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd"> 
+<html>
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Fetching Your Location</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/sites/default/files/mobile_favicon.ico" type="image/x-icon" />
+<style type="text/css" media="screen">@import "style.css";</style>
+      <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
+  <style>
+  body {
+    -webkit-text-size-adjust: none;
+    min-height: 402px;
+    padding:0;
+    margin: 0;
+  }
+  .masthead{
+  	background-color: #99cc33;
+  	padding: 1px;
+  }
+  
+  .view-proximity{
+    color: #666;
+  }
+  .view-proximity a{
+    text-decoration: none;
+  }
+  
+  .view-proximity li{
+  list-style-type: none;
+  }
+  
+  .forward_links {
+  display: none;
+  }
+  
+  .box-inner {
+  display: none;
+  }
+
+  .pager{
+  width:75px; 
+  }
+  
+  .icons img {
+  margin-right:8px;
+  }
+  
+  #logo-image{
+  padding-top: 6px;
+  }
+  
+  #content-area{
+  	padding:2px;
+  }
+    
+  h1{
+  	font-size: 1.5em;
+  	color:  #666;
+  	margin-top: 5px;
+  	margin-bottom: 5px;
+  }
+  
+  h3{
+  	font-size: 0.9em;
+  	color:  #666;
+  	margin-top: 5px;
+  	margin-bottom: 5px;
+  }
+  
+  .alpha{
+  	font-size: .75em;
+  }
+    
+  #footer{
+  	margin-top:70px;
+  	font-size: .75em;
+  }
+
+  
+  </style>
+
+  <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script> 
+  <script src="http://opengreenmap.org/sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
+  
+</head>
+<body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
+
+    <div class="toolbar">
+        <a id="backButton" class="button" href="index.html" style="display:block !important;">Back</a>
+    </div>
+              
+            
+     <div id="content-area">
+            <h1 class="title">Fetching Your Location</h1>
+		          
+    		        
+       <script> 
+		if(geo_position_js.init())
+		{
+			geo_position_js.getCurrentPosition(success_callback,error_callback);
+		}
+		else
+		{
+			window.location='index.html'; 
+		}
+ 
+		function success_callback(p)
+		{
+			window.location = 'add/index.php?distance[latitude]='+p.coords.latitude+'&distance[longitude]='+p.coords.longitude;
+		}
+		
+		function error_callback(p)
+		{
+			window.location='index.html?error=callback_error'; 
+		}		
+	</script>                        
+        <div id="footer">          &copy; Green Map&reg; System, 2010<br/>
+          Visit GreenMap.org on your desktop
+          
+          
+        </div>
+                </div>
+    </div>
+   <script type="text/javascript" src="http://opengreenmap.org/sites/default/files/js/9425df1e43a7894d4f4bee0009dd47aa.js"></script>
+   
+</body>
+</html>
