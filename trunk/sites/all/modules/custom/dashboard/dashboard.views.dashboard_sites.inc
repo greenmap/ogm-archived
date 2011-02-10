@@ -263,6 +263,75 @@ $handler->override_option('style_options', array(
   'default' => 'changed',
 ));
 $handler = $view->new_display('page', 'Published (page)', 'page_1');
+$handler->override_option('filters', array(
+  'type' => array(
+    'operator' => 'in',
+    'value' => array(
+      'green_area' => 'green_area',
+      'green_route' => 'green_route',
+      'green_site' => 'green_site',
+    ),
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'type',
+    'table' => 'node',
+    'field' => 'type',
+    'relationship' => 'none',
+    'override' => array(
+      'button' => 'Use default',
+    ),
+  ),
+  'is_public' => array(
+    'operator' => '=',
+    'value' => '1',
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'is_public',
+    'table' => 'og_ancestry',
+    'field' => 'is_public',
+    'relationship' => 'none',
+  ),
+  'status_extra' => array(
+    'operator' => '=',
+    'value' => '',
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'status_extra',
+    'table' => 'node',
+    'field' => 'status_extra',
+    'relationship' => 'none',
+  ),
+  'field_awaiting_approval_value' => array(
+    'operator' => 'empty',
+    'value' => array(
+      'value' => '',
+      'min' => '',
+      'max' => '',
+    ),
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'field_awaiting_approval_value',
+    'table' => 'node_data_field_awaiting_approval',
+    'field' => 'field_awaiting_approval_value',
+    'relationship' => 'none',
+  ),
+));
 $handler->override_option('empty', 'There are no published sites for this map');
 $handler->override_option('path', 'dashboard/sites/%');
 $handler->override_option('menu', array(
@@ -289,6 +358,8 @@ $handler->override_option('filters', array(
   'type' => array(
     'operator' => 'in',
     'value' => array(
+      'green_area' => 'green_area',
+      'green_route' => 'green_route',
       'green_site' => 'green_site',
     ),
     'group' => '0',
@@ -301,6 +372,9 @@ $handler->override_option('filters', array(
     'table' => 'node',
     'field' => 'type',
     'relationship' => 'none',
+    'override' => array(
+      'button' => 'Use default',
+    ),
   ),
   'status_extra' => array(
     'operator' => '=',
@@ -360,6 +434,8 @@ $handler->override_option('filters', array(
   'type' => array(
     'operator' => 'in',
     'value' => array(
+      'green_area' => 'green_area',
+      'green_route' => 'green_route',
       'green_site' => 'green_site',
     ),
     'group' => '0',
@@ -372,6 +448,9 @@ $handler->override_option('filters', array(
     'table' => 'node',
     'field' => 'type',
     'relationship' => 'none',
+    'override' => array(
+      'button' => 'Use default',
+    ),
   ),
   'is_public' => array(
     'operator' => '=',
@@ -2068,6 +2147,74 @@ $handler->override_option('tab_options', array(
 $handler->override_option('displays', array());
 $handler->override_option('sitename_title', FALSE);
 $handler = $view->new_display('feed', 'Feed', 'feed_4');
+$handler->override_option('filters', array(
+  'type' => array(
+    'operator' => 'in',
+    'value' => array(
+      'green_route' => 'green_route',
+      'green_site' => 'green_site',
+    ),
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'type',
+    'table' => 'node',
+    'field' => 'type',
+    'relationship' => 'none',
+    'override' => array(
+      'button' => 'Use default',
+    ),
+  ),
+  'is_public' => array(
+    'operator' => '=',
+    'value' => '1',
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'is_public',
+    'table' => 'og_ancestry',
+    'field' => 'is_public',
+    'relationship' => 'none',
+  ),
+  'status_extra' => array(
+    'operator' => '=',
+    'value' => '',
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'status_extra',
+    'table' => 'node',
+    'field' => 'status_extra',
+    'relationship' => 'none',
+  ),
+  'field_awaiting_approval_value' => array(
+    'operator' => 'empty',
+    'value' => array(
+      'value' => '',
+      'min' => '',
+      'max' => '',
+    ),
+    'group' => '0',
+    'exposed' => FALSE,
+    'expose' => array(
+      'operator' => FALSE,
+      'label' => '',
+    ),
+    'id' => 'field_awaiting_approval_value',
+    'table' => 'node_data_field_awaiting_approval',
+    'field' => 'field_awaiting_approval_value',
+    'relationship' => 'none',
+  ),
+));
 $handler->override_option('style_plugin', 'rss');
 $handler->override_option('style_options', array(
   'mission_description' => FALSE,
@@ -2094,6 +2241,7 @@ $handler->override_option('tab_options', array(
 ));
 $handler->override_option('displays', array());
 $handler->override_option('sitename_title', FALSE);
+
 ///
 // END PASTE
 ///
