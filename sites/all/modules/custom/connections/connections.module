@@ -143,12 +143,20 @@ function connections_output_connections($green_site) {
     $menu_items[] = 'Contacts';
   }
   foreach ($menu_items as $menu_item) {
-    $connections .= sprintf('<p class="connections_menu_item" id="connections_menu_item_%s" '.
+    if ($menu_item == 'Related Sites') {
+                   $connections .= sprintf('<p class="connections_menu_item_active" id="connections_menu_item_%s" '.
         'onclick="javascript:replace_connections_content(\'%s\');">%s</p>',
         str_replace(' ', '_', $menu_item), $menu_item, t($menu_item));
+                 }
+     else {
+        $connections .= sprintf('<p class="connections_menu_item" id="connections_menu_item_%s" '.
+        'onclick="javascript:replace_connections_content(\'%s\');">%s</p>',
+        str_replace(' ', '_', $menu_item), $menu_item, t($menu_item));
+    }
   }
   $connections .= '</div>';
   $connections .= '<div id="connections_content">';
+  $connections .= $relsite;
   $connections .= t('Choose a connections category from the list on the left.');
   $connections .= '</div>';
   $connections .= '<div style="clear: left;"></div>';
