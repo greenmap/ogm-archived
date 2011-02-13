@@ -809,7 +809,16 @@ form ul.tips li {
 body.node-type-green-map ul.links {
   float: right;
   margin-top: 5px;
+
 }
+
+body.node-type-green-map ul.links li  {
+  display: inline;
+  list-style-type: none;
+  padding: 0px;
+
+}
+
 
 #block-block-13 h2, #block-block-12 h2 {
 display: none;
