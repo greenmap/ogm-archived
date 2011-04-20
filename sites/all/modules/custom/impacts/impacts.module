@@ -58,9 +58,9 @@ function impacts_outcomes_page($mapid) {
   
   // ABOUT
 
-  if ($node->field_description[0]['value']){
+  if ($node->field_outcomes[0]['value']){
     $outcomes .= '<div class="block_title">'. t('About') .'</div><br>';
-    $outcomes .= $node->field_description[0]['value'];
+    $outcomes .= $node->field_outcomes[0]['value'];
    }
 
   	
