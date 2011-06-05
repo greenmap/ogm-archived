@@ -188,7 +188,29 @@ function og_menu_access_node_edit($node) {
   if (!module_exists('og_access') && og_is_group_admin($node)) {
     return TRUE;
   }
-  
+  ////////////////////////////////////////////////////////////////
+  //openflows greenmap green map ogm 
+  //hack by Mark Libkuman, we can't figure out why this user cannot edit sites for this map
+  //when they should, so we are doing something nasty and just giving them the perms
+  global $user;
+  if (($user->uid == 4582) && isset($node->og_groups)) {
+    if (module_exists('og_user_roles')) {
+      $roles = og_user_roles_all_roles($user);
+      foreach ($roles as $k=>$role) {
+        if ($role == "team leader") {
+          foreach ($node->og_groups as $gid) {
+            if ($gid == 2701) {
+              return TRUE;
+            }
+          }     
+        }
+      }
+    }
+  }
+ 
+  //end hack
+  /////////////////////////////////////////////////////////////////////
+
   // Since the group admin tests failed, check access as usual.
   return node_access('update', $node);
 }
