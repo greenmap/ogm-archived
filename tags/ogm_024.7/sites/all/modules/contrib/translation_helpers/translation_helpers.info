@@ -1,0 +1,13 @@
+; $Id: translation_helpers.info,v 1.1 2008/10/08 00:03:45 nedjo Exp $
+name = Translation helpers
+description = Provides methods for other modules to use with translated content.
+dependencies[] = translation
+core = 6.x
+
+
+; Information added by drupal.org packaging script on 2008-10-10
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "translation_helpers"
+datestamp = "1223597581"
+
