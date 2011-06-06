@@ -190,24 +190,33 @@ function og_menu_access_node_edit($node) {
   }
   ////////////////////////////////////////////////////////////////
   //openflows greenmap green map ogm 
-  //hack by Mark Libkuman, we can't figure out why this user cannot edit sites for this map
-  //when they should, so we are doing something nasty and just giving them the perms
+  //hack by Mark Libkuman, 
+  //roles for the specific groups are not assigning edit privs correctly
+  //this is a short term solution unti it can be solved correctly
   global $user;
-  if (($user->uid == 4582) && isset($node->og_groups)) {
-    if (module_exists('og_user_roles')) {
-      $roles = og_user_roles_all_roles($user);
-      foreach ($roles as $k=>$role) {
-        if ($role == "team leader") {
-          foreach ($node->og_groups as $gid) {
-            if ($gid == 2701) {
-              return TRUE;
-            }
-          }     
-        }
+
+  if (module_exists('og_user_roles')) {
+    $roles = og_user_roles_all_roles($user);
+    foreach ($roles as $k=>$role) {
+      if (strtoupper($role) == 'TEAM LEADER') {
+        $is_leader = TRUE;
+      }
+      else if (strtoupper($role) == "TEAM COORDINATOR") {
+        $is_coordinator = TRUE;    
+      }
+      else if (strtoupper($role) == "TEAM MEMBER") {
+        $is_member = TRUE;
       }
     }
   }
- 
+  if ($is_coordinator) {
+    return TRUE;
+  }  
+  else if ($is_leader || $is_member) {
+    if ($node->uid == $user->uid) {
+      return TRUE;
+    }
+  }
   //end hack
   /////////////////////////////////////////////////////////////////////
 
