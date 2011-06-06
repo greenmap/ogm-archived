@@ -209,10 +209,10 @@ function og_menu_access_node_edit($node) {
       }
     }
   }
-  if ($is_coordinator) {
+  if ($is_coordinator || $is_leader) {
     return TRUE;
   }  
-  else if ($is_leader || $is_member) {
+  else if ($is_member) {
     if ($node->uid == $user->uid) {
       return TRUE;
     }
