@@ -1,0 +1,6 @@
+; $Id$
+name = gmap_marker
+description = Extension to gmap module
+package = GreenMap
+dependencies[] = gmap
+core = 6.x
