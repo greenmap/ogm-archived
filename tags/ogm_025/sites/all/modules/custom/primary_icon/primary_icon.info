@@ -1,0 +1,10 @@
+; $Id: primary_icon.info,v 0.1 2008/03/13 15:27:03 tom_o_t Exp $
+name = Primary Icon
+description =  Alters title of primary term field for icon
+dependencies[] = taxonomy
+dependencies[] = primary_term
+dependencies[] = gmap_taxonomy
+package = GreenMap
+version = "6.x-0.1"
+project = "primary_icon"
+core = 6.x
