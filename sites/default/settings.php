@@ -108,8 +108,8 @@
  * check. After finishing the upgrade, be sure to open this file again
  * and change the TRUE back to a FALSE!
  */
-$update_free_access = FALSE;
-#$update_free_access = TRUE;
+//$update_free_access = FALSE;
+$update_free_access = TRUE;
 
 /**
  * Base URL (optional).
@@ -153,6 +153,7 @@ ini_set('session.save_handler',     'user');
 ini_set('session.use_only_cookies', 1);
 ini_set('session.use_trans_sid',    0);
 ini_set('url_rewriter.tags',        '');
+ini_set('max_execution_time', 0);
 
 /**
  * Drupal automatically generates a unique session cookie name for each site

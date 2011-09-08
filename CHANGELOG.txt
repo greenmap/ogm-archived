@@ -1,12 +1,18 @@
-// $Id: CHANGELOG.txt,v 1.253.2.41 2010/08/11 20:35:47 goba Exp $
 
-LOCAL CHANGES
--------------
-- Patched path.module as per http://drupal.org/node/269877 comment #85 to fix
-  issue #1407 -- mvc
-- Patched includes/common.inc as per http://drupal.org/node/479368#comment-3410892 
-  to make the json output work with recent versions of jQuery (as needed for many 
-  frontends using the services module and its json server)
+Drupal 6.22, 2011-05-25
+----------------------
+- Made Drupal 6 work better with IIS and Internet Explorer.
+- Fixed .po file imports to work better with custom textgroups.
+- Improved code documentation at various places.
+- Fixed a variety of other bugs.
+
+Drupal 6.21, 2011-05-25
+----------------------
+- Fixed security issues (Cross site scripting), see SA-CORE-2011-001.
+
+Drupal 6.20, 2010-12-15
+----------------------
+- Fixed a variety of small bugs, improved code documentation.
 
 Drupal 6.19, 2010-08-11
 ----------------------
