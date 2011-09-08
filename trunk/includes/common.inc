@@ -1,5 +1,4 @@
 <?php
-// $Id: common.inc,v 1.756.2.96 2010/08/11 20:35:47 goba Exp $
 
 /**
  * @file
@@ -201,7 +200,7 @@ function drupal_get_feeds($delimiter = "\n") {
 }
 
 /**
- * @name HTTP handling
+ * @defgroup http_handling HTTP handling
  * @{
  * Functions to properly handle HTTP responses.
  */
@@ -653,7 +652,7 @@ function drupal_error_handler($errno, $message, $filename, $line, $context) {
       }
     }
 
-    $entry = $types[$errno] .': '. $message .' in '. $filename .' on line '. $line .'.';
+    $entry = check_plain($types[$errno]) .': '. filter_xss($message) .' in '. check_plain($filename) .' on line '. check_plain($line) .'.';
 
     // Force display of error messages in update.php.
     if (variable_get('error_level', 1) == 1 || strstr($_SERVER['SCRIPT_NAME'], 'update.php')) {
@@ -953,14 +952,15 @@ function t($string, $args = array(), $langcode = NULL) {
  */
 
 /**
- * Verify the syntax of the given e-mail address.
+ * Verifies the syntax of the given e-mail address.
  *
- * Empty e-mail addresses are allowed. See RFC 2822 for details.
+ * See RFC 2822 for details.
  *
  * @param $mail
  *   A string containing an e-mail address.
  * @return
- *   TRUE if the address is in a valid format.
+ *   1 if the email address is valid, 0 if it is invalid or empty, and FALSE if
+ *   there is an input error (such as passing in an array instead of a string).
  */
 function valid_email_address($mail) {
   $user = '[a-zA-Z0-9_\-\.\+\^!#\$%&*+\/\=\?\`\|\{\}~\']+';
@@ -1638,7 +1638,8 @@ function drupal_page_footer() {
  *   A linear array.
  * @param $function
  *   A name of a function to apply to all values before output.
- * @result
+ *
+ * @return
  *   An associative array.
  */
 function drupal_map_assoc($array, $function = NULL) {
@@ -1706,7 +1707,7 @@ function drupal_eval($code) {
  * Returns the path to a system item (module, theme, etc.).
  *
  * @param $type
- *   The type of the item (i.e. theme, theme_engine, module).
+ *   The type of the item (i.e. theme, theme_engine, module, profile).
  * @param $name
  *   The name of the item for which the path is requested.
  *
@@ -1744,7 +1745,7 @@ function drupal_add_link($attributes) {
  *
  * @param $path
  *   (optional) The path to the CSS file relative to the base_path(), e.g.,
- *   /modules/devel/devel.css.
+ *   modules/devel/devel.css.
  *
  *   Modules should always prefix the names of their CSS files with the module
  *   name, for example: system-menus.css rather than simply menus.css. Themes
@@ -2024,12 +2025,12 @@ function drupal_load_stylesheet($file, $optimize = NULL) {
       // Regexp to match single quoted strings.
       $single_quot = "'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'";
       $contents = preg_replace_callback(
-        "<$double_quot|$single_quot|$comment>Sus",  // Match all comment blocks along
-        "_process_comment",                         // with double/single quoted strings
-        $contents);                                 // and feed them to _process_comment().
+        "<$double_quot|$single_quot|$comment>Ss",  // Match all comment blocks along
+        "_process_comment",                        // with double/single quoted strings
+        $contents);                                // and feed them to _process_comment().
       $contents = preg_replace(
-        '<\s*([@{}:;,]|\)\s|\s\()\s*>S',            // Remove whitespace around separators,
-        '\1', $contents);                           // but keep space around parentheses.
+        '<\s*([@{}:;,]|\)\s|\s\()\s*>S',           // Remove whitespace around separators,
+        '\1', $contents);                          // but keep space around parentheses.
       // End the file with a new line.
       $contents .= "\n";
     }
@@ -2496,63 +2497,9 @@ function drupal_to_js($var) {
       return $var;
     case 'resource':
     case 'string':
-      static $replace_pairs;
-
-      if (!isset($replace_pairs)) {
-        // Always use Unicode escape sequences (\u0022) over JSON escape
-        // sequences (\") to prevent browsers interpreting these as
-        // special characters.
-        $replace_pairs = array(
-          // ", \ and U+0000 - U+001F must be escaped according to RFC 4627.
-          '\\' => '\u005c',
-          '"' => '\u0022',
-          "\x00" => '\u0000',
-          "\x01" => '\u0001',
-          "\x02" => '\u0002',
-          "\x03" => '\u0003',
-          "\x04" => '\u0004',
-          "\x05" => '\u0005',
-          "\x06" => '\u0006',
-          "\x07" => '\u0007',
-          "\x08" => '\u0008',
-          "\x09" => '\u0009',
-          "\x0a" => '\u000a',
-          "\x0b" => '\u000b',
-          "\x0c" => '\u000c',
-          "\x0d" => '\u000d',
-          "\x0e" => '\u000e',
-          "\x0f" => '\u000f',
-          "\x10" => '\u0010',
-          "\x11" => '\u0011',
-          "\x12" => '\u0012',
-          "\x13" => '\u0013',
-          "\x14" => '\u0014',
-          "\x15" => '\u0015',
-          "\x16" => '\u0016',
-          "\x17" => '\u0017',
-          "\x18" => '\u0018',
-          "\x19" => '\u0019',
-          "\x1a" => '\u001a',
-          "\x1b" => '\u001b',
-          "\x1c" => '\u001c',
-          "\x1d" => '\u001d',
-          "\x1e" => '\u001e',
-          "\x1f" => '\u001f',
-          // Prevent browsers from interpreting these as as special.
-          "'" => '\u0027',
-          '<' => '\u003c',
-          '>' => '\u003e',
-          '&' => '\u0026',
-          // Prevent browsers from interpreting the solidus as special and
-          // non-compliant JSON parsers from interpreting // as a comment.
-          '/' => '\u002f',
-          // While these are allowed unescaped according to ECMA-262, section
-          // 15.12.2, this causes problems in the core jQuery JSON parser.
-          "\xe2\x80\xa8" => '\u2028', // U+2028, Line Separator.
-          "\xe2\x80\xa9" => '\u2029', // U+2029, Paragraph Separator.
-        );
-      }
-      return '"'. strtr($var, $replace_pairs) .'"';
+      return '"'. str_replace(array("\r", "\n", "<", ">", "&"),
+                              array('\r', '\n', '\x3c', '\x3e', '\x26'),
+                              addslashes($var)) .'"';
     case 'array':
       // Arrays in JSON can't be associative. If the array is empty or if it
       // has sequential whole number keys starting with 0, it's not associative
@@ -2896,13 +2843,21 @@ function drupal_system_listing($mask, $directory, $key = 'name', $min_depth = 1)
  * interface for all altering operations.
  *
  * @param $type
- *   The data type of the structured array. 'form', 'links',
- *   'node_content', and so on are several examples.
+ *   A string describing the type of the alterable $data (e.g. 'form',
+ *   'profile').
  * @param $data
- *   The structured array to be altered.
+ *   The variable that will be passed to hook_TYPE_alter() implementations to
+ *   be altered. The type of this variable depends on $type. For example, when
+ *   altering a 'form', $data will be a structured array. When altering a
+ *   'profile', $data will be an object. If you need to pass additional
+ *   parameters by reference to the hook_TYPE_alter() functions, include them
+ *   as an array in $data['__drupal_alter_by_ref']. They will be unpacked and
+ *   passed to the hook_TYPE_alter() functions, before the additional
+ *   ... parameters (see below).
  * @param ...
- *   Any additional params will be passed on to the called
- *   hook_$type_alter functions.
+ *   Any additional parameters will be passed on to the hook_TYPE_alter()
+ *   functions (not by reference), after any by-reference parameters included
+ *   in $data (see above)
  */
 function drupal_alter($type, &$data) {
   // PHP's func_get_args() always returns copies of params, not references, so
@@ -3202,10 +3157,6 @@ function drupal_common_theme() {
     'pager_link' => array(
       'arguments' => array('text' => NULL, 'page_new' => NULL, 'element' => NULL, 'parameters' => array(), 'attributes' => array()),
     ),
-    // from locale.inc
-    'locale_admin_manage_screen' => array(
-      'arguments' => array('form' => NULL),
-    ),
     // from menu.inc
     'menu_item_link' => array(
       'arguments' => array('item' => NULL),
@@ -3321,7 +3272,10 @@ function drupal_get_schema($table = NULL, $rebuild = FALSE) {
 
       // Invoke hook_schema for all modules.
       foreach (module_implements('schema') as $module) {
-        $current = module_invoke($module, 'schema');
+        // Cast the result of hook_schema() to an array, as a NULL return value
+        // would cause array_merge() to set the $schema variable to NULL as well.
+        // That would break modules which use $schema further down the line.
+        $current = (array) module_invoke($module, 'schema');
         _drupal_initialize_schema($module, $current);
         $schema = array_merge($schema, $current);
       }
@@ -3424,9 +3378,11 @@ function drupal_get_schema_unprocessed($module, $table = NULL) {
   if (!is_null($table) && isset($schema[$table])) {
     return $schema[$table];
   }
-  else {
+  elseif (!empty($schema)) {
     return $schema;
   }
+
+  return array();
 }
 
 /**
