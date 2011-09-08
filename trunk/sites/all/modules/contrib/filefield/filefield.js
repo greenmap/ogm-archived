@@ -1,35 +1,9 @@
-// $Id: filefield.js,v 1.19 2009/04/08 20:01:06 quicksketch Exp $
 
 /**
  * Auto-attach standard client side file input validation.
  */
 Drupal.behaviors.filefieldValidateAutoAttach = function(context) {
-  $("input[type='file'][accept]", context).change( function() {
-    // Remove any previous errors.
-    $('.file-upload-js-error').remove();
-
-    /**
-     * Add client side validation for the input[type=file] accept attribute.
-     */
-    var accept = this.accept.replace(/,\s*/g, '|');
-    if (accept.length > 1 && this.value.length > 0) {
-      var v = new RegExp('\\.(' + accept + ')$', 'gi');
-      if (!v.test(this.value)) {
-        var error = Drupal.t("The selected file %filename cannot not be uploaded. Only files with the following extensions are allowed: %extensions.",
-          { '%filename' : this.value, '%extensions' : accept.replace(/\|/g, ', ') }
-        );
-        // What do I prepend this to?
-        $(this).before('<div class="messages error file-upload-js-error">' + error + '</div>');
-        this.value = '';
-        return false;
-      }
-    }
-
-    /**
-     * Add filesize validation where possible.
-     */
-    /* @todo */
-  });
+  $("input[type=file]", context).bind('change', Drupal.filefield.validateExtensions);
 };
 
 
@@ -37,10 +11,16 @@ Drupal.behaviors.filefieldValidateAutoAttach = function(context) {
  * Prevent FileField uploads when using buttons not intended to upload.
  */
 Drupal.behaviors.filefieldButtons = function(context) {
-  $('input.form-submit')
-    .bind('mousedown', Drupal.filefield.disableFields)
-    .bind('mousedown', Drupal.filefield.progressBar);
+  $('input.form-submit', context).bind('mousedown', Drupal.filefield.disableFields);
+  $('div.filefield-element input.form-submit', context).bind('mousedown', Drupal.filefield.progressBar);
 };
+
+/**
+ * Open links to files within the node form in a new window.
+ */
+Drupal.behaviors.filefieldPreviewLinks = function(context) {
+  $('div.filefield-element div.widget-preview a', context).click(Drupal.filefield.openInNewWindow).attr('target', '_blank');
+}
 
 /**
  * Admin enhancement: only show the "Files listed by default" when needed.
@@ -66,7 +46,28 @@ Drupal.behaviors.filefieldAdmin = function(context) {
  * @param {Object} event
  */
 Drupal.filefield = {
-  disableFields: function(event){
+  validateExtensions: function(event) {
+    // Remove any previous errors.
+    $('.file-upload-js-error').remove();
+
+    var fieldName = this.name.replace(/^files\[([a-z0-9_]+)_\d+\]$/, '$1');
+    var extensions = '';
+    if (Drupal.settings.filefield && Drupal.settings.filefield[fieldName]) {
+      extensions = Drupal.settings.filefield[fieldName].replace(/[, ]+/g, '|');
+    }
+    if (extensions.length > 1 && this.value.length > 0) {
+      var extensionPattern = new RegExp('\\.(' + extensions + ')$', 'gi');
+      if (!extensionPattern.test(this.value)) {
+        var error = Drupal.t("The selected file %filename cannot be uploaded. Only files with the following extensions are allowed: %extensions.",
+          { '%filename' : this.value, '%extensions' : extensions.replace(/\|/g, ', ') }
+        );
+        $(this).parent().before('<div class="messages error file-upload-js-error">' + error + '</div>');
+        this.value = '';
+        return false;
+      }
+    }
+  },
+  disableFields: function(event) {
     var clickedButton = this;
 
     // Only disable upload fields for AHAH buttons.
@@ -77,7 +78,7 @@ Drupal.filefield = {
     // Check if we're working with an "Upload" button.
     var $enabledFields = [];
     if ($(this).parents('div.filefield-element').size() > 0) {
-      $enabledFields = $(this).parent().parent().find('input.form-file');
+      $enabledFields = $(this).parents('div.filefield-element').find('input.form-file');
     }
     // Otherwise we're probably dealing with CCK's "Add another item" button.
     else if ($(this).parents('div.content-add-more').size() > 0) {
@@ -110,12 +111,15 @@ Drupal.filefield = {
       setTimeout(function() {
         $progressId.attr('name', originalName);
       }, 1000);
-
-      // Show the progress bar if the upload takes longer than 3 seconds.
-      setTimeout(function() {
-        $(clickedButton).parents('div.filefield-element').find('div.ahah-progress-bar').slideDown();
-      }, 500);
-
     }
+
+    // Show the progress bar if the upload takes longer than 3 seconds.
+    setTimeout(function() {
+      $(clickedButton).parents('div.filefield-element').find('div.ahah-progress-bar').slideDown();
+    }, 500);
+  },
+  openInNewWindow: function(event) {
+    window.open(this.href, 'filefieldPreview', 'toolbar=0,scrollbars=1,location=1,statusbar=1,menubar=0,resizable=1,width=500,height=550');
+    return false;
   }
 };

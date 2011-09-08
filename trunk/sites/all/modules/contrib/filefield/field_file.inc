@@ -1,5 +1,4 @@
 <?php
-// $Id: field_file.inc,v 1.32 2009/04/12 21:22:17 quicksketch Exp $
 
 /**
  * @file
@@ -38,12 +37,14 @@ function field_file_load($fid, $reset = NULL) {
     }
 
     if (!$file) {
-      $file = array('fid' => 0, 'filepath' => '', 'filename' => '', 'filemime' => '', 'filesize' => 0);
+      $file = (object) array('fid' => 0, 'filepath' => '', 'filename' => '', 'filemime' => '', 'filesize' => 0);
     }
 
     foreach (module_implements('file_load') as $module) {
-      $function =  $module .'_file_load';
-      $function($file);
+      if ($module != 'field') {
+        $function = $module .'_file_load';
+        $function($file);
+      }
     }
 
     // Cache the fully loaded file for later use.
@@ -52,7 +53,7 @@ function field_file_load($fid, $reset = NULL) {
 
   // Cast to an array for the field storage.
   // Contrary to fields, hook_file() and core file functions expect objects.
-  return (array)$files[$fid];
+  return isset($files[$fid]) ? (array) $files[$fid] : FALSE;
 }
 
 /**
@@ -85,7 +86,7 @@ function field_file_save_upload($source, $validators = array(), $dest = FALSE) {
     return 0;
   }
   if (!@chmod($file->filepath, 0664)) {
-    watchdog('filefield', 'Could not set permissons on destination file: %file', array('%file' => $file->filepath));
+    watchdog('filefield', 'Could not set permissions on destination file: %file', array('%file' => $file->filepath));
   }
 
   // Let modules add additional properties to the yet barebone file object.
@@ -100,6 +101,12 @@ function field_file_save_upload($source, $validators = array(), $dest = FALSE) {
 /**
  * Save a file into a file node after running all the associated validators.
  *
+ * This function is usually used to move a file from the temporary file
+ * directory to a permanent location. It may be used by import scripts or other
+ * modules that want to save an existing file into the database.
+ *
+ * @param $filepath
+ *   The local file path of the file to be saved.
  * @param $validators
  *   An optional, associative array of callback functions used to validate the
  *   file. The keys are function names and the values arrays of callback
@@ -110,26 +117,22 @@ function field_file_save_upload($source, $validators = array(), $dest = FALSE) {
  * @param $dest
  *   A string containing the directory $source should be copied to. If this is
  *   not provided or is not writable, the temporary directory will be used.
+ * @param $account
+ *   The user account object that should associated with the uploaded file.
  * @return
  *   An array containing the file information, or 0 in the event of an error.
  */
-function field_file_save_file($filepath, $validators = array(), $dest = FALSE) {
-  global $user;
+function field_file_save_file($filepath, $validators = array(), $dest = FALSE, $account = NULL) {
+  if (!isset($account)) {
+    $account = $GLOBALS['user'];
+  }
 
   // Add in our check of the the file name length.
   $validators['file_validate_name_length'] = array();
 
-  // Build the list of non-munged extensions.
-  // @todo: this should not be here. we need to figure out the right place.
-  $extensions = '';
-  foreach ($user->roles as $rid => $name) {
-    $extensions .= ' '. variable_get("upload_extensions_$rid",
-    variable_get('upload_extensions_default', 'jpg jpeg gif png txt html doc xls pdf ppt pps odt ods odp'));
-  }
-
   // Begin building file object.
   $file = new stdClass();
-  $file->uid = $user->uid;
+  $file->uid = $account->uid;
   $file->filename = basename($filepath);
   $file->filepath = $filepath;
   $file->filemime = module_exists('mimedetect') ? mimedetect_mime($file) : file_get_mimetype($file->filename);
@@ -154,7 +157,10 @@ function field_file_save_file($filepath, $validators = array(), $dest = FALSE) {
   // Call the validation functions.
   $errors = array();
   foreach ($validators as $function => $args) {
-    array_unshift($args, $file);
+      // Add the $file variable to the list of arguments and pass it by
+      // reference (required for PHP 5.3 and higher).
+    array_unshift($args, NULL);
+    $args[0] = &$file;
     $errors = array_merge($errors, call_user_func_array($function, $args));
   }
 
@@ -366,6 +372,34 @@ function field_file_strip_path($path) {
   $dirlen = drupal_strlen($dirpath);
   if (drupal_substr($path, 0, $dirlen + 1) == $dirpath .'/') {
     $path = drupal_substr($path, $dirlen + 1);
+  }
+  return $path;
+}
+
+/**
+ * Encode a file path in a way that is compatible with file_create_url().
+ *
+ * This function should be used on the $file->filepath property before any call
+ * to file_create_url(). This ensures that the file directory path prefix is
+ * unmodified, but the actual path to the file will be properly URL encoded.
+ */
+function field_file_urlencode_path($path) {
+  // Encode the parts of the path to ensure URLs operate within href attributes.
+  // Private file paths are urlencoded for us inside of file_create_url().
+  if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC) {
+    $file_directory_path = file_directory_path();
+    if (strpos($path, $file_directory_path . '/') === 0) {
+      $path = trim(substr($path, strlen($file_directory_path)), '\\/');
+    }
+
+    $parts = explode('/', $path);
+    foreach ($parts as $index => $part) {
+      $parts[$index] = rawurlencode($part);
+    }
+    $path = implode('/', $parts);
+
+    // Add the file directory path again (not encoded).
+    $path = $file_directory_path . '/' . $path;
   }
   return $path;
 }
