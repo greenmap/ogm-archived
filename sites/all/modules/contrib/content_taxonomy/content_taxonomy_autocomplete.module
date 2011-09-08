@@ -1,5 +1,5 @@
 <?php
-// $Id: content_taxonomy_autocomplete.module,v 1.2.2.4.2.15 2009/05/14 17:10:13 mh86 Exp $
+// $Id: content_taxonomy_autocomplete.module,v 1.2.2.4.2.17 2009/08/19 09:42:30 mh86 Exp $
 
 /**
  * @file
@@ -84,10 +84,18 @@ function content_taxonomy_autocomplete_widget_settings($op, $widget) {
         '#required' => TRUE,
         '#description' => t('Defines how many characters can be typed into the autocomplete field. For values higher than 255, remember that one term name can not be longer than 255 (would be cutted), nevertheless it\'s not a problem for multiple values, separated by commas.'),
       );
+      if (module_exists('active_tags')) {
+        $form['autocomplete']['active_tags'] = array(
+          '#type' => 'checkbox', 
+          '#title' => t('Use Active Tags style widget'), 
+          '#default_value' => isset($widget['active_tags']) ? $widget['active_tags'] : 0,
+          '#description' => t('Use the Active Tags module to improve the usability of this autocomplete widget.'),
+        );
+      }
       return $form;
 
     case 'save':
-      return array('new_terms', 'extra_parent', 'maxlength');
+      return array('new_terms', 'extra_parent', 'maxlength', 'active_tags');
   }
 }
 
@@ -185,6 +193,10 @@ function content_taxonomy_autocomplete_process($element, $edit, $form_state, $fo
   }
   array_unshift($element[$field_key]['#element_validate'], 'content_taxonomy_autocomplete_validate');
   
+  if (module_exists('active_tags') && $field['widget']['active_tags']) {
+    active_tags_enable_widget('#' . $element['#id'] . '-value-wrapper');
+  }
+  
   return $element;
 }
 
@@ -262,6 +274,12 @@ function content_taxonomy_autocomplete_load($field_name, $string = '') {
   $content_type_info = _content_type_info();
   $vid = $content_type_info['fields'][$field_name]['vid'];
   $tid = content_taxonomy_field_get_parent($content_type_info['fields'][$field_name]);
+  
+  // If the menu system has splitted the search text because of slashes, glue it back.
+  if (func_num_args() > 2) {
+    $args = func_get_args();
+    $string .= '/'. implode('/', array_slice($args, 2));
+  }
   
   // The user enters a comma-separated list of tags. We only autocomplete the last tag.
   $array = drupal_explode_tags($string);
@@ -403,4 +421,3 @@ function content_taxonomy_autocomplete_merge_tags($terms, $vid) {
 function theme_content_taxonomy_autocomplete($element) {
   return $element['#children'];
 }
-
