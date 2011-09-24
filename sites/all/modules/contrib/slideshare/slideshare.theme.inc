@@ -1,24 +1,20 @@
 <?php
-// $Id: slideshare.theme.inc,v 1.1 2009/03/07 14:53:00 antoniodemarco Exp $
+// $Id: slideshare.theme.inc,v 1.3 2009/11/25 16:04:43 antoniodemarco Exp $
 
 /**
  * @file
  *
- * Theme functions for Slideshare integration module
+ * Theme functions for Slideshare module
  */
 
 /**
- * Flash embed for the theme function
- *
- * @param $embed
- * @param $width
- * @param $height
- * @param $field
- * @param $item
- * @param $node
- * @param $autoplay
- * @return Themed slideshare embed
+ * Flash embed.
  */
 function theme_slideshare_flash($embed, $width, $height, $field, $item, &$node, $autoplay) {
-  return $item['data']['EMBED'][0];
+  $matches = array();
+  preg_match_all('/<object[^>]*>(.*?)<\/object>/', $item['data']['EMBED'][0], $matches);
+  $output = '<object width="'. $width .'" height="'. $height .'" style="margin: 0;">'. $matches[1][0] .'</object>';
+  $output = preg_replace('/width="(\d*)"/', 'width="'. $width .'"', $output);
+  $output = preg_replace('/height="(\d*)"/', 'height="'. $height .'"', $output);
+  return $output;
 }

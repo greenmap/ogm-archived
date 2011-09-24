@@ -1,4 +1,4 @@
-// $Id: INSTALL.txt,v 1.1 2009/03/07 14:53:00 antoniodemarco Exp $
+// $Id: INSTALL.txt,v 1.2 2009/11/22 12:37:44 antoniodemarco Exp $
 
 Getting Started
 ---------------
@@ -15,8 +15,8 @@ Getting Started
 
 4. CLick on "Allow content from Slideshare"
 
-5. Provide "API Key" and "Shared Secret" by Slideshare, to obtain one apply to http://www.slideshare.net/applyforapi.
+5. Provide "API Key" and "Shared Secret" by Slideshare, to obtain one apply to http://www.slideshare.net/developers/applyforapi.
 
 6. Add a CCK field of "Embedded Video" type and select "Slideshare" in "Providers Supported".
 
-7. At the node submission stage paste the Wordpress code provided by Slideshare.net (next version will work simple with URL)
+7. In the node submission form paste the URL of the Slideshare presentation into the Embedded Media Video input field.
