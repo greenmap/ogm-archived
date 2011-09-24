@@ -1,12 +1,12 @@
-$Id: README.txt,v 1.1.8.1 2009/07/07 23:43:55 kbahey Exp $
+$Id: README.txt,v 1.1.8.2 2010/05/11 23:32:37 kbahey Exp $
 
 Copyright 2006 http://2bits.com
 
 Description:
 ------------
 
-This is a profile module export user and profile data to a comma separated 
-variable file (CSV).
+This is a profile module export user and profile data to a Comma Separated 
+Values file (CSV).
 
 This is useful if you want to feed the data to other systems such as 
 membership system, event registration,  ...etc.
