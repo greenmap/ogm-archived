@@ -1,56 +1,148 @@
 <?php
-// $Id: path_redirect.test,v 1.1.2.8 2009/02/28 00:02:32 davereid Exp $
+// $Id: path_redirect.test,v 1.1.2.25 2010/12/01 00:50:52 davereid Exp $
 
 /**
  * @file
  * Tests for the path_redirect module.
  */
 
-class PathRedirectUnitTest extends DrupalWebTestCase {
-  function getInfo() {
+class PathRedirectTestHelper extends DrupalWebTestCase {
+  function setUp(array $modules = array()) {
+    $modules[] = 'path';
+    $modules[] = 'path_redirect';
+    parent::setUp($modules);
+  }
+
+  protected function assertHeader($name, $expected, $message = '') {
+    $value = $this->drupalGetHeader(strtolower($name));
+    if (empty($message)) {
+      $message = t('Header @header identical to %value, expected %expected.', array('@name' => $name, '%value' => $value, '%expected' => $expected));
+    }
+    $this->assertIdentical($expected, $value, $message);
+  }
+
+  protected function assertNoHeader($name, $message = '') {
+    if (empty($message)) {
+      $message = t('Header @header not found.', array('@name' => $name));
+    }
+    $this->assertIdentical($this->drupalGetHeader(strtolower($name)), FALSE, $message);
+  }
+
+  protected function assertRedirect(array $redirect) {
+    $redirect += array(
+      'source_query' => array(),
+      'query' => array(),
+      'fragment' => NULL,
+    );
+    $this->drupalHead($redirect['source'], array('query' => $redirect['source_query']));
+    $expected_url = url($redirect['redirect'], array('query' => $redirect['query'], 'fragment' => $redirect['fragment'], 'absolute' => TRUE));
+    $value = $this->drupalGetHeader('location');
+    $this->assertEqual($value, $expected_url, t('Redirected from !request to !redirect, expected !expected.', array('!request' => $this->getUrl(), '!redirect' => $value, '!expected' => $expected_url)));
+
+    // Reload the redirect.
+    if (!empty($redirect['rid'])) {
+      return path_redirect_load($redirect['rid']);
+    }
+  }
+
+  protected function assertNoRedirect(array $redirect) {
+    $redirect += array(
+      'source_query' => array(),
+    );
+    $this->drupalHead($redirect['source'], array('query' => $redirect['source_query']));
+    $this->assertNoHeader('location', t('Not redirected from !request.', array('!request' => $this->getUrl())));
+  }
+
+  protected function addRedirect($source, $redirect, array $options = array()) {
+    $redirect = array(
+      'source' => $source,
+      'redirect' => $redirect,
+    ) + $options;
+    path_redirect_save($redirect);
+    return path_redirect_load($redirect['rid']);
+  }
+}
+
+class PathRedirectUnitTest extends PathRedirectTestHelper {
+  public static function getInfo() {
     return array(
-      'name' => t('Path redirect functionality'),
-      'description' => t('Test basic redirection.'),
-      'group' => t('Path redirect'),
+      'name' => 'Path redirect unit tests',
+      'description' => 'Test basic functionality.',
+      'group' => 'Path redirect',
     );
   }
 
-  function setUp() {
-    parent::setUp('path_redirect');
+  function setUp(array $modules = array()) {
+    parent::setUp($modules);
+    variable_set('simpletest_maximum_redirects', 0);
+  }
+
+  function testCompareArray() {
+    $haystack = array('a' => 'aa', 'b' => 'bb', 'c' => array('c1' => 'cc1', 'c2' => 'cc2'));
+    $cases = array(
+      array('query' => array('a' => 'aa', 'b' => 'invalid'), 'result' => FALSE),
+      array('query' => array('b' => 'bb', 'b' => 'bb'), 'result' => TRUE),
+      array('query' => array('b' => 'bb', 'c' => 'invalid'), 'result' => FALSE),
+      array('query' => array('b' => 'bb', 'c' => array()), 'result' => TRUE),
+      array('query' => array('b' => 'bb', 'c' => array('invalid')), 'result' => FALSE),
+      array('query' => array('b' => 'bb', 'c' => array('c2' => 'invalid')), 'result' => FALSE),
+      array('query' => array('b' => 'bb', 'c' => array('c2' => 'cc2')), 'result' => TRUE),
+    );
+    foreach ($cases as $index => $case) {
+      $this->assertEqual($case['result'], path_redirect_compare_array($case['query'], $haystack));
+    }
   }
 
   function testRedirects() {
     // Test a basic redirect (with and without a trailing slash requested).
-    path_redirect_save(array('path' => '/test/', 'redirect' => 'node'));
-    $this->assertRedirect('test', 'node');
-    $this->assertRedirect('test/', 'node');
+    $this->addRedirect('test', 'node');
+    $this->assertRedirect(array('source' => 'test', 'redirect' => 'node'));
+    $this->assertRedirect(array('source' => 'test/', 'redirect' => 'node'));
 
     // Test a unicode URL.
-    path_redirect_save(array('path' => 'FrançAIS', 'redirect' => 'http://example.com/'));
-    $this->assertRedirect('FrançAIS', 'http://example.com/');
+    $redirect = $this->addRedirect('FrançAIS', 'http://example.com/');
+    $this->assertRedirect($redirect);
 
     // Test an URL with special characters.
-    path_redirect_save(array('path' => 'foo_/ferzle-foo.bar', 'redirect' => '<front>'));
-    $this->assertRedirect('foo_/ferzle-foo.bar', '<front>');
+    $redirect = $this->addRedirect('foo_/ferzle-foo.bar', '<front>');
+    $this->assertRedirect($redirect);
   }
 
   function testNoCleanURLs() {
-    variable_set('clean_url', 0);
+    $clean_url = (bool) variable_get('clean_url', 0);
+    variable_set('clean_url', !$clean_url);
     $this->testRedirects();
-    variable_set('clean_url', 1);
+    variable_set('clean_url', (int) $clean_url);
   }
 
-  private function assertRedirect($request, $redirect, $code = FALSE) {
-    $this->drupalGet($request);
-    if ($code) {
-      $this->assertResponse($code);
-    }
-    $this->assertEqual($this->getUrl(), url($redirect, array('absolute' => TRUE)), t('Redirected from %request to %redirect.', array('%request' => $request, '%redirect' => $redirect)));
+  /**
+   * Test the _path_redirect_uasort() callback used in
+   * path_redirect_load_by_source().
+   */
+  function testRedirectQuerySorting() {
+    $redirect1 = array('source' => 'test', 'redirect' => 'node');
+    $redirect2 = array('source' => 'test', 'source_query' => array('foo' => 'bar'), 'redirect' => 'node', 'query' => array('foo' => 'bar'));
+    $redirect3 = array('source' => 'test', 'source_query' => array('foo' => 'ferzle'), 'redirect' => 'node', 'query' => array('foo' => 'ferzle'));
+
+    $this->addRedirect('test', 'node', $redirect2);
+    $this->assertNoRedirect($redirect1);
+    $this->assertRedirect($redirect2);
+    $this->assertNoRedirect($redirect3);
+
+    $this->addRedirect('test', 'node');
+    $this->assertRedirect($redirect1);
+    $this->assertRedirect($redirect2);
+    $this->assertRedirect(array('query' => array()) + $redirect3);
+
+    $this->addRedirect('test', 'node', $redirect3);
+    $this->assertRedirect($redirect1);
+    $this->assertRedirect($redirect2);
+    $this->assertRedirect($redirect3);
   }
 }
 
-class PathRedirectPathautoUnitTest extends DrupalWebTestCase {
-  function getInfo() {
+/*class PathRedirectPathautoUnitTest extends PathRedirectTestHelper {
+  public static function getInfo() {
     return array(
       'name' => t('Pathauto integration'),
       'description' => t('Test integration with the pathauto module.'),
@@ -59,8 +151,10 @@ class PathRedirectPathautoUnitTest extends DrupalWebTestCase {
     );
   }
 
-  function setUp() {
-    parent::setUp('path', 'token', 'pathauto', 'path_redirect');
+  function setUp($modules = array()) {
+    $modules[] = 'pathauto';
+    $modules[] = 'token';
+    parent::setUp($modules);
 
     $this->admin_user = $this->drupalCreateUser(array('administer nodes', 'administer redirects', 'create url aliases'));
     $this->drupalLogin($this->admin_user);
@@ -70,7 +164,7 @@ class PathRedirectPathautoUnitTest extends DrupalWebTestCase {
 
   function testPathautoIntegration() {
     $node = $this->drupalCreateNode(array('title' => 'test1'));
-    $this->assertIdentical('content/test1', drupal_get_path_alias("node/{$node->nid}"));
+    $this->assertIdentical('content/test1', drupal_get_path_alias('node/' . $node->nid));
 
     $edit = array(
       'title' => 'test2',
@@ -78,7 +172,7 @@ class PathRedirectPathautoUnitTest extends DrupalWebTestCase {
     );
     $this->drupalPost("node/{$node->nid}/edit", $edit, t('Save'));
     $this->assertRaw(t('%title has been updated.', array('%title' => $edit['title'])), t('Node saved.'));
-    $this->assertTrue(path_redirect_load(array('path' => 'content/test1', 'redirect' => "node/{$node->nid}")), t('Redirect created.'));
+    $this->assertTrue(path_redirect_load(array('source' => 'content/test1', 'redirect' => 'node/' . $node->nid)), t('Redirect created.'));
 
     $edit = array(
       'title' => 'test3',
@@ -86,13 +180,13 @@ class PathRedirectPathautoUnitTest extends DrupalWebTestCase {
     );
     $this->drupalPost("node/{$node->nid}/edit", $edit, t('Save'));
     $this->assertRaw(t('%title has been updated.', array('%title' => $edit['title'])), t('Node saved.'));
-    $this->assertTrue(path_redirect_load(array('path' => 'content/test1', 'redirect' => "node/{$node->nid}")), t('Redirect created.'));
-    $this->assertTrue(path_redirect_load(array('path' => 'content/test2', 'redirect' => "node/{$node->nid}")), t('Redirect created.'));
+    $this->assertTrue(path_redirect_load(array('source' => 'content/test1', 'redirect' => 'node/' . $node->nid)), t('Redirect created.'));
+    $this->assertTrue(path_redirect_load(array('source' => 'content/test2', 'redirect' => 'node/' . $node->nid)), t('Redirect created.'));
   }
-}
+}*/
 
-class PathRedirectFunctionalTest extends DrupalWebTestCase {
-  function getInfo() {
+class PathRedirectFunctionalTest extends PathRedirectTestHelper {
+  public static function getInfo() {
     return array(
       'name' => t('Path redirect administration'),
       'description' => t('Test redirect administration interface.'),
@@ -100,8 +194,8 @@ class PathRedirectFunctionalTest extends DrupalWebTestCase {
     );
   }
 
-  function setUp() {
-    parent::setUp('path', 'path_redirect');
+  function setUp(array $modules = array()) {
+    parent::setUp($modules);
 
     $this->admin_user = $this->drupalCreateUser(array('administer redirects', 'administer nodes', 'create url aliases'));
     $this->drupalLogin($this->admin_user);
@@ -112,31 +206,31 @@ class PathRedirectFunctionalTest extends DrupalWebTestCase {
     $edit = array(
       'path' => 'test1',
     );
-    $this->drupalPost("node/{$node->nid}/edit", $edit, t('Save'));
+    $this->drupalPost('node/' . $node->nid . '/edit', $edit, t('Save'));
     $this->assertRaw(t('@type %title has been updated.', array('@type' => 'Page', '%title' => $node->title)), t('Node saved.'));
-    $this->assertFalse(path_redirect_load(array('redirect' => "node/{$node->nid}")), t('No redirects created yet.'));
+    $this->assertFalse(path_redirect_load_multiple(NULL, array('redirect' => 'node/' . $node->nid)), t('No redirects created yet.'));
 
     $edit = array(
       'path' => 'test2',
     );
-    $this->drupalPost("node/{$node->nid}/edit", $edit, t('Save'));
+    $this->drupalPost('node/' . $node->nid . '/edit', $edit, t('Save'));
     $this->assertRaw(t('@type %title has been updated.', array('@type' => 'Page', '%title' => $node->title)), t('Node saved.'));
-    $this->assertTrue(path_redirect_load(array('path' => 'test1', 'redirect' => "node/{$node->nid}")), t('Redirect created.'));
+    $this->assertTrue(path_redirect_load_multiple(NULL, array('source' => 'test1', 'redirect' => 'node/' . $node->nid)), t('Redirect created.'));
 
-    $this->drupalPost("node/{$node->nid}/delete", array(), t('Delete'));
-    $this->assertFalse(path_redirect_load(array('redirect' => "node/{$node->nid}")), t("Deleted node's redirects deleted."));
+    $this->drupalPost('node/' . $node->nid . '/delete', array(), t('Delete'));
+    $this->assertFalse(path_redirect_load_multiple(NULL, array('redirect' => 'node/' . $node->nid)), t("Deleted node's redirects deleted."));
   }
 
   function testInactivePurging() {
-    $time = time();
     // Add two inactive redirects to the database.
-    path_redirect_save(array('path' => 'test1', 'redirect' => 'node', 'last_used' => $time - 610000));
-    path_redirect_save(array('path' => 'test2', 'redirect' => 'node', 'last_used' => $time - 610000));
+    $time = time();
+    $r1 = $this->addRedirect('test1', 'node', array('last_used' => $time - 620000));
+    $r2 = $this->addRedirect('test2', 'node', array('last_used' => $time - 620000));
 
     // Purging is disabled by default, so after running cron both redirects should not be removed.
-    $this->drupalGet('cron.php');
-    $this->assertTrue(path_redirect_load(array('path' => 'test1')), t('Inactive redirect not removed.'));
-    $this->assertTrue(path_redirect_load(array('path' => 'test2')), t('Inactive redirect not removed.'));
+    $this->cronRun();
+    $this->assertTrue(path_redirect_load($r1['rid']), t('Inactive redirect not removed.'));
+    $this->assertTrue(path_redirect_load($r2['rid']), t('Inactive redirect not removed.'));
 
     // Enable purging of inactive redirects.
     $edit = array('path_redirect_purge_inactive' => 604800);
@@ -145,14 +239,12 @@ class PathRedirectFunctionalTest extends DrupalWebTestCase {
 
     // Run one of the redirects and test that the last used timestamp was updated.
     $this->drupalGet('test1');
-    $this->assertTrue(db_result(db_query("SELECT last_used FROM {path_redirect} WHERE path = 'test1'")) > $time, t('Last used timestamp was updated.'));
+    $this->assertTrue(db_result(db_query("SELECT last_used FROM {path_redirect} WHERE source = 'test1'")) >= $time, t('Last used timestamp was updated.'));
 
     // Run cron and test that the inactive redirect was removed.
-    $this->drupalGet('cron.php');
-    //drupal_cron_run();
-    //path_redirect_cron();
-    $this->assertTrue(path_redirect_load(array('path' => 'test1')), t('Active redirect not removed.'));
-    $this->assertFalse(path_redirect_load(array('path' => 'test2')), t('Inactive redirect removed.'));
+    $this->cronRun();
+    $this->assertTrue(path_redirect_load($r1['rid']), t('Active redirect not removed.'));
+    $this->assertFalse(path_redirect_load($r2['rid']), t('Inactive redirect removed.'));
   }
 
   function testAutocomplete() {
@@ -160,21 +252,24 @@ class PathRedirectFunctionalTest extends DrupalWebTestCase {
     $this->drupalGet('test1');
     $this->drupalGet('test2');
     $this->drupalGet('test2');
+    $this->drupalGet('tst3');
 
     // Create a 404 and then create a valid redirect for it.
     $this->drupalGet('test3');
-    path_redirect_save(array('path' => 'test3', 'redirect' => 'node'));
+    $this->addRedirect('test3', 'node');
 
     // Create a 404 and then create a valid path for it.
     $this->drupalGet('node/1');
-    $this->drupalCreateNode();
+    $node = $this->drupalCreateNode();
+    $this->assertEqual($node->nid, 1, t('Node 1 created'));
 
     // Test that only the valid 404s are found in the autocomplete.
-    $this->drupalGet('admin/build/path-redirect/autocomplete');
+    $this->drupalGet('js/path_redirect/autocomplete_404/e');
     $this->assertText('test1');
     $this->assertText('test2');
-    $this->assertNoText('node/1');
+    $this->assertNoText('node');
     $this->assertNoText('test3');
+    $this->assertNoText('tst3');
 
     // Test that the 404 with the greater hits is listed first.
     $this->assertTrue(strpos($this->drupalGetContent(), 'test1') > strpos($this->drupalGetContent(), 'test2'), t('Paths ordered correctly.'));
