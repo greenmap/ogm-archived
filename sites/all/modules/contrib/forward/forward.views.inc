@@ -1,5 +1,4 @@
 <?php
-// $Id: forward.views.inc,v 1.1.2.4 2009/09/21 15:43:44 seanr Exp $
 
 /**
  * Implementation of hook_views_data()
