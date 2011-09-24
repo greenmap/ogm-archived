@@ -1,5 +1,4 @@
 <?php
-// $Id: imagefield_widget.inc,v 1.37 2009/04/20 23:51:35 quicksketch Exp $
 
 /**
  * @file
@@ -12,13 +11,17 @@
 function imagefield_widget_settings_form($widget) {
   $form = module_invoke('filefield', 'widget_settings', 'form', $widget);
 
+  if ($form['file_extensions']['#default_value'] == 'txt') {
+    $form['file_extensions']['#default_value'] = 'png gif jpg jpeg';
+  }
+
   $form['max_resolution'] = array(
     '#type' => 'textfield',
     '#title' => t('Maximum resolution for Images'),
     '#default_value' => !empty($widget['max_resolution']) ? $widget['max_resolution'] : 0,
     '#size' => 15,
     '#maxlength' => 10,
-    '#description' => t('The maximum allowed image size expressed as WIDTHxHEIGHT (e.g. 640x480). Set to 0 for no restriction. If a larger image is uploaded, it will be resized to reflect the given width and height. Resizing images on upload will cause the loss of <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format">EXIF data</a> in the image.'),
+    '#description' => t('The maximum allowed image size expressed as WIDTHxHEIGHT (e.g. 640x480). Set to 0 for no restriction. If a larger image is uploaded, it will be resized to reflect the given width and height.'),
     '#weight' => 2.1,
   );
   $form['min_resolution'] = array(
@@ -27,10 +30,13 @@ function imagefield_widget_settings_form($widget) {
     '#default_value' => !empty($widget['min_resolution']) ? $widget['min_resolution'] : 0,
     '#size' => 15,
     '#maxlength' => 10,
-    '#description' =>
-    t('The minimum allowed image size expressed as WIDTHxHEIGHT (e.g. 640x480). Set to 0 for no restriction. If an image that is smaller than these dimensions is uploaded it will be rejected.'),
+    '#description' => t('The minimum allowed image size expressed as WIDTHxHEIGHT (e.g. 640x480). Set to 0 for no restriction. If an image that is smaller than these dimensions is uploaded it will be rejected.'),
     '#weight' => 2.2,
   );
+
+  if (!module_exists('imageapi') || imageapi_default_toolkit() == 'imageapi_gd') {
+    $form['max_resolution']['#description'] .= ' ' . t('Resizing images on upload will cause the loss of <a href="http://en.wikipedia.org/wiki/Exchangeable_image_file_format">EXIF data</a> in the image.');
+  }
 
   $form['alt_settings'] = array(
     '#type' => 'fieldset',
@@ -50,7 +56,7 @@ function imagefield_widget_settings_form($widget) {
     '#title' => t('Default ALT text'),
     '#default_value' => !empty($widget['alt']) ? $widget['alt'] : '',
     '#description' => t('This value will be used for alternate text by default.'),
-    '#suffix' => theme('token_help', 'file'),
+    '#suffix' => theme('token_help', array('user')),
   );
 
   $form['title_settings'] = array(
@@ -80,7 +86,7 @@ function imagefield_widget_settings_form($widget) {
     '#title' => t('Default Title text'),
     '#default_value' => !empty($widget['title']) ? $widget['title'] : '',
     '#description' => t('This value will be used as the image title by default.'),
-    '#suffix' =>  theme('token_help', 'file'),
+    '#suffix' => theme('token_help', array('user')),
   );
 
   // Default image settings.
@@ -130,7 +136,13 @@ function imagefield_widget_settings_form($widget) {
  * to the $form_state variable.
  */
 function _imagefield_widget_settings_default_validate($element, &$form_state) {
-  // Verify the destination exists
+  // Skip this validation if there isn't a default file uploaded at all or if
+  // validation has already failed because of another error.
+  if (!is_uploaded_file($_FILES['files']['tmp_name']['default_image_upload']) || form_set_error()) {
+    return;
+  }
+
+  // Verify the destination exists.
   $destination = file_directory_path() .'/imagefield_default_images';
   if (!field_file_check_directory($destination, FILE_CREATE_DIRECTORY)) {
     form_set_error('default_image', t('The default image could not be uploaded. The destination %destination does not exist or is not writable by the server.', array('%destination' => dirname($destination))));
@@ -147,12 +159,12 @@ function _imagefield_widget_settings_default_validate($element, &$form_state) {
     return;
   }
 
-  // Remove old image (if any) & clean up database.
+  // Remove the old default image if any.
   $old_default = $form_state['values']['default_image'];
   if (!empty($old_default['fid'])) {
-    if (file_delete(file_create_path($old_default['filepath']))) {
-      db_query('DELETE FROM {files} WHERE fid=%d', $old_default['fid']);
-    }
+    // Set a flag to not count this instance in hook_file_references().
+    $old_default['imagefield_type_name'] = $form_state['values']['type_name'];
+    field_file_delete($old_default);
   }
 
   // Make the file permanent and store it in the form.
@@ -220,7 +232,7 @@ function imagefield_widget_process($element, $edit, &$form_state, $form) {
   // Check if using the default alt text and replace tokens.
   $default_alt = (!$field['widget']['custom_alt'] || (empty($file['status']) && empty($file['data']['alt'])));
   if ($default_alt && function_exists('token_replace')) {
-    $field['widget']['alt'] = token_replace($field['widget']['alt'], 'user', $GLOBALS['user']);
+    $field['widget']['alt'] = empty($field['widget']['alt']) ? '' : token_replace($field['widget']['alt'], 'user', $GLOBALS['user']);
   }
   $element['data']['alt'] = array(
     '#title' => t('Alternate Text'),
@@ -238,7 +250,7 @@ function imagefield_widget_process($element, $edit, &$form_state, $form) {
   // Check if using the default title and replace tokens.
   $default_title = (!$field['widget']['custom_title'] || (empty($file['status']) && empty($file['data']['title'])));
   if ($default_title && function_exists('token_replace')) {
-    $field['widget']['title'] = token_replace($field['widget']['title'], 'user', $GLOBALS['user']);
+    $field['widget']['title'] = empty($field['widget']['title']) ? '' : token_replace($field['widget']['title'], 'user', $GLOBALS['user']);
   }
 
   // If the custom title is enabled, input type defaults to textfield.
@@ -268,7 +280,8 @@ function imagefield_widget_process($element, $edit, &$form_state, $form) {
 /**
  * FormAPI theme function. Theme the output of an image field.
  */
-function theme_imagefield_widget(&$element) {
+function theme_imagefield_widget($element) {
   drupal_add_css(drupal_get_path('module', 'imagefield') .'/imagefield.css');
+  $element['#id'] .= '-upload'; // Link the label to the upload field.
   return theme('form_element', $element, $element['#children']);
 }
