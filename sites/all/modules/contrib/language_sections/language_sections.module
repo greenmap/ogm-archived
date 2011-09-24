@@ -4,15 +4,15 @@
 // License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
 // Support: Commercial support and customization is available from www.netgenius.co.uk
-// Email: drupal_dev at netgenius.co.uk
+// Email: drupal at netgenius.co.uk
 
-// Currently this .module file is compatible with both Drupal 5.x and 6.x
+// Currently this .module file is compatible with both Drupal 5.x and 6.x, and might work with 7.x.
 
 // Implementation of hook_filter_tips()
 function language_sections_filter_tips($delta, $format, $long = false) {
-  $short_help = "Mark language-dependent sections with <strong>== lc ==</strong> where <em>lc</em> (or <em>lc-xx</em>) is a language code. Use <em>qz</em> for <em>default</em> and <em>qq</em> for <em>all languages.</em>";
+  $short_help = "Mark language-dependent sections with <strong>== lc ==</strong> where <em>lc</em> (or <em>lc-xx</em>) is a language code, <em>other</em> or <em>all</em>.";
   $long_help = $short_help;
-  
+
   return t($long? $long_help : $short_help);
 }
 
@@ -20,7 +20,7 @@ function language_sections_filter_tips($delta, $format, $long = false) {
 function _language_sections_get_language() {
   $versions = explode('.', VERSION, 2);
   switch($versions[0]) {
-    case 6:
+    case 6: case 7:
       global $language;
       return $language->language;
 
@@ -37,8 +37,9 @@ function language_sections_filter($op, $delta = 0, $format = -1, $text = '') {
   // Define the prefix used for config values:
   $prefix = $mod_id.'_'.$format.'_';
   // Define the default pattern used to find matches:
-  $def_pattern = '/(=+ *([a-z]{2}|[a-z]{2}-[a-z]{2}) *=+\s?)(.*?)/';
-  
+//  $def_pattern = '/(=+ *([a-z]{2}|[a-z]{2}-[a-z]{2}) *=+\s?)(.*?)/';
+  $def_pattern = '/(=+ *([a-z]{2}|[a-z]{2}-[a-z]{2,5}|all|other) *=+\s?)(.*?)/i';
+
   switch ($op) {
     case 'process':
       // Get settings, and reset the default pattern if needed:
@@ -48,35 +49,37 @@ function language_sections_filter($op, $delta = 0, $format = -1, $text = '') {
       $matches = preg_split($pattern, $text, -1, PREG_SPLIT_DELIM_CAPTURE);
 
       /************* debug *****************
-      // Display the contents of the array of substrings
-      $cr = "<br>\r\n";
-      $out = "pattern: " . $pattern . $cr;
-      $out .= "array: ";
-      for($i = 0; $i < count($matches); $i++) {
-        if ($matches[$i]) $out .= $i . ': {' . $matches[$i] . '}'. $cr; 
+      if (1) {
+        // Display the contents of the array of substrings
+        $cr = "<br>\r\n";
+        $out = "pattern: " . $pattern . $cr;
+        $out .= "array: ";
+        for($i = 0; $i < count($matches); $i++) {
+          if ($matches[$i]) $out .= $i . ': {' . $matches[$i] . '}'. $cr;
+        }
+        $out .= $cr."(end)".$cr;
+        return $out;
       }
-      $out .= $cr."(end)".$cr;
-      return $out;
       *************************************/
 
       // Build the output string, keeping only the parts we want...
       // Todo: A better preg pattern - this approach is less than optimal with a large number of languages.
       // Todo: 'qq' and 'qz' codes should probably be configurable.
-      $current_language = _language_sections_get_language();
+      $current_language = strtolower(_language_sections_get_language());
       $out = $matches[0]; $default = true;
       for($i = $n1; $i < count($matches); $i += $n3) {
-        switch ($matches[$i]) {
+        switch (strtolower($matches[$i])) {
           // case: a section for the current language, use it and clear "use default" flag.
           case $current_language:
             $out .= $matches[$i+$n2];
             $default = false;
             break;
           // case: a section for "all languages", use it.
-          case 'qq':
+          case 'qq': case 'all':
             $out .= $matches[$i+$n2];
             break;
           // case: a "default" section, use it if we haven't already used a language-specific section...
-          case 'qz':
+          case 'qz': case 'other':
             if ($default)
               $out .= $matches[$i+$n2];
             else
@@ -91,13 +94,13 @@ function language_sections_filter($op, $delta = 0, $format = -1, $text = '') {
 
     case 'list':
       return array(0 => t($mod_name));
-            
+
     case 'description':
       return t('Allows you to define content for several languages in a single text area.');
 
     case 'settings':
       return _language_sections_settings($mod_id, $mod_name, $prefix, $def_pattern);
-                                                                                                                                                                      
+
     default:
       return $text;
   }
@@ -134,7 +137,7 @@ function _language_sections_settings($mod_id, $mod_name, $prefix, $def_pattern) 
     '#default_value' => $use_alt,
     '#description' => t("If set, $mod_name can be defined using the pattern given below. Otherwise, the default pattern will be used."),
   );
-  
+
   $field = $prefix.'pattern';
   $form[$mod_id][$field] = array(
     '#type' => 'textfield',

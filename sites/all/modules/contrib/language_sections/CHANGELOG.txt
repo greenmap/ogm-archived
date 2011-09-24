@@ -1,4 +1,9 @@
 $Id:
+Tue 16 Mar 2010 13:47:39 CET 
+
+* Added "all" and "other" codes instead of the confusing "qq" and "qz", the latter left in for backward compatibility.
+* All comparisons are now case-insensitive, e.g. en-GB and en-gb should work.
+* Supports longer language codes, format xx-yyyyy (2 to 5 characters in the second part) by default.
 
 Tue 29 Jul 2008 03:12:41 CEST 
 Added support for "default" sections, uses "qz" pseudo-language-code.  Updated help and readme to match.
