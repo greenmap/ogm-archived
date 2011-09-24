@@ -1,5 +1,5 @@
 <?php
-// $Id: rules_admin.inc,v 1.1.2.10 2009/04/20 11:45:58 fago Exp $
+// $Id: rules_admin.inc,v 1.1.2.14 2010/11/25 11:14:53 fago Exp $
 
 
 /**
@@ -220,25 +220,18 @@ function rules_admin_get_categories($item_type) {
 }
 
 /**
- * Gets an unique name for a newly added rule.
- */
-function _rules_admin_rule_get_new_unique_name() {
-  $id = variable_get('rules_counter', 0);
-  $id++;
-  variable_set('rules_counter', $id);
-  return 'rules_'. $id;
-}
-
-/**
  * Gets the label for the info of the given element by apply label callbacks.
  * Note that this is also used for argument infos.
  *
  * @param $cfirst
  *   If TRUE, capitalize the first letter, if FALSE lower case the first letter.
+ * @param $element
+ *   The element having or containing this label. Pass by referenec to allow
+ *   callbacks to alter some info, used by rules_core_node_label_callback().
  *
  * @return An array of changed properties of the given info
  */
-function _rules_admin_get_label(&$form_state, $info, $element, $value, $cfirst = NULL) {
+function _rules_admin_get_label(&$form_state, $info, &$element, $value, $cfirst = NULL) {
   $info_changes = array();
 
   if (drupal_strtolower($info['label']) != drupal_strtolower($value)) {
@@ -369,6 +362,7 @@ function rules_admin_fix_breadcrumb($rule, $name) {
   }
   if (arg(5)) {
     // Also add a crumb to the rule itself.
+    array_unshift($crumbs, l(t('Rules'), RULES_ADMIN_PATH));
     $crumbs[] = l($rule['#label'], RULES_ADMIN_RULE_PATH .'/'. $name);
   }
   rules_admin_add_crumbs($crumbs);
@@ -383,4 +377,8 @@ function rules_admin_add_crumbs($crumbs) {
     $breadcrumb = array_merge($breadcrumb, $crumbs);
     drupal_set_breadcrumb($breadcrumb);
   }
+}
+
+function rules_admin_is_event_rule($rule) {
+  return !empty($rule['#set']) && strpos($rule['#set'], 'event_') === 0;
 }
