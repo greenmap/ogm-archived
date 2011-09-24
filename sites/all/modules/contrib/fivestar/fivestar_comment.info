@@ -5,9 +5,9 @@ package = Voting
 core = 6.x
 dependencies[] = votingapi
 dependencies[] = fivestar
-; Information added by drupal.org packaging script on 2009-04-30
-version = "6.x-1.15"
+; Information added by drupal.org packaging script on 2009-10-22
+version = "6.x-1.19"
 core = "6.x"
 project = "fivestar"
-datestamp = "1241125556"
+datestamp = "1256241955"
 
