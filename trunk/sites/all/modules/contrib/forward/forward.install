@@ -1,12 +1,25 @@
 <?php
-// $Id: forward.install,v 1.4.2.4 2009/09/21 15:43:44 seanr Exp $
 function forward_install() {
   drupal_install_schema('forward');
   variable_set('forward_theme_template', 1);
+  db_query("INSERT INTO {forward_statistics} (nid, last_forward_timestamp, forward_count, clickthrough_count) values(0, 0, 0, 0)");
+  db_query("INSERT INTO {forward_statistics} (nid, last_forward_timestamp, forward_count, clickthrough_count) SELECT n.nid, 0, 0, 0 FROM {node} n");
 }
 
+/**
+ * Implementation of hook_uninstall().
+ */
 function forward_uninstall() {
   drupal_uninstall_schema('forward');
+  
+  // Get global variable array
+  global $conf;
+  foreach (array_keys($conf) as $key) {
+    // Find variables that have the module prefix
+    if (strpos($key, 'forward_') === 0) {
+      variable_del($key);
+    }
+  }
 }
 
 /**
@@ -17,10 +30,14 @@ function forward_schema() {
     'fields' => array(
       'path'      => array('type' => 'varchar', 'not null' => TRUE, 'default' => '<front>', 'length' => 255),
       'type'      => array('type' => 'varchar', 'not null' => TRUE, 'length' => 8),
-      'timestamp' => array('type' => 'int', 'not null' => TRUE, 'default' => 0)
+      'timestamp' => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'uid'       => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'hostname'  => array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => '', 'description' => 'Hostname of the user who triggered the event.',),
     ),
     'indexes' => array(
-      'forward_path' => array('path')
+      'forward_path'     => array('path'),
+      'forward_uid'      => array('uid'),
+      'forward_hostname' => array('hostname')
     ),
   );
   $schema['forward_statistics'] = array(
@@ -39,8 +56,7 @@ function forward_schema() {
 }
 
 /**
- * Changed node_comment_statistics to use node->changed to avoid future
- * timestamps.
+ * Add statistics table and populate with data from forward_log
  */
 function forward_update_1() {
   // initialize table
@@ -70,8 +86,7 @@ function forward_update_1() {
 }
 
 /**
- * Changed node_comment_statistics to use node->changed to avoid future
- * timestamps.
+ * Update variable strings
  */
 function forward_update_2() {
   //variable strings changed
@@ -97,4 +112,39 @@ function forward_update_3() {
   db_drop_field($ret, 'forward_log', 'nid');
   
   return $ret;
+}
+
+/**
+ * Migrate variable strings
+ */
+function forward_update_4() {
+  //variable strings changed
+  variable_set('forward_pagesubject', variable_get('forward_emailsubject', '!name has forwarded a page to you from !site'));
+  variable_set('forward_pagemessage', variable_get('forward_emailmessage', '!name thought you would like to see this page from the !site web site.'));
+
+  return array();
+}
+
+/**
+ * Add uid and hostname to log table
+ */
+function forward_update_5() {
+  $ret = array();
+  db_add_field($ret, 'forward_log', 'uid', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+  db_add_field($ret, 'forward_log', 'hostname', array('type' => 'varchar', 'length' => 128, 'not null' => TRUE, 'default' => '', 'description' => 'Hostname of the user who triggered the event.'));
+  db_add_index($ret, 'forward_log', 'forward_uid', array('uid'));
+  db_add_index($ret, 'forward_log', 'forward_hostname', array('hostname'));
+  
+  return $ret;
+}
+
+/**
+ * Fix variable strings
+ */
+function forward_update_6() {
+  //variable strings changed
+  variable_set('forward_page_subject', variable_get('forward_email_subject', '!name has forwarded a page to you from !site'));
+  variable_set('forward_page_message', variable_get('forward_email_message', '!name thought you would like to see this page from the !site web site.'));
+
+  return array();
 }
