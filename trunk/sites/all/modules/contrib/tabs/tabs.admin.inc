@@ -1,5 +1,5 @@
 <?php
-// $Id: tabs.admin.inc,v 1.3 2009/08/26 15:07:33 nedjo Exp $
+// $Id: tabs.admin.inc,v 1.5 2010/01/18 06:30:10 nedjo Exp $
 
 /**
  * @file
@@ -29,7 +29,7 @@ function tabs_admin_settings() {
     '#type' => 'radios',
     '#title' => t('Effect speed'),
     '#description' => t('Speed at which to apply effects.'),
-    '#default_value' => variable_get('tabs_speed', 'slow'),
+    '#default_value' => variable_get('tabs_speed', 'fast'),
     '#options' => array('slow' => t('slow'), 'fast' => t('fast'), '1' => t('immediate')),
   );
   $form['tabs_navigation'] = array(
@@ -50,6 +50,13 @@ function tabs_admin_settings() {
     '#title' => t('Previous button caption'),
     '#description' => t('The text to be displayed in the \'previous\' button.'),
     '#default_value' => variable_get('tabs_nav_prev', t('previous')),
+  );
+  $form['tabs_navigation_titles'] = array(
+    '#type' => 'radios',
+    '#title' => t('Take captions from tab titles'),
+    '#description' => t('Enable to use tht titles of the next or previous tabs for "next" and "previous" button captions. If this option is enabled, the next and previous captions above will be ignored.'),
+    '#default_value' => variable_get('tabs_navigation_titles', 0),
+    '#options' => array(t('disabled'), t('enabled')),
   );
   $form['tabs_descriptive_urls'] = array(
     '#type' => 'radios',
