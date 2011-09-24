@@ -5,9 +5,9 @@ package = Geo
 dependencies[] = geo
 core = 6.x
 
-; Information added by drupal.org packaging script on 2010-01-10
-version = "6.x-1.x-dev"
+; Information added by drupal.org packaging script on 2010-04-05
+version = "6.x-1.0-alpha5"
 core = "6.x"
 project = "geo"
-datestamp = "1263082020"
+datestamp = "1270472414"
 
