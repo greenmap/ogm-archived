@@ -1,4 +1,4 @@
-<?php //$Id: views_handler_field_geo.inc,v 1.7 2010/01/07 18:13:27 vauxia Exp $
+<?php //$Id: views_handler_field_geo.inc,v 1.9 2010/01/19 18:24:01 vauxia Exp $
 
 class views_handler_field_geo extends views_handler_field {
 
@@ -32,35 +32,19 @@ class views_handler_field_geo extends views_handler_field {
     if (!$function) return;
 
     // Figure out whether or not we need a target value to compare against.
-    $target = NULL;
-
-    $info = $this->geo->functionInfo($function);
-    if ($info['requires target']) {
-      $input = geo_input_info($this->options['input']);
-      $value = $this->options['target'][$this->options['input']];
-
-      // TODO this is not how we should be handling this.
-      if ($func = $input['gis callback']) {
-        $target = $func($input, $value, 'wkt:'. $this->geo->geometryType());
-      }
-      else {
-        $target = geo_value($value, 'wkt', 'array'); // TODO assumption of array
-      }
-
-      // Prevent an erroneous query if there's no target to
-      if (!$target) return;
+    if (FALSE === ($target = geo_views_set_target($this, $this->value))) {
+      // Return if target = FALSE to prevent an erroneous query.
+      return;
     }
 
     $table = $this->ensure_my_table();
     $this->geo->setTableName($table);
     $this->geo->setColumnName($this->field);
 
- //   $this->field_alias .= '_'. strtolower($function);
+    $alias = $this->real_field .'_'. strtolower($function);
 
     // Add the field, using the Geo API method for getting it.
     $field = $this->geo->$function($this->geo, $target);
-    $alias = $this->real_field .'_'. strtolower($function);
     $this->field_alias = $this->query->add_field(NULL, $field, $alias);
-//    $this->query->add_field(NULL, $field, $this->field_alias);
   }
 }

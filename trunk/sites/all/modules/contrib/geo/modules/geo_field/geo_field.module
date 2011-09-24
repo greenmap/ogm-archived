@@ -1,4 +1,4 @@
-<?php // $Id: geo_field.module,v 1.30 2009/12/09 17:34:03 vauxia Exp $
+<?php // $Id: geo_field.module,v 1.32 2010/01/20 02:14:30 vauxia Exp $
 
 /**
  * @file
@@ -21,6 +21,10 @@ function geo_field_info() {
  * Implementation of hook_field_settings().
  */
 function geo_field_settings($op, $field) {
+  if (!$geo = geo_load(array('name' => $field['field_name']))) {
+    $geo = geo_sql_load();
+  }
+
   switch ($op) {
     case 'form':
       $form = array();
@@ -45,10 +49,8 @@ function geo_field_settings($op, $field) {
       return array('srid', 'geo_type');
 
     case 'database columns':
-      if (!empty($field['geo_type'])) {
-        return geo('schema_field', $field['geo_type']);
-      }
-      break;
+      $geo_type = isset($field['geo_type']) ? geo_type($field['geo_type']) : GEO_UNKNOWN;
+      return $geo->sqlFieldDefinition('geo', $geo_type);
   }
 }
 

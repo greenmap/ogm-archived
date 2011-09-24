@@ -1,4 +1,4 @@
-<?php // $Id: views_handler_filter_geo.inc,v 1.14 2010/01/07 18:06:00 vauxia Exp $
+<?php // $Id: views_handler_filter_geo.inc,v 1.17 2010/01/26 23:19:09 vauxia Exp $
 
 class views_handler_filter_geo extends views_handler_filter_numeric {
 
@@ -14,6 +14,7 @@ class views_handler_filter_geo extends views_handler_filter_numeric {
     $options['operator'] = array('default' => '<=');
     $options['function'] = array('default' => 'distance');
     $options['input'] = array('default' => 'geo_latlon');
+    $options['group'] = array('default' => 'geo');
 
     $options['value'] = array(
       'contains' => array(
@@ -174,27 +175,14 @@ class views_handler_filter_geo extends views_handler_filter_numeric {
 
     // The GIS function we'll be filtering on.
     $function = $this->options['function'];
-
-    // Figure out whether or not we need a target value to compare against.
-    $target = NULL;
-
     $info = $this->geo->functionInfo($function);
 
-    if ($info['requires target']) {
-      $input = geo_input_info($this->options['input']);
-      $value = $this->value['target'];
-
-      // TODO this is not how we should be handling this.
-      if ($func = $input['gis callback']) {
-        $target = $func($input, $value, 'wkt:'. $this->geo->geometryType());
-      }
-      else {
-        $target = geo_value($value, 'wkt', 'array'); // TODO assumption of array
-      }
-
-      // Prevent an erroneous query if there's no target to
-      if (!$target) return;
+    // Figure out whether or not we need a target value to compare against.
+    if (FALSE === ($target = geo_views_set_target($this, $this->value['target']))) {
+      // Return if target = FALSE to prevent an erroneous query.
+      return;
     }
+    $this->geo_target = $target;
 
     $table = $this->ensure_my_table();
     $this->field_alias = $this->field .'_'. $function;
@@ -203,11 +191,11 @@ class views_handler_filter_geo extends views_handler_filter_numeric {
     $this->geo->setTableName($table);
     $this->geo->setColumnName($this->field);
 
-    // Add the field, using the Geo API method for getting it.
+    // Get the Geo API method for adding a field.
     $query = $this->geo->$function($this->geo, $target);
 
     if ($info['returns'] == 'boolean') {
-      $this->query->add_where(0, $query);
+      $this->query->add_where($this->options['group'], $query);
     }
 
     // Adopt the behavior of the views_filter_numeric parent class.

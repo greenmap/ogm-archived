@@ -1,5 +1,5 @@
 <?php
-// $Id: geo_data.module,v 1.18 2009/12/21 17:29:55 vauxia Exp $
+// $Id: geo_data.module,v 1.23 2010/04/04 22:22:29 vauxia Exp $
 
 /**
  * @file
@@ -118,36 +118,22 @@ function geo_data_field_settings($op, $field) {
 
     case 'views data':
       $data = content_views_field_views_data($field);
-      $table_alias = content_views_tablename($field);
       $db_info = content_database_info($field);
-      $geo_alias = $table_alias .'_geo';
-      $key = $field['field_name'] .'_value';
+      $table_alias = content_views_tablename($field);
+      $key = $db_info['columns']['value']['column'];
 
-      // Add the referenced table to the joins.
-      $data[$geo_alias]['table'] = array(
-        'group' => t('Geospatial Data'),
-        'base' => array(
-          'field' => $field['geo_data_key'],
-        ),
-        'join' => array(
-          'node' => array(
-            'table' => $field['geo_data_table'],
-            'field' => $field['geo_data_key'],
-            'left_table' => $table_alias,
-            'left_field' => $key,
-          ),
-        ),
+      // Add a join from the geo table to this field's table.
+      $data[$field['geo_data_table']]['table']['join'][$table_alias] = array(
+        'left_field' => $key,
+        'field' => $field['geo_data_key'],
       );
 
-      // Switch the field handler to geo_data.
-      $data[$table_alias][$key]['field']['field'] = 'geo';
-      $data[$table_alias][$key]['field']['geo_table'] = $geo_alias;
-      $data[$table_alias][$key]['field']['handler'] = 'views_handler_field_geo_data';
-
-      // Switch the filter handler to geo
-      $data[$table_alias][$key]['filter']['handler'] = 'views_handler_filter_geo';
-      $data[$table_alias][$key]['filter']['geo_type'] = $field['geo_type'];
-      $data[$table_alias][$key]['filter']['geo_table'] = $geo_alias;
+      // Add a join from the geo table to the node table by way of this field.
+      $data[$field['geo_data_table']]['table']['join']['node'] = array(
+        'left_table' => $table_alias,
+        'left_field' => $key,
+        'field' => $field['geo_data_key'],
+      );
 
       return $data;
   }
@@ -161,41 +147,33 @@ function geo_data_field($op, &$node, $field, &$items, $teaser, $page) {
   switch ($op) {
 
     case 'load':
-      $table = $field['geo_data_table'];
-      $select = array();
-      $select[] = geo('field_select', 'geo');
-      $select[] = $key = db_escape_string(check_plain($field['geo_data_key']));
+      $geo = geo_load(array('table_name' => $field['geo_data_table']));
 
+      $select = array();
+
+      // Add the key and value columns to the table query.
+      $select[] = $key = db_escape_string(check_plain($field['geo_data_key']));
       if (is_array($field['geo_data_value'])) {
         foreach ($field['geo_data_value'] as $val) {
           $select[] = db_escape_string(check_plain($val));
+          $label = current($field['geo_data_value']);
         }
       }
+      if ($select = join(',', $select)) $select = ', '. $select;
 
       foreach ($items as $delta => $item) {
-        $ret[$delta] = $item;
-        $ret[$delta]['gis type'] = $field['geo_type'];
+        if (!$item) continue;
 
-        $sql = "SELECT ". join(',', $select) ." FROM {". $table ."}";
-        $sql .= " WHERE $key = '%s'";
-//        $res = db_query(db_distinct_field($table, $key, $sql), $item['value']);
-        $res = db_query($sql, $item['value']);
-        while ($row = db_fetch_array($res)) {
-          foreach ($row as $k => $v) {
-            $key = 'geo_data_'. $k;
-
-            // Simply use the Geo values instead.
-            if (substr($k, 0, 4) == 'geo_') $key = substr($k, 4);
-
-            $ret[$delta][$key] = $v;
-            if (!isset($ret[$delta]['label']) && in_array($k, $field['geo_data_value'])) {
-              $ret[$delta]['label'] = $v;
-            }
-          }
+        $res = db_query("SELECT ". $geo->AsBinary($geo) ." AS geo $select
+          FROM {". $geo->tableName() ."} WHERE $key = '%s'", $item['value']);
+        if ($row = db_fetch_array($res)) {
+          $item = array_merge($row, $item);
+          if ($label) $item['label'] = $item[$label];
+          $item['geo'] = $item['wkb'] = db_decode_blob($item['geo']);
+          $items[$delta] = $item;
         }
       }
-
-      return array($field['field_name'] => $ret);
+      return array($field['field_name'] => $items);
 
     case 'validate':
       return;
@@ -297,14 +275,4 @@ function geo_data_field_formatter_info() {
 function geo_data_theme() {
   module_load_include('theme.inc', 'geo_data', 'theme/geo_data');
   return geo_data_theme_theme();
-}
-
-/**
- * Implementation of hook_geo_views_api().
- */
-function geo_data_views_api() {
-  return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'geo_data') .'/includes/views',
-  );
 }

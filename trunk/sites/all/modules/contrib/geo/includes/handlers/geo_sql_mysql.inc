@@ -1,4 +1,4 @@
-<?php // $Id: geo_sql_mysql.inc,v 1.4 2009/12/09 17:34:02 vauxia Exp $
+<?php // $Id: geo_sql_mysql.inc,v 1.5 2010/04/04 16:57:23 vauxia Exp $
 
 class GeoSQLMySQL extends GeoSQL {
 
@@ -370,9 +370,9 @@ class GeoSQLMySQL extends GeoSQL {
 
     $g = ($g1->geoType() == GEO_TYPE_POINT ) ? '%g' : 'Centroid(%g)';
 
-    $sql = "($r * ACOS($ysin * SIN(Y($g)/$d) + $ycos
+    $sql = "IFNULL(($r * ACOS($ysin * SIN(Y($g)/$d) + $ycos
       * COS(Y($g)/$d)
-      * COS(X($g)/$d - $xd)))";
+      * COS(X($g)/$d - $xd))), 0)";
 
     return $this->sql($sql, array($g1, $g1, $g1));
   }

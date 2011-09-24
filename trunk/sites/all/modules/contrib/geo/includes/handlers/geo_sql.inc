@@ -1,4 +1,4 @@
-<?php // $Id: geo_sql.inc,v 1.5 2009/12/09 17:34:02 vauxia Exp $
+<?php // $Id: geo_sql.inc,v 1.7 2010/01/18 19:47:01 vauxia Exp $
 /**
  * @file
  * A simple SQL implementation of the Geo API.
@@ -85,8 +85,24 @@ class GeoSQL implements GeoInterface {
 
   function sqlTableAlias() {
     if (($table = $this->tableName()) && ($column = $this->columnName())) {
-      return $table .'.'. $column;
+      return '{'. $table .'}.'. $column;
     }
+  }
+
+  function sqlFieldDefinition($column_name = NULL, $geo_type = GEO_UNKNOWN) {
+    if (is_null($column_name)) $column_name = $this->columnName();
+    if (is_null($geo_type)) $geo_type = $this->geoType();
+
+    return array(
+      $column_name => array(
+        'type' => 'blob',
+        'mysql_type' => 'geometry',
+        'pgsql_type' => 'geometry',
+        'geo_type' => $geo_type,
+        'gis type' => geo_gis_type($geo_type),
+        'description' => t('Geometry field'),
+      ),
+    );
   }
 
   /**
@@ -331,7 +347,7 @@ class GeoSQL implements GeoInterface {
   }
 
   function columnName() {
-    if (isset($this->table_name)) {
+    if (isset($this->column_name)) {
       return check_plain($this->column_name);
     }
   }
