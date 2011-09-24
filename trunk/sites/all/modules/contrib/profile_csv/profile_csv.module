@@ -1,6 +1,12 @@
 <?php
-// $Id: profile_csv.module,v 1.10.2.2 2009/10/26 15:52:34 kbahey Exp $
+// $Id: profile_csv.module,v 1.10.2.7 2010/09/13 20:04:32 kbahey Exp $
 
+/**
+ * @file
+ * Profile CSV
+ *
+ * This is a profile module export user and profile data to a Comma Separated Values file (CSV).
+ */
 
 define('PROFILE_CSV_STATUS',         'profile_csv_status');
 define('PROFILE_CSV_PARAM',          'profile_csv_param_');
@@ -8,9 +14,10 @@ define('PROFILE_CSV_ROLE',           'profile_csv_role');
 define('PROFILE_CSV_PERM_DOWNLOAD',  'download profiles');
 
 function profile_csv_help($path, $arg) {
+  $output = '';
   switch ($path) {
     case "admin/modules#description":
-      $output = t("Allows exporting profile data in comma separated variable format.");
+      $output = t("Allows exporting profile data in Comma Separated Values format.");
       break;
   }
   return $output;
@@ -31,9 +38,9 @@ function profile_csv_menu() {
     'page arguments'   => array('profile_csv_admin_settings'),
     'access arguments' => array('administer site configuration'),
   );
-  $items['admin/user/profile_csv'] = array(
+  $items['profile_csv'] = array(
     'title'            => 'Profile CSV Export',
-    'type'             => MENU_NORMAL_ITEM,
+    'type'             => MENU_SUGGESTED_ITEM, // Optional
     'page callback'    => 'profile_csv_page',
     'access arguments' => array(PROFILE_CSV_PERM_DOWNLOAD),
   );
@@ -42,6 +49,7 @@ function profile_csv_menu() {
 }
 
 function profile_csv_admin_settings() {
+
   $form['extra'] = array(
     '#type'        => 'markup',
     '#value'       => t('Remember to enable the profile_csv menu item so users who have the permission to download profile data have this item on their menus'),
@@ -54,12 +62,15 @@ function profile_csv_admin_settings() {
     '#collapsible' => TRUE,
     '#collapsed'   => TRUE,
   );
-
+  $roles = array(
+    DRUPAL_ANONYMOUS_RID,
+    DRUPAL_AUTHENTICATED_RID,
+  );
   foreach (user_roles($membersonly = TRUE) as $rid => $name) {
     $role = PROFILE_CSV_ROLE . $rid;
     $form[$set][$role] = array(
       '#type'          => 'checkbox',
-      '#title'         => $name,
+      '#title'         => in_array($rid, $roles) ? $name : t($name),
       '#return_value'  => 1,
       '#default_value' => variable_get($role, 0),
     );
@@ -73,9 +84,9 @@ function profile_csv_admin_settings() {
     '#collapsed'   => TRUE,
   );
   $options = array(
-    1 => t('Active'),
-    0 => t('Blocked'),
-    2 => t('Both'),
+  1 => t('Active'),
+  0 => t('Blocked'),
+  2 => t('Both'),
   );
   $form[$set][PROFILE_CSV_STATUS] = array(
     '#type'          => 'select',
@@ -92,23 +103,16 @@ function profile_csv_admin_settings() {
     '#collapsible'   => TRUE,
     '#collapsed'     => TRUE,
   );
-  $form[$set][PROFILE_CSV_PARAM . 'uid'] = array(
-    '#type'          => 'checkbox',
-    '#title'         => t('User ID'),
-    '#return_value'  => 1,
-    '#default_value' => variable_get(PROFILE_CSV_PARAM .'uid', 0),
-  );
-  $form[$set][PROFILE_CSV_PARAM . 'name'] = array(
-    '#type'          => 'checkbox',
-    '#title'         => t('User Name'),
-    '#return_value'  => 1,
-    '#default_value' => variable_get(PROFILE_CSV_PARAM .'name', 0),
-  );
-  $form[$set][PROFILE_CSV_PARAM . 'mail'] = array(
-    '#type'          => 'checkbox',
-    '#title'         => t('User Email'),
-    '#return_value'  => 1,
-    '#default_value' => variable_get(PROFILE_CSV_PARAM .'mail', 0),
+  $schema = drupal_get_schema('users');
+  $options = array();
+  foreach ($schema['fields'] as $field_name => $field) {
+    $options[$field_name] = _profile_csv_users_map_column_name($field_name) .'<div class="description clear-block">'. filter_xss_admin(t($field['description'])) .'</div>';
+  }
+  $form[$set][PROFILE_CSV_PARAM .'fields'] = array(
+    '#type'          => 'checkboxes',
+    '#options'       => $options,
+    '#title'         => t('Fields'),
+    '#default_value' => variable_get(PROFILE_CSV_PARAM .'fields', array()),
   );
 
   $set = 'profile';
@@ -128,38 +132,46 @@ function profile_csv_admin_settings() {
     if (!isset($form[$set][$row->category])) {
       $form[$set][$row->category] = array(
         '#type'        => 'fieldset',
-        '#title'       => $row->category,
+        '#title'       => check_plain(t($row->category)),
         '#collapsible' => TRUE,
       );
     }
 
-     $form[$set][$row->category][$fld] = array(
-        '#type'          => 'checkbox',
-        '#title'         => $row->title,
-        '#return_value'  => 1,
-        '#default_value' => variable_get($fld, 0),
-      );
+    $form[$set][$row->category][$fld] = array(
+      '#type'          => 'checkbox',
+      '#title'         => check_plain(t($row->title)),
+      '#return_value'  => 1,
+      '#default_value' => variable_get($fld, 0),
+    );
   }
   return system_settings_form($form);
 }
 
 function profile_csv_page() {
-  header("Content-type: text/plain; charset=UTF-8");
-  header("Content-Disposition: attachment; filename=userlist.csv");
-  header("Pragma: no-cache");
-  header("Expires: 0");
+  // This is needed because with sites with 10s of 1,000s of users
+  // the setting for PHP (e.g. 96MB or 128MB) is not enough. Instead
+  // of increasing it for all pages and modules, we just do it for 
+  // this one, keeping a safe threshold for others.
+  @ini_set('memory_limit', '750M');
+  @set_time_limit(240);
+
+  header('Content-type: text/csv; charset=UTF-8');
+  header('Content-Disposition: attachment; filename=userlist_' . time() . '.csv');
+  header('Pragma: no-cache');
+  header('Expires: 0');
 
   print _profile_csv_header();
+
   $user_status = variable_get(PROFILE_CSV_STATUS, 2);
-  if (variable_get(PROFILE_CSV_ROLE .'2', 0)) {
+  if (variable_get(PROFILE_CSV_ROLE . '2', 0)) {
     $result = db_query("SELECT u.uid, u.status FROM {users} u  WHERE u.uid > 1");
     while ($row = db_fetch_object($result)) {
       if ($user_status == 2) {
-        print _profile_csv_format_user($row->uid );
+        print _profile_csv_format_user($row->uid);
       }
-      else{
+      else {
         if ($user_status == $row->status) {
-          print _profile_csv_format_user($row->uid );
+          print _profile_csv_format_user($row->uid);
         }
       }
     }
@@ -173,18 +185,17 @@ function profile_csv_page() {
     while ($row = db_fetch_object($result)) {
       if ((variable_get(PROFILE_CSV_ROLE . $row->rid, 0)) && ($row->uid != $prev_uid)) {
         if ($user_status == 2) {
-          print  _profile_csv_format_user($row->uid );
+          print _profile_csv_format_user($row->uid);
         }
-        else{
+        else {
           if ($user_status == $row->status) {
-            print  _profile_csv_format_user($row->uid );
+            print _profile_csv_format_user($row->uid);
           }
         }
-       $prev_uid = $row->uid;
+        $prev_uid = $row->uid;
       }
     }
   }
-
   exit();
 }
 
@@ -220,25 +231,27 @@ function _profile_csv_format_user($uid = 0) {
   }
   $data .= trim($line) ."\n";
 
- return $data;
+  return $data;
 }
 
-function _profile_csv_get_user($uid = 0) {
-   $users = array();
-   $result = db_query('SELECT u.uid, u.name, u.mail, u.data FROM {users} u WHERE u.uid = %d', $uid);
-   while ($row = db_fetch_object($result)) {
-    if (variable_get(PROFILE_CSV_PARAM .'uid', 0)) {
-      $users[] = $row->uid;
+function _profile_csv_get_user($uid) {
+  $user = array();
+  $fields = _profile_csv_users_selected_fields();
+  //Verify that the columns haven't been deleted since the last save or the query will fail
+  $schema = drupal_get_schema('users');
+  foreach ($fields as $field_name => $value) {
+    if (!$schema['fields'][$field_name]) {
+      unset($fields[$field_name]);
     }
-    if (variable_get(PROFILE_CSV_PARAM .'name', 0)) {
-      $users[] = $row->name;
-    }
-    if (variable_get(PROFILE_CSV_PARAM .'mail', 0)) {
-      $users[] = $row->mail;
-    }
-    $users['data'] = unserialize($row->data);
   }
-  return $users;
+  $cols = implode(', ', $fields);
+  $result = db_query("SELECT $cols FROM {users} u WHERE u.uid = %d", $uid);
+  while ($row = db_fetch_object($result)) {
+    foreach ($fields as $col) {
+      $user[$col] = ($col == 'data') ? unserialize($row->$col) : $row->$col;
+    }
+  };
+  return $user;
 }
 
 function _profile_csv_get_profile($uid=0, $user_data=NULL) {
@@ -270,19 +283,48 @@ function _profile_csv_get_profile($uid=0, $user_data=NULL) {
 
 function _profile_csv_header() {
   $row = array();
-
-  if (variable_get(PROFILE_CSV_PARAM .'uid', 0)) {
-    $row[] = '"uid"';
-  }
-  if (variable_get(PROFILE_CSV_PARAM .'name', 0)) {
-    $row[] = '"name"';
-  }
-  if (variable_get(PROFILE_CSV_PARAM .'mail', 0)) {
-    $row[] = '"mail"';
+  $fields = _profile_csv_users_selected_fields();
+  foreach ($fields as $field_name => $value) {
+    $row[] = '"'. _profile_csv_users_map_column_name($field_name) .'"';
   }
   foreach (_profile_csv_get_profile_fields() as $field) {
     $row[] = '"'. $field['title'] .'"';
   }
 
   return implode(",", $row) ."\n";
+}
+
+function _profile_csv_users_selected_fields() {
+  static $data = NULL;
+  if (!$data) {
+    $fields = variable_get(PROFILE_CSV_PARAM .'fields', array());
+    foreach ($fields as $field_name => $value) {
+      if ($value === 0) {
+        unset($fields[$field_name]);
+      }
+    }
+    $data = $fields;
+  }
+  return $data;
+}
+
+function _profile_csv_users_map_column_name($field_name) {
+  //map with some translation already in Drupal
+  $names = array(
+    'uid'           => t('User ID'),
+    'name'          => t('Username'),
+    'mail'          => t('E-mail address'),
+    'pass'          => t('Password'),
+    'status'        => t('Status'),
+    'signature'     => t('Signature'),
+    'created'       => t('Member for'),
+    'access'        => t('Last access'),
+    'language'      => t('Language'),
+    'timezone_name' => t('Timezone'),
+    'data'          => t('Data'),
+  );
+  if (isset($names[$field_name])) {
+    return $names[$field_name];
+  }
+  return $field_name;
 }
