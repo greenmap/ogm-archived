@@ -1,4 +1,3 @@
-// $Id: pathauto.js,v 1.5 2009/04/18 17:09:15 freso Exp $
 if (Drupal.jsEnabled) {
   $(document).ready(function() {
     if ($("#edit-pathauto-perform-alias").size() && $("#edit-pathauto-perform-alias").attr("checked")) {
@@ -20,4 +19,21 @@ if (Drupal.jsEnabled) {
       }
     });
   });
+
+  Drupal.verticalTabs = Drupal.verticalTabs || {};
+
+  Drupal.verticalTabs.path = function() {
+    var path = $('#edit-path').val();
+    var automatic = $('#edit-pathauto-perform-alias').attr('checked');
+
+    if (automatic) {
+      return Drupal.t('Automatic alias');
+    }
+    if (path) {
+      return Drupal.t('Alias: @alias', { '@alias': path });
+    }
+    else {
+      return Drupal.t('No alias');
+    }
+  }
 }
