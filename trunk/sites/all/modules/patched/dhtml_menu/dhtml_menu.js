@@ -55,11 +55,15 @@ Drupal.behaviors.dhtmlMenu = function() {
         window.location = this.href;
       });
     }
-	// we want to go to the page when we click the menu item
-	// this is a modification for te's menu
-	$(li).find('a:first').click(function(e) {
-		window.location = this.href;
-	});
+
+    //begin hack by  opengreenmap greenmap openflows MARK LIBKUMAN libkuman
+    //this was first added by te for his menu
+
+    // we want to go to the page when we click the menu item
+    $(li).find('a:first').click(function(e) {
+      window.location = this.href;
+    });
+    //end hack by  opengreenmap greenmap openflows MARK LIBKUMAN libkuman
 
     $(li).find('a:first').click(function(e) {
       Drupal.dhtmlMenu.toggleMenu($(li));

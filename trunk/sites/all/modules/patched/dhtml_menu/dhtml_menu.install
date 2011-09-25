@@ -1,5 +1,5 @@
 <?php
-// $Id: dhtml_menu.install,v 1.9.2.3 2009/01/17 02:50:53 arancaytar Exp $
+// $Id: dhtml_menu.install,v 1.9.2.4 2009/01/17 17:36:27 arancaytar Exp $
 
 /**
  * @file dhtml_menu.install
@@ -78,5 +78,6 @@ function dhtml_menu_update_6003() {
   variable_del('dhtml_menu_theme_menu_item_link');
 
   drupal_rebuild_theme_registry();
+  return array();
 }
 
