@@ -132,31 +132,15 @@ function gmap_taxonomy_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
       if (isset($node->taxonomy) && is_array($node->taxonomy)) {
         foreach ($node->taxonomy as $voc => $terms) {
           if (isset($status[$voc]) && $status[$voc]) {
-            // if this node has a primary term, use that as the marker.
-            // this allows using a vocabulary which allows multiple terms.
-            if (!empty($node->primary_term) || !empty($node->primaryterm)) {
-              if (!empty($node->primaryterm)) {
-                $markertid = $node->primaryterm;
-              }
-              elseif (!empty($node->primary_term)) {
-                $markertid = $node->primary_term->tid;
-              }
-              $result = db_query('SELECT marker, tid FROM {gmap_taxonomy_term} WHERE tid = %d', $markertid);
+            $t = $terms;
+            if (!is_array($t)) {
+              $t = array($t);
+            }
+            foreach ($t as $term) {
+              $result = db_query('SELECT marker, tid FROM {gmap_taxonomy_term} WHERE tid = %d', $term);
               if ($m = db_fetch_object($result)) {
                 $marker = $m->marker;
-              }
-            }
-            else {
-              $t = $terms;
-              if (!is_array($t)) {
-                $t = array($t);
-              }
-              foreach ($t as $term) {
-                $result = db_query('SELECT marker, tid FROM {gmap_taxonomy_term} WHERE tid = %d', $term);
-                if ($m = db_fetch_object($result)) {
-                  $marker = $m->marker;
-                  $markertid = $m->tid;
-                }
+                $markertid = $m->tid;
               }
             }
           }
