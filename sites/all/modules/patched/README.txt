@@ -82,5 +82,6 @@ gmap module
     the actual patch file is in the module directory.
 dhtml_menu
 	- added a line to open parent li on single click rather than double.
+        - see dhtml_menu/dhtml_menu.js.patch
 services module
   - patch to the admin browser for php 5.3 compatibility: http://drupal.org/node/809226
