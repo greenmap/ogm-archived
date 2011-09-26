@@ -62,11 +62,16 @@ li.multiselect_add {
 	display: block;
 	clear: both;
 }
+/* Hide the original label placement. */
+.multiselect .form-item label {
+  display: none;
+}
 
-
+/* begin patch by opengreenmaps greenmap openflows mark libkuman */
 select.multiselect_unsel option.disabled,
 select.multiselect_sel option.disabled {
   font-weight: bold;
   font-style: italic;
   color: black;
 }
+/* begin patch by opengreenmaps greenmap openflows mark libkuman */
