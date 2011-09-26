@@ -1,11 +1,13 @@
 <?php
-// $Id: i18nstrings.install,v 1.2.2.18 2009/11/27 20:33:02 jareyero Exp $
 
 /**
  * @file
  * Installation file for i18nstrings module.
  */
 
+/**
+ * Implementation of hook_install().
+ */
 function i18nstrings_install() {
   // Create database tables.
   drupal_install_schema('i18nstrings');
@@ -16,12 +18,15 @@ function i18nstrings_install() {
   $ret = array();
 
   // Add a field to track whether a translation needs updating.
-  db_add_field($ret, 'locales_target', 'status', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+  db_add_field($ret, 'locales_target', 'i18n_status', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
 
   // Add custom index to locales_source table.
   db_add_index($ret, 'locales_source', 'textgroup_location', array(array('textgroup', 30), 'location'));
 }
 
+/**
+ * Implementation of hook_uninstall().
+ */
 function i18nstrings_uninstall() {
   $ret = array();
 
@@ -31,9 +36,11 @@ function i18nstrings_uninstall() {
   // Should we drop all strings for groups other than 'default' ?
 
   // Drop custom field.
-  db_drop_field($ret, 'locales_target', 'status');
+  db_drop_field($ret, 'locales_target', 'i18n_status');
   // Drop custom index.
   db_drop_index($ret, 'locales_source', 'textgroup_location');
+  // May be a left over variable
+  variable_del('i18nstrings_update_skip');
 }
 
 /**
@@ -96,7 +103,7 @@ function i18nstrings_schema_alter(&$schema) {
   // Add index for textgroup and location to {locales_source}.
   $schema['locales_source']['indexes']['textgroup_location'] = array(array('textgroup', 30), 'location');
   // Add field for tracking whether translations need updating.
-  $schema['locales_target']['fields']['status'] = array(
+  $schema['locales_target']['fields']['i18n_status'] = array(
     'description' => 'A boolean indicating whether this translation needs to be updated.',
     'type' => 'int',
     'not null' => TRUE,
@@ -135,9 +142,6 @@ function i18nstrings_update_6001() {
   if (!variable_get('i18nstrings_update_skip', 0)) {
     db_change_field($ret, 'i18n_strings', 'oid', 'objectid', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
   }
-  else {
-    variable_del('i18nstrings_update_skip');
-  }
   return $ret;
 }
 
@@ -146,7 +150,9 @@ function i18nstrings_update_6001() {
  */
 function i18nstrings_update_6002() {
   $ret = array();
-  db_add_index($ret, 'locales_source', 'textgroup_location', array(array('textgroup', 30), 'location'));
+  if (!variable_get('i18nstrings_update_skip', 0)) {
+    db_add_index($ret, 'locales_source', 'textgroup_location', array(array('textgroup', 30), 'location'));
+  }
   return $ret;
 }
 
@@ -156,7 +162,9 @@ function i18nstrings_update_6002() {
  */
 function i18nstrings_update_6003() {
   $ret = array();
-  db_add_field($ret, 'locales_target', 'status', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+  if (!variable_get('i18nstrings_update_skip', 0)) {
+    db_add_field($ret, 'locales_target', 'status', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+  }
   return $ret;
 }
 
@@ -186,13 +194,26 @@ function i18nstrings_update_6004() {
  */
 function i18nstrings_update_6005() {
   $ret = array();
-  db_add_field($ret, 'i18n_strings', 'objectindex', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
-  // Populate new field from objectid before changing objectid to varchar
-  $ret[] = update_sql('UPDATE {i18n_strings} SET objectindex = objectid');
-  db_change_field($ret, 'i18n_strings', 'objectid', 'objectid', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''));
-  // Add format field
-  db_add_field($ret, 'i18n_strings', 'format', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
-  // Change wrong default value for property (was 'default')
-  db_change_field($ret, 'i18n_strings', 'property', 'property', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''));
+  if (!variable_get('i18nstrings_update_skip', 0)) {
+    db_add_field($ret, 'i18n_strings', 'objectindex', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+    // Populate new field from objectid before changing objectid to varchar
+    $ret[] = update_sql('UPDATE {i18n_strings} SET objectindex = objectid');
+    db_change_field($ret, 'i18n_strings', 'objectid', 'objectid', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''));
+    // Add format field
+    db_add_field($ret, 'i18n_strings', 'format', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+    // Change wrong default value for property (was 'default')
+    db_change_field($ret, 'i18n_strings', 'property', 'property', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''));
+  }
+  return $ret;
+}
+
+/**
+ * Rename status field so it doesn't clash with other l10n modules
+ */
+function i18nstrings_update_6006() {
+  $ret = array();
+  if (!variable_get('i18nstrings_update_skip', 0)) {
+    db_change_field($ret, 'locales_target', 'status', 'i18n_status', array('type' => 'int', 'not null' => TRUE, 'default' => 0));
+  }
   return $ret;
 }

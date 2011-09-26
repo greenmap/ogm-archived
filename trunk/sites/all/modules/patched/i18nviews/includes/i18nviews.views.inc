@@ -23,8 +23,9 @@ function i18nviews_views_handlers() {
     'handlers' => array(
       'content_negotiation_filter_handler' => array(
         'parent' => 'views_handler_filter',
-        'file' => 'includes/content_negotiation_filter_handler.inc'
       ),
+      //begin patch by opengreemaps greenmaps openflows mark libkuman
+      //this is for the i18ntaxonomyviews module
       'i18nviews_handler_field_taxonomy' => array(
         'parent' => 'views_handler_field_taxonomy',
       ),
@@ -40,11 +41,14 @@ function i18nviews_views_handlers() {
       'i18nviews_handler_filter_term_node_tid' => array(
         'parent' => 'views_handler_filter_term_node_tid',
       ),
+      //end patch by opengreenmaps greenmaps openflows mark libkuman
     ),
   );
 }
 
 /**
+ * this function patched in for support of the i18ntaxonomyviews module
+ * opengreenmaps greenmap openflows mark libkuman
  * Implemenation of hook_views_data_alter().
  */
 function i18nviews_views_data_alter(&$data) {

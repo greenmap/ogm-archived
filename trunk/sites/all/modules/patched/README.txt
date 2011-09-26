@@ -59,8 +59,13 @@ node_import module:
     mapped automatically; made the default term separator a comma in
     supported/taxonomy.inc
 
-i18n module:
+i18nviews module:
   - translate taxonomy terms in views http://drupal.org/node/346028#comment-1784958
+  -this used to be part of i18n, but is now its a separate module
+  -you can see teh diff at the patch in 
+   /sites/all/modules/patched/i18nviews/includes/i18nviews.views.inc.patch
+  -the taxonomyviews modules is now also in i18nviews module as it used to be in i18n, this is the 
+   module that was offered by the above link
 
 multiselect module:
   - hacked to preserve order of options http://drupal.org/node/638748
