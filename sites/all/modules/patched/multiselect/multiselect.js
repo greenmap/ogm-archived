@@ -1,4 +1,4 @@
-// $Id: multiselect.js,v 1.6.2.5 2009/05/29 17:43:55 attheshow Exp $
+// $Id: multiselect.js,v 1.6.2.6 2009/07/12 20:59:29 attheshow Exp $
 
 /**
  * The JavaScript behavior that goes with the Multiselect form element.
@@ -9,7 +9,7 @@ Drupal.behaviors.multiselect = function(context) {
   $('select.multiselect_unsel:not(.multiselect-processed)', context).addClass('multiselect-processed').each(function() {
     unselclass = '.' + this.id + '_unsel';
     selclass = '.' + this.id + '_sel';
-    $(unselclass).removeContentsFrom($(selclass));
+    $(unselclass).removeContentsFrom($(selclass));   
   });
 
   // Note: Doesn't matter what sort of submit button it is really (preview or submit)
@@ -53,7 +53,7 @@ jQuery.fn.selectAll = function() {
   this.each(function() {
     for (var x=0;x<this.options.length;x++) {
       option = this.options[x];
-      option.selected = true;
+      option.selected = true;   
     }
   });
 }
@@ -79,6 +79,7 @@ jQuery.fn.moveSelectionTo = function() {
       if (option.selected) {
         dest.addOption(option);
         this.remove(x);
+        $(this).triggerHandler('option-removed', option);
         x--; // Move x back one so that we'll successfully check again to see if it's selected.
       }
     }
@@ -94,12 +95,16 @@ jQuery.fn.addOption = function() {
     anOption = document.createElement('option');
     anOption.text = option.text;
     anOption.value = option.value;
+
+    //begin patch by opengreenmaps greenmap openflows mark libkuman   
     anOption.id = option.id;
     anOption.className = option.className;
-    // add new option to list of options
+    //begin patch by opengreenmaps greenmap openflows mark libkuman   
+
     this.options[this.options.length] = anOption;
 
-    /* 
+    //begin patch by opengreenmaps greenmap openflows mark libkuman   
+    /*
      sorting based on code from jquery selectboxes plugin by Sam Collett
      http://www.texotela.co.uk/code/jquery/select/ (GPL)
      */
@@ -144,7 +149,9 @@ jQuery.fn.addOption = function() {
         $(o[i]).removeAttr("selected");
       }
     }
+    //end patch by opengreenmaps greenmap openflows mark libkuman   
 
+    $(this).triggerHandler('option-added', anOption);
     return false;
   });
 }
@@ -158,6 +165,7 @@ jQuery.fn.removeOption = function() {
       option = this.options[x];
       if (option.value==targOption) {
         this.remove(x);
+        $(this).triggerHandler('option-removed', option);
       }
     }
   });

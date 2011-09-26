@@ -1,0 +1,65 @@
+--- multiselect.js.orig	Mon Sep 26 17:39:40 2011
++++ multiselect.js	Mon Sep 26 17:38:13 2011
+@@ -95,7 +95,62 @@
+     anOption = document.createElement('option');
+     anOption.text = option.text;
+     anOption.value = option.value;
++
++    //begin patch by opengreenmaps greenmap openflows mark libkuman   
++    anOption.id = option.id;
++    anOption.className = option.className;
++    //begin patch by opengreenmaps greenmap openflows mark libkuman   
++
+     this.options[this.options.length] = anOption;
++
++    //begin patch by opengreenmaps greenmap openflows mark libkuman   
++    /*
++     sorting based on code from jquery selectboxes plugin by Sam Collett
++     http://www.texotela.co.uk/code/jquery/select/ (GPL)
++     */
++
++    // sort all options by class
++    var o = this.options;
++    var oL = o.length;
++    var sA = [];
++    // loop through options, adding to sort array
++    for(var i = 0; i<oL; i++) {
++      sA[i] = {
++        val: o[i].value,
++        text: o[i].text,
++        className: o[i].className,
++        id: o[i].id,
++        disabled: $(o[i]).attr("disabled"),
++        selected: $(o[i]).attr("selected")
++      }
++    }
++    // sort items in array
++    sA.sort(
++      function(o1, o2) {
++        if (o1.id == o2.id) { return 0; }
++        // strip off unique identifier within id and do numeric comparison
++        return parseInt(o1.id.substring(7)) < parseInt(o2.id.substring(7)) ? -1 : 1;
++      }
++    );
++    // change the options to match the sort array
++    for(var i = 0; i<oL; i++) {
++      o[i].text = sA[i].text;
++      o[i].value = sA[i].val;
++      o[i].className = sA[i].className;
++      o[i].id = sA[i].id;
++      if (sA[i].disabled) {
++        $(o[i]).attr("disabled", "disabled");
++      } else {
++        $(o[i]).removeAttr("disabled");
++      }
++      if (sA[i].selected) {
++        $(o[i]).attr("selected", "selected");
++      } else {
++        $(o[i]).removeAttr("selected");
++      }
++    }
++    //end patch by opengreenmaps greenmap openflows mark libkuman   
++
+     $(this).triggerHandler('option-added', anOption);
+     return false;
+   });

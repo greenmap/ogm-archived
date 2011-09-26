@@ -77,6 +77,10 @@ i18nviews module:
 
 multiselect module:
   - hacked to preserve order of options http://drupal.org/node/638748
+  -see:
+    multiselect.css.patch	
+    multiselect.js.patch
+    multiselect.module.patch
 
 taxonomy_image.module:
   - translate img alt attribute http://drupal.org/node/642950

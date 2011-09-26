@@ -1,5 +1,5 @@
 <?php
-// $Id: multiselect.module,v 1.7.2.9 2009/05/29 17:27:49 attheshow Exp $
+// $Id: multiselect.module,v 1.7.2.13 2010/04/11 03:15:59 attheshow Exp $
 
 /**
  * @file
@@ -33,7 +33,6 @@ function multiselect_form_alter(&$form, $form_state, $form_id) {
     $output = '<p>'. t('Create a list of options as a list in <strong>Allowed values list</strong> or as an array in PHP code. These values will be the same for %field in all content types.', array('%field' => $label)) .'</p>';
 
     if (in_array($widget_type, array('multiselect_select'))) {
-      $form['field']['multiple']['#default_value'] = 1; // Default to the selection of "Unlimited" "Number of values".
 
       if (in_array($field_type, array('text', 'number_integer', 'number_float', 'number_decimal'))) {
         $form['field']['allowed_values_fieldset']['#collapsed'] = FALSE;
@@ -131,11 +130,12 @@ function multiselect_widget(&$form, &$form_state, $field, $items, $delta = 0) {
  *
  * The $fields array is in $form['#field_info'][$element['#field_name']].
  */
-function multiselect_select_process($element, $edit, $form_state, $form) {
+function multiselect_select_process($element, $edit, &$form_state, $form) {
+
   // Insert Javascript and CSS for this widget.
   $path = drupal_get_path('module', 'multiselect');
   drupal_add_js($path .'/multiselect.js');
-  drupal_add_css($path .'/multiselect.css', 'module', 'all', FALSE); //doesn't aggregate: as it's not used much(?)
+  drupal_add_css($path .'/multiselect.css');
 
   $field_name = $element['#field_name'];
   $field = $form['#field_info'][$field_name];
@@ -148,31 +148,41 @@ function multiselect_select_process($element, $edit, $form_state, $form) {
   }
 
   // Get a list of all options for this field.
-  $options = optionwidgets_options($field);
+  $options = optionwidgets_options($field, FALSE);
+
+  // For this specific widget, HTML should be filtered out and entities left unencoded.
+  // See content_allowed_values / content_filter_xss / filter_xss.
+  content_allowed_values_filter_html($options);
 
   // Create some arrays for use later in the function.
   $unselected_options = array();
   $selected_options = array();
 
-  //if ($field['type'] == 'userreference') {
-    //dsm($element);
-    //dsm($options);
-  //}
-
+  //begin patch by opengreenmaps greenmap openflows mark libkuman
   $key_order = array();
+  //end patch by opengreenmaps greenmap openflows mark libkuman
 
   // Add selected items to the array first
   if (is_array($element['#value'][$field_key])) {
     foreach ($element['#value'][$field_key] as $key => $value) {
+      //begin patch by opengreenmaps greenmap openflows mark libkuman
+      $key_order[$key] = ++$i;
+      //end patch by opengreenmaps greenmap openflows mark libkuman
+
       if (isset($options[$value])) {
-        $selected_options[$value] = $options[$value];
+        $selected_options[$value] = html_entity_decode(strip_tags($options[$value]));
       }
     }
   }
+  //begin patch by opengreenmaps greenmap openflows mark libkuman
   $i = 0;
+  //end patch by opengreenmaps greenmap openflows mark libkuman
   // Add the remaining options to the arrays
   foreach ($options as $key => $value) {
+    //begin patch by opengreenmaps greenmap openflows mark libkuman
     $key_order[$key] = ++$i;
+    //end patch by opengreenmaps greenmap openflows mark libkuman
+
     if (!isset($selected_options[$key])) {
       $unselected_options[$key] = $value;
       //$selected_options[$key] = $value;
@@ -186,7 +196,7 @@ function multiselect_select_process($element, $edit, $form_state, $form) {
   $unselfield = $element['#field_name'] ."_unsel";
 
   // Call methods to create prefix. (ie the non-selected table, etc)
-  $prefix_pre = '<div class="form-item"><label for="edit-title">'. t($element['#title']) .':';
+  $prefix_pre = '<div class="form-item multiselect"><label for="edit-title">'. t($element['#title']) .':';
   if ($field['required']) {
     $prefix_pre .= '<span class="form-required" title="'. t('This field is required.') .'"> * </span>';
   }
@@ -202,7 +212,7 @@ function multiselect_select_process($element, $edit, $form_state, $form) {
 
   $element[$field_key] = array(
     '#type' => 'select',
-    //'#title' => $element['#title'], // Title is added in the prefix section. If added here, displays incorrectly.
+    '#title' => $element['#title'],
     '#description' => $element['#description'],
     '#required' => isset($element['#required']) ? $element['#required'] : $field['required'],
     '#multiple' => isset($element['#multiple']) ? $element['#multiple'] : $field['multiple'],
@@ -212,8 +222,11 @@ function multiselect_select_process($element, $edit, $form_state, $form) {
     '#suffix' => "\n</div>\n",
     '#attributes' => array('class' => "$selfield multiselect_sel", 'id' => $element['#field_name']),
     '#default_value' => isset($element['#value'][$field_key]) ? $element['#value'][$field_key] : NULL,
+
+    //begin patch by opengreenmaps greenmap openflows mark libkuman
     '#key_order' => $key_order,
     '#original_field_type' => $field['type'],
+    //end patch by opengreenmaps greenmap openflows mark libkuman    
   );
 
   // Set #element_validate in a way that it will not wipe out other
@@ -223,6 +236,14 @@ function multiselect_select_process($element, $edit, $form_state, $form) {
   }
   array_unshift($element['#element_validate'], 'optionwidgets_validate');
 
+  // Make sure field info will be available to the validator which
+  // does not get the values in $form.
+
+  // TODO for some reason putting the $field array into $form_state['storage']
+  // causes the node's hook_form_alter to be invoked twice, garbling the
+  // results. Need to investigate why that is happening (a core bug?), but
+  // in the meantime avoid using $form_state['storage'] to store anything.
+  $form_state['#field_info'][$field['field_name']] = $field;
   return $element;
 }
 
@@ -249,6 +270,8 @@ function multiselect_theme() {
  * $element['#delta]  is the position of this element in the group
  */
 function theme_multiselect_select($element) {
+  //begin patch by opengreenmaps greenmap openflows mark libkuman
+  //return $element['#children'];
   $key_order = $element['value']['#key_order'];
   $original_field_type = $element['value']['#original_field_type'];
 
@@ -275,7 +298,7 @@ function theme_multiselect_select($element) {
       // bottom-level items in the taxonomy hierarchy
       // TODO fix this hack -- make this a per-vocabulary option for this
       // widget, and pull hierarchy information directly from vocabulary
-      if ($original_field_type == 'content_taxonomy' && 
+      if ($original_field_type == 'content_taxonomy' &&
           preg_match('@^<option ([^>]+)>(?! -  - )(.*)@', $option, $matches)) {
         $option = sprintf('<option %s class="disabled" disabled="disabled">%s',
             $matches[1],
@@ -284,23 +307,31 @@ function theme_multiselect_select($element) {
     }
     $output .= $option;
   }
-
   return $output;
+  //end patch by opengreenmaps greenmap openflows mark libkuman
 }
 
 /**
  * Provides html to draw the "not selected" box
  */
 function _multiselect_html_for_unselected_box_start($unselfield, $fieldname) {
-  $boxhtml = sprintf('<select name="%s" multiple="multiple" class="form-select %s multiselect_unsel" id="%s" size="10">'."\n",
-      $unselfield, $unselfield, $fieldname);
+  //begin patch by opengreenmaps greenmap openflows mark libkuman
+  //$boxhtml = '';
+  //$boxhtml .= "<select name=\"". $unselfield ."\" multiple=\"multiple\" class=\"form-select ". $unselfield ." multiselect_unsel\" id=\"". $fieldname ."\" size=\"10\">\n";
+   $boxhtml = sprintf('<select name="%s" multiple="multiple" class="form-select %s multiselect_unsel" id="%s" size="10">'."\n", 
+       $unselfield, $unselfield, $fieldname);
+  //end patch by opengreenmaps greenmap openflows mark libkuman
+
   return $boxhtml;
 }
 
 function _multiselect_html_for_unselected_box_options($unselected_options) {
   $boxhtml = '';
   foreach ($unselected_options as $value => $name) {
+    //begin patch by opengreenmaps greenmap openflows mark libkuman
+    //$boxhtml .= "<option value=\"". $value ."\">". $name ."</option>\n";
     $boxhtml .= sprintf('<option value="%s">%s</option>'."\n", $value, $name);
+    //end patch by opengreenmaps greenmap openflows mark libkuman
   }
   return $boxhtml;
 }

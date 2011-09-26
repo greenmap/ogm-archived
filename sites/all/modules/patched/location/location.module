@@ -1320,9 +1320,7 @@ function _location_geo_logic(&$location, $changed, $filled, $inhibit_geocode = F
     // Or, was the location previously user submitted but is no longer?
     
     //begin patch by opengreenmaps greenmap openflows mark libkuman
-    //if ($changed['street'] || $changed['additional'] || $changed['city'] || $changed['province'] || $changed['country'] || $changed['postal_code'] || $location['source'] == LOCATION_LATLON_USER_SUBMITTED) {
-     if ($changed['street'] || $changed['additional'] || $changed['city'] || $changed['province'] || $changed['country'] || $changed['postal_code'] || $location['source'] == LOCATION_LATLON_USER_SUBMITT
-ED || $location['source'] == LOCATION_LATLON_UNDEFINED) {
+     if ($changed['street'] || $changed['additional'] || $changed['city'] || $changed['province'] || $changed['country'] || $changed['postal_code'] || $location['source'] == LOCATION_LATLON_USER_SUBMITTED || $location['source'] == LOCATION_LATLON_UNDEFINED) {
      //end patch by opengreenmaps greenmap openflows mark libkuman
 
       // Attempt exact geocoding.
