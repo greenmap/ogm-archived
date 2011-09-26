@@ -1,5 +1,5 @@
 <?php
-// $Id: i18nviews.module,v 1.4.2.19 2010/03/03 17:39:24 jareyero Exp $
+// $Id: i18nviews.module,v 1.1.2.1 2010/05/17 14:22:17 jareyero Exp $
 
 /**
  * @file
@@ -30,36 +30,16 @@ function i18nviews_locale($op = 'groups') {
     case 'groups':
       return array('views' => t('Views'));
     case 'info':
-      // Only when 2.x version or 3.x and i18nstrings is used as views localization plugin
-      if (views_api_version() == '2.0') {
-        $info['views']['refresh callback'] = 'i18nviews_locale_refresh_2x';
-        $info['views']['format'] = TRUE;
-        return $info;
-      }
-      elseif (variable_get('views_localization_plugin', 'core') == 'i18nstrings') {
-        $info['views']['refresh callback'] = 'i18nviews_locale_refresh';
-        $info['views']['format'] = TRUE;
-        return $info;
-      }
-      break;
+      $info['views']['refresh callback'] = 'i18nviews_locale_refresh';
+      $info['views']['format'] = TRUE;
+      return $info;
   }
-}
-
-/**
- * Refresh views locales, 3.x version
- */
-function i18nviews_locale_refresh() {
-  $views = views_get_all_views();
-  foreach ($views as $view) {
-    $view->save_locale_strings();
-  }
-  return TRUE; // Completed successfully
 }
 
 /**
  * Refresh views locales, 2.x version
  */
-function i18nviews_locale_refresh_2x() {
+function i18nviews_locale_refresh() {
   $views = views_get_all_views();
   foreach ($views as $view) {
     $fields = _i18nviews_display_fields();

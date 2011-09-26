@@ -1,5 +1,4 @@
 <?php
-// $Id: i18ncontent.module,v 1.1.2.18 2010/03/03 17:39:24 jareyero Exp $
 
 /**
  * @file
@@ -32,7 +31,9 @@ function i18ncontent_help($path, $arg) {
   // Add translated help text for node add pages
   if (!menu_get_object() && $arg[1] == 'add' && $arg[2]) {
     $type = str_replace('-', '_', $arg[2]);
-    if ($help = i18nstrings_ts("nodetype:type:$type:help")) {
+    // Fetch default language node type help
+    $source = i18ncontent_node_help_source($type);
+    if ($help = i18nstrings("nodetype:type:$type:help", $source->source)) {
       return '<p>'. filter_xss_admin($help) .'</p>';
     }
   }
@@ -79,10 +80,11 @@ function i18ncontent_form_alter(&$form, $form_state, $form_id) {
       // Replace the help text default value in the node type form with data from
       // i18nstrings. Help text is handled in hook_node_type() and hook_help().
       $type = $form['#node_type']->type;
-      // Use the default language for this.
-      $language = language_default('language');
       if ($type) {
-        $form['submission']['help']['#default_value'] = i18nstrings_ts("nodetype:type:$type:help", $form['submission']['help']['#default_value'], $language);
+        // Fetch default language node type help
+        $source = i18ncontent_node_help_source($type);
+        // We dont need to pass the value through i18nstrings_ts()
+        $form['submission']['help']['#default_value'] = $source->source;
       }
       break;
 
@@ -154,7 +156,6 @@ function i18ncontent_node_type($op, $info) {
  */
 function i18ncontent_menu_alter(&$menu) {
   $menu['node/add']['page callback'] =  'i18ncontent_node_add_page';
-
   // @TODO avoid iterating over every router path.
   foreach ($menu as $path => $item) {
     if (!empty($item['page callback']) && $item['page callback'] == 'node_add') {
@@ -172,7 +173,6 @@ function i18ncontent_menu_alter(&$menu) {
 function i18ncontent_node_add_page() {
   $item = menu_get_item();
   $content = system_admin_menu_block($item);
-
   // The node type isn't available in the menu path, but 'title' is equivalent
   // to the human readable name, so check this against node_get_types() to get
   // the correct values. First we build an array of node types indexed by names
@@ -183,7 +183,6 @@ function i18ncontent_node_add_page() {
       $content[$key]['description'] = i18nstrings("nodetype:type:$type:description", $item['description']);
     }
   }
-
   return theme('node_add_list', $content);
 }
 
@@ -207,4 +206,13 @@ function i18ncontent_node_add($type) {
   }
 
   return $output;
+}
+
+/**
+ * Fetch default source for node type help
+ */
+function i18ncontent_node_help_source($type) {
+  $context = i18nstrings_context("nodetype:type:$type:help");
+  $source = i18nstrings_get_source($context);
+  return $source;
 }
