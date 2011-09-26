@@ -19,7 +19,10 @@ class location_views_handler_field_latitude extends views_handler_field {
     $form['style'] = array(
       '#title' => t('Display style'),
       '#type' => 'select',
+      //begin patch by greenmap opengreenmap openflows mark libkuman
+      //'#options' => array('dd' => t('Decimal degrees'), 'dms' => t('Degrees, minutes, seconds')),
       '#options' => array('dd' => t('Decimal degrees'), 'dms' => t('Degrees, minutes, seconds'), 'kml' => t('Decimal degrees reverse order for kml')),
+      //end patch by greenmap opengreenmap openflows mark libkuman
       '#default_value' => $this->options['style'],
     );
   }
