@@ -1,4 +1,3 @@
-/* $Id: openlayers.css,v 1.16.2.2 2009/10/01 18:57:38 phayes Exp $ */
 
 /**
  * @file
@@ -9,12 +8,20 @@
  * @ingroup openlayers
  */
 
+.openlayers-cck-feature-selected { border: 2px solid blue; }
 
 .openlayers-map {
   z-index:0;
   position:relative;
 }
 
+/**
+ * prevent rtl translations from mirroring 
+ * vector layers
+ */
+.openlayers-map .olLayerDiv {
+  direction: ltr;
+}
 
 /**
  * Controls
@@ -23,3 +30,10 @@
 	z-index:1000;
 }
 
+/**
+ * This is a 'sensible default' for a weird decision
+ * by OpenLayers to make 404 tiles pink.
+ */
+.olImageLoadError {
+  background: transparent;
+}

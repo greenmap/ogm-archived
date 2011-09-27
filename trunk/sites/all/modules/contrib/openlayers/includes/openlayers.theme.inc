@@ -1,5 +1,4 @@
 <?php
-// $Id: openlayers.theme.inc,v 1.4.2.3 2009/10/01 22:54:03 phayes Exp $
 
 /**
  * @file
@@ -11,7 +10,7 @@
 /**
  * Theme function for openlayers_map
  */
-function theme_openlayers_map($map = array()) {
+function theme_openlayers_map($map = array(), $preset_name = '') {
   // To ensure that any controls are on the map correctly, we need to
   // wrap the map in a container, and take into account percentage dimensions
   $container_width = $map['width'];
@@ -21,8 +20,8 @@ function theme_openlayers_map($map = array()) {
 
   // Create output
   $output = '
-    <div style="width: ' . $container_width . '; height: ' . $container_height . ';">
-      <div style="width: ' . $map['width'] . '; height: ' . $map['height'] . ';" id="'. $map['id'] .'" class="openlayers-map openlayers-preset-' . $map['preset_name'] .'"></div>
+    <div style="width: ' . $container_width . '; height: ' . $container_height . ';" id="openlayers-container-'. $map['id'] .'" class="openlayers-container openlayers-container-preset-' . $preset_name .'">
+      <div style="width: ' . $map['width'] . '; height: ' . $map['height'] . ';" id="'. $map['id'] .'" class="openlayers-map openlayers-preset-' . $preset_name .'"></div>
     </div>
   ';
   return $output;
@@ -31,7 +30,7 @@ function theme_openlayers_map($map = array()) {
 /**
  * Theme function to be able to override styles
  */
-function theme_openlayers_vector_styles($styles = array(), $map = array()) {
+function theme_openlayers_styles($styles = array(), $map = array()) {
   // Default is to just send the processed styles back
   return $styles;
 }
