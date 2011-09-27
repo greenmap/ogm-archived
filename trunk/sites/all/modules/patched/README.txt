@@ -17,9 +17,12 @@ recaptcha module:
     http://drupal.org/node/356348
 
 primary_term module:
-  - use primary term as default value during preview and edit when available
+  
+  - (PATCH ADDED TO MODULE AND NO LONGER NECESSARY)
+    use primary term as default value during preview and edit when available
     http://drupal.org/node/343267
-  - views primary term field should only show one term
+  - (PATCH ADDED TO MODULE AND NO LONGER NECESSARY)
+    views primary term field should only show one term
     http://drupal.org/node/160382
 
 location module:
