@@ -1,9 +1,8 @@
-name = Services
-description = Provide an API for creating web services.
+name = xCal and iCal formats
+description = Provides xCal and iCal formatters for the REST server.
 package = Services
 core = 6.x
 php = 5.x
-dependencies[] = ctools
 ; Information added by drupal.org packaging script on 2011-09-19
 version = "6.x-3.0-rc4"
 core = "6.x"
