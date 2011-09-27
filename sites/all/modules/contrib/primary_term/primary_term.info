@@ -4,9 +4,9 @@ description =  Allows selection of a primary term for nodes
 dependencies[] = taxonomy
 core = 6.x
 
-; Information added by drupal.org packaging script on 2008-12-23
-version = "6.x-1.0"
+; Information added by drupal.org packaging script on 2010-10-19
+version = "6.x-1.2"
 core = "6.x"
 project = "primary_term"
-datestamp = "1230064240"
+datestamp = "1287494470"
 
