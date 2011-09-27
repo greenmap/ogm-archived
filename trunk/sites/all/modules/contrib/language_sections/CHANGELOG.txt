@@ -1,40 +1,40 @@
 $Id:
-Tue 16 Mar 2010 13:47:39 CET 
 
-* Added "all" and "other" codes instead of the confusing "qq" and "qz", the latter left in for backward compatibility.
-* All comparisons are now case-insensitive, e.g. en-GB and en-gb should work.
-* Supports longer language codes, format xx-yyyyy (2 to 5 characters in the second part) by default.
+Sun 28 Mar 2010 20:22:13 CEST 
 
-Tue 29 Jul 2008 03:12:41 CEST 
-Added support for "default" sections, uses "qz" pseudo-language-code.  Updated help and readme to match.
-Was a feature request - http://drupal.org/node/287515
+* Fixed bug when upgrading from LS 1.x - http://drupal.org/node/754280
+* Added 'version' to saved settings to help cater for any possible future version incompatibilties.
+* Made trigger rebuild happen only when posting configuration from (reason: setting variables when not needed is bad for Drupal performance, see http://api.drupal.org/api/function/variable_set/6#comment-1058
+* To be release as 2.5
 
-Tue 17 Jun 2008 13:17:56 CEST
+Sat 27 Mar 2010 11:10:38 CET 
+* Changed default pattern to be more consistent with v1.x - '/(=+ *([a-z]{2}[a-z\-]*) *=+\s?)(.*?)/i' -- shouldn't make any difference in pratice.
+* Enabled caching (was accidentally left disabled in 2.3 due to debug line.)
+* To be released as 2.4
 
-Added Drupal 6 compatibility. Currently the same .module file handles both Drupal 5 and 6 internally, only the .info files are different.
-Minor tidy-up of text messages.
+Fri 26 Mar 2010 19:42:56 CET 
 
-Sun 15 Jun 2008 17:23:57 CEST 
-Tweaked for more correct handling of white-space.
-So, can now handle substitution on a single line, e.g:
-This is =en= English =es= Spanish =qq= text.
+* Added support for check_markup patch so that output can be cached (potentially much better performance.)
+* Removed cache configuration setting as it's ineffective.
+* Added message on config. page that shows whether patch is installed.
+* Patch included - check_markup_language_patch_1.patch - see README.txt.
+* To be released as 2.3.
 
-Fri 13 Jun 2008 21:06:16 CEST
-"no cache" option logic reversed - changed to "cache", i.e. defaults to
-"no cache" due to caching problems reported in http://drupal.org/node/269280
+Wed 24 Mar 2010 15:55:23 CET 
 
-Wed 09 Apr 2008 00:27:07 CEST 
-Added configuration options to set "no cache" and "alternative pattern".
- 
-Mon 07 Apr 2008 01:30:43 CEST 
-.info file - Moved to package "Multilanguage"
-To release as 1.2 final
+* Added further support for LS Titles (LS Extras)
+* Added language_sections_format_check() API function (used by LS Titles and MultiLink modules).
+* To be released as 2.2.
 
-Thu 03 Apr 2008 11:31:30 CEST 
-To release as 1.2-BETA1
+Mon 22 Mar 2010 12:28:47 CET 
 
-Thu 03 Apr 2008 08:49:37 CEST 
-Minor fix: loop < count($matches) was <=
-Code layout changes for Drupal coding standards.
+* Changed module .info file: name -> Language Sections, package -> "Multilanguage".
+* Removed references to D5 suuport (not supported in LS 2.x).
 
+Fri 19 Mar 2010 11:51:32 CET 
+* Fixed rebuild of triggers (better performance.) To be released as 2.1.
+
+Thu 18 Mar 2010 22:51:56 CET 
+
+* Initial V2 release, to be released as 2.0.
 
