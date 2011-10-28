@@ -486,6 +486,12 @@ div#tabs-tabset-1, div#tabs-tabset-2, div#tabs-tabset-3 {
 	background: url(images/grey.png) repeat-y right;
 }
 
+
+div#tabset-tab-1, div#tabset-tab-2, div#tabset-tab-3 {
+	padding: 10px;
+	background: url(images/grey.png) repeat-y right;
+}
+
 div#block-group_map-1 ul.primary, div#block-group_map-0 ul.primary {
 	background-color: #fff;
 	height: 2em;
