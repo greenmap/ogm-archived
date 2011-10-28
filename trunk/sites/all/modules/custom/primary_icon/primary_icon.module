@@ -33,7 +33,8 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
 
         // change title of secondary icons field
         $form['taxonomy'][PRIMARY_ICON_VID]['#title'] = t('Secondary Icons');
-        $form['taxonomy'][PRIMARY_ICON_VID]['#description'] = t('Choose up to seven additional icons. Let people know about the site’s other features.');
+        $form['taxonomy'][PRIMARY_ICON_VID]['#description'] = t('You can choose up to 7 icons. Hold down the command key to choose multiple icons. Do not choose your primary icon or a Bold text heading.');
+
 
         // use optgroups to make genres and categories non-selectable
         $form = primary_icon_taxonomy_optgroups($form, PRIMARY_ICON_VID, 3);
