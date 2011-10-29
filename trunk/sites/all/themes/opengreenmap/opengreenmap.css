@@ -217,6 +217,7 @@
   #content-area /* Wrapper for the actual page content */
   {
     padding-top: 10px;
+    padding-right: 20px;
   }
 
   body.simple #content-area {
