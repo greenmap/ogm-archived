@@ -118,9 +118,7 @@ div#instruction_bubble .instructions strong {
   height: 16px;
   width: 16px;
   margin: .3em 0 0 1.2em;
-  position:absolute;
-  right: 25px;
-  top: 45px;
+  
 
 }
 #keys_help_button:hover {
