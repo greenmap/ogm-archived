@@ -15,11 +15,18 @@ function primary_icon_form_alter(&$form, &$form_state, $form_id) {
   switch ($form_id) {
     case $type .'_node_form':
       if ($vids = variable_get('pt_vocabs_'. $form['type']['#value'], array())) {
+        //with latest primaryterm update, it no longer shows up in vocabs so 
+        //make it so
+        $form['taxonomy']['primaryterm'] = $form['primaryterm'];
+        $form['primaryterm'] = NULL;
+        //change weight
+        $form['taxonomy']['primaryterm']['#weight'] = -10;
         // Change the title of the primary icon field
         $form['taxonomy']['primaryterm']['#title'] = t('Primary Icon');
         // make the primary icon field required
         $form['taxonomy']['primaryterm']['#required'] = TRUE;
-
+        $form['taxonomy']['primaryterm']['#description'] = 
+          t("Select a primary icon for this Green Site. The primary icon should represent the site's main feature.");
         /*
         Removing this code for now - it messed up when you edited a node - random wrong icons were selected
 
