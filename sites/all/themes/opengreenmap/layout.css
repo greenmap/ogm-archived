@@ -265,7 +265,7 @@
   #sidebar-right
   {
     float: right;
-    width: 200px;
+    width: 220px;
     margin-left: -200px; /* Negative value of #sidebar-right's width + right margin. */
     margin-right: 0;
     padding: 0; /* DO NOT CHANGE. Add padding or margin to #sidebar-right-inner. */
