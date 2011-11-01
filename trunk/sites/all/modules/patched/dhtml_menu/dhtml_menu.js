@@ -27,11 +27,13 @@ Drupal.behaviors.dhtmlMenu = function() {
   // Get cookie
   if (!effects.siblings) {
     var cookie = Drupal.dhtmlMenu.cookieGet();
-    for (var i in cookie) {
+    if (cookie != '') for (var i in cookie) {
       // If the cookie was not applied to the HTML code yet, do so now.
-      var li = $('#dhtml_menu-' + cookie[i]).parents('li:first');
-      if ($(li).hasClass('collapsed')) {
-        Drupal.dhtmlMenu.toggleMenu(li);
+      if ((cookie instanceof Array) && $('#dhtml_menu-' + cookie[i]).length != 0) {
+        var li = $('#dhtml_menu-' + cookie[i]).parents('li:first');
+        if ($(li).hasClass('collapsed')) {
+          Drupal.dhtmlMenu.toggleMenu(li);
+        }
       }
     }
   }
