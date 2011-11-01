@@ -52,6 +52,14 @@ function dashboard_perm() {
   );
 }
 
+
+function dashboard_access_suggest_a_site($arg0, $arg1 = NULL) {
+  if ($arg0 == 'greenmap' && !$arg1) {
+    return FALSE;
+  } 
+
+  return TRUE;
+}
 /**
  *  implementation of hook_menu
  */
@@ -60,6 +68,8 @@ function dashboard_menu(){
   $items['greenmap/suggest'] = array(
     'title' => 'Suggest a Site',
     'access arguments' => array('access content'),
+    //'access callback' => 'dashboard_access_suggest_a_site', 
+    //'access arguments' => array(0, 1),
     'page callback' => 'dashboard_suggest_site_world_map',
     'type' => MENU_LOCAL_TASK,
     'weight' => 8
