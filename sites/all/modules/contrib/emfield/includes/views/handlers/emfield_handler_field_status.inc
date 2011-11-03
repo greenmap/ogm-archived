@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Field handler for emvideo providers.
+ * Field handler for emfield providers.
  *
  * An extended subclass for field handling that adds multiple field grouping.
  *
  * Fields that want multiple value grouping options in addition to basic
  * field and formatter handling can extend this class.
  */
-class emvideo_handler_field_duration extends content_handler_field_multiple {
+class emfield_handler_field_status extends content_handler_field_multiple {
 
   /**
    * Provide 'group multiple values' option.
@@ -18,8 +18,7 @@ class emvideo_handler_field_duration extends content_handler_field_multiple {
     parent::options_form($form, $form_state);
 
     $form['format']['#options'] = array(
-      'duration_time' => t('Duration (mm:ss)'),
-      'duration_seconds' => t('Duration (seconds)'),
+      'status' => t('Status'),
     );
   }
 
@@ -47,7 +46,7 @@ class emvideo_handler_field_duration extends content_handler_field_multiple {
     $item['#delta'] = $field['multiple'] ?  $values->{$this->aliases['delta']} : 0;
 
     // Render items.
-    $output = theme('emvideo_handler_field_duration', $item, $field, $node, $values, $options['format']);
+    $output = theme('emfield_handler_field_status', $item, $field, $node, $values, $options['format']);
     return $this->render_link($output, $values);
   }
 
@@ -98,7 +97,7 @@ class emvideo_handler_field_duration extends content_handler_field_multiple {
         $rendered = array();
         // Single-value formatter.
         foreach ($items as $item) {
-          $output = theme('emvideo_handler_field_duration', $item, $field, $node, $values, $options['format']);
+          $output = theme('emfield_handler_field_status', $item, $field, $node, $values, $options['format']);
           if (!empty($output)) {
             $rendered[] = $this->render_link($output, (object) array('nid' => $nid));
           }
