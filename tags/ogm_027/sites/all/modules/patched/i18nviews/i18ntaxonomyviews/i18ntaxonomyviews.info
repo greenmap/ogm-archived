@@ -1,0 +1,8 @@
+; $Id$
+name = Views taxonomy translation
+description = "Translate taxonomy terms in views."
+version = ""
+core = 6.x
+package = Multilanguage
+dependencies[] = i18n
+dependencies[] = views
