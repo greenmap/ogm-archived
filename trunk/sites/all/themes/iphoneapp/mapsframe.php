@@ -3,7 +3,7 @@
 
 <head>
   <title>Map It</title>
-  <style type="text/css" media="screen">@import "../style.css";</style>
+  <style type="text/css" media="screen">@import "./style.css";</style>
   <meta name = "viewport" content = "width = device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=no;">
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
   </head>
