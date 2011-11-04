@@ -52,7 +52,7 @@ function ogm_mobile_menu() {
 
 function ogm_mobile_geocode() {
   define("MAPS_HOST", "maps.google.com");
-  $key = keys_api_get_key('Gmap', $_SERVER['HTTP_HOST']);
+  $key = keys_get_key(array('service' => 'google_maps', 'url'=>$_SERVER['HTTP_HOST']));
   // Initialize delay in geocode speed
   $delay = 0;
   $geocode_base_url = "http://" . MAPS_HOST . "/maps/geo?output=xml" . "&key=" . $key;
