@@ -667,7 +667,10 @@ size="12" maxlength="255" /> within<br/>';
          $polykey[0] . $polykey[1] .'<br />'. '</ul>';
     }
     else {
-      $keyout = '<ul id="keys"><div class="clear-block"><h3 class="keys">' . t('Green Map Icons') . '</h3><div id="keys_help_button"></div></div>' . $key .'</ul>';
+      $keyout = '<ul id="keys"><div class="clear-block">'.
+        '<table><tr><td nowrap><h3 class="keys">' . t('Green Map Icons') . '</h3></td>'.
+        '<td valign="top"><div id="keys_help_button"></div></td></tr></table></div>' . 
+        $key .'</ul>';
     }
     $form['tabskey']['tab'. $tabnum] = array(
       '#type' => 'tabpage',
