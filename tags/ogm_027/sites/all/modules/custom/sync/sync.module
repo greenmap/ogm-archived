@@ -176,6 +176,8 @@ function sync_user($op, &$edit, &$account, $category = NULL) {
 
 function sync_fetch_all_gm_maps() {
   require_once('sync.inc.php');
+  sync_set_db_authentication($db_user, $db_pass, $db_name);
+
   if (!$link = sync_open_mysql_connect($db_user,$db_pass,$db_name)) {
     drupal_set_message(t('Database connection failure. Synchronisation with Green Map aborted.'), 'error');
     watchdog('error', t("Error S1: Couldn't do sync_open_mysql_connect in sync.module"));
@@ -203,6 +205,7 @@ function sync_fetch_all_gm_maps() {
 
   $gm_maps = array();
   db_query('TRUNCATE TABLE {sync_gm_green_maps}');
+  
   while ($gm_map = mysql_fetch_object($result)) {
     $gm_maps[] = $gm_map;
     db_query("INSERT INTO {sync_gm_green_maps} (gm_nid, gm_uid, title, filepath, alias) VALUES (%d, %d, '%s', '%s', '%s')", $gm_map->nid, $gm_map->uid, $gm_map->title, $gm_map->filepath, $gm_map->dst);
