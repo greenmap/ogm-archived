@@ -1,0 +1,12 @@
+; $Id: media_image_flotsam.info,v 1.1 2010/09/20 11:35:03 alexua Exp $
+name = Media: Image Flotsam
+description = Legacy Embedded Image Field providers that were removed from Emfield, but don't have their own Media modules.
+core = 6.x
+dependencies[] = emimage
+package = Media
+; Information added by drupal.org packaging script on 2011-01-07
+version = "6.x-1.1"
+core = "6.x"
+project = "media_image_flotsam"
+datestamp = "1294433190"
+
