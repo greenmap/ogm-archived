@@ -143,8 +143,8 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
 
   }
   if($node->uid){
-    $contents .= '<br />'. t('added @date by <a href="@profile_link" target="_blank" title="View Profile">@name</a>',
-      array('@date' => date('m/Y', $node->created),
+    $contents .= '<br />'. t('updated @date by <a href="@profile_link" target="_blank" title="View Profile">@name</a>',
+      array('@date' => date('m/Y', $node->changed),
         '@profile_link' => url('user/'. $node->uid),
         '@name' => $node->name));
   }

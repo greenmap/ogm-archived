@@ -182,8 +182,8 @@ if ($teaser) {
                         'title' => t('View this Open Green Map'))));
     }
     if($node->uid){
-      $contents .= '<br />'. t('added @date by <a href="@profile_link" title="View Profile">@name</a>',
-          array('@date' => date('m/Y', $node->created), '@profile_link' => url('user/'. $node->uid), '@name' => $node->name));
+      $contents .= '<br />'. t('updated @date by <a href="@profile_link" title="View Profile">@name</a>',
+          array('@date' => date('m/Y', $node->changed), '@profile_link' => url('user/'. $node->uid), '@name' => $node->name));
     }
     $contents .= '</div>';
     $img_alt = t('This site was added by an official Mapmaker');
