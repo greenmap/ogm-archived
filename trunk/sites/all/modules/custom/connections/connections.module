@@ -6,7 +6,7 @@
 
 function connections_escape_js($str) {
   $str = str_replace('\'', '&#039;', $str);
-  $str = str_replace('"', '\"', $str);
+  $str = str_replace('"', '', $str);
   $str = str_replace("\n", ' ', $str);
   $str = str_replace("\r", ' ', $str);
   return $str;
@@ -24,13 +24,14 @@ function connections_output_connections($green_site) {
   $relsite1 = views_embed_view('sites', 'page_3', $green_site->primary_term->tid, $og_nid, $green_site->nid);
   // all sites on other maps with the same primary icon
   $relsite1 = str_replace('<a href=', '<a target="_blank" href=', $relsite1);
-
+  
   $relsite2 = views_embed_view('sites', 'page_7', $green_site->primary_term->tid, $og_nid);
   $relsite2 = str_replace('<a href=', '<a target="_blank" href=', $relsite2);
 
   $relsite = t('Every site using the same primary Icon on Open Green Map is automatically linked here. You can compare different approaches and solutions on this map and others around the world.');
   $relsite .= '<br /><div style=""><div style=""><div style=""><b>'. t('Other Sites on Map') .'</b></div>';
   $relsite .= $relsite1;
+  
   $relsite .= '</div><div style=""><b>'. t('Related Sites Worldwide') .'</b></div><div style="">';
   $relsite .= $relsite2;
   $relsite .= '</div></div>';
@@ -72,7 +73,8 @@ function connections_output_connections($green_site) {
   // list closest maps, excluding maps by this mapmaker
   $remap2 = get_location_proximity_view('maps_proximity_search',
       $green_site->location['latitude'], $green_site->location['longitude'], $green_site->uid);
-
+  $remap2 = str_replace('<a href=', '<a target="_blank" href=', $remap2);
+  
   $relmap = '<div style="related_maps_wrapper">';
   if ($green_site->uid != 0) {
     $relmap .= '<div style="related_maps_author"><b>'.
@@ -154,6 +156,7 @@ function connections_output_connections($green_site) {
         str_replace(' ', '_', $menu_item), $menu_item, t($menu_item));
     }
   }
+
   $connections .= '</div>';
   $connections .= '<div id="connections_content">';
   $connections .= $relsite;
