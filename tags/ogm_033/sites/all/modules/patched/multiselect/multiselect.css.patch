@@ -1,0 +1,18 @@
+--- multiselect.css.orig	Mon Sep 26 17:39:28 2011
++++ multiselect.css	Mon Sep 26 17:39:11 2011
+@@ -65,4 +65,13 @@
+ /* Hide the original label placement. */
+ .multiselect .form-item label {
+   display: none;
+-}
+\ No newline at end of file
++}
++
++/* begin patch by opengreenmaps greenmap openflows mark libkuman */
++select.multiselect_unsel option.disabled,
++select.multiselect_sel option.disabled {
++  font-weight: bold;
++  font-style: italic;
++  color: black;
++}
++/* begin patch by opengreenmaps greenmap openflows mark libkuman */
