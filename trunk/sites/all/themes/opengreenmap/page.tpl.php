@@ -145,7 +145,7 @@ if ($_GET['lightboxtheme']) {
 
         <?php if ($breadcrumb or $tabs or $help or $messages): ?>
           <div id="content-header">
-            <?php print $breadcrumb; ?>
+      <?php if ($node && $node->type != 'green_map') { print $breadcrumb; } else { print '<br/>';}?>
             <?php print $messages; ?>
             <?php if ($tabs): ?>
               <?php
