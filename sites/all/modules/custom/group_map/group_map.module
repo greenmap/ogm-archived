@@ -652,24 +652,31 @@ size="12" maxlength="255" /> within<br/>';
     }
   }
   if ($legend) {
+    $_SESSION['SeenInstructionBubble'] = TRUE;
     // don't show the instructions if they've seen it
     // but you do want to load it in case they want help.
     if ($_SESSION['SeenInstructionBubble'])  {
       $hide = 'style="display:none;"';
     }
     $instruction_bubble = '<div id="instruction_bubble" '. $hide .'><div id="instruction_bubble_close"></div><div class="instructions">'.  t('Use this <strong>Legend</strong> To customize the map. Click category, checkbox or Icons to turn related sites <strong>On/Off</strong><br /><br /> Mouse over the Icons for <strong>definitions</strong><br /><br /> More: Click tabs above for Map <strong>Info</strong> or <strong>Search</strong>')  .'</div></div>';
+
+    $icon_image = '<img src="/sites/default/files/icons-for-legend.jpg" 
+      title="'.t('Click category, checkbox, or icons to turn related sites On/Off').'" />';
     if ($node->field_use_poly[0]['value'] == 'Yes') {
 
        $keyout = '<ul id="keys"><div class="clear-block">'.
          '<table><tr><td nowrap><h3 class="keys">' . t('Green Map Icons') . '</h3></td>'.
-         '<td valign="top"><div id="keys_help_button"></div></td></tr></table></div>' . 
+         '<td valign="top"><div id="keys_help_button"></div></td></tr>'.
+         '<tr><td align="center">'.$icon_image.'</td><td>&nbsp;</td></tr></table></div>' . 
          $key .'<br /><strong>'. t('Routes and Areas') .'</strong> '. 
          $polykey[0] . $polykey[1] .'<br />'. '</ul>';
     }
     else {
       $keyout = '<ul id="keys"><div class="clear-block">'.
         '<table><tr><td nowrap><h3 class="keys">' . t('Green Map Icons') . '</h3></td>'.
-        '<td valign="top"><div id="keys_help_button"></div></td></tr></table></div>' . 
+        '<td valign="top"><div id="keys_help_button"></div></td></tr>'.
+        '<tr><td align="center">'.$icon_image.'</td>'.
+        '<td>&nbsp;</td></tr></table></div>' . 
         $key .'</ul>';
     }
     $form['tabskey']['tab'. $tabnum] = array(
