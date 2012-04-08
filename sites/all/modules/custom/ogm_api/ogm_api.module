@@ -1,6 +1,13 @@
 <?php
 
 
+// GH: In the spring of 2012, the mobile app broke because the backend was returning malformated JSON 
+// strings (e.g. ogm_api.user_maps returned { "name": "NYC\'s Green Apple Map", "id": "1561" } for the 
+// admin user [notice the backslash]). I don't know whether a change to the server configuration 
+// was the root cause (the default value of magic_quotes_gpc got changed in PHP 5.4) for this or a 
+// Drupal update - but for now we're circumventing this for now with a few stripslashes().
+
+
 function ogm_api_service()
 {
 	return array(
@@ -207,7 +214,7 @@ function ogm_api_icons()
 		for ($j=0; $j<count($ret[$i]['children']); $j++) {
 			$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = %d ORDER BY weight ASC", $ret[$i]['children'][$j]['id']);
 			while (($r = db_fetch_object($q)) !== false) {
-				$ret[$i]['children'][$j]['children'][] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid);
+				$ret[$i]['children'][$j]['children'][] = array('name'=>stripslashes($r->name), 'description'=>stripslashes($r->description), 'id'=>$r->tid);
 			}
 		}
 	}
@@ -250,7 +257,7 @@ function ogm_api_maps()
 	// all of it should be freely available to the public
 	
 	while (($r = db_fetch_object($q)) !== false) {
-		$ret[] = array('name'=>$r->title, 'id'=>$r->nid);
+		$ret[] = array('name'=>stripslashes($r->title), 'id'=>$r->nid);
 	}
 	
 	return $ret;
@@ -310,7 +317,7 @@ function ogm_api_user_maps($username = NULL, $password = NULL)
 	}
 	$ret = array();
 	foreach ($subscr as $s) {
-		$ret[] = array('name'=>$s['title'], 'id'=>$s['nid']);
+		$ret[] = array('name'=>stripslashes($s['title']), 'id'=>$s['nid']);
 	}
 	return $ret;
 }
@@ -329,7 +336,7 @@ function ogm_api_countries()
 	$countries = _location_supported_countries();
 	$ret = array();
 	foreach ($countries as $key=>$val) {
-		$ret[] = array('name'=>$val, 'code'=>$key);
+		$ret[] = array('name'=>stripslashes($val), 'code'=>stripslashes($key));
 	}
 	return $ret;
 }
