@@ -174,11 +174,11 @@ function _ogm_api_setup_icon(&$icon)
 			$s = t($icon['name'], array(), $l);
 			// only include the translation if it's different than the original
 			if ($s != $icon['name']) {
-				$icon['translations'][$l]['name'] = $s;
+				$icon['translations'][$l]['name'] = stripslashes($s);
 			}
 			$s = t($icon['description'], array(), $l);
 			if ($s != $icon['description']) {
-				$icon['translations'][$l]['description'] = $s;
+				$icon['translations'][$l]['description'] = stripslashes($s);
 			}
 		}
 	}
@@ -202,14 +202,14 @@ function ogm_api_icons()
 	$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.vid=1 AND a.tid = b.tid AND b.parent = 0 ORDER BY weight ASC");
 	
 	while (($r = db_fetch_object($q)) !== false) {
-		$ret[] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid, 'children'=>array());
+		$ret[] = array('name'=>stripslashes($r->name), 'description'=>stripslashes($r->description), 'id'=>$r->tid, 'children'=>array());
 	}
 
 	// get genres and icons
 	for ($i=0; $i<count($ret); $i++) {
 		$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = %d ORDER BY weight ASC", $ret[$i]['id']);
 		while (($r = db_fetch_object($q)) !== false) {
-			$ret[$i]['children'][] = array('name'=>$r->name, 'description'=>$r->description, 'id'=>$r->tid, 'children'=>array());
+			$ret[$i]['children'][] = array('name'=>stripslashes($r->name), 'description'=>stripslashes($r->description), 'id'=>$r->tid, 'children'=>array());
 		}
 		for ($j=0; $j<count($ret[$i]['children']); $j++) {
 			$q = db_query("SELECT * FROM {term_data} AS a, {term_hierarchy} AS b WHERE a.tid = b.tid AND b.parent = %d ORDER BY weight ASC", $ret[$i]['children'][$j]['id']);
