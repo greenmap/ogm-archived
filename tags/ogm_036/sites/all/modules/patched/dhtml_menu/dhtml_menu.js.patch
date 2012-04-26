@@ -1,0 +1,18 @@
+--- dhtml_menu.js.orig	Sun Sep 25 18:22:13 2011
++++ dhtml_menu.js	Sun Sep 25 18:25:52 2011
+@@ -56,6 +56,15 @@
+       });
+     }
+ 
++    //begin hack by  opengreenmap greenmap openflows MARK LIBKUMAN libkuman
++    //this was first added by te for his menu
++
++    // we want to go to the page when we click the menu item
++    $(li).find('a:first').click(function(e) {
++      window.location = this.href;
++    });
++    //end hack by  opengreenmap greenmap openflows MARK LIBKUMAN libkuman
++
+     $(li).find('a:first').click(function(e) {
+       Drupal.dhtmlMenu.toggleMenu($(li));
+       return false;
