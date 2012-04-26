@@ -1,0 +1,14 @@
+<?php
+// $Id: media_image_flotsam.module,v 1.1 2010/09/20 11:35:03 alexua Exp $
+
+/**
+ *  @file
+ *  Container for Embedded Image Field provider files that have yet to get spun off 
+ *  into their own Media Module.
+ */
+
+function media_image_flotsam_emfield_providers($module, $provider = NULL) {
+  if ($module == 'emimage') {
+    return drupal_system_listing("$provider\.inc$", drupal_get_path('module', 'media_image_flotsam') ."/providers", 'name', 0);
+  }
+}

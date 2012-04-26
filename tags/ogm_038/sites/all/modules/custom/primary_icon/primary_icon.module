@@ -1,0 +1,171 @@
+<?php
+
+// $Id: primary_icon.module,v 0.1 2008/03/13 16:39:43 tom_o_t Exp $
+
+define("PRIMARY_ICON_VID", 1);
+define("GREEN_ROUTE_VID", 5);
+define("GREEN_AREA_VID", 7);
+
+/**
+ * hook_form_alter()
+ * Change the title of primary term field on node/add form
+ */
+function primary_icon_form_alter(&$form, &$form_state, $form_id) {
+  $type = $form['type']['#value'];
+  switch ($form_id) {
+    case $type .'_node_form':
+      if ($vids = variable_get('pt_vocabs_'. $form['type']['#value'], array())) {
+        
+        //$form['primaryterm']['#weight'] = -10;
+        // Change the title of the primary icon field
+        $form['primaryterm']['#title'] = t('Primary Icon');
+        // make the primary icon field required
+        $form['primaryterm']['#required'] = TRUE;
+        $form['primaryterm']['#description'] = 
+          t("Select a primary icon for this Green Site. The primary icon should represent the site's main feature.");
+        /*
+        Removing this code for now - it messed up when you edited a node - random wrong icons were selected
+
+        // re-order the list to be alphabetical
+        // add js
+        drupal_add_js(drupal_get_path('module', 'primary_icon') .'/jquery.selectboxes.min.js');
+        // do the re-order using jquery code
+        $js = '$(document).ready(function() { $("#edit-primaryterm").sortOptions() });';
+        drupal_add_js($js,'inline');
+        */
+
+        // change title of secondary icons field
+        $form['taxonomy'][PRIMARY_ICON_VID]['#title'] = t('Secondary Icons');
+        $form['taxonomy'][PRIMARY_ICON_VID]['#description'] = t('You can choose up to 7 icons. Hold down the command key to choose multiple icons. Do not choose your primary icon or a Bold text heading.');
+
+
+        // use optgroups to make genres and categories non-selectable
+        $form = primary_icon_taxonomy_optgroups($form, PRIMARY_ICON_VID, 3);
+        $form = primary_icon_taxonomy_optgroups($form, GREEN_ROUTE_VID, 2);
+        $form = primary_icon_taxonomy_optgroups($form, GREEN_AREA_VID, 2);
+        // use the same options for the primary term dropdown, since
+        // the same optgroups apply there too
+        if (isset($form['taxonomy'][PRIMARY_ICON_VID]) && isset($form['taxonomy']['primaryterm'])) {
+          $form['taxonomy']['primaryterm']['#options'] = $form['taxonomy'][PRIMARY_ICON_VID]['#options'];
+        }
+      }
+    break;
+  }
+}
+
+/**
+ * hook_nodeapi()
+ * If there's a primary icon, then we need to override gmap_taxonomy to ensure
+ * that it's the primary icon that is set as the marker icon
+ */
+function primary_icon_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type != 'green_site') {
+    return;
+  }
+  switch ($op) {
+    case 'insert':
+    case 'update':
+      // check if there's a primary_icon
+      $primaryterm = primary_term_get_term($node->vid);
+      if (! empty($primaryterm)) {
+        $marker = '';
+        // get the marker from the gmap_taxonomy_term table for this term
+        $result = db_query('SELECT marker FROM {gmap_taxonomy_term} WHERE tid = %d', $primaryterm);
+        if ($m = db_fetch_object($result)) {
+          $marker = $m->marker;
+        }
+        else {
+          form_set_error('primaryterm', t('You must choose a valid Primary Icon.'));
+        }
+        if ($marker) {
+          db_query('DELETE FROM {gmap_taxonomy_node} WHERE nid = %d', $node->nid);
+          db_query("INSERT INTO {gmap_taxonomy_node} (nid, vid, tid, marker) VALUES (%d, %d, %d, '%s')",
+              $node->nid, $node->vid, $primaryterm, $marker);
+        }
+      }
+    break;
+    case 'validate':
+      if (isset($node->primaryterm)) {
+        if (!$node->primaryterm) {
+          form_set_error('primaryterm', t('You must choose a Primary Icon.'));
+        }
+        else {
+          $marker = '';
+          $result = db_query('SELECT marker FROM {gmap_taxonomy_term} WHERE tid = %d', $node->primaryterm);
+          if ($m = db_fetch_object($result)) {
+            $marker = $m->marker;
+          }
+          else {
+            form_set_error('primaryterm', t('You must choose a valid Primary Icon.'));
+          }
+        }
+      }
+    break;
+  }
+}
+
+function primary_icon_taxonomy_optgroups($form, $vid, $final_level = 3) {
+  // use optgroups to make genres and categories non-selectable
+  if (isset($form['taxonomy'][$vid])) {
+    $tree = taxonomy_get_tree($vid);
+    $options[''] = $form['taxonomy'][$vid]['#options'][''];
+    $i = 0;
+    if ($final_level == 3) {
+      $parents = array();
+      $parents_pids = array();
+      $grandparents = array();
+      foreach ($tree as $term) {
+        $tt_name = tt("taxonomy:term:$term->tid:name", $term->name);
+        $ptid = $term->parents[0];
+        if ($ptid) {
+          // second level items
+          if (isset($grandparents[$ptid])) {
+            $parents[$term->tid] = $tt_name;
+            $options[$grandparents[$ptid]]['-- '.$tt_name] = array();
+            $parents_pids[$term->tid] = $ptid;
+          }
+          // third level items
+          else {
+            foreach ($options as $options_grandparents => $options_parents) {
+              if (!$options_grandparents) {
+                continue;
+              }
+              $obj = new stdClass();
+              $obj->option[$term->tid] = $tt_name;
+              $options[$grandparents[$parents_pids[$ptid]]]['-- '.$parents[$ptid]][$term->tid] = $obj;
+            }
+          }
+        } else {
+          // first level items
+          $grandparents[$term->tid] = $tt_name;
+          $options[$tt_name] = array();
+        }
+      }
+    }
+    elseif ($final_level == 2) {
+      $parents = array();
+      foreach ($tree as $term) {
+        $tt_name = tt("taxonomy:term:$term->tid:name", $term->name);
+        $ptid = $term->parents[0];
+        if ($ptid) {
+          // second level items
+          if (isset($parents[$ptid])) {
+            $parents[$term->tid] = $tt_name;
+            $obj = new stdClass();
+            $obj->option[$term->tid] = $tt_name;
+            $options[$parents[$ptid]][$term->tid] = $obj;
+          }
+        } else {
+          // first level items
+          $parents[$term->tid] = $tt_name;
+          $options[$tt_name] = array();
+        }
+      }
+    }
+    $form['taxonomy'][$vid]['#options'] = $options;
+    if ($vid == PRIMARY_ICON_VID) {
+      $form['primaryterm']['#options'] = $options;
+    }
+  }
+  return $form;
+}
