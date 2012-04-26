@@ -56,9 +56,12 @@ Step 4)
 Step 5)
   Enable permissions appropriate to your site.
 
-  The forward module provides two permissions:
+  The forward module provides several permissions:
    - 'access forward': allow user to forward pages.
+   - 'access epostcard': allow user to send an epostcard.
+   - 'override email address': allow logged in user to change sender address.
    - 'administer forward': allow user to configure forward.
+   - 'override flood control': allow user to bypass flood control on send.
 
   Note that you need to enable 'access forward' for users who should be able to
   send emails using the forward module.
@@ -66,6 +69,35 @@ Step 5)
 
 Step 6)
   Go to "administer >> logs >> forward tracking" to view forward usage statistics.
+
+
+DYNAMIC BLOCK ACCESS CONTROL
+
+The 6.x-1.21 release of the Forward module added a new security field
+for administators on the Forward configuration page named Dynamic Block
+Access Control.  This field allows the administrator to control which
+permissions are used when Drupal applies access control checks to the nodes,
+comments or users listed in the Dynamic Block.  Several access control
+options are available, including a bypass option.  The bypass option allows
+the email recipient to possibly view node titles, comment titles, or user
+names that only privileged users should see. The bypass option should not
+normally be selected, but is provided for sites that used prior versions
+of Forward and rely on the access bypass to operate correctly.
+
+IMPORTANT: Because the default for the new field is to apply access control,
+administrators of sites that rely on the access bypass to operate correctly
+need to visit the Forward configuration page and explicitly select the bypass
+option after upgrading from versions of Forward prior to 6.x-1.21.
+
+
+CLICKTHROUGH COUNTER FLOOD CONTROL
+
+The Forward module tracks clicks from links in sent emails to determine which
+nodes get the most clickthroughs.  The method used could allow someone to
+manipulate clickthrough counts via CSRF - for example, placing an image on
+a website with a src tag that points to the clickthrough counter link.  The
+module uses flood control to limit the number of clickthroughs from a given
+IP address in a given time period to migitate this possibility.
 
 
 CREDITS & SUPPORT
