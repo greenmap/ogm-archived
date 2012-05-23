@@ -155,7 +155,7 @@ body .toolbar {
 
     <div class="toolbar">
     </div>
-              <h1 class="title">What's Green Nearby?&trade;</h1>
+              <h1 class="title">What's on the Green Map?</h1>
 <form class="panel">
 <fieldset>
 <a href="/sites/default/files/app/findsites/index.html">
@@ -163,15 +163,15 @@ body .toolbar {
 <a href="/sites/default/files/app/findsites/index.html">Find Sites</a>
 </div>
 </a>
-<a href="/sites/default/files/app/addsites/index.html">
+<a href="/sites/default/files/app/addsites/locate.html">
 <div class="row last">
-<a href="/sites/default/files/app/addsites/index.html">Add Sites</a>
+<a href="/sites/default/files/app/addsites/locate.html">Add Sites</a>
 </div>
 </a>
 
 </fieldset>
         <div id="footer"><?php if ($footer_message): ?>
-          &copy; Green Map&reg; System, 2010<br/>
+          &copy; Green Map&reg; System, 2012<br/>
           Visit GreenMap.org on your desktop
           </div>
 </form>
