@@ -1,6 +1,7 @@
 // this code is taken from the TextualZoomControl example
-
+// first line is now a return as we have decided not to use the bubble
 function InfoBubbleZoom() {}
+return;
 InfoBubbleZoom.prototype = new GControl();
 InfoBubbleZoom.prototype.initialize = function(map) {
 	var container = document.createElement("div");
