@@ -1,0 +1,355 @@
+<?php
+// $Id:
+// Language Sections 2.x module for Drupal.
+// License: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+// Support: Commercial support and customization is available from www.netgenius.co.uk
+// Email: drupal at netgenius.co.uk
+
+// Currently this .module file is compatible with 6.x, not with 5.x, but might work with 7.x.
+
+
+// Implementation of hook_filter_tips()
+function language_sections_filter_tips($delta, $format, $long = false) {
+
+  // Get $mod_name, and $mod_prefix;
+  extract(_language_sections_get_ids($format));
+  $tvars = array('%all' => t('all'), '%other' => t('other'));
+  $short_help = t(_language_sections_setting($mod_prefix, 'short_help'), $tvars);
+  $long_help = $short_help;
+
+  return t($long? $long_help : $short_help, $tvars);
+}
+
+// Get $mod_id
+function _language_sections_get_ids($format) {
+  $mod_name = 'Language Sections';
+  $mod_id = 'language_sections';
+  // Define the prefix used for config values:
+  $mod_prefix = $mod_id.'_'.$format.'_';
+  // If set, use shared config.
+  if (_language_sections_setting($mod_prefix, 'shared')) {
+    $mod_prefix = $mod_id.'_shared_';
+  }
+  return compact('mod_name', 'mod_id', 'mod_prefix');
+}
+
+// Implementation of hook_filter()
+function language_sections_filter($op, $delta = 0, $format = -1, $text = '') {
+
+  // Get $mod_name, and $mod_prefix;
+  extract(_language_sections_get_ids($format));
+
+  switch ($op) {
+    case 'process':
+      // Get $pattern and $triggers.
+      $pattern = _language_sections_setting($mod_prefix, 'pattern');
+      $triggers = _language_sections_get_triggers($mod_prefix);
+
+      // Get values for $current_language, $all_languages, $other_languages
+      extract(_language_sections_context('match_types'));
+      $n1 = $n2 = 2; $n3 = 4;  // indexes to use with array from preg_split().
+      $matches = preg_split($pattern, $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+      //drupal_set_message(print_r($matches, 1), 'warning');
+
+      // Build the output string, keeping only the parts we want...
+      $out = $matches[0]; $show_default = true;
+      for($i = $n1; $i < count($matches); $i += $n3) {
+        // Convert to lower case.
+        $trigger = strtolower($matches[$i]);
+        // No matching language trigger so continue with next section.
+        if (!isset($triggers[$trigger]))  continue;
+
+        switch ($triggers[$trigger]) {
+          // case: a section for the current language, use it and clear "use default" flag.
+          case $current_language:
+            $out .= $matches[$i+$n2];
+            $show_default = false;
+            break;
+          // case: a section for "all languages", use it.
+          case $all_languages:
+            $out .= $matches[$i+$n2];
+            break;
+          // case: a "default" section, use it if we haven't already used a language-specific section...
+          case $other_languages:
+            if ($show_default) {
+              $out .= $matches[$i+$n2];
+            }
+            else {
+              $show_default = true;
+            }
+            break;
+        }
+      }
+      // Extract title if present.
+      if (function_exists('ls_titles_process')) {
+        $out = ls_titles_process('set', $out);
+      }
+      return $out;
+
+    case 'no cache':
+      // Support patched filter.module - performance increase.
+      $patched = defined('check_markup_language_patch_1');
+      $no_cache = !$patched;
+      return $no_cache;
+
+    case 'list':
+      return array(0 => t($mod_name));
+
+    case 'description':
+      return t('Allows you to define content for several languages in a single text area.');
+
+    case 'settings':
+      return _language_sections_settings($mod_name, $mod_prefix);
+
+    default:
+      return $text;
+  }
+}
+
+// Get triggers array for specified language.
+function _language_sections_get_triggers($mod_prefix, $language = FALSE, $rebuild = FALSE) {
+  if (!$language)  global $language;
+  //$rebuild = 1;
+
+  // Get saved $triggers.
+  $varname = $mod_prefix.'triggers_'.$language->language;
+  $triggers = variable_get($varname, null);
+
+  // Check if saved $triggers is valid - $language settings may have been edited.
+  $check = crc32(serialize($language));
+  if ($rebuild || $triggers['check'] !== $check) {
+    //drupal_set_message(sprintf('rebuild %s: %s', $mod_prefix, $language->name));
+    $triggers = array(
+      'types' => _language_sections_build_triggers($mod_prefix, $language),
+      'check' => $check,
+    );
+    variable_set($varname, $triggers);
+  }
+  //drupal_set_message(sprintf('triggers for %s: %s ', $lang, print_r($triggers, 1)), 'warning');
+
+  return $triggers['types'];
+}
+
+// Build triggers arrays for specified language.
+// The idea here is to do processing here rather than every time that the LS filter gets called,
+// so as to maximise performance during node display etc.
+// Results here are normally cached by _language_sections_get_triggers().
+function _language_sections_build_triggers($mod_prefix, $language) {
+  // Get $elements, $specials, $match_types.
+  extract(_language_sections_context());
+
+  // Build triggers using $elements.
+  foreach($elements as $element) {
+    $key = 'trigger_'.$element;
+    // If trigger is in use, add it.
+    if (_language_sections_setting($mod_prefix, $key)) {
+      $triggers[$language->$element] = $match_types['current_language'];
+    }
+  }
+
+  // Append from $specials (currently $name values will be 'all' and 'other')
+  foreach($specials as $name => $desc) {
+    $key = 'trigger_special_'.$name;
+    $matches = explode('|', _language_sections_setting($mod_prefix, $key));
+    foreach($matches as $match) {
+      //drupal_set_message(sprintf('name: %s, match: %s, type: %s', $name, $match, $match_types[$name.'_languages'], 'error'));
+      $triggers[strtolower($match)] = $match_types[$name.'_languages'];
+    }
+  }
+  return $triggers;
+}
+
+// Define default values for settings, get setting.
+function _language_sections_setting($mod_prefix, $key, $get_default = FALSE) {
+  // These are here to help consider backward compatibility.
+  // pattern  v1.5: '/(=+ *([a-z]{2}|[a-z]{2}-[a-z]{2}) *=+\s?)(.*?)/'
+  // pattern  v1.7: '/(=+ *([a-z]{2}|[a-z]{2}-[a-z]{2,5}|all|other) *=+\s?)(.*?)/i'
+  // original v2.x: '/(=+ *([a-z]{2}[a-z\-]*) *=+\s?)([.\s]*)/i'
+  // pattern  v2.4: '/(=+ *([a-z]{2}[a-z\-]*) *=+\s?)(.*?)/i',
+  $defaults = array(
+    'pattern' => '/(=+ *([a-z]{2}[a-z\-]*) *=+\s?)(.*?)/i',
+    'trigger_language' => 1,
+    'trigger_special_all' => 'all|qq',
+    'trigger_special_other' => 'other|qz',
+    'short_help' => 'Mark language-dependent sections with <strong>== marker ==</strong> '
+                  . 'where <em>marker</em> is a language code or other valid text such as %all or %other.',
+  );
+
+  // Make sure settings have been updated to Version 2.x
+  if (!variable_get($mod_prefix.'version', FALSE)) {
+    variable_set($mod_prefix.'version', '2.5');
+    // This is needed when upgrading from 1.x.
+    if (!variable_get($mod_prefix.'alt', FALSE)) {
+      variable_del($mod_prefix.'pattern');
+    }
+  }
+
+  return $get_default? $defaults[$key] : variable_get($mod_prefix.$key, $defaults[$key]);
+}
+
+// Define some values needed in various places.
+function _language_sections_context($topic = FALSE) {
+
+  $context = array(
+    // Elements of $language that we use as possible triggers.
+    'elements' => array('language', 'name', 'prefix'),
+    // "Special" triggers and descriptions.
+    'specials' => array('all' => t('all languages'), 'other' => t('other languages')),
+    'match_types' => array('current_language' => 1, 'all_languages' =>2, 'other_languages' => 3),
+  );
+  return $topic? $context[$topic] : $context;
+}
+
+// Build and return the settings form.
+function _language_sections_settings($mod_name, $mod_prefix) {
+
+  //require_once(dirname(__FILE__) . '/help.html');
+  global $language;
+  $textsize = 30;
+
+  // Get $elements and $specials.
+  extract(_language_sections_context());
+
+  // Create collapsible section for this module in the filters configuration form.
+  $section =& $form[$mod_name];
+  $shared = _language_sections_setting($mod_prefix, 'shared');
+  $section = array(
+    '#type' => 'fieldset',
+    '#title' => $shared? sprintf('%s (%s)', t($mod_name), t('shared configuration')) : t($mod_name),
+    '#collapsible' => TRUE,
+  );
+
+  /*
+  $section['help'] = array(
+    '#type' => 'markup',
+    '#value' => '<p>Help goes here.</p>',
+  );
+  */
+
+  $fieldset =& $section['triggers'];
+  $fieldset = array(
+    '#type' => 'fieldset',
+    '#title' => t('Current language triggers'),
+    '#description' => t('Which elements from current language can be used in language-section markers?'),
+  );
+
+  // Create a checkbox for each $element.
+  $title = '%element';
+  $desc = 'Language:%element is currently %value.';
+  foreach($elements as $element) {
+    $key = 'trigger_'.$element;
+    $tvars = array('%element'=>$element, '%value'=>$language->$element? $language->$element : t('<blank>'));
+    $fieldset[$mod_prefix.$key] = array(
+      '#type' => 'checkbox',
+      '#title' => t($title, $tvars),
+      '#default_value' => _language_sections_setting($mod_prefix, $key),
+      '#description' => t($desc, $tvars),
+    );
+  }
+
+  // Create an entry field for special codes ("all" and "other").
+  $examples = array('all' => 'all|todos|toutes', 'other' => 'english|other|otro|autre');
+  foreach($specials as $type => $desc) {
+    $key = 'trigger_special_'.$type;
+    $tvars = array('%desc' => $desc, '%ex' => t($examples[$type]));
+    $section[$mod_prefix.$key] = array(
+      '#type' => 'textfield',
+      '#title' => t('Triggers for %desc sections', $tvars),
+      '#size' => $textsize,
+      '#default_value' => _language_sections_setting($mod_prefix, $key),
+      '#description' => t('Text that may mark an %desc section. Leave blank to disable, multiple entries allowed, e.g: %ex', $tvars),
+    );
+  }
+
+  $fieldset =& $section['advanced'];
+  $fieldset = array(
+    '#type' => 'fieldset',
+    '#title' => t('Advanced'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $key = 'shared';
+  $fieldset[$mod_prefix.$key] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Shared configuration'),
+    '#default_value' => $shared,
+    '#description' => t('Use the same configuration for all filters. If you change this, save and then check all configuration values.'),
+  );
+
+  $key = 'short_help';
+  $fieldset[$mod_prefix.$key] = array(
+    '#type' => 'textarea',
+    '#title' => t('User help'),
+    '#rows' => 2,
+    '#default_value' => _language_sections_setting($mod_prefix, $key),
+    '#description' => t('Filter-help shown to the user. This text is passed through t().'),
+  );
+
+  $key = 'alt';
+  $use_alt = _language_sections_setting($mod_prefix, $key);
+  $fieldset[$mod_prefix.$key] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use alternative pattern'),
+    '#default_value' => $use_alt,
+    '#description' => t('If set, sections can be defined using the pattern given below. Otherwise, the default pattern will be used.'),
+  );
+
+  $key = 'pattern';
+  // Update stored pattern if we need to.
+  if (!$use_alt && variable_get($mod_prefix.$key, FALSE))  variable_del($mod_prefix.$key);
+  $pattern = _language_sections_setting($mod_prefix, $key);
+
+  $fieldset[$mod_prefix.$key] = array(
+    '#type' => 'textfield',
+    '#title' => t('Alternative pattern'),
+    '#size' => 40,
+    '#default_value' => $pattern,
+    '#description' => t('If enabled above, this pattern will be used for finding sections in the text.'
+                      . ' Initially, this is set to the module\'s internal default.'
+                      . ' You should not change the number of parenthesised groups in the expression.'
+                      )
+  );
+
+  // Display a message showing whether caching is enabled (patch installed.)
+  $msg = array('Patch for $func is not installed - output cannot be cached. See included README.txt',
+               'Patch for $func is installed - output can be cached.',
+              );
+  $fieldset['cache'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Output caching'),
+    'msg' => array(
+      '#value' => t($msg[defined('check_markup_language_patch_1')], array('$func' => 'check_markup()')),
+    ),
+  );
+
+  // If form is being posted, process new settings.
+  if (!empty($_POST)) {
+    // Rebuild stored triggers.
+    foreach(language_list() as $lang) {
+      _language_sections_get_triggers($mod_prefix, $lang, TRUE);
+    }
+  }
+
+  return $form;
+}
+
+// Return true if LS is active for the given filter $format.
+function language_sections_format_check($format) {
+  static $formats;
+
+  if (!isset($formats[$format])) {
+    $formats[$format] = false;
+    $filters = filter_list_format($format);
+    foreach($filters as $filter) {
+      if ($filter->module == 'language_sections') {
+        $formats[$format] = true;
+        break;
+      }
+    }
+  }
+  return $formats[$format];
+}
+
+// --- Drupal docs advise NOT closing PHP tags ---

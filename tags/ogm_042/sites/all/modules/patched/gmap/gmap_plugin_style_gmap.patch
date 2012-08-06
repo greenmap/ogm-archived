@@ -1,0 +1,33 @@
+--- gmap_plugin_style_gmap.inc.orig	Sat Sep 24 18:11:08 2011
++++ gmap_plugin_style_gmap.inc	Sat Sep 24 18:16:25 2011
+@@ -206,8 +206,29 @@
+         }
+       }
+       if (!empty($markers)) { // Don't draw empty maps.
+-        $map = gmap_parse_macro($this->options['macro']);
++        
++        //GREENMAP OPENFLOWS HACK MARK LIBKUMAN 
++        //THIS HACK WAS ORIGINALLY PUT INTO PLACE BY MATT CORKS, in version = "6.x-1.1-rc1"
++        //NOW CARRIED OVER TO version = "6.x-1.1"
++        // TODO: need to replace this hack which maintains custom zoom level
++        //   with a long term solution
++        $arguments = $this->view->argument;
++        foreach ($arguments as $argobj) {
++	  if (is_numeric($argobj->argument)) {
++            $gid = $argobj->argument;
++            $macro = group_map_gmap_macro($gid);
++          }
++        }
++        if ($macro) {
++          $map = gmap_parse_macro($macro);
++        }
++        else {
++          $map = gmap_parse_macro($this->options['macro']);
++        }
+ 
++        //$map = gmap_parse_macro($this->options['macro']);
++        //END GREENMAP OPENFLOWS HACK MARK LIBKUMAN      
++ 
+         // If center lon/lat are not empty they are used to center map
+         if (!empty($center_lon) && !empty($center_lat)) {
+           $map['longitude'] = $center_lon;
