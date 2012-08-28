@@ -68,9 +68,12 @@ $form['locations']['0']['#description'] = t("There are 3 ways to set the site's 
 }
 
 function ogm_form_tweaks_longitude($element) {
-
-  $element[0]['locpick']['user_latitude']['#value'] = $element[0]['#value']['latitude'];
-  $element[0]['locpick']['user_longitude']['#value'] = $element[0]['#value']['longitude'];
+  if ($element[0]['#value']['latitude']) {
+    $element[0]['locpick']['user_latitude']['#value'] = $element[0]['#value']['latitude'];
+  }
+  if ($element[0]['#value']['longitude']) {
+    $element[0]['locpick']['user_longitude']['#value'] = $element[0]['#value']['longitude'];
+  }
   return $element;
 } 
 
