@@ -1,0 +1,15 @@
+; $Id:
+name = Language Sections
+description = An input filter which allows you to define content for several languages in a single text area.
+version = 6.x-2.x-dev
+package = "Multilanguage"
+dependencies[] = locale
+core = 6.x
+
+
+; Information added by drupal.org packaging script on 2010-03-28
+version = "6.x-2.5"
+core = "6.x"
+project = "language_sections"
+datestamp = "1269804307"
+

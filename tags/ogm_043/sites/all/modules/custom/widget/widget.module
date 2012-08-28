@@ -1,0 +1,310 @@
+<?php
+/* mjgoins' notes:
+ *   view takes one arg: the nid of the map
+ *   the HTTP GET args provide the rest of the map data
+ *
+ *  still need: to export views
+ *      fix access rules
+ *
+ */
+/**
+ * Implementation of hook_perm().
+ */
+function widget_perm() {
+  return array('make widget', 'administer widget');
+}
+
+function widget_menu(){
+  $items = array();
+	$items['node/widget'] = array(
+    'title' => 'Make Map Widget',
+    'page callback' => 'widget_create_widget_page',
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array('make widget'),
+  );
+	$items['node/widget/onmapchange/%'] = array(
+    'title' => 'OnMapChange',
+    'page callback' => 'widget_onMapChange',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array(3),
+    'access callback' => 'widget_admin_access_callback',
+  );
+  $items['node/%/widget'] = array(
+    'title' => 'Widget',
+    'access arguments' => array(1),
+    'access callback' => 'widget_admin_access_callback',
+    'page callback' => 'widget_create_widget_page',
+    'page arguments'=> array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 9
+  );
+  /* the url the remote site embeds
+   */
+  $items['greenmap_widget'] = array(
+    'title' => 'Open Green Map',
+    //FIXME: the remote site should always be able to access this, so they are
+    //  an anonymous user. is that really ok?
+    'access arguments' => array('access content'),
+    'page callback' => 'widget_views_arguments_wrapper',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function widget_admin_access_callback() {
+  global $user;
+  $args = func_get_args();
+  $nid = $args[0];
+  $node = node_load($nid);
+  if ( ! ('green_map' == $node->type) ) {
+    return FALSE;
+  }
+
+  return user_access('administer widget') || og_user_roles_user_access('make widget', $nid, $user->uid);
+}
+
+function widget_create_widget_page(){
+  global $user;
+
+  if ( ! (user_access('administer widget') ||
+       $user->og_groups[arg(1)]['is_admin']) )
+  {
+    drupal_access_denied();
+    exit;
+  }
+
+	$path = drupal_get_path('module', 'widget');
+	drupal_add_js( $path.'/ajax.js' );
+ 	drupal_add_js( $path.'/widget.js' );
+	drupal_add_js( 'misc/collapse.js' );
+	drupal_set_title(t('Make Map Widget'));
+	$content .= "<fieldset class='collapsible'>"."<legend> Widget settings";
+	$content .= "</legend>";
+	$content .= "<p>" . t('First choose which map you want to make a widget for, and set the size.') . "</p>";
+	$content .= "<ul>";
+	$content .= "<li>";
+	$content .= "<label for='mapname'>" . t('Map') . "</label>";
+	$content .= "<select name='mapname' onChange='Drupal.onMapChange(\"mapname\")'id='mapname'>";
+	$content .= "<option selected='selected' value=''>- Select map -</option>";
+
+	while(list($key,$group) = each($user->og_groups)){
+		if  ($user->og_groups[$key]['is_admin']){
+			$content .= "<option value='".$key."'>".$user->og_groups[$key]['title']."</option>";
+		}
+	}
+
+	$content .= "</select>";
+	$content .= "</li>";
+	$content .= "<li>";
+	$content .= "<label for='width'>Width</label>";
+	$content .= "<input type='text' onChange='Drupal.onChange()' value='".variable_get('widget_width', '100%')."' name='width' id='width' />";
+	$content .= "</li>";
+	$content .= "<li>";
+	$content .= "<label for='height'>Height</label>";
+	$content .= "<input type='text' onChange='Drupal.onChange()' value='".variable_get('widget_height', '500')."' name='height' id='height' />";
+	$content .= "</li>";
+	$content .= "</ul>";
+	$content .= "</fieldset>";
+
+
+	$content .= "<fieldset id='fieldset_map_settings' class='collapsible collapsed'>".
+				"<legend> Map settings";
+	$content .= "</legend>";
+	$content .= "<p>" .t('You can use the settings here to change how the map looks in the widget.') . "</p>";
+	  //t('You can use the settings here to change how the map looks in the widget, or just drag and zoom the map below.') . "</p>";
+
+	$content .= "<ul>";
+	$content .= "<li>";
+	$content .= "<label for='lat'>Latitude</label>";
+	$content .= "<input type='text' onChange='Drupal.onChange()' value='".variable_get('widget_lat', 18.312810846425442)."' name='lat' id='lat' />";
+	$content .= "</li>";
+	$content .= "<li>";
+	$content .= "<label for='lon'>Longitude</label>";
+	$content .= "<input type='text' onChange='Drupal.onChange()' value='".variable_get('widget_lon', 6.6796875)."' name='lon' id='lon' />";
+	$content .= "</li>";
+	$content .= "<li>";
+	$content .= "<label for='zoom'>Zoom</label>";
+	$content .= "<select onChange='Drupal.onChange()' name='zoom' id='zoom'>";
+	$content .= "<option value=''>- Select zoom value -</option>";
+	$content .= "<option >0</option>";
+	$content .= "<option >1</option>";
+	$content .= "<option >2</option>";
+	$content .= "<option >3</option>";
+	$content .= "<option >4</option>";
+	$content .= "<option >5</option>";
+	$content .= "<option >6</option>";
+	$content .= "<option >7</option>";
+	$content .= "<option >8</option>";
+	$content .= "<option >9</option>";
+	$content .= "<option >10</option>";
+	$content .= "<option >11</option>";
+	$content .= "<option >12</option>";
+	$content .= "<option >13</option>";
+	$content .= "<option >14</option>";
+	$content .= "<option >15</option>";
+	$content .= "<option >16</option>";
+	$content .= "<option >17</option>";
+	$content .= "</select>";
+	$content .= "</li>";
+	$content .= "<li>";
+	$content .= "<label for='maptype'>Map type</label>";
+	$content .= "<select onChange='Drupal.onChange()' name='maptype' id='maptype'>";
+	$content .= "<option selected='selected' value='Map'>Map</option>";
+	$content .= "<option value='Satellite'>Satellite</option>";
+	$content .= "<option value='Hybrid'>Hybrid</option>";
+	$content .= "</select>";
+	$content .= "</li>";
+	$content .= "</ul>";
+	$content .= "</fieldset>";
+
+	$content .= "<fieldset id='fieldset_html_codes' class='collapsible collapsed'>".
+				"<legend> Widget html code";
+	$content .= "</legend>";
+	$content .= "<p>" . t('Copy this code to your own website or blog to embed the map. On Wordpress and other sites, you may need to select HTML or PHP options.') . "</p>";
+	$content .= "<input type='text' size='100' value='' name='html' id='html' />";
+	$content .= "</fieldset>";
+
+	$content .= "<fieldset id='fieldset_map_view' class='collapsible collapsed'>".
+				"<legend> Map view";
+	$content .= "</legend>";
+	$content .= "<p>" . t('This is how your widget will look.') . "</p>";
+	$content .= "<div id='DIVview'></div>";
+//	$content .= "<iframe width='425' height='350' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src=''></iframe>";
+	$content .= "</fieldset>";
+
+	return $content;
+}
+
+function widget_onMapChange() {
+	if(!arg(3)){die();} // if argument is missing
+	$nodeID = arg(3);
+	$result = widget_get_map_data($nodeID);
+	if( $resultArray = db_fetch_array($result) ){
+		$zoom = $resultArray["ZOOM"];
+		$lat = $resultArray["LAT"];
+		$lon = $resultArray["LON"];
+		$type = $resultArray["MapTYPE"];
+	}
+	echo "var lat='".$lat."';var lon='".$lon."';var zoom='".$zoom."';var type='".$type."';";
+	die();
+}
+
+function widget_get_map_data($nid) {
+  $query = "
+    SELECT
+      n.nid
+      , gm.field_gmap_type_value MapTYPE
+      , l.latitude LAT
+      , l.longitude LON
+      , gm.field_map_zoom_value ZOOM
+    FROM
+      {node} n
+        INNER JOIN {location_instance} li
+          ON n.nid = li.nid
+        INNER JOIN {location} l
+          ON li.lid = l.lid
+        INNER JOIN {content_type_green_map} gm
+          ON n.vid = gm.vid
+    WHERE
+      n.nid = %d
+	";
+  $result = db_query($query, $nid);
+  return $result;
+}
+
+/*
+ *  this is the page callback that should be called from the path 'greenmap_widget'
+ */
+function widget_views_arguments_wrapper() {
+
+  $nid = arg(1);
+  if ( is_numeric($nid) ) {
+    $node = node_load($nid);
+  }
+
+  if ( 'green_map' != $node->type ) {
+    drupal_access_denied();
+  }
+  if (module_exists('ogm_ol') && $node->field_use_poly[0]['value'] == 'Yes') {
+    ogm_ol_load_lines_js($node);
+    ogm_ol_load_areas_js($node);
+  }
+  $latitude = 0;
+  $longitude = 0;
+
+  $view = views_get_view('map_widget');
+  $view->set_display('page');
+  $view->is_cacheable = FALSE;
+
+  list($latitude, $longitude) = widget_http_get_args($view, $node->nid);
+
+  // Fetch the distance filter (name of exposed Location proximity filter)
+  $item = $view->get_item('page_1', 'filter', 'distance');
+
+  // Apply dynamic elements to our exposed filter based on current node
+  $item['value'] = array(
+    'latitude' => $latitude,
+    'longitude' => $longitude,
+    'search_distance' => 1000,
+    'search_units' => 'km',
+  );
+  $view->set_item('page_1', 'filter', 'distance', $item);
+
+  $view->args[] = $uid;
+
+  return $view->render();
+}
+
+/**
+ *  takes a views object and a gmap nid, and returns a two element array
+ *  containing the lat and lon.
+ *
+ *  uses the $_GET array from the http request
+ */
+function widget_http_get_args(&$view, $nid) {
+  $zoom = 0;
+  fivestar_add_css();
+
+  if($_GET['LON'] && $_GET['LAT'] && $_GET['ZOOM'] && $_GET['TYPE']){
+    $zoom = $_GET['ZOOM'];
+    $lat = $_GET['LAT'];
+    $lon = $_GET['LON'];
+    $type = $_GET['TYPE'];
+  }
+  else {
+    $result = widget_get_map_data($nid);
+    if( $resultArray = mysql_fetch_array($result) ){
+      if($_GET['ZOOM']) {
+        $zoom = $_GET['ZOOM'];
+      }
+      else {
+        $zoom = $resultArray["ZOOM"];
+      }
+      if($_GET['LAT']) {
+        $lat = $_GET['LAT'];
+      }
+      else {
+        $lat = $resultArray["LAT"];
+      }
+      if($_GET['LON']) {
+        $lon = $_GET['LON'];
+      }
+      else {
+        $lon = $resultArray["LON"];
+      }
+      if($_GET['TYPE']) {
+        $type = $_GET['TYPE'];
+      }
+      else {
+        $type = $resultArray["MapTYPE"];
+      }
+    }
+  }
+  $macro = "[gmap zoom=$zoom |center=$lat,$lon |type=$type]";
+  $view->display_handler->options['style_options']['macro'] = $macro;
+  return array($lat, $lon);
+}
+
+function widget_views_api() {
+  return array('api' => 2.0,);
+}

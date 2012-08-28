@@ -1,0 +1,40 @@
+$Id:
+
+Sun 28 Mar 2010 20:22:13 CEST 
+
+* Fixed bug when upgrading from LS 1.x - http://drupal.org/node/754280
+* Added 'version' to saved settings to help cater for any possible future version incompatibilties.
+* Made trigger rebuild happen only when posting configuration from (reason: setting variables when not needed is bad for Drupal performance, see http://api.drupal.org/api/function/variable_set/6#comment-1058
+* To be release as 2.5
+
+Sat 27 Mar 2010 11:10:38 CET 
+* Changed default pattern to be more consistent with v1.x - '/(=+ *([a-z]{2}[a-z\-]*) *=+\s?)(.*?)/i' -- shouldn't make any difference in pratice.
+* Enabled caching (was accidentally left disabled in 2.3 due to debug line.)
+* To be released as 2.4
+
+Fri 26 Mar 2010 19:42:56 CET 
+
+* Added support for check_markup patch so that output can be cached (potentially much better performance.)
+* Removed cache configuration setting as it's ineffective.
+* Added message on config. page that shows whether patch is installed.
+* Patch included - check_markup_language_patch_1.patch - see README.txt.
+* To be released as 2.3.
+
+Wed 24 Mar 2010 15:55:23 CET 
+
+* Added further support for LS Titles (LS Extras)
+* Added language_sections_format_check() API function (used by LS Titles and MultiLink modules).
+* To be released as 2.2.
+
+Mon 22 Mar 2010 12:28:47 CET 
+
+* Changed module .info file: name -> Language Sections, package -> "Multilanguage".
+* Removed references to D5 suuport (not supported in LS 2.x).
+
+Fri 19 Mar 2010 11:51:32 CET 
+* Fixed rebuild of triggers (better performance.) To be released as 2.1.
+
+Thu 18 Mar 2010 22:51:56 CET 
+
+* Initial V2 release, to be released as 2.0.
+
