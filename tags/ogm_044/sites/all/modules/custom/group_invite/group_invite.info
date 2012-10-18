@@ -1,0 +1,7 @@
+; $Id$
+name = group_invite
+description = Group Invite -module
+package = GreenMap
+dependencies[] = og
+dependencies[] = og_user_roles
+core = 6.x

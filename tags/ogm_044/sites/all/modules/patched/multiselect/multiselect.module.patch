@@ -1,0 +1,119 @@
+--- multiselect.module.orig	Mon Sep 26 17:40:46 2011
++++ multiselect.module	Mon Sep 26 18:00:23 2011
+@@ -158,16 +158,31 @@
+   $unselected_options = array();
+   $selected_options = array();
+ 
++  //begin patch by opengreenmaps greenmap openflows mark libkuman
++  $key_order = array();
++  //end patch by opengreenmaps greenmap openflows mark libkuman
++
+   // Add selected items to the array first
+   if (is_array($element['#value'][$field_key])) {
+     foreach ($element['#value'][$field_key] as $key => $value) {
++      //begin patch by opengreenmaps greenmap openflows mark libkuman
++      $key_order[$key] = ++$i;
++      //end patch by opengreenmaps greenmap openflows mark libkuman
++
+       if (isset($options[$value])) {
+         $selected_options[$value] = html_entity_decode(strip_tags($options[$value]));
+       }
+     }
+   }
++  //begin patch by opengreenmaps greenmap openflows mark libkuman
++  $i = 0;
++  //end patch by opengreenmaps greenmap openflows mark libkuman
+   // Add the remaining options to the arrays
+   foreach ($options as $key => $value) {
++    //begin patch by opengreenmaps greenmap openflows mark libkuman
++    $key_order[$key] = ++$i;
++    //end patch by opengreenmaps greenmap openflows mark libkuman
++
+     if (!isset($selected_options[$key])) {
+       $unselected_options[$key] = $value;
+       //$selected_options[$key] = $value;
+@@ -207,6 +222,11 @@
+     '#suffix' => "\n</div>\n",
+     '#attributes' => array('class' => "$selfield multiselect_sel", 'id' => $element['#field_name']),
+     '#default_value' => isset($element['#value'][$field_key]) ? $element['#value'][$field_key] : NULL,
++
++    //begin patch by opengreenmaps greenmap openflows mark libkuman
++    '#key_order' => $key_order,
++    '#original_field_type' => $field['type'],
++    //end patch by opengreenmaps greenmap openflows mark libkuman    
+   );
+ 
+   // Set #element_validate in a way that it will not wipe out other
+@@ -250,22 +270,68 @@
+  * $element['#delta]  is the position of this element in the group
+  */
+ function theme_multiselect_select($element) {
+-  return $element['#children'];
++  //begin patch by opengreenmaps greenmap openflows mark libkuman
++  //return $element['#children'];
++  $key_order = $element['value']['#key_order'];
++  $original_field_type = $element['value']['#original_field_type'];
++
++  // we need to pass option order to javascript, which is done via element
++  // id's.  the FAPI doesn't allow us to set attributes on select options, so
++  // this is done via a hack in the theme. we split the rendered HTML using a
++  // regular expression, then add the id attribute from the previously stored
++  // $key_order array.
++  $options = preg_split('@(<option value="\d+"( selected="selected")*>[^<>]+</option>)@',
++      $element['#children'], NULL, PREG_SPLIT_DELIM_CAPTURE);
++  $output = '';
++  foreach ($options as $option) {
++    if (preg_match('@^<option value="(\d+)"( selected="selected")*>(.*)@', $option, $matches)) {
++      // include #delta to allow multiple multiselects within a form
++      // (TODO test this more thoroughly)
++      $option = sprintf('<option value="%d" id="ms_%03d_%d"%s>%s',
++         $matches[1],
++         $element['#delta'],
++         $key_order[$matches[1]],
++         $matches[2],
++         $matches[3]);
++      // uncomment this to simulate optgroups for higher-level taxonomy items
++      // for content_taxonomy fields, so that users are forced to select
++      // bottom-level items in the taxonomy hierarchy
++      // TODO fix this hack -- make this a per-vocabulary option for this
++      // widget, and pull hierarchy information directly from vocabulary
++      if ($original_field_type == 'content_taxonomy' &&
++          preg_match('@^<option ([^>]+)>(?! -  - )(.*)@', $option, $matches)) {
++        $option = sprintf('<option %s class="disabled" disabled="disabled">%s',
++            $matches[1],
++            $matches[2]);
++      }
++    }
++    $output .= $option;
++  }
++  return $output;
++  //end patch by opengreenmaps greenmap openflows mark libkuman
+ }
+ 
+ /**
+  * Provides html to draw the "not selected" box
+  */
+ function _multiselect_html_for_unselected_box_start($unselfield, $fieldname) {
+-  $boxhtml = '';
+-  $boxhtml .= "<select name=\"". $unselfield ."\" multiple=\"multiple\" class=\"form-select ". $unselfield ." multiselect_unsel\" id=\"". $fieldname ."\" size=\"10\">\n";
++  //begin patch by opengreenmaps greenmap openflows mark libkuman
++  //$boxhtml = '';
++  //$boxhtml .= "<select name=\"". $unselfield ."\" multiple=\"multiple\" class=\"form-select ". $unselfield ." multiselect_unsel\" id=\"". $fieldname ."\" size=\"10\">\n";
++   $boxhtml = sprintf('<select name="%s" multiple="multiple" class="form-select %s multiselect_unsel" id="%s" size="10">'."\n", 
++       $unselfield, $unselfield, $fieldname);
++  //end patch by opengreenmaps greenmap openflows mark libkuman
++
+   return $boxhtml;
+ }
+ 
+ function _multiselect_html_for_unselected_box_options($unselected_options) {
+   $boxhtml = '';
+   foreach ($unselected_options as $value => $name) {
+-    $boxhtml .= "<option value=\"". $value ."\">". $name ."</option>\n";
++    //begin patch by opengreenmaps greenmap openflows mark libkuman
++    //$boxhtml .= "<option value=\"". $value ."\">". $name ."</option>\n";
++    $boxhtml .= sprintf('<option value="%s">%s</option>'."\n", $value, $name);
++    //end patch by opengreenmaps greenmap openflows mark libkuman
+   }
+   return $boxhtml;
+ }
