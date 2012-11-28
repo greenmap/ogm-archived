@@ -12,7 +12,7 @@ function ogm_mobile_views_handlers() {
         'path' => drupal_get_path('module', 'ogm_mobile'),
     ),
     'handlers' => array(
-      'views_handler_field_primary_term_tid_clone' => array(
+      'ogm_mobile_handler_field_primary_term_tid_clone' => array(
         'parent' => 'views_handler_field',
       ),
     ),
@@ -23,21 +23,14 @@ function ogm_mobile_views_handlers() {
  * Implementation of hook_views_data().
  */
 function ogm_mobile_views_data() {
-  $data['ogm_mobile']['table']['group'] = t('Node');
-  $data['ogm_mobile']['table']['join'] = array(
-    'node' => array(
-      'left_field' => 'vid',
-      'field' => 'vid',
-    ),
-    // @@@ Node_revisions?
-  );
-
-  $data['ogm_mobile']['tid'] = array(
-    'title' => t('Primary Term: Term Image'),
-    'help' => t('The Primary Term Image of the node.'),
+  $data['primary_term']['tid_clone'] = array(
+    'real field' => 'tid',
+    'title' => t('Primary Term: OGM Options'),
+    'help' => t('Customized Primary Term data for the node.'),
     'field' => array(
-      'handler' => 'views_handler_field_primary_term_tid_clone',
+      'handler' => 'ogm_mobile_handler_field_primary_term_tid_clone',
       'click sortable' => TRUE,
+      'real field' => 'tid',
     ),
     'sort' => array(
       'handler' => 'views_handler_sort',

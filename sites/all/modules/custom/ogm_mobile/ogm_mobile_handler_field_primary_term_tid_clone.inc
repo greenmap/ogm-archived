@@ -6,7 +6,7 @@
  * Provide a views handlers for primary_term data fields.
  */
 
-class views_handler_field_primary_term_tid_clone extends views_handler_field {
+class ogm_mobile_handler_field_primary_term_tid_clone extends views_handler_field {
 
   function option_definition() {
     $options = parent::option_definition();
@@ -23,6 +23,12 @@ class views_handler_field_primary_term_tid_clone extends views_handler_field {
    */
   function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
+
+    $form['tid'] = array(
+      '#title' => t('Return just tid, ignore other options'),
+      '#type' => 'checkbox',
+      '#default_value' => !empty($this->options['tid']),
+    );
 
     $form['filepath'] = array(
       '#title' => t('Return just the filepath for the image'),
@@ -61,6 +67,10 @@ class views_handler_field_primary_term_tid_clone extends views_handler_field {
       return;
     }
 
+    // Render just the ID
+    if ($this->options['tid']) {
+      return $tid;
+    }
     // Render url
     if ($this->options['filepath']) {
       $image = taxonomy_image_get_url($tid);
