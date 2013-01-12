@@ -23,6 +23,8 @@ $by_referer_config = array(
 
     ),
   ),
+ 	//new mobile edits
+ 	//maplocate is the map result page
      '#maplocate#' => array(
     // string 'referers' is always the key here
     'referers' => array(
@@ -30,6 +32,7 @@ $by_referer_config = array(
       '#markfielbig.com/files/web#' => 'iphoneapp','#addsites/locate.html#' => 'iphoneapp'
     ),
   ),
+  //mobile is just the root for errors
      '#mobile#' => array(
     // string 'referers' is always the key here
     'referers' => array(
@@ -37,7 +40,8 @@ $by_referer_config = array(
       '#markfielbig.com/files/web#' => 'iphoneapp','#addsites/locate.html#' => 'iphoneapp'
     ),
   ),
-     '#node/add#' => array(
+  //add is the actual suggest page with the form in it
+     '#add#' => array(
     // string 'referers' is always the key here
     'referers' => array(
       // key is pattern for referer, value is name of theme
