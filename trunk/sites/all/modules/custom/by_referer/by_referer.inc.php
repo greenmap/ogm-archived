@@ -41,7 +41,7 @@ $by_referer_config = array(
     ),
   ),
   //add is the actual suggest page with the form in it
-     '#add#' => array(
+     '#^node/add/green-site#' => array(
     // string 'referers' is always the key here
     'referers' => array(
       // key is pattern for referer, value is name of theme
