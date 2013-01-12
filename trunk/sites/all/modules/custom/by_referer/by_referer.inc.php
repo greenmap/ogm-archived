@@ -23,7 +23,7 @@ $by_referer_config = array(
 
     ),
   ),
-     '#^maplocate#' => array(
+     '#maplocate#' => array(
     // string 'referers' is always the key here
     'referers' => array(
       // key is pattern for referer, value is name of theme
@@ -35,6 +35,13 @@ $by_referer_config = array(
     'referers' => array(
       // key is pattern for referer, value is name of theme
       '#markfielbig.com/files/web#' => 'iphoneapp','#addsites/locate.html#' => 'iphoneapp'
+    ),
+  ),
+     '#node/add#' => array(
+    // string 'referers' is always the key here
+    'referers' => array(
+      // key is pattern for referer, value is name of theme
+      '#markfielbig.com/files/web#' => 'iphoneapp','#addsites/locate.html#' => 'iphoneapp','#opengreenmap.org/maplocate#' => 'iphoneapp'
     ),
   ),
   'DEBUG' => FALSE,
