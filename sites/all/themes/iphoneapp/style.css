@@ -57,11 +57,11 @@ body > .toolbar {
     }
 
 body[orient="portrait"] > .toolbar {
-    background: url(/sites/all/themes/iphoneapp/img/header.png) #6FC22A no-repeat center;
+    background: url(img/header.png) #6FC22A no-repeat center;
     }
 
 body[orient="landscape"] >.toolbar {
-    background: url(/sites/all/themes/iphoneapp/img/header.png) #6FC22A no-repeat center;
+    background: url(img/header.png) #6FC22A no-repeat center;
     }
 
 .toolbar > h1 {
@@ -253,9 +253,9 @@ display: none;
     -webkit-border-radius: 0;
     text-align: right;
     z-index: 5;
-    width: 290px;
+    width: 90%px;
     padding: 0 5px;
-    margin:5px 0 !important;
+    margin:5px auto !important;
 }
 
 .form-item label {
@@ -1036,7 +1036,7 @@ display: none;
 
 /* add site optimizations December 2012*/
 #edit-taxonomy-1-wrapper, #edit-taxonomy-tags-4-wrapper, #edit-field-child-friendly-value-wrapper, #edit-field-wheelchair-accessible-value-wrapper, #edit-field-appointment-needed-value-wrapper, #edit-field-accessible-by-public-tran-value-wrapper, #edit-field-public-transport-directio-0-value-wrapper, #edit-field-free-entry-value-wrapper, #edit-field-entry-cost-0-value-wrapper, #edit-field-volunteer-opportunities-a-value-wrapper, #edit-field-volunteer-details-0-value-wrapper, .group-videos-photos--audio, #edit-field-name-involved-0-value-wrapper {
-display: none;
+display: none !important;
 }
 
 #edit-primaryterm, #edit-field-involved-value {
