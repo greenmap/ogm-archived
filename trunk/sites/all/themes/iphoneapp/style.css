@@ -249,17 +249,18 @@ display: none;
 .form-item  {
     position: relative;
     min-height: 42px;
-    border-bottom: 1px solid #999999;
     -webkit-border-radius: 0;
     text-align: right;
     z-index: 5;
     width: 90%;
     padding: 0 5px;
     margin:5px auto !important;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
 }
 
 .form-item label {
-text-align: left;
+text-align: center;
 font-size: 13px !important;
 margin-bottom: 5px;
 }
@@ -270,14 +271,12 @@ text-align: left;
 }
 
 .form-item .form-text {
-border:#999999 solid 1px !important;
 font-size:15px;
 height:35px;
-margin-left:-6px;
+margin:auto;
 width:90%;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
-    border: 1px solid #999999;
+    border: none;
+    background: none
 }
 
 fieldset .form-item .form-text {
@@ -348,6 +347,19 @@ fieldset {
     font-size: 16px;
     width: 90%;
     }
+    
+    fieldset {
+    position: relative;
+    margin: auto;
+    padding: 5px;
+    background: #FFFFFF;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border: 1px solid #999999;
+    text-align: right;
+    font-size: 16px;
+    width: 90%;
+    }
 
 #edit-field-accessible-by-public-tran-value-wrapper {
 border-bottom:none;
@@ -381,8 +393,8 @@ font-family:arial;
 font-size:16px;
 height:200px;
 letter-spacing:1px;
-width:80%;
-margin-left: -4px;
+margin: auto;
+background: none;
 }
 
 .form-item input {
