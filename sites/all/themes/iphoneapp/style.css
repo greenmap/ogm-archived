@@ -373,6 +373,9 @@ z-index:5;
 display: none;
 }
 
+.location div:not(#edit-locations-0-country-wrapper) {
+display: none;
+}
 
 #edit-locations-0-country-wrapper select{
 width: 270px;
