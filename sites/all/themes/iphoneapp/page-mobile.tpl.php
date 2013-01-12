@@ -171,7 +171,7 @@ body .toolbar {
 
 </fieldset>
         <div id="footer"><?php if ($footer_message): ?>
-          &copy; Green Map&reg; System, 2012<br/>
+          &copy; Green Map&reg; System, <?php echo date("Y"); ?><br/>
           Visit GreenMap.org on your desktop
           </div>
 </form>
