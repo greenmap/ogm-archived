@@ -49,7 +49,7 @@ $by_referer_config = array(
     ),
   ),
   //if forgot required field
-     '#^node/add/green-site#' => array(
+     '#node/add/green-site#' => array(
     // string 'referers' is always the key here
     'referers' => array(
       // key is pattern for referer, value is name of theme
