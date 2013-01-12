@@ -253,7 +253,7 @@ display: none;
     -webkit-border-radius: 0;
     text-align: right;
     z-index: 5;
-    width: 90%px;
+    width: 90%;
     padding: 0 5px;
     margin:5px auto !important;
 }
