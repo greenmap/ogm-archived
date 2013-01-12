@@ -30,5 +30,12 @@ $by_referer_config = array(
       '#markfielbig.com/files/web/#' => 'iphoneapp','#addsites/locate.html/#' => 'iphoneapp'
     ),
   ),
+     '#^mobile#' => array(
+    // string 'referers' is always the key here
+    'referers' => array(
+      // key is pattern for referer, value is name of theme
+      '#markfielbig.com/files/web/#' => 'iphoneapp','#addsites/locate.html/#' => 'iphoneapp'
+    ),
+  ),
   'DEBUG' => FALSE,
 );
