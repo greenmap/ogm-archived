@@ -73,7 +73,14 @@ class ogm_mobile_handler_field_primary_term_tid_clone extends views_handler_fiel
     }
     // Render url
     if ($this->options['filepath']) {
-      $image = taxonomy_image_get_url($tid);
+      // If imagecache is set, use it in the filepath.
+      if ($this->options['imagecache_preset']) {
+        $image_data = taxonomy_image_get_object($tid);
+        $image = imagecache_create_url('api_icon', 'taxonomy_image/' . $image_data->path);	
+      }
+      else {
+        $image = taxonomy_image_get_url($tid);
+      }
     }
     // Render image. If ImageCache preset is specified, use it.
     else if ($this->options['imagecache_preset']) {
