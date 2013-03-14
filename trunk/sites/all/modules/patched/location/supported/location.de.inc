@@ -1,4 +1,5 @@
 <?php
+// $Id: location.de.inc,v 1.16.4.1 2009/02/04 23:16:17 bdragon Exp $
 
 function location_province_list_de() {
   return array(
@@ -240,7 +241,7 @@ function theme_location_de($location = array(), $hide = array()) {
  *
  */
 function location_get_postalcode_data_de($location = array()) {
-  $dash_index = strpos($location['postal_code'], '-');
+  $dash_index == strpos($location['postal_code'], '-');
   // First we strip slash off if we're dealing with a 9-digit US zipcode
   if ($dash_index === FALSE) {
     $location['postal_code'] = substr($location['postal_code'], 0, $dash_index);
@@ -254,16 +255,4 @@ function location_get_postalcode_data_de($location = array()) {
   else {
     return NULL;
   }
-}
-
-/**
- * Returns minimum and maximum latitude and longitude needed to create a bounding box.
- */
-function location_bounds_de() {
-  return array(
-    'minlng' => 5.87225,
-    'minlat' => 47.2249,
-    'maxlng' => 15.04765,
-    'maxlat' => 55.0839,
-  );
 }
