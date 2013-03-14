@@ -97,7 +97,7 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
     $contents .= '<div id="siteactions">';
       $contents .= '<ul>';
         $contents .= '<li>' . format_plural($comment_count, '1 comment', '@count comments') . '</li>';
-        $contents .= '<li>' . l(t('share this site'), 'forward/' . $node->nid . '/simple') . '</li>';
+        $contents .= '<li>' . '<a href="http://staging.opengreenmap.org/forward?path=node/' . $node->nid .'">'.t('share this site'). '</a></li>';
         $contents .= '<li>' . flag_create_link('report_green_site', $node->nid);
       $contents .= '</ul>';
     $contents .= '</div>';

@@ -57,11 +57,11 @@ body > .toolbar {
     }
 
 body[orient="portrait"] > .toolbar {
-    background: url(img/header.png) #6FC22A no-repeat center;
+    background: url(/sites/all/themes/iphoneapp/img/header.png) #6FC22A no-repeat center;
     }
 
 body[orient="landscape"] >.toolbar {
-    background: url(img/header.png) #6FC22A no-repeat center;
+    background: url(/sites/all/themes/iphoneapp/img/header.png) #6FC22A no-repeat center;
     }
 
 .toolbar > h1 {
@@ -249,18 +249,17 @@ display: none;
 .form-item  {
     position: relative;
     min-height: 42px;
+    border-bottom: 1px solid #999999;
     -webkit-border-radius: 0;
     text-align: right;
     z-index: 5;
-    width: 90%;
+    width: 290px;
     padding: 0 5px;
-    margin:5px auto !important;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
+    margin:5px 0 !important;
 }
 
 .form-item label {
-text-align: center;
+text-align: left;
 font-size: 13px !important;
 margin-bottom: 5px;
 }
@@ -271,15 +270,18 @@ text-align: left;
 }
 
 .form-item .form-text {
+border:#999999 solid 1px !important;
 font-size:15px;
 height:35px;
-margin:auto;
+margin-left:-6px;
 width:90%;
-    border: none;
-    background: none
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border: 1px solid #999999;
 }
 
 fieldset .form-item .form-text {
+border:#999999 solid 1px !important;
 font-size:15px;
 height:26px;
 margin-left:-6px;
@@ -341,18 +343,6 @@ fieldset {
     background: #FFFFFF;
     -webkit-border-radius: 10px;
     -moz-border-radius: 10px;
-    text-align: right;
-    font-size: 16px;
-    width: 90%;
-    }
-    
-    fieldset {
-    position: relative;
-    margin: auto;
-    padding: 5px;
-    background: #FFFFFF;
-    -webkit-border-radius: 10px;
-    -moz-border-radius: 10px;
     border: 1px solid #999999;
     text-align: right;
     font-size: 16px;
@@ -391,8 +381,8 @@ font-family:arial;
 font-size:16px;
 height:200px;
 letter-spacing:1px;
-margin: auto;
-background: none;
+width:80%;
+margin-left: -4px;
 }
 
 .form-item input {
@@ -1046,7 +1036,7 @@ display: none;
 
 /* add site optimizations December 2012*/
 #edit-taxonomy-1-wrapper, #edit-taxonomy-tags-4-wrapper, #edit-field-child-friendly-value-wrapper, #edit-field-wheelchair-accessible-value-wrapper, #edit-field-appointment-needed-value-wrapper, #edit-field-accessible-by-public-tran-value-wrapper, #edit-field-public-transport-directio-0-value-wrapper, #edit-field-free-entry-value-wrapper, #edit-field-entry-cost-0-value-wrapper, #edit-field-volunteer-opportunities-a-value-wrapper, #edit-field-volunteer-details-0-value-wrapper, .group-videos-photos--audio, #edit-field-name-involved-0-value-wrapper {
-display: none !important;
+display: none;
 }
 
 #edit-primaryterm, #edit-field-involved-value {
@@ -1081,18 +1071,4 @@ filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endCo
 
 fieldset {
 border: 0;
-border: none;
-/* Fallback for web browsers that doesn't support RGBa */
-background: rgb(255, 255, 255);
-/* RGBa with 0.6 opacity */
-background: rgba(255, 255, 255, 0.9) !important;
-/* For IE 5.5 - 7*/
-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF); /* IE 6/7 */
--ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF)"; /* IE8 */
-}
-
-.location_auto_country {
-width: 100%;
-font-size: 20px;
-height: 30px;
 }

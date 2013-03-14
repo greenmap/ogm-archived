@@ -117,3 +117,42 @@
         font: bold 14px helvetica, arial,sans-serif; text-align: center; color: #fff;
         cursor: default;
     }
+
+/* add site optimizations December 2012*/
+#edit-taxonomy-1-wrapper, #edit-taxonomy-tags-4-wrapper, #edit-field-child-friendly-value-wrapper, #edit-field-wheelchair-accessible-value-wrapper, #edit-field-appointment-needed-value-wrapper, #edit-field-accessible-by-public-tran-value-wrapper, #edit-field-public-transport-directio-0-value-wrapper, #edit-field-free-entry-value-wrapper, #edit-field-entry-cost-0-value-wrapper, #edit-field-volunteer-opportunities-a-value-wrapper, #edit-field-volunteer-details-0-value-wrapper, .group-videos-photos--audio, #edit-field-name-involved-0-value-wrapper {
+display: none;
+}
+
+#edit-primaryterm, #edit-field-involved-value {
+width: 100%;
+font-size: 20px;
+height: 30px;
+}
+
+#edit-title-wrapper input{
+text-align: center;
+text-transform: capitalize;
+}
+
+.form-item .description {
+font-size: 11px;
+text-align: left;
+margin: 10px;
+text-align: center;
+color: #333 !important;
+}
+
+.form-item {
+border: none;
+/* Fallback for web browsers that doesn't support RGBa */
+background: rgb(255, 255, 255);
+/* RGBa with 0.6 opacity */
+background: rgba(255, 255, 255, 0.9) !important;
+/* For IE 5.5 - 7*/
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF); /* IE 6/7 */
+-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#CCFFFFFF, endColorstr=#CCFFFFFF)"; /* IE8 */
+}
+
+fieldset {
+border: 0;
+}
