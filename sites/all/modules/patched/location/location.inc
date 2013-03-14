@@ -1,4 +1,5 @@
 <?php
+// $Id: location.inc,v 1.95.2.9 2010/07/04 14:10:07 rooby Exp $
 
 /**
  * @defgroup Location Location: An API for working with locations.
@@ -99,6 +100,28 @@ function location_get_postalcode_data($location = array()) {
     return $country_specific_function($location);
   }
   else {
+    //begin hack by opengreenmaps greenmap openflows mark libkuman
+    if ($cache = cache_get('location:supported-countries', 'cache_location')) {
+      $country = $location['country'];
+      if ($cache->data[$country]) {
+        $include = drupal_get_path('module', 'location') .'/supported/location.'. $location['country'] .'.inc';
+        if (file_exists($include)){
+          include_once($include);
+          if (function_exists($country_specific_function)) {
+            return $country_specific_function($location);
+          } else {
+            drupal_set_message(t('The support file for: ' . $location['country']. ' found at <i>' . $include .'</i>. does not have a function to support zip code look ups. Missing funtion: <i>'. $country_specific_function . '</i>'), 'error');
+          }
+        } else {
+          drupal_set_message(t('The support file for: ' . $location['country']. ' could not be found at <i>' . $include .'</i>.'), 'error');
+        }
+      } else {
+        drupal_set_message(t('The country code requested: ' . $location['country']. ' is not supported by this site.'), 'warning');
+      }
+    } else {
+      drupal_set_message(t('There are no supported countries in the site cache.'), 'warning');
+    }
+    //end hack by opengreenmaps greenmap openflows mark libkuman
     return NULL;
   }
 }
@@ -313,39 +336,6 @@ function location_latlon_rough_default($location = array()) {
   }
   else {
     return NULL;
-  }
-}
-
-/**
- * Get an appropriate bounding box for showing an entire country on a map.
- * Target is a bounding box large enough to show the country in both spherical
- * mercator and mercator projections.
- * @param $location
- *   Either a location array or a country code.
- *
- * @return
- *   An array with 'minlng', 'minlat', 'maxlng', and 'maxlat' elements.
- */
-function location_country_bounds($location = array()) {
-  if (!is_array($location)) {
-    $location = array('country' => $location);
-  }
-  if (!empty($location['country'])) {
-    location_load_country($location['country']);
-  }
-
-  $country_bounds_function = 'location_bounds_' . $location['country'];
-
-  if (function_exists($country_bounds_function)) {
-    return $country_bounds_function();
-  }
-  else {
-    return array(
-      'minlng' => -180.0,
-      'minlat' => -90.0,
-      'maxlng' => 180.0,
-      'maxlat' => 90.0,
-    );
   }
 }
 
@@ -872,7 +862,7 @@ function location_get_iso3166_list($upper = FALSE) {
     'th' => t('Thailand'),
     'tj' => t('Tajikistan'),
     'tk' => t('Tokelau'),
-    'tl' => t('Timor-Leste'),
+    'tl' => t('East Timor'),
     'tm' => t('Turkmenistan'),
     'tn' => t('Tunisia'),
     'to' => t('Tonga'),
