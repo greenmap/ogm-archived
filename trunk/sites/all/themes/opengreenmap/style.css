@@ -1194,3 +1194,7 @@ color: #555555;
 padding-top: -5px;
 font-size: 18px;
 }
+
+#edit-field-map-license-value-wrapper {
+ visibility:hidden;
+}
