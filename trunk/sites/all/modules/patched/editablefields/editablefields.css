@@ -1,0 +1,20 @@
+.editablefields_throbber {
+  background: url(./throbber.gif)  no-repeat right center;
+  padding-right:18px;
+}
+
+.editablefields.clicktoedit { position:relative; padding-top:1.5em; }
+
+div.editablefields_clicktoedit_message { 
+  position: absolute;
+  cursor:pointer;
+  font-size:xx-small;
+  opacity:0.5;
+  display:block;
+  top:0;
+  z-index: 200;
+  background-color: #8F3; 
+  border: 1px solid #4A0;
+  padding: 1px 4px 0px;
+  border-radius: 3px;
+}
