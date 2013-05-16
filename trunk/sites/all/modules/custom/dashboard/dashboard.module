@@ -236,7 +236,8 @@ function dashboard_leadmapmaker($nid){
   drupal_add_js("misc/collapse.js");
   drupal_set_title(t('Map Dashboard for %group', array('%group' => $node->title)));
   $content .= "<p>" . t('Use this page to manage sites on the map. You can also use the <a href="@advanced-mapboard">advanced Map Dashboard</a>, which lets you filter and search.', array('@advanced-mapboard' => url('advanced/' . $node->nid))) . "</p>";
-
+  // add in new bulk edit link
+  $content .= "<p>" . t('You can also use the <a href="@bulk-mapboard">Bulk Edit View</a>, which will let you edit some details of your sites in an easier interface.', array('@bulk-mapboard' => url('dashboard/sites/bulk/' . $node->nid))) . "</p>"; 
   $views_to_embed = array(
     array(
       'view' => 'dashboard_sites',
