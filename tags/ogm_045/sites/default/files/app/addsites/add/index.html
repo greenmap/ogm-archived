@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html style="background:url(img/pinstripes.png);">
+<head>
+<title>Add a Site</title>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+<link rel="apple-touch-icon" href="../iui/iui-logo-touch-icon.png" />
+<meta name="apple-touch-fullscreen" content="YES" />
+<link rel="stylesheet" type="text/css" href="style.css">
+<link rel="stylesheet" type="text/css" href="../../style.css">
+<script type="text/javascript" src="jquery.min.js"></script>
+<script type="text/javascript" src="json2.js"></script>
+<script type="text/javascript" src="jquery.cookie.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<style type="text/css">
+#ogm_submit_success fieldset {
+margin:auto;
+background: url(/sites/all/themes/iphoneapp/img/buttonbg.png) repeat #8cc63f !important;
+}
+
+#ogm_submit_success .row a {
+text-decoration: none;
+color:#ffffff;
+font-family:arial;
+font-size:20px;
+font-weight:bold;
+letter-spacing:3px;
+text-transform:uppercase;
+}
+
+#ogm_submit_success .last {
+border-bottom:none;
+}
+
+#ogm_submit_success .row {
+min-height:33px;
+padding-top:13px;
+position:relative;
+text-align:center;
+width:100% !important;
+z-index:5;
+text-decoration: none;
+border-bottom:1px solid #ffffff;
+}
+
+#footer {
+font-size:0.75em;
+margin-top:100px;
+text-align:center;
+}
+
+</style>
+
+</head>
+<body onLoad="setTimeout(scrollTo, 100, 0, 1);">
+    <div class="toolbar">
+         <span id="backButton" class="button" ONCLICK="history.go(-1)" style="display:block !important;">Back</span>
+    </div>
+<form id="ogm_submit_login" class="panel">
+<fieldset>
+
+	<div class="row">
+    <label>Username</label>
+	<input id="username" type="text" name="username" value="username here" class="form-text" onfocus="this.value=''">
+	</div>
+
+	<div class="row">
+	<label>Password</label>
+	<input id="password" type="password" name="password" value="password here" class="form-text" onfocus="this.value=''"> 
+	</div>
+</fieldset>	
+	<input class="whitebuton"  id="ogm_submit_login_submit" type="submit" value="login">
+
+</form>
+<form id="ogm_submit_site" style="display: none;" class="panel">
+<fieldset>
+	<div class="row">
+    <label>Select Map</label>
+	<select id="map"></select>
+	</div>
+	
+	<div class="row">
+	<label>Site Name</label>
+	<input id="name" type="text" value="name of site here" onfocus="this.value=''"><br>
+	</div>
+	
+	<div class="row">
+	<label>Select Icon</label>
+	<select id="icon" disabled="disabled">
+	<option>Retrieving icons..</option>
+	</select>
+	</div>
+	
+	<div class="row">
+	<label>Country</label>
+	<select id="country" disabled="disabled">
+	<option style="width:200px;">Retrieving countries..</option>
+	</select>
+	</div>
+	
+	<div class="row">
+	<p id="location">Waiting to retrieve current location</p>
+	</div>
+	
+	<div class="row">
+	<center><label><b>Details</b></label></center>
+	<textarea id="details" type="text" value="additonal Information" onfocus="this.value=''"></textarea><br>
+	</div>
+	
+	</fieldset>
+	<input id="ogm_submit_site_submit" type="submit" value="submit site" class="whitebuton">
+</form>
+<div id="ogm_submit_success" style="display:none;">
+	<h1 class="title" id="ogm_submit_title">Thank you for submitting!</h1>
+
+</div>
+</body>
+</html>
