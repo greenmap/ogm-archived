@@ -1198,3 +1198,8 @@ font-size: 18px;
 #edit-field-map-license-value-wrapper {
  visibility:hidden;
 }
+
+/* Dashboard Bulk Edit View */
+
+.view-dashboard-bulkedit .views_table { width:100%; }
+    
