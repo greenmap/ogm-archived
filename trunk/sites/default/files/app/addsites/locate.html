@@ -103,20 +103,22 @@
 		}
 		else
 		{
-			window.location='http://opengreenmap.org/mobile'; 
+			window.location='http://staging.opengreenmap.org/mobile'; 
+			alert('Your location could not be determined.');
 		}
  
 		function success_callback(p)
 		{
-			window.location = '/maplocate?distance[latitude]='+p.coords.latitude+'&distance[longitude]='+p.coords.longitude+'&distance[search_distance]=100&distance[search_units]=mile';
+			window.location = 'http://staging.opengreenmap.org/maplocate?distance[latitude]='+p.coords.latitude+'&distance[longitude]='+p.coords.longitude+'&distance[search_distance]=100&distance[search_units]=mile';
 		}
 		
 		function error_callback(p)
 		{
-			window.location='http://opengreenmap.org/mobile?error=callback_error'; 
+			window.location='http://staging.opengreenmap.org/mobile?error=callback_error';
+			alert('Your location could not be determined.');
 		}		
 	</script>                        
-        <div id="footer">          &copy; Green Map&reg; System, 2012<br/>
+        <div id="footer">          &copy; Green Map&reg; System, 2013<br/>
           Visit GreenMap.org on your desktop
           
           

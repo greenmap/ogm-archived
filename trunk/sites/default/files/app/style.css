@@ -53,11 +53,11 @@ body > .toolbar {
 }
 
 body[orient="portrait"] > .toolbar {
-    background: url(img/header.png) #6FC22A no-repeat;
+    background: url(img/header.png) #6FC22A no-repeat center;
     }
 
 body[orient="landscape"] >.toolbar {
-    background: url(img/header-wide.png) #6FC22A no-repeat;
+    background: url(img/header.png) #6FC22A no-repeat center;
     }
 
 .toolbar > h1 {
