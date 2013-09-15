@@ -292,7 +292,7 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
       $medianode->field_image_local[0]['type'] = 'image_local';
       $medianode->field_image_local[0]['title'] = $medianode->title;
       $medianode->field_image_local[0]['view'] = theme('imagefield_image', $medianode->field_image_local[0], '', '', array('width' => 300), FALSE);
-      $medianode->field_image_local[0]['view'] = str_replace('<a href=', '<a target="_blank" href=', $medianode->field_image_local[0]['view']);
+      $medianode->field_image_local[0]['view'] = str_replace('<a href=', '<a class="foo" target="_blank" href=', $medianode->field_image_local[0]['view']);
       $usr = user_load(array('uid' => $medianode->uid));
       $medianode->field_image_local[0]['author'] = theme_username($usr);
       $media = array_merge($media, $medianode->field_image_local);
@@ -323,7 +323,7 @@ $contents = '<div id="mediathumbs">' . $media_thumb ;
       $medianode->field_photo[0]['author'] = theme_username($usr);
       // HACKHACK
       $medianode->field_photo[0]['view'] = theme('emimage_image_full', array_merge($medianode->field_photo, array('widget' => array('full_width' => 320, 'full_height' => 0))), $medianode->field_photo[0], 'image_full', $medianode);
-      $medianode->field_photo[0]['view'] = str_replace('<a href=', '<a target="_blank" href=', $medianode->field_photo[0]['view']);
+      $medianode->field_photo[0]['view'] = str_replace('<a href=', '<a class="foo" target="_blank" href=', $medianode->field_photo[0]['view']);
       $media = array_merge($media, $medianode->field_photo);
     }
   }

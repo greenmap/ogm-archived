@@ -1,9 +1,22 @@
 <!--comment.tpl.php-->
-<div class="comment <?php print $comment_classes ." ". $zebra; ?>"><div class="comment-inner">
+<div class="comment <?php print $comment_classes ; ?>"><div class="comment-inner">
   
   <?php if ($unpublished) : ?>
     <div class="unpublished"><?php print t('Unpublished'); ?></div>
   <?php endif; ?> 
+  
+  
+  <span class="content">
+    <?php print $content; ?>
+  </span>
+  -
+  <span class="submitted">
+    <?php
+    $commenter = $comment->name ? $comment->name : t('Anonymous');
+    
+    ?>
+    <?php print $commenter; ?> 
+  </span>
   
   <?php if ($links): ?>
     <div class="links">
@@ -11,25 +24,6 @@
     </div>
   <?php endif; ?> 
   
-  <span class="submitted">
-    <?php print format_date($comment->timestamp, 'custom', 'j M Y'); ?> 
-    <?php
-    if($comment->homepage){
-      $commenter = l($comment->name,$comment->homepage);
-    } elseif ($comment->uid > 0) {
-      $commenter = l($comment->name, 'user/' . $comment->uid);
-    } else {
-      $commenter = $comment->name ? $comment->name : t('Anonymous');
-    }
-    
-    ?>
-    <?php print $commenter; ?> 
-    <?php print t('wrote'); ?>: 
-  </span>
-  
-  <span class="content">
-    <?php print $content; ?>
-  </span>
   
   
   <?php if (!empty($new)): ?>

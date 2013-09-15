@@ -534,7 +534,6 @@ form#map-prox-search select#nearby_unit {
 
   .comment .submitted /* The "posted by" information */
   {
-    color: #1C75BA;
   }
 
   .comment .content /* Comment's content wrapper */
