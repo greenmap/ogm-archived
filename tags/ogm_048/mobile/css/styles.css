@@ -1,0 +1,280 @@
+/** Global properties **/
+
+html, body {
+  height: 100%;
+  padding: 0px;
+  margin: 0px;
+  font-family: "verdana","arial","helvetica", sans-serif;
+}
+
+body {
+  opacity: 0
+}
+
+body.load {
+  opacity: 1;
+  -webkit-transition: opacity 1s ease-in;
+  -moz-transition: opacity 1s ease-in;
+  -o-transition: opacity 1s ease-in;
+  -ms-transition: opacity 1s ease-in;
+  transition: opacity 1s ease-in;
+}
+
+.greenGradient {
+  background: #8CC63F
+}
+
+.navbarLocation {
+  display: none;
+}
+
+/** Header menu **/
+
+#menuButtons li {
+  padding: 0px;
+  margin: 5px;
+}
+
+#headerWrapper {
+  position: fixed;
+  z-index: 1000;
+  height: 40px;
+  width: 100%;
+}
+
+#header {
+  margin: 0px;
+  width: 100%;
+  position: fixed;
+}
+
+#logo, #menuButtons a {
+  color: white;
+  text-shadow: 0.05em 0.05em 0.1em black;
+}
+
+#menuButtons a {
+  text-shadow: 0.1em 0.1em 0.1em black;
+}
+
+#logo {
+  padding: 0px;
+}
+
+#logo img {
+  position: relative;
+  top: 4px;
+  height: 32px;
+  width: auto;
+}
+
+#mapButton, #listButton, #headerWrapper .navbar-inner {
+  border-radius: 0px;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+}
+
+#menuButtons li :hover {
+  background: #cdeb8b; /* Old browsers */
+  background: -moz-linear-gradient(top, #cdeb8b 0%, #cdeb8b 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#cdeb8b), color-stop(100%,#cdeb8b)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top, #cdeb8b 0%,#cdeb8b 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top, #cdeb8b 0%,#cdeb8b 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top, #cdeb8b 0%,#cdeb8b 100%); /* IE10+ */
+  background: linear-gradient(to bottom, #cdeb8b 0%,#cdeb8b 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cdeb8b', endColorstr='#cdeb8b',GradientType=0 ); /* IE6-9 */
+}
+
+#expandButton {
+  background-color: #CDEB8B;
+  background-image: none;
+}
+
+#expandButton:hover {
+  background-color: #FF6432;
+  background-image: none;
+}
+
+.detailsTitle {
+  font-size: 2em;
+  line-height: 1.2em;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+/** Location drop down **/
+
+#addressText {
+  margin-top: 15px;
+  margin-bottom: 0px;
+}
+
+#addressButton {
+  background-color: #CDEB8B;
+  background-image: none;
+  position: relative;
+  margin-left: 3px;
+  top: 8px;
+  padding: 5px;
+}
+
+li a#addressButton:hover {
+  background-color: #FF6432;
+  background-image: none;
+}
+
+/** Content regions **/
+
+#map, #list {
+  position: absolute;
+  width: 100%;
+  margin: auto;
+  top: 40px;
+  z-index: 1;
+}
+
+/** Map view **/
+
+#map_canvas {
+  height: 100%;
+  width: 100%;
+}
+
+/** List view **/
+
+#list {
+  display: none;
+  z-index: 0;
+}
+
+.evenListLocation {
+  background-color: #C6FA82;
+}
+
+.oddListLocation {
+  background-color: #E7FACD;
+}
+
+/** Footer **/
+
+#footerWrapper {
+  position: absolute;
+  width: 100%;
+}
+
+#footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0px;
+  z-index: 2;
+}
+
+#footer button {
+  width: 50%;
+}
+
+#mapButton, #listButton {
+  background-color: #CDEB8B;
+  background-image: none;
+}
+
+#mapButton:hover, #listButton:hover {
+  background-color: #FF6432;
+  background-image: none;
+}
+
+#mapButton.active, #listButton.active {
+  background-color: #8CC63F;
+  background-image: none;
+}
+
+#footerSpacer {
+  height: 30px;
+  min-height: 30px;
+}
+
+#modalContents {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.detailsIcon {
+  text-align: center;
+  width: 100%;
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
+
+.detailsDist {
+  float:right;
+}
+
+.detailsDetails {
+  text-align: justify;
+}
+
+.detailsLeft {
+  float: right;
+  padding-left: 20px;
+}
+
+.detailsImage {
+  text-align: center
+  width: 100%;
+}
+
+.padded10 {
+  padding: 10px;
+}
+
+.btnFull {
+  width: 100%;
+}
+
+.clear {
+  clear:both;
+}
+
+.btn-primary, .btn-primary.disabled {
+  width: 100%;
+  margin-top: 5px;
+  background-color: #8CC63F;
+  background-image: none;
+}
+
+.btn-primary:hover {
+  background-color: #FF6432;
+  background-image: none;
+}
+
+/** Splash screen **/
+
+#splash {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 310px;
+  height: 400px;
+  margin-top: -150px;
+  margin-left: -155px;
+  color: #8CC63F;
+  font-size: 2em;
+  font-weight: bold;
+  text-align: center;
+}
+
+.kmDisp {
+  color: grey;
+}
+.miDisp {
+  color: grey;
+}
+
+/** Submission form **/
+
+#form {
+  position: absolute;
+  width: 100%;
+  top: -3px;
+}
