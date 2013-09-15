@@ -2211,6 +2211,7 @@ function drupal_add_js($data = NULL, $type = 'module', $scope = 'header', $defer
       $javascript['header'] = array(
         'core' => array(
           'misc/jquery.js' => array('cache' => TRUE, 'defer' => FALSE, 'preprocess' => TRUE),
+          'misc/jquery-migrate-1.2.1.min.js' => array('cache' => TRUE, 'defer' => FALSE, 'preprocess' => TRUE),
           'misc/drupal.js' => array('cache' => TRUE, 'defer' => FALSE, 'preprocess' => TRUE),
         ),
         'module' => array(),
