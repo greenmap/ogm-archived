@@ -8,7 +8,7 @@ var storage = new Array();
 var zoomOnOff = false;
 var objects = new Array();
 var breakpoint = 10;
-var geocoder = new GClientGeocoder();
+var geocoder = new google.maps.Geocoder();
 
 /* jQuery */
 $(document).ready(function() {
@@ -54,7 +54,7 @@ function showLocations(address){
         alert("not found1");
       }else if(places.length == 1){
         // only one
-        var point = new GLatLng(places[0].Point.coordinates[1],places[0].Point.coordinates[0]);
+        var point = new google.maps.LatLng(places[0].Point.coordinates[1],places[0].Point.coordinates[0]);
         map.setCenter(point, 13); // , 13
         //alert(places[0].AddressDetails.Accuracy);
       }else {
@@ -115,7 +115,7 @@ onMapChange = function(http_request,returnArgs) {
 //  for(var i =0; i< 2;i++) {
   for(var i =0; i< lines.length;i++) {
     if(lines[i] == ''){continue;}
-    var tmp = [];
+    var tmp = {};
 
     var line = lines[i].split("*");
     var nid = line[0];
@@ -125,9 +125,9 @@ onMapChange = function(http_request,returnArgs) {
     var opts =line[3];
     var grps = line[5];
 
-    tmp['object'] = createMarker(new GLatLng(lat, lon), opts,nid);
+    tmp.object = createMarker(new google.maps.LatLng(lat, lon), opts,nid);
     // set up layer
-    tmp['layer'] = layer;
+    tmp.layer = layer;
 
     // set up groups
     var groups = [];
@@ -163,7 +163,7 @@ function clearExtras(obj) {
   var nids = [];
   for (var m in objects) {
     var object = objects[m];
-    if (b.contains(object.getPoint())) {continue;}
+    if (b.contains(object.getPosition())) {continue;}
     nids.push(object.getId());
 
     // let's delete object if not inside bounds
@@ -194,57 +194,64 @@ function randObjects(){
 }
 
 var maxContentDiv;
-
+var globalInfoWindow;
 
 function createMarker(point, opts, nid) {
   var opt = {};
   eval(opts); // puts all options to opt-object
-  var object = new GMarker(point, opt);
+  var object = new google.maps.Marker(opt);
+  object.setPosition(point);
+
   object.value = nid;
   object.setId(nid);
+
+  function showInfoWindow(doneCallback) {
+    var html = Drupal.makeReq(Drupal_base_path + Drupal_language + '/' + 'node/gmap_marker/getMiniBubble/' + nid,'');
+      html.onreadystatechange = function() {
+        if (html.readyState != 4) {return;}
+        if (html.status == 200) {// success
+          if (globalInfoWindow) {
+            globalInfoWindow.close();
+          }
+          globalInfoWindow = new google.maps.InfoWindow({
+              position: point, 
+              content: html.responseText,
+          });
+          globalInfoWindow.open(GlobalMap, object);
+          var handle = google.maps.event.addListener(globalInfoWindow, "domready", function () {
+            $("#media_slideshow").bjqs({
+              width: 200,
+              height: 210,
+              usecaptions: false,
+              showcontrols: true,
+              showmarkers: false,
+              centercontrols: false,
+              automatic: false,
+              nexttext: "<h3>&gt;</h3>",
+              prevtext: "<h3>&lt;</h3>",
+            });
+            google.maps.event.removeListener(handle);
+          });
+
+          if (doneCallback) {
+              doneCallback();
+          }
+       }
+    };
+  }
+
 
   if ( Drupal.settings.group_map != undefined && 
        Drupal.settings.group_map.autoBubbleNID != undefined ) {
     if ( Drupal.settings.group_map.autoBubbleNID === nid ) {
-      var html = Drupal.makeReq(Drupal_base_path + Drupal_language + '/' + 'node/gmap_marker/getMiniBubble/' + nid,'');
-      html.onreadystatechange = function() {
-        if (html.readyState != 4) {return;}
-        maxContentDiv = document.createElement('div');
-        // somewhere in here is a problem which results in two <html> tags
-        maxContentDiv.id = 'maxcontentdiv';
-        maxContentDiv.innerHTML = '<iframe frameborder="0" src="' + Drupal_base_path + Drupal_language + '/node/' + nid + '/simple" width="670" height="360"></iframe>';
-        GlobalMap.openInfoWindowHtml(point, html.responseText,
-        {maxContent: maxContentDiv,
-        maxTitle: ''});
-        Drupal.settings.group_map.autoBubbleNID = 0;
-      }
+      showInfoWindow(function () { Drupal.settings.group_map.autoBubbleNID = 0; });
     }
   }
 
-  GEvent.addListener(object, "click", function() {
+  google.maps.event.addListener(object, "click", function() {
+      showInfoWindow();
 
-    var html = Drupal.makeReq(Drupal_base_path + Drupal_language + '/' + 'node/gmap_marker/getMiniBubble/' + nid,'');
-
-    html.onreadystatechange = function() {
-      if (html.readyState != 4) {return;}
-      if (html.status == 200) {// success
-        maxContentDiv = document.createElement('div');
-        // somewhere in here is a problem which results in two <html> tags
-        maxContentDiv.id = 'maxcontentdiv';
-        maxContentDiv.innerHTML = '<iframe frameborder="0" src="' + Drupal_base_path + Drupal_language + '/node/' + nid + '/simple" width="670" height="360"></iframe>';
-        GlobalMap.openInfoWindowHtml(point, html.responseText,
-        {maxContent: maxContentDiv,
-        maxTitle: ''});
-
-        jQuery(function(){
-          jQuery('.maximize').click(function() {
-            var rel = jQuery(this).attr('rel');
-            GlobalMap.getInfoWindow().maximize();
-          })
-        });
-      } 
-    };
-  });
+    });
   return object;
 }
 
@@ -326,7 +333,9 @@ Drupal.gmap.addHandler('gmap',function(elem) {
       GlobalElement = elem;
       GlobalMap = map;
       GlobalObj = obj;
-      G_NORMAL_MAP.getMinimumResolution = function() {return 2;};
+      
+        //Trying to fix this now... G_NORMAL_MAP problems 
+      map.getMinimumResolution = function() {return 2;};
       // mapNid
       if(mapNid){
         mapNodeLoad(obj);
@@ -336,7 +345,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
 
 
         // Send out outgoing zooms
-      GEvent.addListener(map, "zoomend", function(oldzoom,newzoom) {
+      google.maps.event.addListener(map, "zoom_changed", function(oldzoom,newzoom) {
         //var obj = GlobalObj;
         //if (mapNid) {return;}
 
@@ -414,9 +423,8 @@ Drupal.gmap.addHandler('gmap',function(elem) {
 
 
         // Send out outgoing moves
-      GEvent.addListener(map,"moveend",function() {
+      google.maps.event.addListener(map,"idle",function() {
       // CUSTOM
-
         try{
           // zoomOnOff &&
 
@@ -428,9 +436,9 @@ Drupal.gmap.addHandler('gmap',function(elem) {
             if ( dx < 300 && dy < 150 ) {
             dx *= 0.20;
             dy *= 0.20;
-            bounds = new GLatLngBounds(
-                new GLatLng( sw.lat() + dy, sw.lng() + dx ),
-                new GLatLng( ne.lat() - dy, ne.lng() - dx )
+            bounds = new google.maps.LatLngBounds(
+                new google.maps.LatLng( sw.lat() + dy, sw.lng() + dx ),
+                new google.maps.LatLng( ne.lat() - dy, ne.lng() - dx )
             );
           }
           var mlat = obj.gm.map.getCenter().lat();
@@ -518,10 +526,10 @@ function showNearby(keys, distance, unit, inc, incval){
     var xml = GXml.parse(bounds_req.responseText);
     var points = xml.documentElement.getElementsByTagName('bound');
 
-    var bounds = new GLatLngBounds();
+    var bounds = new google.maps.LatLngBounds();
     for (var i = 0; i < points.length; i++) {
       var name = points[i].getAttribute('name');
-      var point = new GLatLng(parseFloat(points[i].getAttribute('lat')),
+      var point = new google.maps.LatLng(parseFloat(points[i].getAttribute('lat')),
       parseFloat(points[i].getAttribute('lng')));
       bounds.extend(point);
    }

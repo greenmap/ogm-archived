@@ -107,8 +107,8 @@ Drupal.makeReq = function (url, params) {
     http_request.open('POST', url, true);
 	//Send the proper header information along with the request
 	http_request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	http_request.setRequestHeader("Content-length", params.length);
-	http_request.setRequestHeader("Connection", "close");
+	//http_request.setRequestHeader("Content-length", params.length);
+	//http_request.setRequestHeader("Connection", "close");
     http_request.send(params);
 	return http_request;
 	

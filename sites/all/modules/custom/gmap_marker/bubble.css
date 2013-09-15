@@ -29,7 +29,7 @@ div#bubble_small .maximize-link {
 	font-size: 0.8em;
 	margin-right: 2px;
 	margin-top: 2px;
-	text-align: right;
+	float: right;
 }
 
 #bubble_small_more a {
@@ -51,7 +51,7 @@ div#bubble_small .maximize-link {
 }
 
 .bubble_small_title {
-	border-bottom-width: 2px;
+	border-bottom-width: 3px;
 	border-color: #666666;
 	border-left-width: 0px;
 	border-right-width: 0px;
@@ -60,7 +60,6 @@ div#bubble_small .maximize-link {
 	font-size: 18px;			/* em values seem to break Google Maps calculation of the div height */
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	line-height: 1.1em;
-	max-width: 370px;
 	padding-bottom: 8px;
 	padding-left: 4px;
 	padding-top: 10px;
@@ -119,14 +118,9 @@ div#bubble_small .maximize-link {
 }
 
 #bubble_middle {
-	float: left;
 	margin-bottom: 10px;
 	margin-left: 7px;
 	margin-right: 7px;
-}
-
-#bubble_small_rating {
-	margin-top: 20px;
 }
 
 #bubble_small_comment {
@@ -168,4 +162,93 @@ div#bubble_small .maximize-link {
 	font-size: 0.8em;
 	text-align: center;
 	width: 100%;
+}
+
+.green_site_popup:after {
+    /* clearfix hack http://nicolasgallagher.com/micro-clearfix-hack/ */
+    clear: both;
+    content: " ";
+    display: block;
+}
+
+.green_site_popup {
+    width: 600px;
+    height: 250px;
+    overflow: auto;
+}
+
+.green_site_popup #multimedia_main {
+    width: 240px;
+    position: static;
+    float: right;
+    margin-left: 1em;
+}
+
+.green_site_popup .bjqs-prev,
+.green_site_popup .bjqs-next {
+    position: absolute;
+    top: 40px;
+}
+
+.green_site_popup .bjqs-controls a {
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+}
+
+.bjqs-next {
+    right: 0px;
+}
+
+.bjqs li.slideshow_element img {
+    width: auto;
+    max-width: 200px;
+    max-height: 150px;
+}
+
+.green_site_popup #multimedia_selector_title {
+    position: static;
+}
+
+.green_site_popup .multimedia_description_author,
+.green_site_popup .multimedia_description_flag,
+.green_site_popup .multimedia_description_description {
+    display: none;
+}
+
+.green_site_popup .elided {
+    max-height: 93px;
+    overflow: hidden;
+}
+
+.green_site_popup .comment div.links {
+    float: none;
+}
+
+ul.site_descriptors {
+    list-style-type: none;
+}
+
+ul.site_descriptors > li{
+    display: inline;
+}
+
+ul.site_descriptors .accessible {
+    color: #2E68B2;
+}
+
+ul.site_descriptors .free {
+    color: #8CC63F;
+}
+
+ul.site_descriptors .public_transportation {
+    color: #C6006F;
+}
+
+ul.site_descriptors .youth_friendly {
+    color: #F89938;
+}
+
+.bubble_rating_label {
+    float: left;
 }

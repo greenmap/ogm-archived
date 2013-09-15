@@ -74,9 +74,12 @@ function gmap_marker_gmap($op, $map=null) {
            && ('edit' != arg(2))
          )
       {
+
+//OLD ICONS THING IS HERE. 
+/*
         $icons = '';
         $icons .= "function getIcon(img){\n";
-        $icons .= "  var ico = new GIcon();\n";
+        $icons .= "  var ico = new google.maps.Icon();\n";
         $icons .= "  if(!img){return ico;}\n";
         $icons .= "  ico.image = 'http://". $_SERVER["HTTP_HOST"] . base_path() ."'+img;\n";
         $icons .= "  ico.iconSize = new GSize(24, 40);\n";
@@ -85,13 +88,25 @@ function gmap_marker_gmap($op, $map=null) {
         $icons .= "  ico.iconAnchor = new GPoint(1 ,40);\n";
         $icons .= "  return ico;\n";
         $icons .= "}\n\n";
+*/
+
+        $icons = ''; 
+        $icons .= "function getIcon(img){\n"; 
+        $icons .= "var ico = {url:  'http://". $_SERVER["HTTP_HOST"] . base_path() ."'+img, \n";
+        $icons .= "size: new google.maps.Size(24, 40), \n";
+        $icons .= "anchor : new google.maps.Point(1 ,40)}; \n";
+        $icons .= "return ico; \n"; 
+        $icons .= "}\n\n";  
+
 
         drupal_add_js( $path.'/ajax.js' );
         drupal_add_js( $icons,'inline');
         drupal_add_js( $path.'/gmap_marker.js','module','footer' );
         drupal_add_js( $path .'/gmap_groupmarker.js');
+        drupal_add_js( $path .'/bjqs-1.3.js');
         //GH: added
         drupal_add_css($path.'/bubble.css');
+        drupal_add_css( $path .'/bjqs.css');
         // drupal_add_js(drupal_get_path('module', 'fivestar') . '/js/fivestar.js'); // perhaps redundant
         drupal_add_css(drupal_get_path('module', 'fivestar') . '/css/fivestar.css');
     }

@@ -1,7 +1,10 @@
+/*
+
+
 // this code is taken from the TextualZoomControl example
 // first line is now a return as we have decided not to use the bubble
 function InfoBubbleZoom() {}
-return;
+//return;
 InfoBubbleZoom.prototype = new GControl();
 InfoBubbleZoom.prototype.initialize = function(map) {
 	var container = document.createElement("div");
@@ -75,6 +78,11 @@ var gInfoBubbleZoomInterval;
 // HACKHACK: this is also defined as setCookie and getCookie in key.js, quick fix for now (gh)
 // taken from http://www.w3schools.com/JS/js_cookies.asp, modified
 
+
+
+/*
+
+
 function setCookie2(name, value, expires)
 {
 	var exdate = new Date();
@@ -128,4 +136,4 @@ Drupal.gmap.addHandler('gmap', function(elem) {
 
 
 });
-
+*/ 
