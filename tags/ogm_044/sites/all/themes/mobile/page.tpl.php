@@ -167,7 +167,7 @@
   <script src="<?php print base_path() ?>sites/all/modules/custom/ogm_mobile/geo.js" type="text/javascript" charset="utf-8"></script> 
   
 </head>
-<body onLoad="setTimeout(scrollTo, 100, 0, 1);" >
+<body onLoad="setTimeout(scrollTo, 100, 0, 1);" id="body-<?php print $node->nid; ?>">
 
  <?php if ($logo): ?>
             <div class="masthead">
