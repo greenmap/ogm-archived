@@ -214,13 +214,6 @@ div.view-og-ghp-map form#views-filters, div.view-greenmap form#views-filters {
 */
 }
 
-
-/* floats the map type buttons in a bit */
-
-div.gmap-map div.gmnoprint {
-	right: 300px;
-}
-
 /* Theme the popup window on map */
 div.gmappopup, div.gmapstyle-title a, div.gmappopup a {
 	color: #414141;
