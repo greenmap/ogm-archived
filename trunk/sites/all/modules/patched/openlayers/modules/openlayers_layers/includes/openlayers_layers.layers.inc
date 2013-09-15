@@ -400,7 +400,7 @@ function _openlayers_layers_include_map_api($type = '') {
     switch ($type) {
       case 'google':
         // Include Google Map API JS (maybe getting key from GMap)
-        drupal_set_html_head('<script src="'. check_url("http://maps.google.com/maps?file=api&v=2&sensor=false&key=" . variable_get('openlayers_layers_google_api', variable_get('googlemap_api_key', ''))) . '" type="text/javascript"></script>');
+        drupal_set_html_head('<script src="'. check_url("http://maps.google.com/maps?file=api&v=3&sensor=false&key=" .variable_get('gmap_api_key', '')) . '" type="text/javascript"></script>');
         break;
 
       case 'yahoo':
