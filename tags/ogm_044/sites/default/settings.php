@@ -251,6 +251,22 @@ $conf['i18n_variables'] = array(
   'contact_form_information',
   // Different front page for each language
   'site_frontpage',
+  'user_mail_password_reset_body',
+  'user_mail_password_reset_subject',
+  'user_mail_register_admin_created_body',
+  'user_mail_register_admin_created_subject',
+  'user_mail_register_no_approval_required_body',
+  'user_mail_register_no_approval_required_subject',
+  'user_mail_register_pending_approval_body',
+  'user_mail_register_pending_approval_subject',
+  'user_mail_status_activated_body',
+  'user_mail_status_activated_subject',
+  'user_mail_status_blocked_body',
+  'user_mail_status_blocked_subject',
+  'user_mail_status_deleted_body',
+  'user_mail_status_deleted_subject',
+  'user_picture_guidelines',
+  'user_registration_help',
 /*
   // Primary and secondary links
   //'menu_primary_links_source',
