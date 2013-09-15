@@ -537,8 +537,7 @@ h2#comments-title {
 /* disable comments everywhere except where explicitly allowed */
 
 
-body.node-type-green-site h2#comments-title,
-div#comments-inner
+body.node-type-green-site h2#comments-title
 {
   display: none;
 }
@@ -547,6 +546,10 @@ body.node-type-support-forum-issue div#comments div#comments-inner,
 div#green_site_full div.mycomments div#comments div#comments-inner
 {
 	display: block;
+}
+
+#green_site_full {
+    padding: 2em;
 }
 
 /* Theming tabs */
@@ -646,14 +649,6 @@ div.multimedia {
 div#comment .resizable-textarea textarea {
 	height: 50px;
 }
-
-#multimedia_main_na {
-	/* no media available */
-  background: #fff;
-  height: 200px;
-  width: 500px;
-}
-
 
 #multimedia_description {
 	/* font-size: 11px;  /* Removed by TT as avoiding fixed size fonts */

@@ -40,7 +40,8 @@ print($nid);
 ?>
 
         <div id="content-area">
-          <?php print $content; ?>
+          <?php
+print $content; ?>
         </div>
 
 
