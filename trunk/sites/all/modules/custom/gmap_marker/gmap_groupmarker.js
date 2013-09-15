@@ -26,17 +26,16 @@ GGroups = function ( map ){
 		var objectData = self.objectQueue.shift();
 		var object = self.AddObject(objectData['object'],objectData['layer'],objectData['groups']);
 		
-		if ((object.getVisibility()) && (object != null) && (bounds.contains(object.getPoint()))) {
+		if ((object.getVisibility()) && (object != null) && (bounds.contains(object.getPosition()))) {
 			// Display the visible objects not already up
 			if (!object.onMap) {
-	   			self.map.addOverlay( object );
+                                object.setMap(self.map); 
 	   			object.onMap = true;
 			}
 		} else {
 			// Take down the non-visible objects.
 			if (object.onMap) {
-				
-				self.map.removeOverlay( object );
+				object.setMap(null); 
 				object.onMap = false;
 			}
 		}
@@ -44,7 +43,7 @@ GGroups = function ( map ){
    
    
   // These could be useful in the future
-  
+ 
     //GEvent.addListener( map, 'zoomend', this.zoomDisplay());
     //GEvent.addListener( map, 'moveend', this.Display()) ;
 	
@@ -57,6 +56,7 @@ GGroups = function ( map ){
  */
 GGroups.prototype.getBounds = function() {
 	var bounds = this.map.getBounds();
+    bounds = bounds || new google.maps.LatLngBounds(new google.maps.LatLng(40,-50), new google.maps.LatLng(41, -49));
 
     // Expand the bounds a little, so things look smoother when scrolling
     // by small amounts.
@@ -67,9 +67,9 @@ GGroups.prototype.getBounds = function() {
     if ( dx < 300 && dy < 150 ) {
 		dx *= 0.10;
 		dy *= 0.10;
-		bounds = new GLatLngBounds(
-	  		new GLatLng( sw.lat() - dy, sw.lng() - dx ),
-	  		new GLatLng( ne.lat() + dy, ne.lng() + dx ) 
+		bounds = new google.maps.LatLngBounds(
+	  		new google.maps.LatLng( sw.lat() - dy, sw.lng() - dx ),
+	  		new google.maps.LatLng( ne.lat() + dy, ne.lng() + dx ) 
 		);
 	}
 	// save the bounds
@@ -91,10 +91,10 @@ GGroups.prototype.AddObjects = function(objects){
 
 /**
  * AddObject
- * @param GMarker object
+ * @param google.maps.Marker object
  * @param GLayer layer
  * @param Array groups
- * @return GMarker;
+ * @return google.maps.Marker;
  * @see AddObjects
  * Add object to the GGroups. Use this when you want to add a single object. For multiple objects use AddObjects-function
  */
@@ -145,14 +145,14 @@ GGroups.prototype.countObjects = function () {
 };
 /**
  * RemoveObject
- * @param GMarker object
+ * @param google.maps.Marker object
  * Call this to remove a object.
  */
 GGroups.prototype.RemoveObject = function (object){
 	// find object
 	for (var i = (this.objects.length -1);i >= 0 ; i-- ) {
 		if (this.objects[i] != object) { continue; }
-	    if ( object.onMap ){ this.map.removeOverlay( object ); }
+	    if ( object.onMap ){ object.setMap(null); }
 		
 		// delete from groups
 		for (var j = (this.groups.length -1);j >= 0 ; j-- ) {
@@ -419,10 +419,10 @@ GGroups.prototype.DispInt = function(){
 			return;
 		}
 
-		if ((object.getVisibility()) && (this.bounds.contains(object.getPoint()))) {
+		if ((object.getVisibility()) && (this.bounds.contains(object.getPosition()))) {
 			// Display the visible objects not already up
 			if (!object.onMap) {
-				this.map.addOverlay(object);
+				object.setMap(this.map);
 				object.onMap = true;
 			}
 		}
@@ -431,7 +431,7 @@ GGroups.prototype.DispInt = function(){
 
 			//if (object.onMap) {
 
-				this.map.removeOverlay(object);
+				object.setMap(null);
 				object.onMap = false;
 			//}
 		}
@@ -480,7 +480,7 @@ GGroup.prototype.getName = function (){
 };
 /**
  * AddObject
- * @param GMarker object
+ * @param google.maps.Marker object
  * adds object to this GGroup
  */
 GGroup.prototype.AddObject = function (object){
@@ -489,7 +489,7 @@ GGroup.prototype.AddObject = function (object){
 };
 /**
  * RemoveObject
- * @param GMarker object
+ * @param google.maps.Marker object
  * Removes object from this GGroup.
  */
 GGroup.prototype.RemoveObject = function(object){
@@ -532,7 +532,7 @@ GGroup.prototype.setVisibility = function (visibility){
 			//if(!this.objects[i].onMap){continue;}
 			
 			// if object's visibility is false and object is on the map, remove it from the map
-			this.map.removeOverlay( this.objects[i] );
+			this.objects[i].setMap(null);
 			this.objects[i].onMap = false;
 		}
 	}
@@ -615,14 +615,14 @@ GLayer.prototype.setVisibility = function (visibility){
 		if (this.objects[i] == null) {continue;}
 		if(!this.objects[i].testVisibility()) {
 			// if object's visibility is false, remove it from the map
-			this.map.removeOverlay( this.objects[i] );
+			objects[i].setMap(null);
 			this.objects[i].onMap = false;
 		}
 	}
 };
 /**
  * AddObject
- * @param GMarker object
+ * @param google.maps.Marker object
  * adds object to this GLayer
  */
 GLayer.prototype.AddObject = function (object){
@@ -631,7 +631,7 @@ GLayer.prototype.AddObject = function (object){
 };
 /**
  * RemoveObject
- * @param GMarker object
+ * @param google.maps.Marker object
  * Removes object from this GLayer.
  */
 GLayer.prototype.RemoveObject = function(object){
@@ -701,18 +701,18 @@ GLayer.prototype.zoomed = function(zoom){
 
 // *** GMARKER ***
 /*
- * GMarker is Google Map's own prototype and these functions are only extensions.
+ * google.maps.Marker is Google Map's own prototype and these functions are only extensions.
  */
 
-GMarker.defaultVisibility = false; // marker's default visibility
-GMarker.defaultVisibilityType = 'AND'; 	// visibility type tells how the marker should act when groups are hidden.
+google.maps.Marker.defaultVisibility = false; // marker's default visibility
+google.maps.Marker.defaultVisibilityType = 'AND'; 	// visibility type tells how the marker should act when groups are hidden.
 										// when value is 'AND' all groups of this marker should be visible for viewing this marker on the map
 										// when value is 'OR' at least one group of this marker should be visible for viewing this marker on the map
 										// You find this code in testVisibility-function
-										// This data is located in GMarker because there might be different kinds of markers 
+										// This data is located in google.maps.Marker because there might be different kinds of markers 
 										//(for example subway stations should always be visible when at least one group is visible and
 										// normal markers which should be easily hidden)
-//GMarker.defaultVisibilityType = 'OR';
+//google.maps.Marker.defaultVisibilityType = 'OR';
 
 /**
  * addGroup
@@ -720,7 +720,7 @@ GMarker.defaultVisibilityType = 'AND'; 	// visibility type tells how the marker 
  * @return Boolean
  * adds new group to this marker. If this group already exists return false. On success return true.
  */
-GMarker.prototype.addGroup = function ( group ){
+google.maps.Marker.prototype.addGroup = function ( group ){
 	if(!this.groups){
 		this.groups = new Array();
 	}
@@ -737,7 +737,7 @@ GMarker.prototype.addGroup = function ( group ){
  * @param GGroup group
  * Removes current group from this marker. Note: this doesn't remove GGroup object.
  */
-GMarker.prototype.RemoveGroup = function ( group ) {
+google.maps.Marker.prototype.RemoveGroup = function ( group ) {
 	// leave markers behind even if they don't have any group
 	for(var j in this.groups) {
 		if (this.groups[j] != group) { continue; }
@@ -762,7 +762,7 @@ GMarker.prototype.RemoveGroup = function ( group ) {
  * @return GLayer
  * Sets the markers layer. Note: One marker can be only in one layer at a time!
  */
-GMarker.prototype.setLayer = function ( layer ){
+google.maps.Marker.prototype.setLayer = function ( layer ){
 	this.layer = layer;
 	layer.AddObject(this);
 	return layer;
@@ -771,7 +771,7 @@ GMarker.prototype.setLayer = function ( layer ){
  * getLayer
  * @return GLayer
  */
-GMarker.prototype.getLayer = function (){
+google.maps.Marker.prototype.getLayer = function (){
 	if(!this.layer){
 		this.layer = false;
 	}
@@ -782,14 +782,14 @@ GMarker.prototype.getLayer = function (){
  * @param Int id
  * Id is the identifier for this marker.
  */
-GMarker.prototype.setId = function ( id ){
+google.maps.Marker.prototype.setId = function ( id ){
 	this.id = id;
 };
 /**
  * getId
  * @return Int
  */
-GMarker.prototype.getId = function (){
+google.maps.Marker.prototype.getId = function (){
 	if(!this.id){
 		this.id = false;
 	}
@@ -802,9 +802,9 @@ GMarker.prototype.getId = function (){
  * 		- If Layer is invisible -> marker is invisible
  * 		- this marker's visibility depends on the visibility type (AND/OR) and visibility of the groups of this marker.
  */
-GMarker.prototype.testVisibility = function () {
+google.maps.Marker.prototype.testVisibility = function () {
 	if(this.visibility == null){
-		this.visibility = GMarker.defaultVisibility;
+		this.visibility = google.maps.Marker.defaultVisibility;
 	}
 
 	// if the layer is not visible we don't show the marker either
@@ -846,7 +846,7 @@ GMarker.prototype.testVisibility = function () {
 	/*
 	else {
 		// if visibility type is something else, we reset the visibility-type and start again.
-		this.setVisibilityType( GMarker.defaultVisibilityType );
+		this.setVisibilityType( google.maps.Marker.defaultVisibilityType );
 		return this.testVisibility();
 	}
 	*/
@@ -857,7 +857,7 @@ GMarker.prototype.testVisibility = function () {
  * @return Boolean
  * Returns cached visibility of this marker (use this as mutch as possible).
  */
-GMarker.prototype.getVisibility = function() {
+google.maps.Marker.prototype.getVisibility = function() {
 	// if visibility is not set
 	if (this.visibility == null) {
 		return this.testVisibility();
@@ -870,7 +870,7 @@ GMarker.prototype.getVisibility = function() {
  * @param Boolean visibility
  * sets cached visibility value.
  */
-GMarker.prototype.setVisibility = function(visibility){
+google.maps.Marker.prototype.setVisibility = function(visibility){
 	this.visibility = visibility;
 };
 /**
@@ -878,7 +878,7 @@ GMarker.prototype.setVisibility = function(visibility){
  * @param String type
  * Sets the visibility type (AND/OR)
  */
-GMarker.prototype.setVisibilityType = function(type){
+google.maps.Marker.prototype.setVisibilityType = function(type){
 	this.visibilityType = type;
 };
 /**
@@ -886,9 +886,9 @@ GMarker.prototype.setVisibilityType = function(type){
  * @return String
  * Returns the visibility type (AND/OR)
  */
-GMarker.prototype.getVisibilityType = function(){
+google.maps.Marker.prototype.getVisibilityType = function(){
 	if(this.visibilityType ==null){
-		this.visibilityType = GMarker.defaultVisibilityType;
+		this.visibilityType = google.maps.Marker.defaultVisibilityType;
 	}
 	return this.visibilityType;
 };
@@ -898,18 +898,18 @@ GMarker.prototype.getVisibilityType = function(){
 
 // GPOLYLINE
 /*
- * GPolyline is Google Map's own prototype and these functions are only extensions.
+ * google.maps.Polyline is Google Map's own prototype and these functions are only extensions.
  */
 
-GPolyline.defaultVisibility = false; // marker's default visibility
-GPolyline.defaultVisibilityType = 'AND'; 	// visibility type tells how the marker should act when groups are hidden.
+google.maps.Polyline.defaultVisibility = false; // marker's default visibility
+google.maps.Polyline.defaultVisibilityType = 'AND'; 	// visibility type tells how the marker should act when groups are hidden.
 										// when value is 'AND' all groups of this marker should be visible for viewing this marker on the map
 										// when value is 'OR' at least one group of this marker should be visible for viewing this marker on the map
 										// You find this code in testVisibility-function
-										// This data is located in GPolyline because there might be different kinds of markers 
+										// This data is located in google.maps.Polyline because there might be different kinds of markers 
 										//(for example subway stations should always be visible when at least one group is visible and
 										// normal markers which should be easily hidden)
-//GPolyline.defaultVisibilityType = 'OR';
+//google.maps.Polyline.defaultVisibilityType = 'OR';
 
 /**
  * addGroup
@@ -917,7 +917,7 @@ GPolyline.defaultVisibilityType = 'AND'; 	// visibility type tells how the marke
  * @return Boolean
  * adds new group to this marker. If this group already exists return false. On success return true.
  */
-GPolyline.prototype.addGroup = function ( group ){
+google.maps.Polyline.prototype.addGroup = function ( group ){
 	if(!this.groups){
 		this.groups = new Array();
 	}
@@ -934,7 +934,7 @@ GPolyline.prototype.addGroup = function ( group ){
  * @param GGroup group
  * Removes current group from this marker. Note: this doesn't remove GGroup object.
  */
-GPolyline.prototype.RemoveGroup = function ( group ) {
+google.maps.Polyline.prototype.RemoveGroup = function ( group ) {
 	// leave markers behind even if they don't have any group
 	for(var j in this.groups) {
 		if (this.groups[j] != group) { continue; }
@@ -959,7 +959,7 @@ GPolyline.prototype.RemoveGroup = function ( group ) {
  * @return GLayer
  * Sets the markers layer. Note: One marker can be only in one layer at a time!
  */
-GPolyline.prototype.setLayer = function ( layer ){
+google.maps.Polyline.prototype.setLayer = function ( layer ){
 	this.layer = layer;
 	layer.AddObject(this);
 	return layer;
@@ -968,7 +968,7 @@ GPolyline.prototype.setLayer = function ( layer ){
  * getLayer
  * @return GLayer
  */
-GPolyline.prototype.getLayer = function (){
+google.maps.Polyline.prototype.getLayer = function (){
 	if(!this.layer){
 		this.layer = false;
 	}
@@ -979,14 +979,14 @@ GPolyline.prototype.getLayer = function (){
  * @param Int id
  * Id is the identifier for this marker.
  */
-GPolyline.prototype.setId = function ( id ){
+google.maps.Polyline.prototype.setId = function ( id ){
 	this.id = id;
 };
 /**
  * getId
  * @return Int
  */
-GPolyline.prototype.getId = function (){
+google.maps.Polyline.prototype.getId = function (){
 	if(!this.id){
 		this.id = false;
 	}
@@ -999,9 +999,9 @@ GPolyline.prototype.getId = function (){
  * 		- If Layer is invisible -> marker is invisible
  * 		- this marker's visibility depends on the visibility type (AND/OR) and visibility of the groups of this marker.
  */
-GPolyline.prototype.testVisibility = function () {
+google.maps.Polyline.prototype.testVisibility = function () {
 	if(this.visibility == null){
-		this.visibility = GPolyline.defaultVisibility;
+		this.visibility = google.maps.Polyline.defaultVisibility;
 	}
 
 	// if the layer is not visible we don't show the marker either
@@ -1043,7 +1043,7 @@ GPolyline.prototype.testVisibility = function () {
 	/*
 	else {
 		// if visibility type is something else, we reset the visibility-type and start again.
-		this.setVisibilityType( GPolyline.defaultVisibilityType );
+		this.setVisibilityType( google.maps.Polyline.defaultVisibilityType );
 		return this.testVisibility();
 	}
 	*/
@@ -1054,7 +1054,7 @@ GPolyline.prototype.testVisibility = function () {
  * @return Boolean
  * Returns cached visibility of this marker (use this as mutch as possible).
  */
-GPolyline.prototype.getVisibility = function() {
+google.maps.Polyline.prototype.getVisibility = function() {
 	// if visibility is not set
 	if (this.visibility == null) {
 		return this.testVisibility();
@@ -1067,7 +1067,7 @@ GPolyline.prototype.getVisibility = function() {
  * @param Boolean visibility
  * sets cached visibility value.
  */
-GPolyline.prototype.setVisibility = function(visibility){
+google.maps.Polyline.prototype.setVisibility = function(visibility){
 	this.visibility = visibility;
 };
 /**
@@ -1075,7 +1075,7 @@ GPolyline.prototype.setVisibility = function(visibility){
  * @param String type
  * Sets the visibility type (AND/OR)
  */
-GPolyline.prototype.setVisibilityType = function(type){
+google.maps.Polyline.prototype.setVisibilityType = function(type){
 	this.visibilityType = type;
 };
 /**
@@ -1083,9 +1083,9 @@ GPolyline.prototype.setVisibilityType = function(type){
  * @return String
  * Returns the visibility type (AND/OR)
  */
-GPolyline.prototype.getVisibilityType = function(){
+google.maps.Polyline.prototype.getVisibilityType = function(){
 	if(this.visibilityType ==null){
-		this.visibilityType = GPolyline.defaultVisibilityType;
+		this.visibilityType = google.maps.Polyline.defaultVisibilityType;
 	}
 	return this.visibilityType;
 };
@@ -1093,18 +1093,18 @@ GPolyline.prototype.getVisibilityType = function(){
 // GPOLYGON
 
 /*
- * GPolygon is Google Map's own prototype and these functions are only extensions.
+ * google.maps.Polygon is Google Map's own prototype and these functions are only extensions.
  */
 
-GPolygon.defaultVisibility = false; // marker's default visibility
-GPolygon.defaultVisibilityType = 'AND'; 	// visibility type tells how the marker should act when groups are hidden.
+google.maps.Polygon.defaultVisibility = false; // marker's default visibility
+google.maps.Polygon.defaultVisibilityType = 'AND'; 	// visibility type tells how the marker should act when groups are hidden.
 										// when value is 'AND' all groups of this marker should be visible for viewing this marker on the map
 										// when value is 'OR' at least one group of this marker should be visible for viewing this marker on the map
 										// You find this code in testVisibility-function
-										// This data is located in GPolygon because there might be different kinds of markers 
+										// This data is located in google.maps.Polygon because there might be different kinds of markers 
 										//(for example subway stations should always be visible when at least one group is visible and
 										// normal markers which should be easily hidden)
-//GPolygon.defaultVisibilityType = 'OR';
+//google.maps.Polygon.defaultVisibilityType = 'OR';
 
 /**
  * addGroup
@@ -1112,7 +1112,7 @@ GPolygon.defaultVisibilityType = 'AND'; 	// visibility type tells how the marker
  * @return Boolean
  * adds new group to this marker. If this group already exists return false. On success return true.
  */
-GPolygon.prototype.addGroup = function ( group ){
+google.maps.Polygon.prototype.addGroup = function ( group ){
 	if(!this.groups){
 		this.groups = new Array();
 	}
@@ -1129,7 +1129,7 @@ GPolygon.prototype.addGroup = function ( group ){
  * @param GGroup group
  * Removes current group from this marker. Note: this doesn't remove GGroup object.
  */
-GPolygon.prototype.RemoveGroup = function ( group ) {
+google.maps.Polygon.prototype.RemoveGroup = function ( group ) {
 	// leave markers behind even if they don't have any group
 	for(var j in this.groups) {
 		if (this.groups[j] != group) { continue; }
@@ -1154,7 +1154,7 @@ GPolygon.prototype.RemoveGroup = function ( group ) {
  * @return GLayer
  * Sets the markers layer. Note: One marker can be only in one layer at a time!
  */
-GPolygon.prototype.setLayer = function ( layer ){
+google.maps.Polygon.prototype.setLayer = function ( layer ){
 	this.layer = layer;
 	layer.AddObject(this);
 	return layer;
@@ -1163,7 +1163,7 @@ GPolygon.prototype.setLayer = function ( layer ){
  * getLayer
  * @return GLayer
  */
-GPolygon.prototype.getLayer = function (){
+google.maps.Polygon.prototype.getLayer = function (){
 	if(!this.layer){
 		this.layer = false;
 	}
@@ -1174,14 +1174,14 @@ GPolygon.prototype.getLayer = function (){
  * @param Int id
  * Id is the identifier for this marker.
  */
-GPolygon.prototype.setId = function ( id ){
+google.maps.Polygon.prototype.setId = function ( id ){
 	this.id = id;
 };
 /**
  * getId
  * @return Int
  */
-GPolygon.prototype.getId = function (){
+google.maps.Polygon.prototype.getId = function (){
 	if(!this.id){
 		this.id = false;
 	}
@@ -1194,9 +1194,9 @@ GPolygon.prototype.getId = function (){
  * 		- If Layer is invisible -> marker is invisible
  * 		- this marker's visibility depends on the visibility type (AND/OR) and visibility of the groups of this marker.
  */
-GPolygon.prototype.testVisibility = function () {
+google.maps.Polygon.prototype.testVisibility = function () {
 	if(this.visibility == null){
-		this.visibility = GPolygon.defaultVisibility;
+		this.visibility = google.maps.Polygon.defaultVisibility;
 	}
 
 	// if the layer is not visible we don't show the marker either
@@ -1222,7 +1222,7 @@ GPolygon.prototype.testVisibility = function () {
 	/*
 	else {
 		// if visibility type is something else, we reset the visibility-type and start again.
-		this.setVisibilityType( GPolygon.defaultVisibilityType );
+		this.setVisibilityType( google.maps.Polygon.defaultVisibilityType );
 		return this.testVisibility();
 	}
 	*/
@@ -1233,7 +1233,7 @@ GPolygon.prototype.testVisibility = function () {
  * @return Boolean
  * Returns cached visibility of this marker (use this as mutch as possible).
  */
-GPolygon.prototype.getVisibility = function() {
+google.maps.Polygon.prototype.getVisibility = function() {
 	// if visibility is not set
 	if (this.visibility == null) {
 		return this.testVisibility();
@@ -1246,7 +1246,7 @@ GPolygon.prototype.getVisibility = function() {
  * @param Boolean visibility
  * sets cached visibility value.
  */
-GPolygon.prototype.setVisibility = function(visibility){
+google.maps.Polygon.prototype.setVisibility = function(visibility){
 	this.visibility = visibility;
 };
 /**
@@ -1254,7 +1254,7 @@ GPolygon.prototype.setVisibility = function(visibility){
  * @param String type
  * Sets the visibility type (AND/OR)
  */
-GPolygon.prototype.setVisibilityType = function(type){
+google.maps.Polygon.prototype.setVisibilityType = function(type){
 	this.visibilityType = type;
 };
 /**
@@ -1262,9 +1262,9 @@ GPolygon.prototype.setVisibilityType = function(type){
  * @return String
  * Returns the visibility type (AND/OR)
  */
-GPolygon.prototype.getVisibilityType = function(){
+google.maps.Polygon.prototype.getVisibilityType = function(){
 	if(this.visibilityType ==null){
-		this.visibilityType = GPolygon.defaultVisibilityType;
+		this.visibilityType = google.maps.Polygon.defaultVisibilityType;
 	}
 	return this.visibilityType;
 };
