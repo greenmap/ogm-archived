@@ -332,7 +332,21 @@ if ($teaser) {
       echo '<div id="bubble_small_edit"><a href="'. url('node/'.$node->nid."/edit") .'" target="_parent">'.t('edit').'</a></div>';
     }
     ?>
-
+    <div class="top_right">
+        <?php if ($location['street'] != '') { ?>
+          <div class="street_address"><?php print $location['street']; ?></div>
+        <?php if ($field_phone[0] > '') {
+          echo '<div class="fieldphone">'. content_format('field_phone', $field_phone[0]) .'</div>';
+        }
+        if ($field_email[0] > '') {
+          echo '<div class="fieldemail">'. content_format('field_email', $field_email[0]) .'</div>';
+        }
+        if ($field_web[0] > '') {
+          $link = str_replace('<a href=', '<a target="_blank" href=', content_format('field_web', $field_web[0]));
+          echo '<div class="fieldweb">'. $link .'</div>';
+        }?>
+        <?php } ?>
+    </div>
     <div id="bubble_icons">
       <?php if ($primary_icon) : ?>
         <div id="bubble_icon_primary">
