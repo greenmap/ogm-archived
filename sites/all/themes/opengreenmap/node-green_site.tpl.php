@@ -57,7 +57,7 @@ function getMultiMedia($node) {
     $usr = user_load(array('uid' => $medianode->uid));
     $medianode->field_video_0[0]['author'] = theme_username($usr);
     // HACKHACK
-    $medianode->field_video_0[0]['view'] = theme('emvideo_video_video', array_merge($medianode->field_video_0, array('widget' => array('video_width' => 320, 'video_height' => 240))), $medianode->field_video_0[0], 'video_video', $medianode);
+    $medianode->field_video_0[0]['view'] = theme('emvideo_video_video', array_merge($medianode->field_video_0, array('widget' => array('video_width' => 200, 'video_height' => 150))), $medianode->field_video_0[0], 'video_video', $medianode);
     $medianode->field_video_0[0]['view'] = str_replace('<a href="', '<a target="_blank" href="', $medianode->field_video_0[0]['view']);
     $media = array_merge($media, $medianode->field_video_0);
   }
