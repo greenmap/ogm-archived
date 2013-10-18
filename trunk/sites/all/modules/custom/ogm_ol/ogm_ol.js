@@ -128,7 +128,7 @@ function ogmOlRemovePolies(map, tid) {
   if (allPolygons) {
     allPolygons.map(function(poly) {
       if (poly[0] === tid) {
-        map.removeOverlay(poly[1]);
+        poly[1].setMap(null);
       }
     });
   }
@@ -138,7 +138,7 @@ function ogmOlAddPolies(map, tid) {
   if (allPolygons) {
     allPolygons.map(function(poly) {
       if (poly[0] === tid) {
-        map.addOverlay(poly[1]);
+        poly[1].setMap(map);
       }
     });
   }
