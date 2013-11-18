@@ -103,24 +103,7 @@ Drupal.gmap.addHandler('gmap',function(elem) {
 
 function OgmOlOnClick(nid, point) {
   return function() {
-    var html = Drupal.makeReq(Drupal_base_path + Drupal_language + '/' + 'node/gmap_marker/getMiniBubble/' + nid,'');
-
-    html.onreadystatechange = function() {
-      if (html.readyState != 4) {
-        return;
-      }
-      if (html.status == 200) {// success
-        maxContentDiv = document.createElement('div');
-        // somewhere in here is a problem which results in two <html> tags
-        maxContentDiv.id = 'maxcontentdiv';
-        maxContentDiv.innerHTML = '<iframe frameborder="0" src="' + Drupal_base_path + Drupal_language + '/node/' + nid + '/simple" width="670" height="360"></    iframe>';
-        var infoWindow = new google.maps.InfoWindow({
-            position: point, 
-            content: html.responseText, 
-        });
-        infoWindow.open(GlobalMap);
-      }
-    };
+    showInfoWindow(nid, point);
   };
 };
 
