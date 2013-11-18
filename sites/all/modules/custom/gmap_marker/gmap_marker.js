@@ -196,6 +196,41 @@ function randObjects(){
 var maxContentDiv;
 var globalInfoWindow;
 
+function showInfoWindow(nid, position, doneCallback) {
+  var html = Drupal.makeReq(Drupal_base_path + Drupal_language + '/' + 'node/gmap_marker/getMiniBubble/' + nid,'');
+    html.onreadystatechange = function() {
+      if (html.readyState != 4) {return;}
+      if (html.status == 200) {// success
+        if (globalInfoWindow) {
+          globalInfoWindow.close();
+        }
+        globalInfoWindow = new google.maps.InfoWindow({
+            position: position, 
+            content: html.responseText,
+        });
+        globalInfoWindow.open(GlobalMap);
+        var handle = google.maps.event.addListener(globalInfoWindow, "domready", function () {
+          $("#media_slideshow").bjqs({
+            width: 200,
+            height: 210,
+            usecaptions: false,
+            showcontrols: true,
+            showmarkers: false,
+            centercontrols: false,
+            automatic: false,
+            nexttext: "<h3>&gt;</h3>",
+            prevtext: "<h3>&lt;</h3>",
+          });
+          google.maps.event.removeListener(handle);
+        });
+
+        if (doneCallback) {
+            doneCallback();
+        }
+     }
+  };
+}
+
 function createMarker(point, opts, nid) {
   var opt = {};
   eval(opts); // puts all options to opt-object
@@ -205,52 +240,15 @@ function createMarker(point, opts, nid) {
   object.value = nid;
   object.setId(nid);
 
-  function showInfoWindow(doneCallback) {
-    var html = Drupal.makeReq(Drupal_base_path + Drupal_language + '/' + 'node/gmap_marker/getMiniBubble/' + nid,'');
-      html.onreadystatechange = function() {
-        if (html.readyState != 4) {return;}
-        if (html.status == 200) {// success
-          if (globalInfoWindow) {
-            globalInfoWindow.close();
-          }
-          globalInfoWindow = new google.maps.InfoWindow({
-              position: point, 
-              content: html.responseText,
-          });
-          globalInfoWindow.open(GlobalMap, object);
-          var handle = google.maps.event.addListener(globalInfoWindow, "domready", function () {
-            $("#media_slideshow").bjqs({
-              width: 200,
-              height: 210,
-              usecaptions: false,
-              showcontrols: true,
-              showmarkers: false,
-              centercontrols: false,
-              automatic: false,
-              nexttext: "<h3>&gt;</h3>",
-              prevtext: "<h3>&lt;</h3>",
-            });
-            google.maps.event.removeListener(handle);
-          });
-
-          if (doneCallback) {
-              doneCallback();
-          }
-       }
-    };
-  }
-
-
   if ( Drupal.settings.group_map != undefined && 
        Drupal.settings.group_map.autoBubbleNID != undefined ) {
     if ( Drupal.settings.group_map.autoBubbleNID === nid ) {
-      showInfoWindow(function () { Drupal.settings.group_map.autoBubbleNID = 0; });
+      showInfoWindow(nid, object.getPosition(), function () { Drupal.settings.group_map.autoBubbleNID = 0; });
     }
   }
 
   google.maps.event.addListener(object, "click", function() {
-      showInfoWindow();
-
+      showInfoWindow(nid, object.getPosition());
     });
   return object;
 }
@@ -480,6 +478,10 @@ Drupal.gmap.addHandler('gmap',function(elem) {
           obj.gm.zoomDisplay();
         }catch(e){}
 
+        });
+        
+        google.maps.event.addListener(map, "click", function mapClick() {
+          globalInfoWindow.close();
         });
     });
   // Send out outgoing control type changes.
