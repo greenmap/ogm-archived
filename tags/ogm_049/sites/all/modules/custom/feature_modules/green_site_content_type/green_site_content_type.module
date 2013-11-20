@@ -1,0 +1,3 @@
+<?php
+
+include_once('green_site_content_type.features.inc');
