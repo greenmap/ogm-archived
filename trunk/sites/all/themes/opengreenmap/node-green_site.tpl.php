@@ -339,10 +339,10 @@ if ($teaser) {
           echo '<div class="fieldphone">'. content_format('field_phone', $field_phone[0]) .'</div>';
         }
         if ($field_email[0] > '') {
-          echo '<div class="fieldemail">'. content_format('field_email', $field_email[0]) .'</div>';
+          echo '<div class="fieldemail"><a href="mailto:'. $field_email[0]['safe'] . '">Contact</a></div>';
         }
         if ($field_web[0] > '') {
-          $link = str_replace('<a href=', '<a target="_blank" href=', content_format('field_web', $field_web[0]));
+          $link = '<a target="_blank" href="' . $field_web[0]['display_url'] . '">Website</a>';
           echo '<div class="fieldweb">'. $link .'</div>';
         }?>
         <?php } ?>
