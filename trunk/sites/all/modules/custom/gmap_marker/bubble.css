@@ -137,6 +137,10 @@ div#bubble_small .maximize-link {
 	margin-right: 7px;
 }
 
+.bubble_comments #comments .tips {
+	display: none;
+}
+
 #bubble_small_comment {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 0.8em;
