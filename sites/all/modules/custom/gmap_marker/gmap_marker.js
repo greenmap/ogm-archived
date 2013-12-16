@@ -224,6 +224,8 @@ function showInfoWindow(nid, position, doneCallback) {
           google.maps.event.removeListener(handle);
         });
 
+        jQuery('.gm-style').removeClass('gm-style');
+
         if (doneCallback) {
             doneCallback();
         }
