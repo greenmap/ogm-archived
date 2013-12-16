@@ -13,7 +13,7 @@
         
         obj.bind("init",function() {
             var map = obj.map;
-            map.controls[google.maps.ControlPosition.BOTTOM_LEFT].push(container);
+            map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(container);
         });
     });
 })();
