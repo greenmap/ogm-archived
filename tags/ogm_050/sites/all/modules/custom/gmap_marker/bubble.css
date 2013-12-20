@@ -1,0 +1,272 @@
+#bubble_small {
+	/* small InfoWindow bubble */
+	padding: 5px;
+  max-width: 400px;
+}
+
+#bubble_small_more {
+	/* more info >> */
+	font-family: Verdana, Arial, Helvetica, sans-serif;	/* GH: use different font? */
+	font-size: 0.8em;
+	margin-right: 25px;
+	text-align: right;
+}
+div#bubble_small .maximize-link {
+  border: 0px none;
+  margin: 0px;
+  padding: 0px;
+  position: absolute;
+  right: 30px;
+  top: -8px;
+  font-family: Verdana, Arial, Helvetica, sans-serif; /* GH: use different font? */
+  font-size: 0.8em;
+  text-align: right;
+}
+
+#bubble_small_edit {
+	/* edit */
+	font-family: Verdana, Arial, Helvetica, sans-serif;	/* GH: use different font? */
+	font-size: 0.8em;
+	margin-right: 2px;
+	margin-top: 2px;
+	float: right;
+}
+
+#bubble_small_more a {
+	color: #6c6f70;
+}
+
+.top_right {
+    float: right;
+}
+
+.top_right {
+    color: #666;
+}
+
+#bubble_icons {
+	margin-top: 6px;
+}
+
+#bubble_icons img {
+	padding-left: 3px;
+	padding-right: 3px;
+}
+
+#bubble_icon_primary {
+	/* the primary icon */
+	display: inline;
+}
+
+.bubble_small_title {
+	border-bottom-width: 3px;
+	border-color: #666666;
+	border-left-width: 0px;
+	border-right-width: 0px;
+	border-style: dotted;
+	border-top-width: 0px;
+	font-size: 18px;			/* em values seem to break Google Maps calculation of the div height */
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	line-height: 1.1em;
+	padding-bottom: 8px;
+	padding-left: 4px;
+	padding-top: 10px;
+}
+
+.bubble_small_title:after {
+    content: "";
+    clear: both;
+    display: block;
+}
+
+.bubble_small_title a {
+	color: #666666;
+}
+
+.bubble_small_title a:hover {
+	text-decoration: none;
+}
+
+.sustainable_living {
+	border-color: #2e68b2;
+}
+
+.culture__society {
+	border-color: #f89938;
+}
+
+.nature {
+	border-color: #099848;
+}
+
+#bubble_left {
+	float: left;
+	margin-bottom: 10px;
+	margin-left: 5px;
+	margin-right: 7px;
+}
+
+#bubble_media {
+	font-size: 10px;
+	height: 60px;
+	margin-top: 18px;
+	width: 80px;
+  overflow: hidden;
+}
+
+#bubble_media a {
+	color: #6c6f70;
+}
+
+#bubble_media_missing {
+	border-color: #cccccc;
+	border-style: solid;
+	border-width: 1px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	height: 47px;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 13px;
+	text-align: center;
+	width: 70px;
+}
+
+#bubble_middle {
+	margin-bottom: 10px;
+	margin-left: 7px;
+	margin-right: 7px;
+}
+
+.bubble_comments #comments .tips {
+	display: none;
+}
+
+#bubble_small_comment {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	margin-top: 5px;
+}
+
+#bubble_small_comment a {
+	color: #6c6f70;
+}
+
+#bubble_right {
+	float: left;
+	margin-bottom: 10px;
+	margin-left: 7px;
+}
+
+#bubble_small_address {
+	color: #666666;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	margin-top: 18px;
+	max-width: 150px;
+  margin-left: 50px;
+}
+
+#bubble_small_address p {
+	margin-bottom: 1px;
+	margin-top: 0px;
+	line-height: 1.2em;
+}
+
+#bubble_small_flagged {
+	/* Flagged Site. Please view with caution! */
+	clear: left;
+	color: #b7205d;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 0.8em;
+	text-align: center;
+	width: 100%;
+}
+
+.green_site_popup:after {
+    /* clearfix hack http://nicolasgallagher.com/micro-clearfix-hack/ */
+    clear: both;
+    content: " ";
+    display: block;
+}
+
+.green_site_popup {
+    width: 600px;
+    height: 250px;
+    overflow: auto;
+}
+
+.green_site_popup #multimedia_main {
+    width: 240px;
+    position: static;
+    float: right;
+    margin-left: 1em;
+}
+
+.green_site_popup .bjqs-prev,
+.green_site_popup .bjqs-next {
+    position: absolute;
+    top: 40px;
+}
+
+.green_site_popup .bjqs-controls a {
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+}
+
+.bjqs-next {
+    right: 0px;
+}
+
+.bjqs li.slideshow_element img {
+    width: auto;
+    max-width: 200px;
+    max-height: 150px;
+}
+
+.green_site_popup #multimedia_selector_title {
+    position: static;
+}
+
+.green_site_popup .multimedia_description_author,
+.green_site_popup .multimedia_description_flag,
+.green_site_popup .multimedia_description_description {
+    display: none;
+}
+
+.green_site_popup .elided {
+    max-height: 93px;
+    overflow: hidden;
+}
+
+.green_site_popup .comment div.links {
+    float: none;
+}
+
+ul.site_descriptors {
+    list-style-type: none;
+}
+
+ul.site_descriptors > li{
+    display: inline;
+}
+
+ul.site_descriptors .accessible {
+    color: #2E68B2;
+}
+
+ul.site_descriptors .free {
+    color: #8CC63F;
+}
+
+ul.site_descriptors .public_transportation {
+    color: #C6006F;
+}
+
+ul.site_descriptors .youth_friendly {
+    color: #F89938;
+}
+
+.bubble_rating_label {
+    float: left;
+}
