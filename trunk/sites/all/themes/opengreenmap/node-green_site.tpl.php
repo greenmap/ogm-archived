@@ -338,10 +338,10 @@ if ($teaser) {
         <?php if ($field_phone[0] > '') {
           echo '<div class="fieldphone">'. content_format('field_phone', $field_phone[0]) .'</div>';
         }
-        if ($field_email[0] > '') {
+        if ($field_email[0]['email'] > '') {
           echo '<div class="fieldemail"><a href="mailto:'. $field_email[0]['safe'] . '">Contact</a></div>';
         }
-        if ($field_web[0] > '') {
+        if ($field_web[0]['url'] > '') {
           $link = '<a target="_blank" href="' . $field_web[0]['display_url'] . '">Website</a>';
           echo '<div class="fieldweb">'. $link .'</div>';
         }?>
@@ -371,7 +371,7 @@ if ($teaser) {
    $site_descriptors = '<ul class="site_descriptors">';
    // RM $site_descriptors code moved up along with icons display code ////////////
     if($node->field_accessible_by_public_tran[0]['value'] == 1) {
-      $site_descriptors .= ' <li class="accessible">' . t('Weelchair Accessible') . '</li> ';
+      $site_descriptors .= ' <li class="accessible">' . t('Wheelchair Accessible') . '</li> ';
     }
     if($node->field_child_friendly[0]['value'] == 1) {
       $site_descriptors .= ' <li class="youth_friendly">' . t('Youth Friendly') . '</li> ';
