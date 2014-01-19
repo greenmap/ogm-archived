@@ -191,23 +191,26 @@ div#bubble_small .maximize-link {
 
 .green_site_popup {
     width: 600px;
-    height: 300px;
     overflow: auto;
 }
 
-.green_site_popup .left-pane {
+.green_site_popup .left-pane-scroll {
 	height: 220px;
 	overflow-y: scroll;
 	padding-right: 5px;
 	margin-top: 4px;
 }
 
-.green_site_popup .left-pane::-webkit-scrollbar {
+.green_site_popup .left-pane-scroll::-webkit-scrollbar {
 	width: 6px;
 }
 
-.green_site_popup .left-pane::-webkit-scrollbar-thumb {
+.green_site_popup .left-pane-scroll::-webkit-scrollbar-thumb {
     background: #B8B8B8;
+}
+
+.green_site_popup .related-content{
+    padding: 10px 0px 0px 0px;
 }
 
 .green_site_popup #multimedia_main {
