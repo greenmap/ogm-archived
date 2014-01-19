@@ -367,6 +367,8 @@ if ($teaser) {
   <?php
    print getMultimedia($node);
    ?><div class="left-pane"><?php
+
+   ?><div class="left-pane-scroll"><?php
    $description = '<div class="description">' . content_format('field_details', $field_details[0], 'default', $node) . '</div>';
    print $description;
    $site_descriptors = '<ul class="site_descriptors">';
@@ -441,6 +443,11 @@ if ($teaser) {
      $countents .= '</div><!-- /meta-->';
     print $contents;?>
   </div>
+  </div>
+  <div class="related-content">
+    <a href="<?php echo base_path().'en/node/'.$node->nid . '/simple#tabset-tab-3' ?>">
+        <?php print t('Explore related content'); ?>
+      </a></div>
   </div>
 <?php
 } else {
