@@ -366,6 +366,7 @@ if ($teaser) {
 
   <?php
    print getMultimedia($node);
+   ?><div class="left-pane"><?php
    $description = '<div class="description">' . content_format('field_details', $field_details[0], 'default', $node) . '</div>';
    print $description;
    $site_descriptors = '<ul class="site_descriptors">';
@@ -439,7 +440,7 @@ if ($teaser) {
 
      $countents .= '</div><!-- /meta-->';
     print $contents;?>
-
+  </div>
   </div>
 <?php
 } else {

@@ -212,7 +212,7 @@ function showInfoWindow(nid, position, doneCallback) {
         var handle = google.maps.event.addListener(globalInfoWindow, "domready", function () {
           $("#media_slideshow").bjqs({
             width: 200,
-            height: 210,
+            height: 190,
             usecaptions: false,
             showcontrols: true,
             showmarkers: false,
