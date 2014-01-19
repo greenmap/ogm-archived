@@ -198,6 +198,16 @@ div#bubble_small .maximize-link {
 .green_site_popup .left-pane {
 	height: 220px;
 	overflow-y: scroll;
+	padding-right: 5px;
+	margin-top: 4px;
+}
+
+.green_site_popup .left-pane::-webkit-scrollbar {
+	width: 6px;
+}
+
+.green_site_popup .left-pane::-webkit-scrollbar-thumb {
+    background: #B8B8B8;
 }
 
 .green_site_popup #multimedia_main {
