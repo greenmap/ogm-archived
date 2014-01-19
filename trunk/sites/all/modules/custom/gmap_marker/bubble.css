@@ -191,8 +191,13 @@ div#bubble_small .maximize-link {
 
 .green_site_popup {
     width: 600px;
-    height: 250px;
+    height: 300px;
     overflow: auto;
+}
+
+.green_site_popup .left-pane {
+	height: 220px;
+	overflow-y: scroll;
 }
 
 .green_site_popup #multimedia_main {
@@ -200,6 +205,12 @@ div#bubble_small .maximize-link {
     position: static;
     float: right;
     margin-left: 1em;
+    height: 210px;
+    overflow-y: scroll;
+}
+
+.green_site_popup #multimedia_main p {
+	margin: 0;
 }
 
 .green_site_popup .bjqs-prev,
