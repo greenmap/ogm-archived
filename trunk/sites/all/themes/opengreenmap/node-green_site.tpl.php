@@ -392,7 +392,7 @@ if ($teaser) {
     ?>
     <div id="bubble_middle">
         <div class="bubble_rating_label">Rating:</div   float: left;> 
-        <?php print fivestar_widget_form($node); drupal_add_js("Drupal.behaviors.fivestar()", "inline");?>
+        <?php print fivestar_widget_form($node); ?>
     </div>
     <?php
    $comments = '<div class="bubble_comments">' . comment_render($node) . '</div>'; 

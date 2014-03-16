@@ -191,7 +191,8 @@ div#bubble_small .maximize-link {
 
 .green_site_popup {
     width: 600px;
-    overflow: auto;
+    height: 320px;
+    overflow: hidden;
 }
 
 .green_site_popup .left-pane-scroll {
