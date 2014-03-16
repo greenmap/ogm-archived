@@ -221,6 +221,7 @@ function showInfoWindow(nid, position, doneCallback) {
             nexttext: "<h3>&gt;</h3>",
             prevtext: "<h3>&lt;</h3>",
           });
+          Drupal.behaviors.fivestar($(".green_site_popup"));
           google.maps.event.removeListener(handle);
         });
 
