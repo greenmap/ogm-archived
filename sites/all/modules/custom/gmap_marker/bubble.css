@@ -275,6 +275,7 @@ div#bubble_small .maximize-link {
 
 ul.site_descriptors {
     list-style-type: none;
+    padding-left: 0;	
 }
 
 ul.site_descriptors > li{
