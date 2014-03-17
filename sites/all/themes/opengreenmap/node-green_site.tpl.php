@@ -445,7 +445,7 @@ if ($teaser) {
   </div>
   </div>
   <div class="related-content">
-    <a href="<?php echo base_path().'en/node/'.$node->nid . '/simple#tabset-tab-3' ?>">
+    <a href="<?php echo base_path().'en/node/'.$node->nid . '#tabset-tab-3' ?>">
         <?php print t('Explore related content'); ?>
       </a></div>
   </div>
